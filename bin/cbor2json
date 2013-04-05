@@ -1,0 +1,17 @@
+#!/usr/bin/env node
+
+var cbor = require('../lib/cbor');
+var BufferStream = require('../lib/BufferStream');
+var bs = new BufferStream();
+bs.ensure(512);
+
+process.stdin.pipe(bs);
+process.stdin.on('end', function() {
+  var buf = bs.flatten();
+  var off = 0;
+  while (off < buf.length) {
+    var res = cbor.unpack(buf, off);
+    off = res[1];
+    console.log(JSON.stringify(res[0]));
+  }
+});
