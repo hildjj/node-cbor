@@ -1,0 +1,27 @@
+{
+  "name": "node-cbor",
+  "version": "0.0.0",
+  "description": "Encode and parse CBOR documents.",
+  "main": "./lib/cbor.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "bin": {
+    "json2cbor": "./bin/json2cbor",
+    "cbor2json": "./bin/cbor2json"
+  },
+  "keywords": [
+    "coap",
+    "cbor",
+    "json"
+  ],
+  "author": {
+    "name": "Joe Hildebrand",
+    "email": "joe-github@cursive.net"
+  },
+  "devDependencies": {
+    "nodeunit": "*"
+  },
+  "license": "MIT",
+  "readmeFilename": "README.md"
+}
