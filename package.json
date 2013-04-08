@@ -20,7 +20,9 @@
     "email": "joe-github@cursive.net"
   },
   "devDependencies": {
-    "nodeunit": "*"
+    "nodeunit": "*", 
+    "covershot": "*",
+    "node-jsmeter": "*"
   },
   "license": "MIT",
   "readmeFilename": "README.md"
