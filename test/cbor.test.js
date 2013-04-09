@@ -232,6 +232,12 @@ exports.unpack_edges = function(test) {
       test.fail(obj, 'Should never be called');
     });
   });
+
+  // tag can't follow a tag.
+  cbor.unpack(hex('0x71715f40c3880000000000'), function(er, obj) {
+    test.deepEqual(er, new Error('Tag must not follow a tag'));
+  });
+
   cbor.unpack(hex('0x0801'), 1, function(er, obj) {
     test.ok(!er);
     test.deepEqual(obj, 1);
