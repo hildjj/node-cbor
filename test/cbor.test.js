@@ -217,7 +217,8 @@ exports.decode_special_objects = function(test) {
 
   testUnpack('0x80', new Buffer(0), test);
   testUnpack('0x850001020304', new Buffer([0,1,2,3,4]), test);
-  testUnpack('0x77a3666f6f', /foo/, test, true);
+  testUnpack('0x77a3666f6f', /foo/, test);
+  testUnpack('0x7e000f4240850001020304', new Buffer([0, 1, 2, 3, 4]), test, true)
 };
 
 exports.unpack_edges = function(test) {
