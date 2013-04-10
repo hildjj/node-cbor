@@ -1,5 +1,5 @@
 var csrequire = require('covershot').require.bind(null, require);
-var cbor = csrequire('../lib/cbor');
+var cbor = require('../lib/cbor');
 
 function hex(s) {
   return new Buffer(s.replace(/^0x/, ''), 'hex');
@@ -90,7 +90,7 @@ exports.encode_objects = function(test) {
 };
 
 exports.encode_special_objects = function(test) {
-  test.deepEqual(cbor.pack(new Date(0)), hex('0x715f0000000000000000'));
+  test.deepEqual(cbor.pack(new Date(0)), hex('0x7100'));
 
   test.deepEqual(cbor.pack(new Buffer(0)), hex('0x80'));
   test.deepEqual(cbor.pack(new Buffer([0,1,2,3,4])), hex('0x850001020304'));
@@ -188,9 +188,9 @@ exports.decode_special_numbers = function(test) {
 };
 
 exports.decode_specials = function(test) {
-  testUnpack('0x4f', 'unallocated15', test);
-  testUnpack('0x5c28', 'unallocated40', test);
-  testUnpack('0x5cff', 'unallocated255', test, true);
+  testUnpack('0x4f', new cbor.Unallocated(15), test);
+  testUnpack('0x5c28', new cbor.Unallocated(0x28), test);
+  testUnpack('0x5cff', new cbor.Unallocated(0xff), test, true);
 };
 
 exports.decode_strings = function(test) {
@@ -269,4 +269,13 @@ exports.unpack_edges = function(test) {
     test.deepEqual(obj, 1);
     test.done();
   })
+};
+
+function parseMilliInts(tag, obj, cb) {
+  return cb(null, obj / 1000);
+}
+
+exports.add_tag = function(test) {
+  cbor.addSemanticTag(0xffff, parseMilliInts);
+  testUnpack('0x7dffff1d2710', 10, test, true);
 };
