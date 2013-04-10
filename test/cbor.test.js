@@ -235,7 +235,14 @@ exports.decode_special_objects = function(test) {
   testUnpack('0x80', new Buffer(0), test);
   testUnpack('0x850001020304', new Buffer([0,1,2,3,4]), test);
   testUnpack('0x77a3666f6f', /foo/, test);
-  testUnpack('0x7e000f4240850001020304', new Buffer([0, 1, 2, 3, 4]), test, true)
+
+  // an unknown tag
+  cbor.unpack(hex('0x7e000f4240850001020304'), function(er, res, tag) {
+    test.ok(!er, er);
+    test.deepEqual(new Buffer([0, 1, 2, 3, 4]), res);
+    test.deepEqual(1000000, tag);
+    test.done();
+  });
 };
 
 exports.unpack_edges = function(test) {
@@ -256,6 +263,7 @@ exports.unpack_edges = function(test) {
     test.deepEqual(er, new Error('Tag must not follow a tag'));
   });
 
+  // With an offset
   cbor.unpack(hex('0x0801'), 1, function(er, obj) {
     test.ok(!er);
     test.deepEqual(obj, 1);
