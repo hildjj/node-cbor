@@ -155,7 +155,24 @@ exports.decode_floats = function(test) {
   testUnpack('0x5f3ff199999999999a', 1.1, test);
   testUnpack('0x5f7e37e43c8800759c', 1.0e+300, test);
   testUnpack('0x5e47c35000', 100000.0, test);
-  testUnpack('0x5fc010666666666666', -4.1, test, true);
+  testUnpack('0x5fc010666666666666', -4.1, test);
+
+  // extra tests for half-precision, since it's implemented by hand
+  testUnpack('0x5dc000', -2, test);
+  testUnpack('0x5d7bff', 65504, test);
+  testUnpack('0x5d0400', Math.pow(2,-14), test);
+  testUnpack('0x5d0001', Math.pow(2,-24), test);
+  testUnpack('0x5d0000', 0, test);
+  testUnpack('0x5d8000', -0, test);
+  testUnpack('0x5d7c00', Infinity, test);
+  testUnpack('0x5dfc00', -Infinity, test);
+  testUnpack('0x5d3555', 0.333251953125, test);
+
+  cbor.unpack(hex('0x5d7c01'), function(er, res) {
+    test.ok(!er, er);
+    test.ok(isNaN(res));
+    test.done();
+  });
 };
 
 exports.decode_special_numbers = function(test) {
@@ -171,8 +188,9 @@ exports.decode_special_numbers = function(test) {
 };
 
 exports.decode_specials = function(test) {
-  testUnpack('0x4f', 'special0', test);
-  testUnpack('0x5c00', 'special28', test, true);
+  testUnpack('0x4f', 'unallocated15', test);
+  testUnpack('0x5c28', 'unallocated40', test);
+  testUnpack('0x5cff', 'unallocated255', test, true);
 };
 
 exports.decode_strings = function(test) {
@@ -213,7 +231,6 @@ exports.decode_special_objects = function(test) {
   testUnpack('0x715f40c3880000000000', new Date(1e7), test);
   testUnpack('0x71b8313937302d30312d30315430303a30303a30302e3030305a',
     new Date(0), test)
-
 
   testUnpack('0x80', new Buffer(0), test);
   testUnpack('0x850001020304', new Buffer([0,1,2,3,4]), test);
