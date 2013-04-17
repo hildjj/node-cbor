@@ -1,5 +1,6 @@
 var csrequire = require('covershot').require.bind(null, require);
-var cbor = require('../lib/cbor');
+var cbor = csrequire('../lib/cbor');
+var BufferStream = csrequire('../lib/BufferStream');
 
 function hex(s) {
   return new Buffer(s.replace(/^0x/, ''), 'hex');
@@ -33,66 +34,71 @@ exports.encode = {
   },
 
   floats: function(test) {
-    test.deepEqual(cbor.pack(1.1), hex('0x5f3ff199999999999a'));
-    //test.deepEqual(cbor.pack(1.5), hex('0x5d3e00'));
-    //test.deepEqual(cbor.pack(3.4028234663852886e+38), hex('0x5e7f7fffff'));
-    test.deepEqual(cbor.pack(1.0e+300), hex('0x5f7e37e43c8800759c'));
-    //test.deepEqual(cbor.pack(5.960464477539063e-08), hex('0x5d0001'));
-    //test.deepEqual(cbor.pack(6.103515625e-05), hex('0x5d0400'));
-    test.deepEqual(cbor.pack(-4.1), hex('0x5fc010666666666666'));
+    test.deepEqual(cbor.pack(1.1), hex('0xdf3ff199999999999a'));
+    //test.deepEqual(cbor.pack(1.5), hex('0xdd3e00'));
+    //test.deepEqual(cbor.pack(3.4028234663852886e+38), hex('0xde7f7fffff'));
+    test.deepEqual(cbor.pack(1.0e+300), hex('0xdf7e37e43c8800759c'));
+    //test.deepEqual(cbor.pack(5.960464477539063e-08), hex('0xdd0001'));
+    //test.deepEqual(cbor.pack(6.103515625e-05), hex('0xdd0400'));
+    test.deepEqual(cbor.pack(-4.1), hex('0xdfc010666666666666'));
     test.done();
   },
 
   special_numbers: function(test) {
-    test.deepEqual(cbor.pack(Infinity), hex('0x5f7ff0000000000000'));
-    test.deepEqual(cbor.pack(-Infinity), hex('0x5ffff0000000000000'));
-    test.deepEqual(cbor.pack(NaN), hex('0x5f7ff8000000000000'));
+    test.deepEqual(cbor.pack(Infinity), hex('0xdf7ff0000000000000'));
+    test.deepEqual(cbor.pack(-Infinity), hex('0xdffff0000000000000'));
+    test.deepEqual(cbor.pack(NaN), hex('0xdf7ff8000000000000'));
     test.done();
   },
 
   small: function(test) {
-    test.deepEqual(cbor.pack(false), hex('0x58'));
-    test.deepEqual(cbor.pack(true), hex('0x59'));
-    test.deepEqual(cbor.pack(null), hex('0x5a'));
-    test.deepEqual(cbor.pack(), hex('0x5b'));
+    test.deepEqual(cbor.pack(false), hex('0xd8'));
+    test.deepEqual(cbor.pack(true), hex('0xd9'));
+    test.deepEqual(cbor.pack(null), hex('0xda'));
+    test.deepEqual(cbor.pack(), hex('0xdb'));
     test.done();
   },
 
   strings: function(test) {
-    test.deepEqual(cbor.pack(""), hex('0xa0'));
-    test.deepEqual(cbor.pack("a"), hex('0xa161'));
-    test.deepEqual(cbor.pack("\u00FC"), hex('0xa2c3bc'));
-    test.deepEqual(cbor.pack("IETF"), hex('0xa449455446'));
+    test.deepEqual(cbor.pack(""), hex('0x60'));
+    test.deepEqual(cbor.pack("a"), hex('0x6161'));
+    test.deepEqual(cbor.pack("\u00FC"), hex('0x62c3bc'));
+    test.deepEqual(cbor.pack("IETF"), hex('0x6449455446'));
     test.done();
   },
 
   arrays : function(test) {
-    test.deepEqual(cbor.pack([]), hex('0xc0'));
-    test.deepEqual(cbor.pack([1, 2, 3]), hex('0xc3010203'));
+    test.deepEqual(cbor.pack([]), hex('0x80'));
+    test.deepEqual(cbor.pack([1, 2, 3]), hex('0x83010203'));
     test.done();
   },
 
   objects: function(test) {
-    test.deepEqual(cbor.pack({}), hex('0xe0'));
-    //test.deepEqual(cbor.pack({1: 2, 3: 4}), hex('e201020304'));
-    test.deepEqual(cbor.pack({"a": 1, "b": [2, 3]}), hex('0xe2a16101a162c20203'));
-    test.deepEqual(cbor.pack(["a", {"b": "c"}]), hex('0xc2a161e1a162a163'));
+    test.deepEqual(cbor.pack({}), hex('0xa0'));
+    //test.deepEqual(cbor.pack({1: 2, 3: 4}), hex('a201020304'));
+    test.deepEqual(cbor.pack({"a": 1, "b": [2, 3]}), hex('0xa26161016162820203'));
+    test.deepEqual(cbor.pack(["a", {"b": "c"}]), hex('0x826161a161626163'));
     test.deepEqual(cbor.pack(
       [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
        17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]),
-      hex('0xdc1e0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1c1c1d1c1e'));
+      hex('0x9c1e0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1c1c1d1c1e'));
     test.deepEqual(cbor.pack({"a": "A", "b": "B", "c": "C", "d": "D", "e": "E"}),
-      hex('0xe5a161a141a162a142a163a143a164a144a165a145'));
+      hex('0xa56161614161626142616361436164614461656145'));
     test.done();
   },
 
   special_objects: function(test) {
-    test.deepEqual(cbor.pack(new Date(0)), hex('0x7100'));
+    /*
+    test.deepEqual(cbor.pack(new Date(0)), hex('0xeb00'));
 
-    test.deepEqual(cbor.pack(new Buffer(0)), hex('0x80'));
-    test.deepEqual(cbor.pack(new Buffer([0,1,2,3,4])), hex('0x850001020304'));
+    test.deepEqual(cbor.pack(new Buffer(0)), hex('0x40'));
+    test.deepEqual(cbor.pack(new Buffer([0,1,2,3,4])), hex('0x450001020304'));
+    */
+    debugger;
+    test.deepEqual(cbor.pack(new BufferStream()), hex('0x40'));
+    test.deepEqual(cbor.pack(new cbor.Unallocated(255)), hex('0xdcff'));
 
-    test.deepEqual(cbor.pack(/a/), hex('0x77a161'));
+    test.deepEqual(cbor.pack(/a/), hex('0xf76161'));
     test.done();
   },
 
@@ -106,7 +112,7 @@ exports.encode = {
   edges: function(test) {
     var bs = new BufferStream();
     cbor.pack('a', bs);
-    test.deepEqual(bs.flatten(), hex('0xa161'));
+    test.deepEqual(bs.flatten(), hex('0x6161'));
 
     test.done();
   }
@@ -203,58 +209,63 @@ exports.decode = {
     testUnpack('0x4f', new cbor.Unallocated(15), test);
     testUnpack('0x5c28', new cbor.Unallocated(0x28), test);
     testUnpack('0x5cff', new cbor.Unallocated(0xff), test);
+    var u = new cbor.Unallocated(0xff)
+    test.equal(u.toString(), 'Unallocated-255');
+    test.equal(u.toString(2), 'Unallocated-0b11111111');
+    test.equal(u.toString(8), 'Unallocated-0377');
+    test.equal(u.toString(16), 'Unallocated-0xff');
     test.done();
   },
   strings: function(test) {
-    testUnpack('0xa0', '', test);
-    testUnpack('0xa161', 'a', test);
-    testUnpack('0xa2c3bc', '\u00FC', test);
-    testUnpack('0xa449455446', 'IETF', test);
+    testUnpack('0x60', '', test);
+    testUnpack('0x6161', 'a', test);
+    testUnpack('0x62c3bc', '\u00FC', test);
+    testUnpack('0x6449455446', 'IETF', test);
 
     test.done();
   },
   small: function(test) {
-    testUnpack('0x58', false, test);
-    testUnpack('0x59', true, test);
-    testUnpack('0x5a', null, test);
-    testUnpack('0x5b', undefined, test);
+    testUnpack('0xd8', false, test);
+    testUnpack('0xd9', true, test);
+    testUnpack('0xda', null, test);
+    testUnpack('0xdb', undefined, test);
 
     test.done();
   },
   arrays: function(test) {
-    testUnpack('0xc0', [], test);
-    testUnpack('0xc3010203', [1, 2, 3], test);
-    testUnpack('0xc3a449455446a449455446a449455446',
+    testUnpack('0x80', [], test);
+    testUnpack('0x83010203', [1, 2, 3], test);
+    testUnpack('0x83a449455446a449455446a449455446',
       ['IETF', 'IETF', 'IETF'], test);
 
     test.done();
   },
   objects: function(test) {
-    testUnpack('0xe0', {}, test);
-    testUnpack('0xe2a16101a162c20203', {"a": 1, "b": [2, 3]}, test);
-    testUnpack('0xc2a161e1a162a163', ["a", {"b": "c"}], test);
-    testUnpack('0xdc1e0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1c1c1d1c1e',
+    testUnpack('0xa0', {}, test);
+    testUnpack('0xa26161016162820203', {"a": 1, "b": [2, 3]}, test);
+    testUnpack('0x826161a161626163', ["a", {"b": "c"}], test);
+    testUnpack('0x9c1e0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1c1c1d1c1e',
       [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
         17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30], test);
-    testUnpack('0xe5a161a141a162a142a163a143a164a144a165a145',
+    testUnpack('0xa56161614161626142616361436164614461656145',
       {"a": "A", "b": "B", "c": "C", "d": "D", "e": "E"}, test);
 
     test.done();
   },
   special_objects: function(test) {
     // double: 0
-    testUnpack('0x715f0000000000000000', new Date(0), test);
-    // double: 1e10
-    testUnpack('0x715f40c3880000000000', new Date(1e7), test);
-    testUnpack('0x71b8313937302d30312d30315430303a30303a30302e3030305a',
-      new Date(0), test)
+    testUnpack('0xeb5f0000000000000000', new Date(0), test);
 
-    testUnpack('0x80', new Buffer(0), test);
-    testUnpack('0x850001020304', new Buffer([0,1,2,3,4]), test);
-    testUnpack('0x77a3666f6f', /foo/, test);
+    // double: 1e10
+    testUnpack('0xeb5f40c3880000000000', new Date(1e7), test);
+    testUnpack('0xebb8313937302d30312d30315430303a30303a30302e3030305a',
+      new Date(0), test)
+    testUnpack('0x40', new Buffer(0), test);
+    testUnpack('0x450001020304', new Buffer([0,1,2,3,4]), test);
+    testUnpack('0xf7a3666f6f', /foo/, test);
 
     // an unknown tag
-    parser.unpack(hex('0x7e000f4240850001020304'), function(er, res, tag) {
+    parser.unpack(hex('0xfe000f4240450001020304'), function(er, res, tag) {
       test.ok(!er, er);
       test.deepEqual(new Buffer([0, 1, 2, 3, 4]), res);
       test.deepEqual(1000000, tag);
@@ -275,7 +286,7 @@ exports.decode = {
     });
 
     // tag can't follow a tag.
-    parser.unpack(hex('0x71715f40c3880000000000'), function(er, obj) {
+    parser.unpack(hex('0xf1f15f40c3880000000000'), function(er, obj) {
       test.deepEqual(er, new Error('Tag must not follow a tag'));
     });
 
@@ -288,7 +299,7 @@ exports.decode = {
   },
   add_tag: function(test) {
     parser.addSemanticTag(0xffff, parseMilliInts);
-    testUnpack('0x7dffff1d2710', 10, test, function(er, obj) {
+    testUnpack('0xfdffff1d2710', 10, test, function(er, obj) {
       test.ok(this instanceof cbor.Parser);
       test.done();
     });
