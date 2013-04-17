@@ -40,6 +40,18 @@ exports.append = function(test) {
   test.done();
 };
 
+exports.flatten = function(test) {
+  var bs = new BufferStream();
+  var input = new Buffer(1024);
+  input.fill(9);
+  bs.append(input);
+  bs.grow();
+
+  var output = bs.flatten();
+  test.deepEqual(input, output);
+  test.done();
+};
+
 exports.funcEdges = function(test) {
   var bs = new BufferStream({bsInit: new Buffer('123'), bsStartEmpty:true});
   test.deepEqual(bs.flatten(), new Buffer('123'));
@@ -106,9 +118,16 @@ exports.waitEdges = function(test) {
   bs.wait(0, function(er, buf) {
     test.ok(!er);
     test.deepEqual(buf, new Buffer(0));
+  });
 
+  bs.wait(100, function(er, buf) {
+    // EOF while waiting
+    test.ok(er);
+    test.ok(!buf);
     test.done();
   });
+
+  bs.end();
 };
 
 exports.stream = function(test) {
@@ -119,6 +138,33 @@ exports.stream = function(test) {
   bs.on('finish', function() {
     test.done();
   });
+};
+
+exports.streamDecoded = function(test) {
+  var bs = new BufferStream({decodeStrings: false});
+  bs.on('error', function(er) {
+    test.ok(er);
+    test.done();
+  });
+  bs.write("foo", "utf8");
+};
+
+exports.streamWaitEnded = function(test) {
+  var bs = new BufferStream();
+  bs.end();
+  bs.wait(1, function(er, buf) {
+    test.ok(er);
+    test.ok(!buf);
+    test.done();
+  });
+};
+
+exports.streamAppendSecond = function(test) {
+  var bs = new BufferStream();
+  bs.append(new Buffer(1));
+  bs.append(new Buffer(1024));
+  test.deepEqual(bs.bufs.length, 2);
+  test.done();
 };
 
 exports.JSON = function(test) {

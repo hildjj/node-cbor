@@ -22,6 +22,7 @@
   "devDependencies": {
     "nodeunit": "*", 
     "covershot": "*",
+    "temp": "*",
     "node-jsmeter": "git://github.com/hildjj/node-jsmeter.git"
   },
   "license": "MIT",

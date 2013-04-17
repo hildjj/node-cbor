@@ -1,10 +1,34 @@
 var csrequire = require('covershot').require.bind(null, require);
 var cbor = csrequire('../lib/cbor');
 var BufferStream = csrequire('../lib/BufferStream');
+var fs = require('fs');
+var temp = require('temp');
 
 function hex(s) {
   return new Buffer(s.replace(/^0x/, ''), 'hex');
 }
+
+exports.Unallocated = {
+  create: function(test) {
+    var u = new cbor.Unallocated(0);
+    test.deepEqual(u.value, 0);
+
+    test.throws(function() {
+      new cbor.Unallocated("0");
+    });
+    test.throws(function() {
+      new cbor.Unallocated(-1);
+    });
+    test.throws(function() {
+      new cbor.Unallocated(256);
+    });
+    test.throws(function() {
+      new cbor.Unallocated(1.1);
+    });
+
+    test.done();
+  }
+};
 
 exports.encode = {
   ints: function(test) {
@@ -25,7 +49,7 @@ exports.encode = {
     test.done();
   },
 
-  negative_ints: function(test) {
+  negativeInts: function(test) {
     test.deepEqual(cbor.pack(-1), hex('0x20'));
     test.deepEqual(cbor.pack(-10), hex('0x29'));
     test.deepEqual(cbor.pack(-100), hex('0x3c63'));
@@ -44,7 +68,7 @@ exports.encode = {
     test.done();
   },
 
-  special_numbers: function(test) {
+  specialNumbers: function(test) {
     test.deepEqual(cbor.pack(Infinity), hex('0xdf7ff0000000000000'));
     test.deepEqual(cbor.pack(-Infinity), hex('0xdffff0000000000000'));
     test.deepEqual(cbor.pack(NaN), hex('0xdf7ff8000000000000'));
@@ -87,15 +111,13 @@ exports.encode = {
     test.done();
   },
 
-  special_objects: function(test) {
-    /*
+  specialObjects: function(test) {
     test.deepEqual(cbor.pack(new Date(0)), hex('0xeb00'));
 
     test.deepEqual(cbor.pack(new Buffer(0)), hex('0x40'));
     test.deepEqual(cbor.pack(new Buffer([0,1,2,3,4])), hex('0x450001020304'));
-    */
-    debugger;
     test.deepEqual(cbor.pack(new BufferStream()), hex('0x40'));
+    test.deepEqual(cbor.pack(new cbor.Unallocated(0)), hex('0xc0'));
     test.deepEqual(cbor.pack(new cbor.Unallocated(255)), hex('0xdcff'));
 
     test.deepEqual(cbor.pack(/a/), hex('0xf76161'));
@@ -116,16 +138,45 @@ exports.encode = {
 
     test.done();
   }
-}
+};
 
 var parser = null;
 function testUnpack(hexString, expected, test, cb) {
-  parser.unpack(hex(hexString), function(er, res) {
+  var bs = new BufferStream({bsInit: hex(hexString)});
+  parser.unpack(bs, function(er, res) {
     test.ok(!er, er);
+    test.deepEqual(bs.length, 0, "Data left over!");
     test.deepEqual(expected, res);
     if (cb) {
       cb.call(this, er, res);
     }
+  });
+}
+
+function testUnpackFail(hexString, test, cb) {
+  parser.unpack(hex(hexString), function(er, res) {
+    test.ok(er, "Error expected");
+    if (cb) {
+      cb.call(this, er, res);
+    }
+  });
+}
+
+function testStream(buf, test, cb) {
+  // TODO: replace with a readable BufferStream
+  var path = temp.path({prefix: 'test-', suffix: '.cbor'});
+  fs.writeFile(path, buf, function(er) {
+    test.ok(!er);
+    var p = new cbor.ParseStream();
+    p.on('msg', function(obj) {
+      cb(null, obj);
+    });
+    p.on('error', function(er) {
+      cb(er);
+    });
+    var str = fs.createReadStream(path);
+    test.ok(str);
+    str.pipe(p);
   });
 }
 
@@ -163,7 +214,7 @@ exports.decode = {
 
     test.done();
   },
-  negative_ints: function(test) {
+  negativeInts: function(test) {
     testUnpack('0x20', -1, test);
     testUnpack('0x29', -10, test);
     testUnpack('0x3c63', -100, test);
@@ -172,32 +223,32 @@ exports.decode = {
     test.done();
   },
   floats: function(test) {
-    testUnpack('0x5f3ff199999999999a', 1.1, test);
-    testUnpack('0x5f7e37e43c8800759c', 1.0e+300, test);
-    testUnpack('0x5e47c35000', 100000.0, test);
-    testUnpack('0x5fc010666666666666', -4.1, test);
+    testUnpack('0xdf3ff199999999999a', 1.1, test);
+    testUnpack('0xdf7e37e43c8800759c', 1.0e+300, test);
+    testUnpack('0xde47c35000', 100000.0, test);
+    testUnpack('0xdfc010666666666666', -4.1, test);
 
     // extra tests for half-precision, since it's implemented by hand
-    testUnpack('0x5dc000', -2, test);
-    testUnpack('0x5d7bff', 65504, test);
-    testUnpack('0x5d0400', Math.pow(2,-14), test);
-    testUnpack('0x5d0001', Math.pow(2,-24), test);
-    testUnpack('0x5d0000', 0, test);
-    testUnpack('0x5d8000', -0, test);
-    testUnpack('0x5d7c00', Infinity, test);
-    testUnpack('0x5dfc00', -Infinity, test);
-    testUnpack('0x5d3555', 0.333251953125, test);
+    testUnpack('0xddc000', -2, test);
+    testUnpack('0xdd7bff', 65504, test);
+    testUnpack('0xdd0400', Math.pow(2,-14), test);
+    testUnpack('0xdd0001', Math.pow(2,-24), test);
+    testUnpack('0xdd0000', 0, test);
+    testUnpack('0xdd8000', -0, test);
+    testUnpack('0xdd7c00', Infinity, test);
+    testUnpack('0xddfc00', -Infinity, test);
+    testUnpack('0xdd3555', 0.333251953125, test);
 
-    parser.unpack(hex('0x5d7c01'), function(er, res) {
+    parser.unpack(hex('0xdd7c01'), function(er, res) {
       test.ok(!er, er);
       test.ok(isNaN(res));
       test.done();
     });
   },
-  special_numbers: function(test) {
-    testUnpack('0x5f7ff0000000000000', Infinity, test);
-    testUnpack('0x5ffff0000000000000', -Infinity, test);
-    parser.unpack(hex('0x5f7ff8000000000000'), function(er, obj) {
+  specialNumbers: function(test) {
+    testUnpack('0xdf7ff0000000000000', Infinity, test);
+    testUnpack('0xdffff0000000000000', -Infinity, test);
+    parser.unpack(hex('0xdf7ff8000000000000'), function(er, obj) {
       test.ok(!er);
 
       // NaN !== NaN
@@ -206,10 +257,10 @@ exports.decode = {
     });
   },
   specials: function(test) {
-    testUnpack('0x4f', new cbor.Unallocated(15), test);
-    testUnpack('0x5c28', new cbor.Unallocated(0x28), test);
-    testUnpack('0x5cff', new cbor.Unallocated(0xff), test);
-    var u = new cbor.Unallocated(0xff)
+    testUnpack('0xcf', new cbor.Unallocated(15), test);
+    testUnpack('0xdc28', new cbor.Unallocated(0x28), test);
+    testUnpack('0xdcff', new cbor.Unallocated(0xff), test);
+    var u = new cbor.Unallocated(0xff);
     test.equal(u.toString(), 'Unallocated-255');
     test.equal(u.toString(2), 'Unallocated-0b11111111');
     test.equal(u.toString(8), 'Unallocated-0377');
@@ -235,7 +286,7 @@ exports.decode = {
   arrays: function(test) {
     testUnpack('0x80', [], test);
     testUnpack('0x83010203', [1, 2, 3], test);
-    testUnpack('0x83a449455446a449455446a449455446',
+    testUnpack('0x83644945544664494554466449455446',
       ['IETF', 'IETF', 'IETF'], test);
 
     test.done();
@@ -252,17 +303,17 @@ exports.decode = {
 
     test.done();
   },
-  special_objects: function(test) {
+  specialObjects: function(test) {
     // double: 0
-    testUnpack('0xeb5f0000000000000000', new Date(0), test);
+    testUnpack('0xebdf0000000000000000', new Date(0), test);
 
     // double: 1e10
-    testUnpack('0xeb5f40c3880000000000', new Date(1e7), test);
-    testUnpack('0xebb8313937302d30312d30315430303a30303a30302e3030305a',
-      new Date(0), test)
+    testUnpack('0xebdf40c3880000000000', new Date(1e7), test);
+    testUnpack('0xeb78313937302d30312d30315430303a30303a30302e3030305a',
+      new Date(0), test);
     testUnpack('0x40', new Buffer(0), test);
     testUnpack('0x450001020304', new Buffer([0,1,2,3,4]), test);
-    testUnpack('0xf7a3666f6f', /foo/, test);
+    testUnpack('0xf763666f6f', /foo/, test);
 
     // an unknown tag
     parser.unpack(hex('0xfe000f4240450001020304'), function(er, res, tag) {
@@ -286,7 +337,7 @@ exports.decode = {
     });
 
     // tag can't follow a tag.
-    parser.unpack(hex('0xf1f15f40c3880000000000'), function(er, obj) {
+    parser.unpack(hex('0xebebdf40c3880000000000'), function(er, obj) {
       test.deepEqual(er, new Error('Tag must not follow a tag'));
     });
 
@@ -294,14 +345,33 @@ exports.decode = {
     parser.unpack(hex('0x0801'), 1, function(er, obj) {
       test.ok(!er);
       test.deepEqual(obj, 1);
-      test.done();
-    })
+    });
+
+    testUnpackFail('0xeba0', test);
+    testUnpackFail('0xf7a0', test);
+    test.done();
   },
-  add_tag: function(test) {
+  addTag: function(test) {
     parser.addSemanticTag(0xffff, parseMilliInts);
     testUnpack('0xfdffff1d2710', 10, test, function(er, obj) {
       test.ok(this instanceof cbor.Parser);
       test.done();
     });
+  },
+  stream: function(test) {
+    testStream(cbor.pack({a: {b: {c: {d: {e: [0, 1, 2 , 3]}}}}}),
+      test, function(er, obj) {
+        test.ok(!er);
+        test.ok(obj);
+        test.done();
+    });
+  },
+  streamError: function(test) {
+    testStream(hex("0xebebdf40c3880000000000"),
+      test, function(er, obj) {
+        test.ok(er);
+        test.ok(!obj);
+        test.done();
+    });
   }
-}
+};
