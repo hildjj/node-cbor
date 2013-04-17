@@ -1,12 +1,40 @@
 #!/usr/bin/env node
 
+var fs = require('fs');
 var cbor = require('../lib/cbor');
 var BufferStream = require('../lib/BufferStream');
-var bs = new BufferStream();
+var argv = process.argv.slice(2);
 
-process.stdin.pipe(bs);
-process.stdin.on('end', function() {
-  var buf = bs.flatten();
-  var js = JSON.parse(buf);
-  process.stdout.write(cbor.pack(js));
-});
+if (argv.length === 0) {
+  argv = ['-'];
+}
+
+function convert(stream, cb) {
+  var bs = new BufferStream();
+  bs.on('error', function(er) {
+    process.strderr.write(er);
+    process.exit(1);
+  });
+  bs.on('finish', function() {
+    var j = JSON.parse(bs.flatten());
+    buf = cbor.pack(j);
+    process.stdout.write(buf);
+    cb();
+  });
+  stream.pipe(bs);
+}
+
+var i=0;
+function convertNext() {
+  if (i >= argv.length) {
+    return;
+  }
+  var f = argv[i++];
+  if (f === '-') {
+    convert(process.stdin, convertNext);
+  } else {
+    convert(fs.createReadStream(f), convertNext);
+  }
+}
+
+convertNext();
