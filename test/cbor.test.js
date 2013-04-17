@@ -30,78 +30,79 @@ exports.Unallocated = {
   }
 };
 
+function testPack(obj, encoded, test) {
+  test.deepEqual(cbor.pack(obj), hex(encoded));
+}
+
 exports.encode = {
   ints: function(test) {
-    test.deepEqual(cbor.pack(0), hex('0x00'));
-    test.deepEqual(cbor.pack(1), hex('0x01'));
-    test.deepEqual(cbor.pack(10), hex('0x0a'));
-    test.deepEqual(cbor.pack(0x1b), hex('0x1b'));
-    test.deepEqual(cbor.pack(0x1c), hex('0x1c1c'));
-    test.deepEqual(cbor.pack(29), hex('0x1c1d'));
-    test.deepEqual(cbor.pack(100), hex('0x1c64'));
-    test.deepEqual(cbor.pack(0xff), hex('0x1cff'));
-    test.deepEqual(cbor.pack(0x1ff), hex('0x1d01ff'));
-    test.deepEqual(cbor.pack(1000), hex('0x1d03e8'));
-    test.deepEqual(cbor.pack(0xffff), hex('0x1dffff'));
-    test.deepEqual(cbor.pack(0x1ffff), hex('0x1e0001ffff'));
-    test.deepEqual(cbor.pack(1000000), hex('0x1e000f4240'));
-    test.deepEqual(cbor.pack(0x7fffffff), hex('0x1e7fffffff'));
+    testPack(0, '0x00', test);
+    testPack(1, '0x01', test);
+    testPack(10, '0x0a', test);
+    testPack(0x1b, '0x1b', test);
+    testPack(0x1c, '0x1c1c', test);
+    testPack(29, '0x1c1d', test);
+    testPack(100, '0x1c64', test);
+    testPack(0xff, '0x1cff', test);
+    testPack(0x1ff, '0x1d01ff', test);
+    testPack(1000, '0x1d03e8', test);
+    testPack(0xffff, '0x1dffff', test);
+    testPack(0x1ffff, '0x1e0001ffff', test);
+    testPack(1000000, '0x1e000f4240', test);
+    testPack(0x7fffffff, '0x1e7fffffff', test);
     test.done();
   },
 
   negativeInts: function(test) {
-    test.deepEqual(cbor.pack(-1), hex('0x20'));
-    test.deepEqual(cbor.pack(-10), hex('0x29'));
-    test.deepEqual(cbor.pack(-100), hex('0x3c63'));
-    test.deepEqual(cbor.pack(-1000), hex('0x3d03e7'));
+    testPack(-1, '0x20', test);
+    testPack(-10, '0x29', test);
+    testPack(-100, '0x3c63', test);
+    testPack(-1000, '0x3d03e7', test);
+    testPack(-0x80000000, '0x3e7fffffff', test);
     test.done();
   },
 
   floats: function(test) {
-    test.deepEqual(cbor.pack(1.1), hex('0xdf3ff199999999999a'));
-    //test.deepEqual(cbor.pack(1.5), hex('0xdd3e00'));
-    //test.deepEqual(cbor.pack(3.4028234663852886e+38), hex('0xde7f7fffff'));
-    test.deepEqual(cbor.pack(1.0e+300), hex('0xdf7e37e43c8800759c'));
-    //test.deepEqual(cbor.pack(5.960464477539063e-08), hex('0xdd0001'));
-    //test.deepEqual(cbor.pack(6.103515625e-05), hex('0xdd0400'));
-    test.deepEqual(cbor.pack(-4.1), hex('0xdfc010666666666666'));
+    testPack(1.1, '0xdf3ff199999999999a', test);
+    testPack(1.0e+300, '0xdf7e37e43c8800759c', test);
+    testPack(-4.1, '0xdfc010666666666666', test);
     test.done();
   },
 
   specialNumbers: function(test) {
-    test.deepEqual(cbor.pack(Infinity), hex('0xdf7ff0000000000000'));
-    test.deepEqual(cbor.pack(-Infinity), hex('0xdffff0000000000000'));
-    test.deepEqual(cbor.pack(NaN), hex('0xdf7ff8000000000000'));
+    testPack(Infinity, '0xdf7ff0000000000000', test);
+    testPack(-Infinity, '0xdffff0000000000000', test);
+    testPack(NaN, '0xdf7ff8000000000000', test);
     test.done();
   },
 
   small: function(test) {
-    test.deepEqual(cbor.pack(false), hex('0xd8'));
-    test.deepEqual(cbor.pack(true), hex('0xd9'));
-    test.deepEqual(cbor.pack(null), hex('0xda'));
-    test.deepEqual(cbor.pack(), hex('0xdb'));
+    testPack(false, '0xd8', test);
+    testPack(true, '0xd9', test);
+    testPack(null, '0xda', test);
+    testPack(undefined, '0xdb', test);
     test.done();
   },
 
   strings: function(test) {
-    test.deepEqual(cbor.pack(""), hex('0x60'));
-    test.deepEqual(cbor.pack("a"), hex('0x6161'));
-    test.deepEqual(cbor.pack("\u00FC"), hex('0x62c3bc'));
-    test.deepEqual(cbor.pack("IETF"), hex('0x6449455446'));
+    testPack("", '0x60', test);
+    testPack("a", '0x6161', test);
+    testPack("\u00FC", '0x62c3bc', test);
+    testPack("IETF", '0x6449455446', test);
     test.done();
   },
 
   arrays : function(test) {
-    test.deepEqual(cbor.pack([]), hex('0x80'));
-    test.deepEqual(cbor.pack([1, 2, 3]), hex('0x83010203'));
+    testPack([], '0x80', test);
+    testPack([1, 2, 3], '0x83010203', test);
     test.done();
   },
 
   objects: function(test) {
-    test.deepEqual(cbor.pack({}), hex('0xa0'));
-    //test.deepEqual(cbor.pack({1: 2, 3: 4}), hex('a201020304'));
-    test.deepEqual(cbor.pack({"a": 1, "b": [2, 3]}), hex('0xa26161016162820203'));
-    test.deepEqual(cbor.pack(["a", {"b": "c"}]), hex('0x826161a161626163'));
+    testPack({}, '0xa0', test);
+    testPack({1: 2, 3: 4}, '0xa2613102613304', test);
+    testPack({"a": 1, "b": [2, 3]}, '0xa26161016162820203', test);
+    testPack(["a", {"b": "c"}], '0x826161a161626163', test);
     test.deepEqual(cbor.pack(
       [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
        17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]),
@@ -120,7 +121,7 @@ exports.encode = {
     test.deepEqual(cbor.pack(new cbor.Unallocated(0)), hex('0xc0'));
     test.deepEqual(cbor.pack(new cbor.Unallocated(255)), hex('0xdcff'));
 
-    test.deepEqual(cbor.pack(/a/), hex('0xf76161'));
+    testPack(/a/, '0xf76161', test);
     test.done();
   },
 
