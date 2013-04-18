@@ -141,6 +141,8 @@ exports.encode = {
       '0xef71687474703a2f2f6c6f63616c686f73742f');
 
     testPack(test, /a/, '0xf76161');
+
+    testPack(test, new cbor.Tagged(0xffff, "foo"), '0xfdffff63666f6f');
     test.done();
   },
 
@@ -391,9 +393,11 @@ exports.decode = {
     });
 
     // an unknown tag
-    testUnpack(test, '0xfe000f4240450001020304', function(er, res, tag) {
-      test.deepEqual(new Buffer([0, 1, 2, 3, 4]), res);
-      test.deepEqual(1000000, tag);
+    testUnpack(test, '0xfe000f4240450001020304', function(er, res) {
+      test.ok(!er, er);
+      test.ok(res instanceof cbor.Tagged, typeof res);
+      test.deepEqual(new Buffer([0, 1, 2, 3, 4]), res.value);
+      test.deepEqual(1000000, res.tag);
       test.done();
     });
   },
@@ -437,9 +441,11 @@ exports.decode = {
   },
 
   addTagOptions: function(test) {
-    cbor.unpack(hex('0xfdffff1d2710'), function(er, obj, tag) {
-      test.deepEqual(obj, 10000);
-      test.deepEqual(tag, 0xffff);
+    cbor.unpack(hex('0xfdffff1d2710'), function(er, obj) {
+      test.ok(!er, er);
+      test.ok(obj instanceof cbor.Tagged);
+      test.deepEqual(obj.value, 10000);
+      test.deepEqual(obj.tag, 0xffff);
     });
     cbor.unpack(hex('0xfdffff1d2710'), {psTags:{
       0xffff: parseMilliInts
