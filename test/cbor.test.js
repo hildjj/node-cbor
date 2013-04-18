@@ -31,102 +31,149 @@ exports.Unallocated = {
   }
 };
 
-function testPack(obj, encoded, test) {
-  test.deepEqual(cbor.pack(obj), hex(encoded));
+// If you pass a function as encoded, catch errors and pass them
+// to the callback.  Avoids test.throws.
+function testPack(test, obj, encoded) {
+  var funky = (typeof encoded === 'function');
+  try {
+    var packed = cbor.pack(obj);
+    test.ok(packed);
+    if (funky) {
+      encoded(null, packed);
+    } else {
+      test.deepEqual(packed, hex(encoded));
+    }
+  } catch (e) {
+    if (funky) {
+      encoded(e);
+    } else {
+      throw e;
+    }
+  }
 }
 
 exports.encode = {
   ints: function(test) {
-    testPack(0, '0x00', test);
-    testPack(1, '0x01', test);
-    testPack(10, '0x0a', test);
-    testPack(0x1b, '0x1b', test);
-    testPack(0x1c, '0x1c1c', test);
-    testPack(29, '0x1c1d', test);
-    testPack(100, '0x1c64', test);
-    testPack(0xff, '0x1cff', test);
-    testPack(0x1ff, '0x1d01ff', test);
-    testPack(1000, '0x1d03e8', test);
-    testPack(0xffff, '0x1dffff', test);
-    testPack(0x1ffff, '0x1e0001ffff', test);
-    testPack(1000000, '0x1e000f4240', test);
-    testPack(0x7fffffff, '0x1e7fffffff', test);
+    testPack(test, 0, '0x00');
+    testPack(test, 1, '0x01');
+    testPack(test, 10, '0x0a');
+    testPack(test, 0x1b, '0x1b');
+    testPack(test, 0x1c, '0x1c1c');
+    testPack(test, 29, '0x1c1d');
+    testPack(test, 100, '0x1c64');
+    testPack(test, 0xff, '0x1cff');
+    testPack(test, 0x1ff, '0x1d01ff');
+    testPack(test, 1000, '0x1d03e8');
+    testPack(test, 0xffff, '0x1dffff');
+    testPack(test, 0x1ffff, '0x1e0001ffff');
+    testPack(test, 1000000, '0x1e000f4240');
+    testPack(test, 0x7fffffff, '0x1e7fffffff');
     test.done();
   },
 
   negativeInts: function(test) {
-    testPack(-1, '0x20', test);
-    testPack(-10, '0x29', test);
-    testPack(-100, '0x3c63', test);
-    testPack(-1000, '0x3d03e7', test);
-    testPack(-0x80000000, '0x3e7fffffff', test);
+    testPack(test, -1, '0x20');
+    testPack(test, -10, '0x29');
+    testPack(test, -100, '0x3c63');
+    testPack(test, -1000, '0x3d03e7');
+    testPack(test, -0x80000000, '0x3e7fffffff');
     test.done();
   },
 
   floats: function(test) {
-    testPack(1.1, '0xdf3ff199999999999a', test);
-    testPack(1.0e+300, '0xdf7e37e43c8800759c', test);
-    testPack(-4.1, '0xdfc010666666666666', test);
+    testPack(test, 1.1, '0xdf3ff199999999999a');
+    testPack(test, 1.0e+300, '0xdf7e37e43c8800759c');
+    testPack(test, -4.1, '0xdfc010666666666666');
     test.done();
   },
 
   specialNumbers: function(test) {
-    testPack(Infinity, '0xdf7ff0000000000000', test);
-    testPack(-Infinity, '0xdffff0000000000000', test);
-    testPack(NaN, '0xdf7ff8000000000000', test);
+    testPack(test, Infinity, '0xdf7ff0000000000000');
+    testPack(test, -Infinity, '0xdffff0000000000000');
+    testPack(test, NaN, '0xdf7ff8000000000000');
     test.done();
   },
 
   small: function(test) {
-    testPack(false, '0xd8', test);
-    testPack(true, '0xd9', test);
-    testPack(null, '0xda', test);
-    testPack(undefined, '0xdb', test);
+    testPack(test, false, '0xd8');
+    testPack(test, true, '0xd9');
+    testPack(test, null, '0xda');
+    testPack(test, undefined, '0xdb');
     test.done();
   },
 
   strings: function(test) {
-    testPack("", '0x60', test);
-    testPack("a", '0x6161', test);
-    testPack("\u00FC", '0x62c3bc', test);
-    testPack("IETF", '0x6449455446', test);
+    testPack(test, "", '0x60');
+    testPack(test, "a", '0x6161');
+    testPack(test, "\u00FC", '0x62c3bc');
+    testPack(test, "IETF", '0x6449455446');
     test.done();
   },
 
   arrays : function(test) {
-    testPack([], '0x80', test);
-    testPack([1, 2, 3], '0x83010203', test);
+    testPack(test, [], '0x80');
+    testPack(test, [1, 2, 3], '0x83010203');
     test.done();
   },
 
   objects: function(test) {
-    testPack({}, '0xa0', test);
-    testPack({1: 2, 3: 4}, '0xa2613102613304', test);
-    testPack({"a": 1, "b": [2, 3]}, '0xa26161016162820203', test);
-    testPack(["a", {"b": "c"}], '0x826161a161626163', test);
-    test.deepEqual(cbor.pack(
-      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-       17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]),
-      hex('0x9c1e0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1c1c1d1c1e'));
-    test.deepEqual(cbor.pack({"a": "A", "b": "B", "c": "C", "d": "D", "e": "E"}),
-      hex('0xa56161614161626142616361436164614461656145'));
+    testPack(test, {}, '0xa0');
+    testPack(test, {1: 2, 3: 4}, '0xa2613102613304');
+    testPack(test, {"a": 1, "b": [2, 3]}, '0xa26161016162820203');
+    testPack(test, ["a", {"b": "c"}], '0x826161a161626163');
+    testPack(test, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+       17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+      '0x9c1e0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1c1c1d1c1e');
+    testPack(test, {"a": "A", "b": "B", "c": "C", "d": "D", "e": "E"},
+      '0xa56161614161626142616361436164614461656145');
     test.done();
   },
 
   specialObjects: function(test) {
-    test.deepEqual(cbor.pack(new Date(0)), hex('0xeb00'));
+    testPack(test, new Date(0), '0xeb00');
 
-    test.deepEqual(cbor.pack(new Buffer(0)), hex('0x40'));
-    test.deepEqual(cbor.pack(new Buffer([0,1,2,3,4])), hex('0x450001020304'));
-    test.deepEqual(cbor.pack(new BufferStream()), hex('0x40'));
-    test.deepEqual(cbor.pack(new cbor.Unallocated(0)), hex('0xc0'));
-    test.deepEqual(cbor.pack(new cbor.Unallocated(255)), hex('0xdcff'));
+    testPack(test, new Buffer(0), '0x40');
+    testPack(test, new Buffer([0,1,2,3,4]), '0x450001020304');
+    testPack(test, new BufferStream(), '0x40');
+    testPack(test, new cbor.Unallocated(0), '0xc0');
+    testPack(test, new cbor.Unallocated(255), '0xdcff');
+    testPack(test, url.parse('http://localhost'),
+      '0xef71687474703a2f2f6c6f63616c686f73742f');
 
-    testPack(/a/, '0xf76161', test);
+    testPack(test, /a/, '0xf76161');
     test.done();
   },
 
-  fail : function(test) {
+  addSemanticType: function(test) {
+    function tempClass(val) {
+      // render as the string tempClass with the tag 0xffff
+      this.value = val || "tempClass";
+    }
+    tempClass.pack = function(gen, obj, bufs) {
+      cbor.Generator.packInt(0xffff, 7, bufs);
+      gen.unsafePack(obj.value, bufs);
+    };
+    // before the tag, this is an innocuous object:
+    // {"value": "foo"}
+    var t = new tempClass('foo');
+    testPack(test, t, '0xa16576616c756563666f6f');
+
+    var gen = new cbor.Generator({genTypes: [tempClass, tempClass.pack]});
+    test.deepEqual(gen.pack(t), hex('0xfdffff63666f6f'));
+
+    function hexPackBuffer(gen, obj, bufs) {
+      gen.unsafePack('0x' + obj.toString('hex'), bufs);
+    }
+
+    // replace Buffer serializer with hex strings
+    gen = new cbor.Generator({genTypes: [Buffer, hexPackBuffer]});
+    test.deepEqual(gen.pack(new Buffer('010203', 'hex')),
+      hex('0x683078303130323033'));
+
+    test.done();
+  },
+
+  fail: function(test) {
     test.throws(function() {
       cbor.pack(test.ok);
     });
@@ -144,16 +191,25 @@ exports.encode = {
 
 var parser = null;
 function testUnpack(test, hexString, expected) {
-  var bs = new BufferStream({bsInit: hex(hexString)});
-  parser.unpack(bs, function(er, res, tag) {
-    test.ok(!er, er);
-    test.deepEqual(bs.length, 0, "Data left over!");
-    if (typeof expected === 'function') {
-      expected.call(this, er, res, tag);
+  var funky = (typeof expected === 'function');
+  try {
+    var bs = new BufferStream({bsInit: hex(hexString)});
+    parser.unpack(bs, function(er, res, tag) {
+      if (funky) {
+        expected.call(this, er, res, tag);
+      } else {
+        test.ok(!er, er);
+        test.deepEqual(bs.length, 0, "Data left over!");
+        test.deepEqual(expected, res);
+      }
+    });
+  } catch (e) {
+    if (funky) {
+      expected(e);
     } else {
-      test.deepEqual(expected, res);
+      throw(e);
     }
-  });
+  }
 }
 
 function testUnpackFail(hexString, test, cb) {
@@ -217,6 +273,7 @@ exports.decode = {
 
     test.done();
   },
+
   negativeInts: function(test) {
     testUnpack(test, '0x20', -1);
     testUnpack(test, '0x29', -10);
@@ -225,6 +282,7 @@ exports.decode = {
 
     test.done();
   },
+
   floats: function(test) {
     testUnpack(test, '0xdf3ff199999999999a', 1.1);
     testUnpack(test, '0xdf7e37e43c8800759c', 1.0e+300);
@@ -248,6 +306,7 @@ exports.decode = {
       test.done();
     });
   },
+
   specialNumbers: function(test) {
     testUnpack(test, '0xdf7ff0000000000000', Infinity);
     testUnpack(test, '0xdffff0000000000000', -Infinity);
@@ -257,6 +316,7 @@ exports.decode = {
       test.done();
     });
   },
+
   specials: function(test) {
     testUnpack(test, '0xcf', new cbor.Unallocated(15));
     testUnpack(test, '0xdc28', new cbor.Unallocated(0x28));
@@ -268,6 +328,7 @@ exports.decode = {
     test.equal(u.toString(16), 'Unallocated-0xff');
     test.done();
   },
+
   strings: function(test) {
     testUnpack(test, '0x60', '');
     testUnpack(test, '0x6161', 'a');
@@ -276,6 +337,7 @@ exports.decode = {
 
     test.done();
   },
+
   small: function(test) {
     testUnpack(test, '0xd8', false);
     testUnpack(test, '0xd9', true);
@@ -284,6 +346,7 @@ exports.decode = {
 
     test.done();
   },
+
   arrays: function(test) {
     testUnpack(test, '0x80', []);
     testUnpack(test, '0x83010203', [1, 2, 3]);
@@ -292,6 +355,7 @@ exports.decode = {
 
     test.done();
   },
+
   objects: function(test) {
     testUnpack(test, '0xa0', {});
     testUnpack(test, '0xa26161016162820203', {"a": 1, "b": [2, 3]});
@@ -304,6 +368,7 @@ exports.decode = {
 
     test.done();
   },
+
   specialObjects: function(test) {
     // double: 0
     testUnpack(test, '0xebdf0000000000000000', new Date(0));
@@ -319,6 +384,12 @@ exports.decode = {
       test.deepEqual(obj.href, 'http://localhost/');
     });
 
+    testUnpack(test, '0xef00', function(er, obj) {
+      // Unsupported Uri type: number
+      test.ok(er);
+      test.ok(!obj);
+    });
+
     // an unknown tag
     testUnpack(test, '0xfe000f4240450001020304', function(er, res, tag) {
       test.deepEqual(new Buffer([0, 1, 2, 3, 4]), res);
@@ -326,6 +397,7 @@ exports.decode = {
       test.done();
     });
   },
+
   edges: function(test) {
     test.throws(function() {
       parser.unpack(hex('0x00'));
@@ -357,11 +429,13 @@ exports.decode = {
     testUnpackFail('0xf7a0', test);
     test.done();
   },
+
   addTag: function(test) {
     parser.addSemanticTag(0xffff, parseMilliInts);
     testUnpack(test, '0xfdffff1d2710', 10);
     test.done();
   },
+
   addTagOptions: function(test) {
     cbor.unpack(hex('0xfdffff1d2710'), function(er, obj, tag) {
       test.deepEqual(obj, 10000);
@@ -374,6 +448,7 @@ exports.decode = {
       test.done();
     });
   },
+
   stream: function(test) {
     testStream(cbor.pack({a: {b: {c: {d: {e: [0, 1, 2 , 3]}}}}}),
       test, function(er, obj) {
@@ -382,6 +457,7 @@ exports.decode = {
         test.done();
     });
   },
+
   streamError: function(test) {
     testStream(hex("0xebebdf40c3880000000000"),
       test, function(er, obj) {
@@ -390,6 +466,7 @@ exports.decode = {
         test.done();
     });
   },
+
   unpackStream: function(test) {
     var path = temp.path({prefix: 'test-', suffix: '.cbor'});
     fs.writeFile(path, hex('0x00'), function(er) {
@@ -403,6 +480,7 @@ exports.decode = {
       });
     });
   },
+
   unpackStreamShort: function(test) {
     var path = temp.path({prefix: 'test-', suffix: '.cbor'});
     fs.writeFile(path, hex('0x6861'), function(er) {
@@ -415,6 +493,7 @@ exports.decode = {
       });
     });
   },
+
   unpackStreamError: function(test) {
     var path = temp.path({prefix: 'test-', suffix: '.cbor'});
     fs.writeFile(path, hex('0xebebdf40c3880000000000'), function(er) {
@@ -427,6 +506,7 @@ exports.decode = {
       });
     });
   },
+
   unpackStreamEdges: function(test) {
     test.throws(function() {
       cbor.unpack("foo", console.log);
