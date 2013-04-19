@@ -324,10 +324,7 @@ exports.decode = {
     testUnpack(test, '0xdc28', new cbor.Unallocated(0x28));
     testUnpack(test, '0xdcff', new cbor.Unallocated(0xff));
     var u = new cbor.Unallocated(0xff);
-    test.equal(u.toString(), 'Unallocated-255');
-    test.equal(u.toString(2), 'Unallocated-0b11111111');
-    test.equal(u.toString(8), 'Unallocated-0377');
-    test.equal(u.toString(16), 'Unallocated-0xff');
+    test.equal(u.toString(), 'simple(255)');
     test.done();
   },
 
