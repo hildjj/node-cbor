@@ -1,3 +1,6 @@
+/*jslint node: true */
+"use strict";
+
 var csrequire = require('covershot').require.bind(null, require);
 var cbor = csrequire('../lib/cbor');
 
