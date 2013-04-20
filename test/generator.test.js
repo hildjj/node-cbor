@@ -4,11 +4,9 @@
 var csrequire = require('covershot').require.bind(null, require);
 var cbor = csrequire('../lib/cbor');
 var BufferStream = csrequire('../lib/BufferStream');
-var url = require('url');
+var hex = csrequire('../lib/utils').hex;
 
-function hex(s) {
-  return new Buffer(s.replace(/^0x/, ''), 'hex');
-}
+var url = require('url');
 
 // If you pass a function as encoded, catch errors and pass them
 // to the callback.  Avoids test.throws.
