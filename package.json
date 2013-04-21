@@ -10,6 +10,9 @@
     "json2cbor": "./bin/json2cbor",
     "cbor2json": "./bin/cbor2json"
   },
+  "scripts": {
+    "test": "./node_modules/.bin/nodeunit test"
+  },
   "keywords": [
     "coap",
     "cbor",
