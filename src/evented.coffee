@@ -1,7 +1,7 @@
 # jslint node: true
 
 assert = require 'assert'
-events = require 'events'
+stream = require 'stream'
 async = require 'async'
 
 BufferStream = require '../lib/BufferStream'
@@ -13,7 +13,7 @@ MT = constants.MT
 BREAK = () ->
   "BREAK"
 
-class EventedParser extends events.EventEmitter
+class EventedParser extends stream.Writable
   constructor: (@options) ->
     @options ?= {}
 

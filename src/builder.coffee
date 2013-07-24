@@ -114,6 +114,17 @@ class Builder extends events.EventEmitter
   unpack: (buf, offset, encoding)->
     @parser.unpack buf, offset, encoding
 
+  @parse: (buf, cb)->
+    d = new Builder();
+    actual = []
+    d.on 'complete', (v)->
+      actual.push v
+
+    d.on 'end', ()->
+      cb(null, actual) if cb
+    d.on 'error', cb
+    d.unpack buf
+
   tag_DATE_STRING: (val)->
     new Date(val)
 
