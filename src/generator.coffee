@@ -28,11 +28,8 @@ class Generator extends stream.Readable
       Array, @_packArray
       Date, @_packDate
       Buffer, @_packBuffer
-      BufferStream, BufferStream.pack
       RegExp, @_packRegexp
-      Tagged, Tagged.pack
       url.Url, @_packUrl
-      Simple, Simple.pack
       bignumber, @_packBigNumber
     ]
 
@@ -109,7 +106,7 @@ class Generator extends stream.Readable
   _packUndefined: (obj)->
     @bs.writeUInt8 UNDEFINED
 
-  _packArray: (gen, obj, bs)->
+  _packArray: (gen, obj)->
     len = obj.length
     @_packInt len, MT.ARRAY
     for x in obj
@@ -118,19 +115,19 @@ class Generator extends stream.Readable
   _packTag: (tag)->
     @_packInt tag, MT.TAG
 
-  _packDate: (gen, obj, bs)->
+  _packDate: (gen, obj)->
     @_packTag TAG.DATE_EPOCH
     @_pack obj / 1000
 
-  _packBuffer: (gen, obj, bs)->
+  _packBuffer: (gen, obj)->
     @_packInt obj.length, MT.BYTE_STRING
     @bs.append obj
 
-  _packRegexp: (gen, obj, bs)->
+  _packRegexp: (gen, obj)->
     @_packTag TAG.REGEXP
     @_pack obj.source
 
-  _packUrl: (gen, obj, bs)->
+  _packUrl: (gen, obj)->
     @_packTag TAG.URI
     @_pack obj.format()
 
@@ -147,7 +144,7 @@ class Generator extends stream.Readable
     @_packTag tag
     @_packBuffer this, buf, @bs
 
-  _packBigNumber: (gen, obj, bs)->
+  _packBigNumber: (gen, obj)->
     if obj.isNaN()
       return @_packNaN()
     unless obj.isFinite()
@@ -169,7 +166,11 @@ class Generator extends stream.Readable
     unless obj then return @bs.writeUInt8 NULL
     for typ,i in @semanticTypes by 2
       if obj instanceof typ
-        return @semanticTypes[i+1].call(this, this, obj, @bs)
+        return @semanticTypes[i+1].call(this, this, obj)
+
+    f = obj.generateCBOR
+    if typeof f == 'function'
+      return f.call(obj, this)
 
     keys = Object.keys obj
     len = keys.length
