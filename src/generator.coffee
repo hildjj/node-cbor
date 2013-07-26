@@ -24,6 +24,7 @@ class Generator extends stream.Readable
     super options
 
     @bs = new BufferStream options
+    @going = true
     @semanticTypes = [
       Array, @_packArray
       Date, @_packDate
@@ -47,9 +48,13 @@ class Generator extends stream.Readable
     null
 
   _read: (size)->
-    x = @bs.read()
-    if x.length
-      @push x
+    @going = true
+    while @going
+      x = @bs.read -1
+      if x.length
+        @going = @push x
+      else
+        break
 
   _packNaN: ()->
     @bs.write 'f97e00', 'hex' # Half-NaN
@@ -191,10 +196,14 @@ class Generator extends stream.Readable
   write: (objs...)->
     for o in objs
       @_pack o
+      if @going
+        x = @bs.read()
+        if x.length
+          @going = @push x
 
   @generate: (objs...)->
     g = new Generator
     g.write(objs...)
-    g.bs.read()
+    g.read()
 
 module.exports = Generator

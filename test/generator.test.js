@@ -195,24 +195,33 @@ exports.specialObjects = function(test) {
 };
 
 exports.addSemanticType = function(test) {
-  function tempClass(val) {
+  function TempClass(val) {
     // render as the string tempClass with the tag 0xffff
     this.value = val || "tempClass";
   }
-  tempClass.pack = function(gen, obj, bufs) {
-    gen['_packTag'].call(gen, 0xffff);
-    gen['_pack'].call(gen, obj.value);
-  };
 
   // before the tag, this is an innocuous object:
   // {"value": "foo"}
-  var t = new tempClass('foo');
+  var t = new TempClass('foo');
   var packed = generator.generate(t);
   test.deepEqual(packed, hex('0xa16576616c756563666f6f'));
 
-  var gen = new generator({genTypes: [tempClass, tempClass.pack]});
+  TempClass.prototype.generateCBOR = function(gen) {
+    gen._packTag(0xffff);
+    gen._pack(this.value);
+  };
+
+  function TempClassToCBOR(gen, obj){
+    gen._packTag(0xfffe);
+    gen._pack(obj.value);
+  }
+
+  var packed = generator.generate(t);
+  test.deepEqual(packed, hex('0xd9ffff63666f6f'));
+
+  var gen = new generator({genTypes: [TempClass, TempClassToCBOR]});
   gen.write(t);
-  test.deepEqual(gen.bs.read(), hex('0xd9ffff63666f6f'));
+  test.deepEqual(gen.read(), hex('0xd9fffe63666f6f'));
 
   function hexPackBuffer(gen, obj, bufs) {
     gen.write('0x' + obj.toString('hex'));
@@ -222,7 +231,7 @@ exports.addSemanticType = function(test) {
   gen.addSemanticType(Buffer, hexPackBuffer);
   gen.write(new Buffer('010203', 'hex'));
 
-  test.deepEqual(gen.bs.read(), hex('0x683078303130323033'));
+  test.deepEqual(gen.read(), hex('0x683078303130323033'));
 
   test.done();
 };
