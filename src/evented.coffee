@@ -14,8 +14,10 @@ BREAK = () ->
   "BREAK"
 
 class EventedParser extends stream.Writable
-  constructor: (@options) ->
-    @options ?= {}
+  constructor: (options) ->
+    @options = utils.extend
+      max_depth: 512  # on my machine, the max was 674
+    , options
 
   _drainState: (state) ->
     tags = state.tags.slice()
@@ -180,11 +182,19 @@ class EventedParser extends stream.Writable
 
   _unpack: (state, cb) ->
     state.bs.wait 1, (er,buf) =>
-      return @emit 'error', er if er
+      return cb(er) if er
 
+      state.depth++
+      if state.depth > @options.max_depth
+        return cb.call this, new Error("Maximum depth exceeded: #{state.depth}")
       state.octet = buf[0]
       state.mt = state.octet >> 5
       state.ai = state.octet & 0x1f
+
+      decrement = ()->
+        unless arguments[0] instanceof Error
+          state.depth--
+        cb.apply this, arguments
 
       switch state.ai
         when 24,25,26,27
@@ -192,15 +202,15 @@ class EventedParser extends stream.Writable
             return cb er if er
             if state.mt == MT.SIMPLE_FLOAT # floating point or high simple
               if state.ai == 24
-                @_readSimple state, utils.parseInt(state.ai, buf), cb
+                @_readSimple state, utils.parseInt(state.ai, buf), decrement
               else
-                @_val state, utils.parseFloat(state.ai, buf), cb
+                @_val state, utils.parseFloat(state.ai, buf), decrement
             else
-              @_getVal state, utils.parseInt(state.ai, buf), cb
+              @_getVal state, utils.parseInt(state.ai, buf), decrement
         when 28,29,30
           return cb new Error("Additional info not implemented: #{ai}")
-        when 31 then @_stream state, cb
-        else @_getVal state, state.ai, cb
+        when 31 then @_stream state, decrement
+        else @_getVal state, state.ai, decrement
 
   unpack: (buf, offset=0, encoding='hex') ->
     bs = buf
@@ -209,6 +219,9 @@ class EventedParser extends stream.Writable
         bs = bs.slice(offset)
       bs = new BufferStream
         bsInit: bs
+    else if bs instanceof stream.Readable
+      bs = new BufferStream
+      buf.pipe bs
     else if typeof(bs) == 'string'
       s = buf
       if encoding == 'hex'
@@ -224,10 +237,14 @@ class EventedParser extends stream.Writable
       bs: bs
       tags: []
       kind: null
+      depth: 0
 
     unpacked_one = (er)=>
-      return @emit 'error', er if er
-      @emit 'top'
+      if er
+        if BufferStream.isEOFError(er) && (state.depth == 0)
+          return @emit 'end'
+        else
+          return @emit 'error', er
 
       async.nextTick ()=>
         if state.bs.isEOF()

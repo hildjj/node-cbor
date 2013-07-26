@@ -11,7 +11,8 @@
     "cbor2json": "./bin/cbor2json"
   },
   "scripts": {
-    "test": "./node_modules/.bin/nodeunit test"
+    "test": "./node_modules/.bin/nodeunit test",
+    "prepublish": "coffee -c -o lib src"
   },
   "keywords": [
     "coap",
@@ -23,6 +24,7 @@
     "email": "joe-github@cursive.net"
   },
   "devDependencies": {
+    "coffee-script": "*",
     "nodeunit": "*",
     "covershot": "*",
     "temp": "*",
@@ -32,7 +34,6 @@
   "readmeFilename": "README.md",
   "dependencies": {
     "async": "~0.2.9",
-    "coffee-script": "~1.6.3",
     "bignumber.js": "~1.0.1"
   }
 }

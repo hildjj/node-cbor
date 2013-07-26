@@ -115,7 +115,7 @@ class Builder extends events.EventEmitter
     @parser.unpack buf, offset, encoding
 
   @parse: (buf, cb)->
-    d = new Builder();
+    d = new Builder
     actual = []
     d.on 'complete', (v)->
       actual.push v

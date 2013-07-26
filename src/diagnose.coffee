@@ -127,4 +127,4 @@ class Diagnose extends events.EventEmitter
   unpack: (buf, offset, encoding)->
     @parser.unpack buf, offset, encoding
 
-exports.Diagnose = Diagnose
+module.exports = Diagnose

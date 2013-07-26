@@ -16,21 +16,16 @@ function parse(f, cb) {
     stream = fs.createReadStream(f);
   }
 
-  var p = new cbor.Builder();
+  var d = new cbor.Diagnose();
 
-  p.on('error', function(er) {
-    cb(er);
-  });
-  p.on('complete', function(obj) {
-    console.log(JSON.stringify(obj, null, 2));
-  });
-  p.on('end', cb);
-  p.parser.unpack(stream);
+  d.on('error', cb);
+  d.on('end', cb);
+  d.parser.unpack(stream);
 }
 
 async.eachSeries(argv, parse, function(er) {
   if (er) {
-    process.stderr.write("\n" + er + "\n");
+    console.log("\n"+er);
   }
 });
 

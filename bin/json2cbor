@@ -4,37 +4,42 @@ var fs = require('fs');
 var cbor = require('../lib/cbor');
 var BufferStream = require('../lib/BufferStream');
 var argv = process.argv.slice(2);
+var async = require('async');
+
+var hex = false;
+if (argv[0] === '-h') {
+  hex = true;
+  argv.shift();
+}
 
 if (argv.length === 0) {
   argv = ['-'];
 }
 
-function convert(stream, cb) {
+function convert(f, cb) {
+  if (f === '-') {
+    stream = process.stdin;
+  } else {
+    stream = fs.createReadStream(f);
+  }
+
   var bs = new BufferStream();
-  bs.on('error', function(er) {
-    process.strderr.write(er);
-    process.exit(1);
-  });
+  bs.on('error', cb);
   bs.on('finish', function() {
     var j = JSON.parse(bs.flatten());
-    buf = cbor.pack(j);
-    process.stdout.write(buf);
+    buf = cbor.Generator.generate(j);
+    if (hex) {
+      console.log(buf.toString('hex'));
+    } else {
+      process.stdout.write(buf);
+    }
     cb();
   });
   stream.pipe(bs);
 }
 
-var i=0;
-function convertNext() {
-  if (i >= argv.length) {
-    return;
+async.eachSeries(argv, convert, function(er) {
+  if (er) {
+    console.log("\n"+er);
   }
-  var f = argv[i++];
-  if (f === '-') {
-    convert(process.stdin, convertNext);
-  } else {
-    convert(fs.createReadStream(f), convertNext);
-  }
-}
-
-convertNext();
+});

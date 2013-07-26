@@ -1,11 +1,13 @@
 /*jslint node: true */
 "use strict";
 
-var csrequire = require('covershot').require.bind(null, require);
-var Builder = csrequire('../src/builder');
-var Simple = require('../lib/simple');
-var Tagged = require('../lib/tagged');
 var url = require('url');
+
+var csrequire = require('covershot').require.bind(null, require);
+var cbor = csrequire('../src/cbor');
+var Builder = cbor.Builder;
+var Simple = cbor.Simple;
+var Tagged = cbor.Tagged;
 
 var async = require('async');
 var bignumber =  require('bignumber.js');

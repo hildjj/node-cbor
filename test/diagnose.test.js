@@ -2,23 +2,23 @@
 "use strict";
 
 var csrequire = require('covershot').require.bind(null, require);
-var diagnose = csrequire('../src/diagnose');
+var Diagnose = csrequire('../src/diagnose');
 var BufferStream = csrequire('../lib/BufferStream');
 var async = require('async');
 
 
-function diagTest(test) {
+function diagTest(test, max_depth) {
   return function (hd, cb) {
     var expected = hd[0];
     var hex = hd[1];
-    var d = new diagnose.Diagnose(null, {
+    var d = new Diagnose(null, {
       stream: new BufferStream(),
       separator: null
     });
     var actual = [];
-    var oexpected = expected;
-    if (!Array.isArray(expected)) {
-      expected = [expected];
+    var aexpected = [expected];
+    if (max_depth) {
+      d.parser.options.max_depth = max_depth;
     }
 
     d.on('complete', function(s) {
@@ -26,11 +26,21 @@ function diagTest(test) {
     });
 
     d.on('end', function() {
-      test.deepEqual(actual, expected, oexpected + " | " + hex + " != " + actual);
-      cb();
+      if (typeof(expected) === 'function') {
+        cb(expected(test, null, actual));
+      } else {
+        test.deepEqual(actual, aexpected, expected + " | " + hex + " != " + actual);
+        cb();
+      }
     });
 
-    d.on('error', cb);
+    d.on('error', function(er){
+      if (typeof(expected) === 'function') {
+        cb(expected(test, er, actual));
+      } else {
+        cb(er);
+      }
+    });
 
     d.unpack(hex);
   };
@@ -152,12 +162,17 @@ exports.from_spec =  function(test) {
   });
 };
 
+function expectError(test, er, val) {
+  test.ok(er);
+}
+
 exports.edges = function(test) {
-  var dt = diagTest(test);
+  var dt = diagTest(test,2);
   async.each([
-    ['', '0x7432303133']
+    [expectError, '0x7432303133'],
+    [expectError, '0x818181818100']
   ], dt, function(er) {
-    test.ok(er);
+    test.equal(er, null);
     test.done();
   });
 };
