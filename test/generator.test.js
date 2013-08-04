@@ -203,8 +203,7 @@ exports.addSemanticType = function(test) {
   // before the tag, this is an innocuous object:
   // {"value": "foo"}
   var t = new TempClass('foo');
-  var packed = generator.generate(t);
-  test.deepEqual(packed, hex('0xa16576616c756563666f6f'));
+  test.deepEqual(generator.generate(t), hex('0xa16576616c756563666f6f'));
 
   TempClass.prototype.generateCBOR = function(gen) {
     gen._packTag(0xffff);
@@ -216,8 +215,7 @@ exports.addSemanticType = function(test) {
     gen._pack(obj.value);
   }
 
-  var packed = generator.generate(t);
-  test.deepEqual(packed, hex('0xd9ffff63666f6f'));
+  test.deepEqual(generator.generate(t), hex('0xd9ffff63666f6f'));
 
   var gen = new generator({genTypes: [TempClass, TempClassToCBOR]});
   gen.write(t);
