@@ -4,7 +4,7 @@
 var url = require('url');
 
 var csrequire = require('covershot').require.bind(null, require);
-var cbor = csrequire('../src/cbor');
+var cbor = csrequire('../lib/cbor');
 var Builder = cbor.Builder;
 var Simple = cbor.Simple;
 var Tagged = cbor.Tagged;

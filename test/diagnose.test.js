@@ -2,7 +2,7 @@
 "use strict";
 
 var csrequire = require('covershot').require.bind(null, require);
-var Diagnose = csrequire('../src/diagnose');
+var Diagnose = csrequire('../lib/diagnose');
 var BufferStream = csrequire('../lib/BufferStream');
 var async = require('async');
 

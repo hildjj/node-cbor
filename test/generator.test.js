@@ -2,7 +2,7 @@
 "use strict";
 
 var csrequire = require('covershot').require.bind(null, require);
-var generator = csrequire('../src/generator');
+var generator = csrequire('../lib/generator');
 var hex = csrequire('../lib/utils').hex;
 var Simple = require('../lib/simple');
 var url = require('url');
