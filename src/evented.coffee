@@ -191,8 +191,8 @@ class EventedParser extends stream.Writable
       state.mt = state.octet >> 5
       state.ai = state.octet & 0x1f
 
-      decrement = ()->
-        unless arguments[0] instanceof Error
+      decrement = (er)=>
+        unless er instanceof Error
           state.depth--
         cb.apply this, arguments
 

@@ -36,6 +36,17 @@ exports.parseFloat = (ai, buf)->
 exports.hex = (s)->
   new Buffer s.replace(/^0x/, ''), 'hex'
 
+exports.bin = (s)->
+  s = s.replace(/\s/g, '')
+  start = 0
+  end = s.length%8 or 8
+  chunks = []
+  while end <= s.length
+    chunks.push parseInt(s.slice(start, end), 2)
+    start=end
+    end += 8
+  new Buffer chunks
+
 exports.extend = (old, adds...)->
   old ?= {}
   for a in adds
@@ -44,6 +55,8 @@ exports.extend = (old, adds...)->
   old
 
 exports.arrayEqual = (a, b)->
+  if !a? and !b? then return true
+  if !a? or !b? then return false
   (a.length == b.length) && a.every (elem,i)->
     elem == b[i];
 
