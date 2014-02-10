@@ -118,7 +118,7 @@ class EventedParser extends stream.Writable
     , () ->
       keep_going
     , (er) =>
-      return cb.call that, er if er
+      return cb.call(this, er) if er
       @emit 'stream stop', count, mt, tags, kind
       cb.call this
 
@@ -208,7 +208,7 @@ class EventedParser extends stream.Writable
             else
               @_getVal state, utils.parseInt(state.ai, buf), decrement
         when 28,29,30
-          return cb new Error("Additional info not implemented: #{ai}")
+          return cb(new Error("Additional info not implemented: #{state.ai}"))
         when 31 then @_stream state, decrement
         else @_getVal state, state.ai, decrement
 

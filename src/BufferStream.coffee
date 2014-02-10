@@ -4,10 +4,10 @@ stream = require 'stream'
 
 EMPTY = new Buffer 0
 
-class EOFError extends Error
-  constructor: ()->
-    super "End of File"
-    Error.captureStackTrace @, EOFError
+createEOF = () ->
+  e = new Error('EOF')
+  e.BufferStreamEOF = true
+  e
 
 # new BufferStream([options])
 # options can be as for stream, but also:
@@ -25,7 +25,7 @@ class BufferStream extends stream.Writable
     @growSize = options.bsGrowSize ? 512
 
     @on "finish", ()=>
-      @_resetCB(new EOFError)
+      @_resetCB createEOF()
 
     # Sometimes we'll know the buffer we're working with,
     # and it will never grow.
@@ -43,7 +43,7 @@ class BufferStream extends stream.Writable
     b instanceof BufferStream
 
   @isEOFError: (er)->
-    er instanceof EOFError
+    er and (er instanceof Error) and (er.BufferStreamEOF == true)
 
   generateCBOR: (gen)->
     gen._packBuffer @flatten()
@@ -161,7 +161,8 @@ class BufferStream extends stream.Writable
         @_notifyWaiter()
       else if @_writableState.ended
         # never gonna fill you up
-        @_resetCB(new EOFError)
+        # Damn you, me from months ago.  You just rolled yourself.
+        @_resetCB createEOF()
 
   clear: ()->
     # if someone is waiting, they will have to keep waiting;

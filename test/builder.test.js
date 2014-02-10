@@ -10,7 +10,7 @@ var Simple = cbor.Simple;
 var Tagged = cbor.Tagged;
 
 var async = require('async');
-var bignumber =  require('bignumber.js');
+var bignumber = require('bignumber.js');
 
 function buildTest(test) {
   return function (hd, cb) {
@@ -167,6 +167,30 @@ exports.others =  function(test) {
     [new bignumber(273.15), '0xc48221196ab3'],
     [new bignumber(0.25), '0xc5822101'],
     [new bignumber(1.5), '0xc5822003']
+  ], bt, function(er) {
+    test.equal(er, null);
+    test.done();
+  });
+};
+
+function buildInvalidTest(test) {
+  return function (hd, cb) {
+    Builder.parse(hd, function(er, v) {
+      test.notEqual(er, null);
+      cb();
+    });
+  }
+}
+
+exports.invalid = function(test) {
+  var bt = buildInvalidTest(test);
+
+  async.each([
+    '0xFE',
+    '0x64494554',
+    '0x7f657374726561646d696e',
+    '0x44010203',
+    '0xa20102'
   ], bt, function(er) {
     test.equal(er, null);
     test.done();
