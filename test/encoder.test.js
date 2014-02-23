@@ -2,9 +2,10 @@
 "use strict";
 
 var csrequire = require('covershot').require.bind(null, require);
-var generator = csrequire('../lib/generator');
+var cbor = csrequire('../lib/cbor');
+var Encoder = cbor.Encoder;
+var Simple = cbor.Simple;
 var hex = csrequire('../lib/utils').hex;
-var Simple = require('../lib/simple');
 var url = require('url');
 var async = require('async');
 var bignumber =  require('bignumber.js');
@@ -18,7 +19,7 @@ function testPack(test) {
 
     var funky = (typeof expected === 'function');
     try {
-      var packed = generator.generate(obj);
+      var packed = Encoder.generate(obj);
       test.ok(packed);
       if (funky) {
         cb(expected(null, packed));
@@ -203,7 +204,7 @@ exports.addSemanticType = function(test) {
   // before the tag, this is an innocuous object:
   // {"value": "foo"}
   var t = new TempClass('foo');
-  test.deepEqual(generator.generate(t), hex('0xa16576616c756563666f6f'));
+  test.deepEqual(Encoder.generate(t), hex('0xa16576616c756563666f6f'));
 
   TempClass.prototype.generateCBOR = function(gen) {
     gen._packTag(0xffff);
@@ -215,9 +216,9 @@ exports.addSemanticType = function(test) {
     gen._pack(obj.value);
   }
 
-  test.deepEqual(generator.generate(t), hex('0xd9ffff63666f6f'));
+  test.deepEqual(Encoder.generate(t), hex('0xd9ffff63666f6f'));
 
-  var gen = new generator({genTypes: [TempClass, TempClassToCBOR]});
+  var gen = new Encoder({genTypes: [TempClass, TempClassToCBOR]});
   gen.write(t);
   test.deepEqual(gen.read(), hex('0xd9fffe63666f6f'));
 

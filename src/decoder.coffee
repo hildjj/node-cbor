@@ -17,7 +17,7 @@ MINUS_ONE = new bignumber -1
 TEN = new bignumber 10
 TWO = new bignumber 2
 
-class Builder extends events.EventEmitter
+class Decoder extends events.EventEmitter
   constructor: (@parser, tags) ->
     @tags = {}
     for k,v of TAG
@@ -115,7 +115,7 @@ class Builder extends events.EventEmitter
     @parser.unpack buf, offset, encoding
 
   @parse: (buf, cb)->
-    d = new Builder
+    d = new Decoder
     actual = []
     d.on 'complete', (v)->
       actual.push v
@@ -153,4 +153,4 @@ class Builder extends events.EventEmitter
   tag_REGEXP: (val)->
     new RegExp val
 
-module.exports = Builder
+module.exports = Decoder

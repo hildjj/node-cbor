@@ -5,7 +5,7 @@ var url = require('url');
 
 var csrequire = require('covershot').require.bind(null, require);
 var cbor = csrequire('../lib/cbor');
-var Builder = cbor.Builder;
+var Decoder = cbor.Decoder;
 var Simple = cbor.Simple;
 var Tagged = cbor.Tagged;
 
@@ -16,7 +16,7 @@ function buildTest(test) {
   return function (hd, cb) {
     var expected = hd[0];
     var hex = hd[1];
-    var d = new Builder();
+    var d = new Decoder();
     var actual = [];
     var oexpected = expected;
     expected = [expected];
@@ -175,7 +175,7 @@ exports.others =  function(test) {
 
 function buildInvalidTest(test) {
   return function (hd, cb) {
-    Builder.parse(hd, function(er, v) {
+    Decoder.parse(hd, function(er, v) {
       test.notEqual(er, null);
       cb();
     });
