@@ -45,7 +45,7 @@ class BufferStream extends stream.Writable
   @isEOFError: (er)->
     er and (er instanceof Error) and (er.BufferStreamEOF == true)
 
-  generateCBOR: (gen)->
+  encodeCBOR: (gen)->
     gen._packBuffer @flatten()
 
   isValid: ()->

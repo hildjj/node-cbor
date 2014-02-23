@@ -11,7 +11,7 @@ class Simple
   toString: ()->
     "simple(#{@value})"
 
-  generateCBOR: (gen)->
+  encodeCBOR: (gen)->
     gen._packInt @value, constants.MT.SIMPLE_FLOAT
 
   @isSimple = (b)->

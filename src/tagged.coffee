@@ -8,7 +8,7 @@ class Tagged
   toString: ()->
     return "#{@tag}(#{JSON.stringify(@value)})"
 
-  generateCBOR: (gen)->
+  encodeCBOR: (gen)->
     gen._packTag @tag
     gen._pack(@value)
 

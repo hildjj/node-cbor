@@ -19,7 +19,7 @@ function testPack(test) {
 
     var funky = (typeof expected === 'function');
     try {
-      var packed = Encoder.generate(obj);
+      var packed = Encoder.encode(obj);
       test.ok(packed);
       if (funky) {
         cb(expected(null, packed));
@@ -204,9 +204,9 @@ exports.addSemanticType = function(test) {
   // before the tag, this is an innocuous object:
   // {"value": "foo"}
   var t = new TempClass('foo');
-  test.deepEqual(Encoder.generate(t), hex('0xa16576616c756563666f6f'));
+  test.deepEqual(Encoder.encode(t), hex('0xa16576616c756563666f6f'));
 
-  TempClass.prototype.generateCBOR = function(gen) {
+  TempClass.prototype.encodeCBOR = function(gen) {
     gen._packTag(0xffff);
     gen._pack(this.value);
   };
@@ -216,7 +216,7 @@ exports.addSemanticType = function(test) {
     gen._pack(obj.value);
   }
 
-  test.deepEqual(Encoder.generate(t), hex('0xd9ffff63666f6f'));
+  test.deepEqual(Encoder.encode(t), hex('0xd9ffff63666f6f'));
 
   var gen = new Encoder({genTypes: [TempClass, TempClassToCBOR]});
   gen.write(t);

@@ -173,7 +173,7 @@ class Encoder extends stream.Readable
       if obj instanceof typ
         return @semanticTypes[i+1].call(this, this, obj)
 
-    f = obj.generateCBOR
+    f = obj.encodeCBOR
     if typeof f == 'function'
       return f.call(obj, this)
 
@@ -201,7 +201,7 @@ class Encoder extends stream.Readable
         if x.length
           @going = @push x
 
-  @generate: (objs...)->
+  @encode: (objs...)->
     g = new Encoder
     g.write(objs...)
     g.read()
