@@ -19,7 +19,7 @@ FALSE = (MT.SIMPLE_FLOAT<<5)|constants.SIMPLE.FALSE
 UNDEFINED = (MT.SIMPLE_FLOAT<<5)|constants.SIMPLE.UNDEFINED
 NULL = (MT.SIMPLE_FLOAT<<5)|constants.SIMPLE.NULL
 
-class Generator extends stream.Readable
+class Encoder extends stream.Readable
   constructor: (options)->
     super options
 
@@ -202,8 +202,8 @@ class Generator extends stream.Readable
           @going = @push x
 
   @generate: (objs...)->
-    g = new Generator
+    g = new Encoder
     g.write(objs...)
     g.read()
 
-module.exports = Generator
+module.exports = Encoder
