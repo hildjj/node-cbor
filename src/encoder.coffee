@@ -22,9 +22,9 @@ NULL = (MT.SIMPLE_FLOAT<<5)|constants.SIMPLE.NULL
 class Encoder extends stream.Readable
   constructor: (options)->
     super options
-
     @bs = new BufferStream options
-    @going = true
+    @going = false
+    @sendEOF = false
     @semanticTypes = [
       Array, @_packArray
       Date, @_packDate
@@ -50,10 +50,12 @@ class Encoder extends stream.Readable
   _read: (size)->
     @going = true
     while @going
-      x = @bs.read -1
+      x = @bs.read()
       if x.length
         @going = @push x
       else
+        if @sendEOF
+          @going = @push null
         break
 
   _packNaN: ()->
@@ -201,9 +203,17 @@ class Encoder extends stream.Readable
         if x.length
           @going = @push x
 
+  end: (objs...)->
+    if objs.length then @write objs...
+    if @going
+      # assert.ok(@bs.length == 0)
+      @going = @push null
+    else
+      @sendEOF = true
+
   @encode: (objs...)->
     g = new Encoder
-    g.write(objs...)
+    g.end objs...
     g.read()
 
 module.exports = Encoder

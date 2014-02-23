@@ -101,6 +101,7 @@ class Decoder extends events.EventEmitter
     @parser.on 'error', @on_error
 
   unlisten: ()->
+    # TODO: remove?  Can't think of a reason I'd use this.
     @parser.removeListener 'value', @on_value
     @parser.removeListener 'array start', @on_array_start
     @parser.removeListener 'array stop', @on_array_stop
