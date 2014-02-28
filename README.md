@@ -1,5 +1,11 @@
 Encode and parse [CBOR](http://tools.ietf.org/html/draft-bormann-coap-misc-24#appendix-D.6.2) documents.
 
+Installation:
+
+```
+$ npm install node-cbor
+```
+
 Example:
 ```javascript
 var cbor = require('cbor');
