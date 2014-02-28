@@ -6,6 +6,13 @@ Installation:
 $ npm install node-cbor
 ```
 
+From the command line:
+```
+$ bin/json2cbor package.json > package.cbor
+$ bin/cbor2json package.cbor
+$ bin/cbor2diag package.cbor
+```
+
 Example:
 ```javascript
 var cbor = require('cbor');
