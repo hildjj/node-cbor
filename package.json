@@ -1,6 +1,6 @@
 {
   "name": "node-cbor",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Encode and parse CBOR documents.",
   "main": "./lib/cbor.js",
   "directories": {
