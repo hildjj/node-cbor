@@ -1,8 +1,14 @@
 {
   "name": "node-cbor",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Encode and parse CBOR documents.",
   "main": "./lib/cbor.js",
+  "repository" :
+  {
+    "type" : "git",
+    "url" : "http://github.com/hildjj/node-cbor.git"
+  },
+  "homepage": "https://github.com/hildjj/node-cbor/",
   "directories": {
     "lib": "lib"
   },
