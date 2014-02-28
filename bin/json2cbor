@@ -27,7 +27,7 @@ function convert(f, cb) {
   bs.on('error', cb);
   bs.on('finish', function() {
     var j = JSON.parse(bs.flatten());
-    buf = cbor.Generator.generate(j);
+    buf = cbor.Encoder.encode(j);
     if (hex) {
       console.log(buf.toString('hex'));
     } else {

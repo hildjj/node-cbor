@@ -16,7 +16,7 @@ function parse(f, cb) {
     stream = fs.createReadStream(f);
   }
 
-  var p = new cbor.Builder();
+  var p = new cbor.Decoder();
 
   p.on('error', function(er) {
     cb(er);
