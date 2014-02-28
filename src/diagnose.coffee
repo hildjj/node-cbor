@@ -113,17 +113,6 @@ class Diagnose extends events.EventEmitter
     @parser.on 'end', @on_end
     @parser.on 'error', @on_error
 
-  unlisten: ()->
-    @parser.removeListener 'value', @on_value
-    @parser.removeListener 'array start', @on_array_start
-    @parser.removeListener 'array stop', @on_array_stop
-    @parser.removeListener 'map start', @on_map_start
-    @parser.removeListener 'map stop', @on_map_stop
-    @parser.removeListener 'stream start', @on_stream_start
-    @parser.removeListener 'stream stop', @on_stream_stop
-    @parser.removeListener 'end', @on_end
-    @parser.removeListener 'error', @on_error
-
   unpack: (buf, offset, encoding)->
     @parser.unpack buf, offset, encoding
 

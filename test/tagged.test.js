@@ -11,6 +11,7 @@ exports.create = function(test) {
   test.deepEqual(t.value, "one");
   test.deepEqual(t.toString(), '1("one")');
 
+  test.deepEqual(cbor.encode(t), new Buffer('c1636f6e65', 'hex'))
   test.done();
 };
 
