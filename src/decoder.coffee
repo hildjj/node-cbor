@@ -1,6 +1,6 @@
 # jslint node: true
 
-events = require 'events'
+stream = require 'stream'
 url = require 'url'
 bignumber = require 'bignumber.js'
 
@@ -17,17 +17,25 @@ MINUS_ONE = new bignumber -1
 TEN = new bignumber 10
 TWO = new bignumber 2
 
-class Decoder extends events.EventEmitter
-  constructor: (@parser, tags) ->
-    @tags = {}
+class Decoder extends stream.Writable
+  constructor: (@options={}, tags={}) ->
+    super()
+
+    @tags = utils.extend {}, tags
     for k,v of TAG
       f = @["tag_" + k]
       if f? and (typeof(f) == 'function')
         @tags[v] = f
-    utils.extend @tags, tags
     @stack = []
-    @parser ?= new Evented
+
+    @parser = new Evented
+      input: @options.input
     @listen()
+    @on 'finish', ->
+      @parser.end()
+
+  start: ()->
+    @parser.start()
 
   on_error: (er) =>
     @emit 'error', er
@@ -100,13 +108,14 @@ class Decoder extends events.EventEmitter
     @parser.on 'end', @on_end
     @parser.on 'error', @on_error
 
-  unpack: (buf, offset, encoding)->
-    @parser.unpack buf, offset, encoding
+  _write: (buf, offset, encoding)->
+    @parser.write buf, offset, encoding
 
-  @parse: (buf, cb)->
+  @decode: (buf, cb)->
     if !cb?
       throw new Error "cb must be specified"
     d = new Decoder
+      input: buf
     actual = []
     d.on 'complete', (v)->
       actual.push v
@@ -114,7 +123,7 @@ class Decoder extends events.EventEmitter
     d.on 'end', ()->
       cb(null, actual) if cb
     d.on 'error', cb
-    d.unpack buf
+    d.start()
 
   tag_DATE_STRING: (val)->
     new Date(val)

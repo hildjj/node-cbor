@@ -13,106 +13,147 @@ MT = constants.MT
 BREAK = () ->
   "BREAK"
 
-class EventedParser extends stream.Writable
+module.exports = class EventedParser extends stream.Writable
+
   constructor: (options) ->
+    super() # TODO: pass subset of options
     @options = utils.extend
       max_depth: 512  # on my machine, the max was 674
+      input: null
+      offset: 0
+      encoding: 'hex'
     , options
 
-  _drainState: (state) ->
-    tags = state.tags.slice()
-    state.tags.length = 0
-    [state.kind, kind] = [null, state.kind]
+    @bs = null
+    @tags = []
+    @kind = null
+    @depth = 0
+
+    @on 'finish', ()->
+      @bs.end()
+
+    if @options.input?
+      @_start @options.input, @options.offset, @options.encoding
+    else
+      @bs = new BufferStream
+      @_pump()
+
+  start: ()->
+    @_pump()
+
+  _start: (input, offset, encoding)->
+    if Buffer.isBuffer(input)
+      if @options.offset
+        input = input.slice offset
+      @bs = new BufferStream
+        bsInit: input
+    else if typeof(input) == 'string'
+      if encoding == 'hex'
+        input = input.replace /^0x/, ''
+      if @options.offset
+        input = input.slice offset
+      @bs = new BufferStream
+        bsInit: new Buffer(input, @options.encoding)
+    else if !BufferStream.isBufferStream(input)
+      throw new Error "input must be Buffer, string, or BufferStream"
+
+  _write: (chunk, enc, next)->
+    @bs.write chunk, enc, next
+
+  _drainState: () ->
+    tags = @tags.slice()
+    @tags.length = 0
+    [@kind, kind] = [null, @kind]
     [tags, kind]
 
-  _val: (state,val,cb) ->
-    [tags, kind] = @_drainState(state)
+  _val: (val,cb) ->
+    [tags, kind] = @_drainState()
     @emit 'value', val, tags, kind
     cb.call this, null, val
 
-  _readBuf: (state,len,cb) ->
-    state.bs.wait len, (er,buf) =>
+  _readBuf: (len,cb) ->
+    @bs.wait len, (er,buf) =>
       return cb.call(this,er) if er
-      @_val state, buf, cb
+      @_val buf, cb
 
-  _readStr: (state,len,cb) ->
-    state.bs.wait len, (er,buf) =>
+  _readStr: (len,cb) ->
+    @bs.wait len, (er,buf) =>
       return cb.call(this,er) if er
-      @_val state, buf.toString('utf8'), cb
+      @_val buf.toString('utf8'), cb
 
-  _readArray: (state,count,cb) ->
-    [tags, kind] = @_drainState(state)
+  _readArray: (count,cb) ->
+    [tags, kind] = @_drainState()
     @emit 'array start', count, tags, kind
 
     async.timesSeries count, (n,done) =>
-      state.kind = if n then 'array' else 'array first'
-      @_unpack state, done
+      @kind = if n then 'array' else 'array first'
+      @_unpack done
     , (er) =>
       return cb.call(this, er) if er
       @emit 'array stop', count, tags, kind
-      state.mt = MT.ARRAY
+      @mt = MT.ARRAY
       cb.call this
 
-  _readMap: (state,count,cb) ->
-    [tags, kind] = @_drainState(state)
+  _readMap: (count,cb) ->
+    [tags, kind] = @_drainState()
     @emit 'map start', count, tags, kind
     up = @_unpack.bind(this)
 
     async.timesSeries count, (n,done) =>
       async.series [
         (cb) =>
-          state.kind = if n then 'key' else 'key first'
-          up state, cb
+          @kind = if n then 'key' else 'key first'
+          up cb
         , (cb) =>
-          state.kind = 'value'
-          up state, cb
+          @kind = 'value'
+          up cb
       ], done
     , (er) =>
         return cb.call(this, er) if er
         @emit 'map stop', count, tags, kind
-        state.mt = MT.MAP
+        @mt = MT.MAP
         cb.call this
 
-  _readTag: (state,val,cb) ->
-    state.tags.push val
-    @_unpack state, cb
+  _readTag: (val,cb) ->
+    @tags.push val
+    @_unpack cb
 
-  _readSimple: (state,val,cb) ->
+  _readSimple: (val,cb) ->
     switch val
-      when 20 then @_val state, false, cb
-      when 21 then @_val state, true, cb
-      when 22 then @_val state, null, cb
-      when 23 then @_val state, undefined, cb
-      else @_val state, new Simple(val), cb
+      when 20 then @_val false, cb
+      when 21 then @_val true, cb
+      when 22 then @_val null, cb
+      when 23 then @_val undefined, cb
+      else @_val new Simple(val), cb
 
-  _getVal: (state,val,cb) ->
-    switch state.mt
-      when MT.POS_INT then @_val state, val, cb
-      when MT.NEG_INT then @_val state, -1-val, cb
-      when MT.BYTE_STRING then @_readBuf state, val, cb
-      when MT.UTF8_STRING then @_readStr state, val, cb
-      when MT.ARRAY then @_readArray state, val, cb
-      when MT.MAP then @_readMap state, val, cb
-      when MT.TAG then @_readTag state, val, cb
-      when MT.SIMPLE_FLOAT then @_readSimple state, val, cb
+  _getVal: (val,cb) ->
+    switch @mt
+      when MT.POS_INT then @_val val, cb
+      when MT.NEG_INT then @_val -1-val, cb
+      when MT.BYTE_STRING then @_readBuf val, cb
+      when MT.UTF8_STRING then @_readStr val, cb
+      when MT.ARRAY then @_readArray val, cb
+      when MT.MAP then @_readMap val, cb
+      when MT.TAG then @_readTag val, cb
+      when MT.SIMPLE_FLOAT then @_readSimple val, cb
       else
-        cb.call this, new Error("Unknown major type(#{state.mt}): #{val}")
+        cb.call this, new Error("Unknown major type(#{@mt}): #{val}")
 
-  _stream_stringy: (state,cb) ->
-    mt = state.mt
-    [tags, kind] = @_drainState(state)
+  _stream_stringy: (cb) ->
+    mt = @mt
+    [tags, kind] = @_drainState()
     count = 0
     @emit 'stream start', mt, tags, kind
     keep_going = true
     async.doWhilst (done) =>
-      state.kind = if count then 'stream' else 'stream first'
-      @_unpack state, (er,val) =>
+      @kind = if count then 'stream' else 'stream first'
+      @_unpack (er,val) =>
         return done(er) if er
         if val == BREAK
           keep_going = false
         else
-          if state.mt != mt
-            return done(new Error("Invalid stream major type: #{state.mt}, when anticipating only #{mt}"))
+          if @mt != mt
+            return done(new Error("Invalid stream major type: #{@mt}, when anticipating only #{mt}"))
           count++
         done()
     , () ->
@@ -122,16 +163,16 @@ class EventedParser extends stream.Writable
       @emit 'stream stop', count, mt, tags, kind
       cb.call this
 
-  _stream_array: (state,cb) ->
-    mt = state.mt
-    [tags, kind] = @_drainState(state)
+  _stream_array: (cb) ->
+    mt = @mt
+    [tags, kind] = @_drainState()
     count = 0
     @emit 'array start', -1, tags, kind
     keep_going = true
 
     async.doWhilst (done) =>
-      state.kind = if count then 'array' else 'array first'
-      @_unpack state, (er,val) =>
+      @kind = if count then 'array' else 'array first'
+      @_unpack (er,val) =>
         return done(er) if er
         if val == BREAK
           keep_going = false
@@ -145,24 +186,24 @@ class EventedParser extends stream.Writable
       @emit 'array stop', count, tags, kind
       cb.call this
 
-  _stream_map: (state,cb) ->
-    mt = state.mt
-    [tags, kind] = @_drainState(state)
+  _stream_map: (cb) ->
+    mt = @mt
+    [tags, kind] = @_drainState()
     count = 0
     @emit 'map start', -1, tags, kind
     keep_going = true
 
     async.doWhilst (done) =>
-      state.kind = if count then 'key' else 'key first'
-      @_unpack state, (er,val) ->
+      @kind = if count then 'key' else 'key first'
+      @_unpack (er,val) ->
         return done(er) if er
         if val == BREAK
           keep_going = false
           done()
         else
           count++
-          state.kind = 'value'
-          @_unpack state, done
+          @kind = 'value'
+          @_unpack done
     , () ->
       keep_going
     , (er) =>
@@ -170,89 +211,57 @@ class EventedParser extends stream.Writable
       @emit 'map stop', count, tags, kind
       cb.call this
 
-  _stream: (state,cb) ->
-    switch state.mt
-      when MT.BYTE_STRING, MT.UTF8_STRING then @_stream_stringy state, cb
-      when MT.ARRAY then @_stream_array state, cb
-      when MT.MAP then @_stream_map state, cb
+  _stream: (cb) ->
+    switch @mt
+      when MT.BYTE_STRING, MT.UTF8_STRING then @_stream_stringy cb
+      when MT.ARRAY then @_stream_array cb
+      when MT.MAP then @_stream_map cb
       when MT.SIMPLE_FLOAT
-        [tags, kind] = @_drainState(state)
+        [tags, kind] = @_drainState()
         cb.call this, null, BREAK
-      else cb.call this, new Error("Invalid stream major type: #{state.mt}")
+      else cb.call this, new Error("Invalid stream major type: #{@mt}")
 
-  _unpack: (state, cb) ->
-    state.bs.wait 1, (er,buf) =>
+  _unpack: (cb) ->
+    @bs.wait 1, (er,buf) =>
       return cb(er) if er
 
-      state.depth++
-      if state.depth > @options.max_depth
-        return cb.call this, new Error("Maximum depth exceeded: #{state.depth}")
-      state.octet = buf[0]
-      state.mt = state.octet >> 5
-      state.ai = state.octet & 0x1f
+      @depth++
+      if @depth > @options.max_depth
+        return cb.call this, new Error("Maximum depth exceeded: #{@depth}")
+      @octet = buf[0]
+      @mt = @octet >> 5
+      @ai = @octet & 0x1f
 
       decrement = (er)=>
         unless er instanceof Error
-          state.depth--
+          @depth--
         cb.apply this, arguments
 
-      switch state.ai
+      switch @ai
         when 24,25,26,27
-          state.bs.wait 1<<(state.ai-24), (er,buf) =>
+          @bs.wait 1<<(@ai-24), (er,buf) =>
             return cb er if er
-            if state.mt == MT.SIMPLE_FLOAT # floating point or high simple
-              if state.ai == 24
-                @_readSimple state, utils.parseInt(state.ai, buf), decrement
+            if @mt == MT.SIMPLE_FLOAT # floating point or high simple
+              if @ai == 24
+                @_readSimple utils.parseInt(@ai, buf), decrement
               else
-                @_val state, utils.parseFloat(state.ai, buf), decrement
+                @_val utils.parseFloat(@ai, buf), decrement
             else
-              @_getVal state, utils.parseInt(state.ai, buf), decrement
+              @_getVal utils.parseInt(@ai, buf), decrement
         when 28,29,30
-          return cb(new Error("Additional info not implemented: #{state.ai}"))
-        when 31 then @_stream state, decrement
-        else @_getVal state, state.ai, decrement
+          return cb(new Error("Additional info not implemented: #{@ai}"))
+        when 31 then @_stream decrement
+        else @_getVal @ai, decrement
 
-  unpack: (buf, offset=0, encoding='hex') ->
-    bs = buf
-    if Buffer.isBuffer(bs)
-      if offset
-        bs = bs.slice(offset)
-      bs = new BufferStream
-        bsInit: bs
-    else if bs instanceof stream.Readable
-      bs = new BufferStream
-      buf.pipe bs
-    else if typeof(bs) == 'string'
-      s = buf
-      if encoding == 'hex'
-        s = s.replace /^0x/, ''
-      if offset
-        s = s.slice offset
-      bs = new BufferStream()
-      bs.end s, encoding
-
-    else if !BufferStream.isBufferStream(bs)
-      throw new Error "buf must be Buffer, string, or BufferStream"
-    state =
-      bs: bs
-      tags: []
-      kind: null
-      depth: 0
-
-    unpacked_one = (er)=>
-      if er
-        if BufferStream.isEOFError(er) && (state.depth == 0)
-          return @emit 'end'
-        else
-          return @emit 'error', er
-
-      async.nextTick ()=>
-        if state.bs.isEOF()
-          @emit 'end'
-        else
-          @_unpack state, unpacked_one
+  _pump: (er)=>
+    if er
+      if BufferStream.isEOFError(er) && (@depth == 0)
+        return @emit 'end'
+      else
+        return @emit 'error', er
 
     async.nextTick ()=>
-      @_unpack state, unpacked_one
-
-module.exports = EventedParser
+      if @bs.isEOF()
+        @emit 'end'
+      else
+        @_unpack @_pump

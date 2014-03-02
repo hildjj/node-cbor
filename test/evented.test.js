@@ -1,13 +1,22 @@
 /*jslint node: true */
 "use strict";
 
+var temp = require('temp');
+var fs = require('fs');
+
 var csrequire = require('covershot').require.bind(null, require);
-var EventedParser = csrequire('../lib/evented');
+var cbor = csrequire('../lib/cbor');
+
+var Evented = cbor.Evented;
 
 var hex = csrequire('../lib/utils').hex;
 
-exports.unpack = function(test) {
-  var parser = new EventedParser();
+exports.input_string = function(test) {
+  var parser = new Evented({
+    input: '0001',
+    encoding: 'hex',
+    offset: 2
+  });
   var foundValue = false;
   parser.on('value', function(value, tags, kind) {
     foundValue = value;
@@ -19,5 +28,55 @@ exports.unpack = function(test) {
   parser.on('error', function(er) {
     test.fail(er);
   });
-  parser.unpack(new Buffer('0001', 'hex'), 1);
+  parser.start();
 };
+
+exports.input_buffer = function(test) {
+  var parser = new Evented({
+    input: new Buffer('0001', 'hex'),
+    offset: 1
+  });
+  var foundValue = false;
+  parser.on('value', function(value, tags, kind) {
+    foundValue = value;
+  });
+  parser.on('end', function() {
+    test.deepEqual(foundValue, 1);
+    test.done();
+  });
+  parser.on('error', function(er) {
+    test.fail(er);
+  });
+  parser.start();
+};
+
+exports.stream = function(test) {
+  var parser = new Evented();
+  var foundValue = false;
+  parser.on('value', function(value, tags, kind) {
+    foundValue = value;
+  });
+  parser.on('end', function() {
+    test.deepEqual(foundValue, 1);
+    test.done();
+  });
+  parser.on('error', function(er) {
+    test.fail(er);
+  });
+
+  var f = temp.createWriteStream();
+  f.end(new Buffer('01', 'hex'), function(er){
+    var g = fs.createReadStream(f.path);
+    g.pipe(parser);
+  });
+
+};
+
+exports.errors = function(test) {
+  test.throws(function() {
+    new Evented({
+      input: 0
+    });
+  }, "invalid input");
+  test.done();
+}

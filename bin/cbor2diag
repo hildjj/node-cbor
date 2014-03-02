@@ -17,10 +17,9 @@ function parse(f, cb) {
   }
 
   var d = new cbor.Diagnose();
-
   d.on('error', cb);
   d.on('end', cb);
-  d.parser.unpack(stream);
+  stream.pipe(d);
 }
 
 async.eachSeries(argv, parse, function(er) {

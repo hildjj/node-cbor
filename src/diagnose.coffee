@@ -1,24 +1,30 @@
 # jslint node: true
 
-events = require 'events'
+stream = require 'stream'
 
 Evented = require './evented'
 BufferStream = require '../lib/BufferStream'
 Simple = require '../lib/simple'
 utils = require '../lib/utils'
 
-class Diagnose extends events.EventEmitter
-  constructor: (@parser, options) ->
+class Diagnose extends stream.Writable
+  constructor: (options={}) ->
+    super()
+
     @options = utils.extend
       separator: '\n'
-      stream: process.stdout
+      output: process.stdout
     , options
 
-    @parser ?= new Evented(options)
+    @parser = new Evented
+      input: @options.input
     @listen()
 
-  stream_val: (val) ->
-    @options.stream.write switch
+  start: ()->
+    @parser.start()
+
+  _stream_val: (val) ->
+    @options.output.write switch
       when val == undefined then 'undefined'
       when val == null then 'nil'
       when typeof(val) == 'number'
@@ -33,71 +39,71 @@ class Diagnose extends events.EventEmitter
 
   on_error: (er) =>
     if @options.streamErrors
-      @options.stream.write er.toString()
+      @options.output.write er.toString()
     @emit 'error', er
 
-  fore: (kind) ->
+  _fore: (kind) ->
     switch kind
-      when 'array', 'key', 'stream' then @options.stream.write ', '
+      when 'array', 'key', 'stream' then @options.output.write ', '
 
-  aft: (kind) ->
+  _aft: (kind) ->
     switch kind
-      when 'key', 'key first' then @options.stream.write ': '
+      when 'key', 'key first' then @options.output.write ': '
       when null
         if @options.separator?
-          @options.stream.write @options.separator
-        @emit 'complete', @options.stream
+          @options.output.write @options.separator
+        @emit 'complete', @options.output
 
   on_value: (val,tags,kind)=>
-    @fore kind
+    @_fore kind
     if tags
-      @options.stream.write "#{t}(" for t in tags
+      @options.output.write "#{t}(" for t in tags
 
-    @stream_val val
+    @_stream_val val
 
     if tags
-      @options.stream.write ")" for t in tags
-    @aft kind
+      @options.output.write ")" for t in tags
+    @_aft kind
 
   on_array_start: (count,tags,kind)=>
-    @fore kind
+    @_fore kind
     if tags
-      @options.stream.write "#{t}(" for t in tags
-    @options.stream.write "["
+      @options.output.write "#{t}(" for t in tags
+    @options.output.write "["
     if count == -1
-      @options.stream.write "_ "
+      @options.output.write "_ "
 
   on_array_stop: (count,tags,kind)=>
-    @options.stream.write "]"
+    @options.output.write "]"
     if tags
-      @options.stream.write ")" for t in tags
-    @aft kind
+      @options.output.write ")" for t in tags
+    @_aft kind
 
   on_map_start: (count,tags,kind)=>
-    @fore kind
+    @_fore kind
     if tags
-      @options.stream.write "#{t}(" for t in tags
-    @options.stream.write "{"
+      @options.output.write "#{t}(" for t in tags
+    @options.output.write "{"
     if count == -1
-      @options.stream.write "_ "
+      @options.output.write "_ "
 
   on_map_stop: (count,tags,kind)=>
-    @options.stream.write "}"
+    @options.output.write "}"
     if tags
-      @options.stream.write ")" for t in tags
-    @aft kind
+      @options.output.write ")" for t in tags
+    @_aft kind
 
   on_stream_start: (mt,tags,kind)=>
-    @fore kind
+    @_fore kind
     if tags
-      @options.stream.write "#{t}(" for t in tags
-    @options.stream.write "(_ "
+      @options.output.write "#{t}(" for t in tags
+    @options.output.write "(_ "
 
   on_stream_stop: (count,mt,tags,kind)=>
-    @options.stream.write ")"
+    @options.output.write ")"
     if tags
-      @options.stream.write ")" for t in tags
-    @aft kind
+      @options.output.write ")" for t in tags
+    @_aft kind
 
   on_end: ()=>
     @emit 'end'
@@ -113,7 +119,7 @@ class Diagnose extends events.EventEmitter
     @parser.on 'end', @on_end
     @parser.on 'error', @on_error
 
-  unpack: (buf, offset, encoding)->
-    @parser.unpack buf, offset, encoding
+  _write: (chunk, enc, next)->
+    @parser.write chunk, enc, next
 
 module.exports = Diagnose

@@ -16,7 +16,7 @@ function buildTest(test) {
   return function (hd, cb) {
     var expected = hd[0];
     var hex = hd[1];
-    var d = new Decoder();
+    var d = new Decoder({input: hex});
     var actual = [];
     var oexpected = expected;
     expected = [expected];
@@ -31,8 +31,7 @@ function buildTest(test) {
     });
 
     d.on('error', cb);
-
-    d.unpack(hex);
+    d.start();
   };
 }
 
@@ -175,7 +174,7 @@ exports.others =  function(test) {
 
 function buildInvalidTest(test) {
   return function (hd, cb) {
-    Decoder.parse(hd, function(er, v) {
+    Decoder.decode(hd, function(er, v) {
       test.notEqual(er, null);
       cb();
     });

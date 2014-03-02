@@ -5,6 +5,7 @@ var fs = require('fs');
 
 exports.create = function(test) {
   var bs = new BufferStream();
+  test.ok(bs.isValid());
   test.ok(BufferStream.isBufferStream(bs));
   test.ok(!BufferStream.isBufferStream(null));
   test.ok(!BufferStream.isBufferStream(new Buffer(0)));

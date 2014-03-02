@@ -11,8 +11,9 @@ function diagTest(test, max_depth) {
   return function (hd, cb) {
     var expected = hd[0];
     var hex = hd[1];
-    var d = new Diagnose(null, {
-      stream: new BufferStream(),
+    var d = new Diagnose({
+      output: new BufferStream(),
+      input: hex,
       separator: null
     });
     var actual = [];
@@ -41,8 +42,7 @@ function diagTest(test, max_depth) {
         cb(er);
       }
     });
-
-    d.unpack(hex);
+    d.start();
   };
 }
 

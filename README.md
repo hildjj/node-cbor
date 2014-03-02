@@ -36,7 +36,13 @@ d.on('complete', function(obj){
 });
 
 var s = fs.createReadStream('foo');
-d.unpack(s); // TODO: make Decoder a WritableStream so pipe works
+s.pipe(d);
+
+var d2 = new cbor.Decoder({input: '00', encoding: 'hex'});
+d.on('complete', function(obj){
+  console.log(obj);
+});
+d2.start(); // needed when you don't use the stream interface
 ```
 
 And also a SAX-type mode (which the streaming mode wraps):
@@ -105,7 +111,7 @@ parser.on('error', function(er) {
 });
 
 var s = fs.createReadStream('foo');
-parser.unpack(s);  // no, cbor.Evented does not quite work as a WritableStream yet.
+s.pipe(parser);
 ```
 
-Test coverage is currently about 95%.
+Test coverage is currently above 95%.

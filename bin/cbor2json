@@ -25,7 +25,7 @@ function parse(f, cb) {
     console.log(JSON.stringify(obj, null, 2));
   });
   p.on('end', cb);
-  p.parser.unpack(stream);
+  stream.pipe(p);
 }
 
 async.eachSeries(argv, parse, function(er) {
