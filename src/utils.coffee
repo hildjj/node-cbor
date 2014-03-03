@@ -2,6 +2,10 @@ bignumber = require 'bignumber.js'
 
 SHIFT32 = Math.pow(2,32)
 
+# Parse an integer of 1,4, or 8 bytes.
+# @param ai [Integer] the additional information from the input stream
+# @param buf [Buffer] the appropriate number of bytes based on `ai`
+# @return [Integer]
 exports.parseInt = (ai, buf)->
   switch ai
     when 24 then buf.readUInt8 0, true
@@ -13,6 +17,9 @@ exports.parseInt = (ai, buf)->
       (f * SHIFT32) + g;
     else throw new Error "Invalid additional info for int: #{ai}"
 
+# Parse an IEEE754 half-precision float
+# @param buf [Buffer] two bytes to parse from
+# @return [Number]
 exports.parseHalf = parseHalf = (buf)->
   sign = if (buf[0] & 0x80) then -1 else 1
   exp = (buf[0] & 0x7C) >> 2
@@ -26,6 +33,9 @@ exports.parseHalf = parseHalf = (buf)->
   else
     sign * Math.pow(2, exp-25) * (1024 + mant)
 
+# Parse an IEEE754 half-,  single-, or double-precision float.
+# @param buf [Buffer] 2,4, or 8 bytes to parse from
+# @return [Number]
 exports.parseFloat = (ai, buf)->
   switch ai
     when 25 then parseHalf buf
@@ -33,9 +43,13 @@ exports.parseFloat = (ai, buf)->
     when 27 then buf.readDoubleBE 0, true
     else throw new Error "Invalid additional info for float: #{ai}"
 
+# Decode a hex string into a buffer
+# @return [Buffer]
 exports.hex = (s)->
   new Buffer s.replace(/^0x/, ''), 'hex'
 
+# Decode a binary string (e.g. '1001') into a buffer
+# @return [Buffer]
 exports.bin = (s)->
   s = s.replace(/\s/g, '')
   start = 0
@@ -47,6 +61,10 @@ exports.bin = (s)->
     end += 8
   new Buffer chunks
 
+# Copy all of keys from the second and subsequent objects into the first object.
+# @param old [Object] optional object to copy into (default: {})
+# @param adds [Object*] optional additional objects to copy on top.  These get
+#   copied left to right, with later objects overwriting the keys from previous ones.
 exports.extend = (old, adds...)->
   old ?= {}
   for a in adds
@@ -54,12 +72,19 @@ exports.extend = (old, adds...)->
       old[k] = v
   old
 
+# Are all of the items in two arrays the same?
+# @param a [Array]
+# @param b [Array]
+# @return [Boolean]
 exports.arrayEqual = (a, b)->
   if !a? and !b? then return true
   if !a? or !b? then return false
   (a.length == b.length) && a.every (elem,i)->
     elem == b[i];
 
+# Convert a a buffer to a bignumber
+# @param buf [Buffer] the buffer to convert
+# @return [bignumber]
 exports.bufferToBignumber =  (buf)->
   # TODO: there's got to be a faster way to do this
   new bignumber buf.toString('hex'), 16

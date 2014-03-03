@@ -181,3 +181,11 @@ exports.edges = function(test) {
   });
 };
 
+exports.diagnose = function(test) {
+  var bs = new BufferStream();
+  Diagnose.diagnose('0xf5', null, bs, function(er) {
+    test.ok(!er);
+    test.deepEqual(bs.read().toString('utf8'), 'true\n');
+    test.done();
+  });
+};

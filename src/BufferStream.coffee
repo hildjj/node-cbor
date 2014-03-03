@@ -1,22 +1,96 @@
+# jslint node: true
+
 assert = require 'assert'
 util = require 'util'
 stream = require 'stream'
 
+# @nodoc
 EMPTY = new Buffer 0
 
+# @nodoc
 createEOF = () ->
   e = new Error('EOF')
   e.BufferStreamEOF = true
   e
 
-# new BufferStream([options])
-# options can be as for stream, but also:
-# - bsInit: Initial buffer
-# - bsGrowSize: the number of bytes to grow when needed (default: 512)
-# - bsStartEmpty: Don't initialize with a growSize buffer (default: false)
-# - bsStartEnded: after bsInit is appended, should we end the stream?
-#     if bsInit, defaults to true, else ignored
+# A buffer that grows in chunks, and allows waiting for a given number of
+# bytes to be available.
+#
+# @method #writeUInt8(val)
+#   Write an unsigned byte into the stream
+#   @param val [Integer] the byte to write
+#
+# @method #writeUInt16LE(val)
+#   Write an unsigned 16 bit integer into the stream in little endian order
+#   to the stream
+#   @param val [Integer]
+#
+# @method #writeUInt16BE(val)
+#   Write an unsigned 16 bit integer into the stream in big endian order
+#   to the stream
+#   @param val [Integer]
+#
+# @method #writeUInt32LE(val)
+#   Write an unsigned 32 bit integer into the stream in little endian order
+#   to the stream
+#   @param val [Integer]
+#
+# @method #writeUInt32BE(val)
+#   Write an unsigned 32 bit integer into the stream in big endian order
+#   to the stream
+#   @param val [Integer]
+#
+# @method #writeInt8(val)
+#   Write a signed 8 bit integer into the stream
+#   to the stream
+#   @param val [Integer]
+#
+# @method #writeInt16LE(val)
+#   Write a signed 16 bit integer into the stream in little endian order
+#   to the stream
+#   @param val [Integer]
+#
+# @method #writeInt16BE(val)
+#   Write a signed 16 bit integer into the stream in big endian order
+#   to the stream
+#   @param val [Integer]
+#
+# @method #writeInt32LE(val)
+#   Write a signed 32 bit integer into the stream in little endian order
+#   to the stream
+#   @param val [Integer]
+#
+# @method #writeInt32BE(val)
+#   Write a signed 32 bit integer into the stream in big endian order
+#   to the stream
+#   @param val [Integer]
+#
+# @method #writeFloatLE(val)
+#   Write a single-precision IEEE 754 floating point number in little endian order
+#   to the stream
+#   @param val [Integer]
+#
+# @method #writeFloatBE(val)
+#   Write a single-precision IEEE 754 floating point number in big endian order
+#   to the stream
+#   @param val [Integer]
+#
+# @method #writeDoubleLE(val)
+#   Write a double-precision IEEE 754 floating point number in little endian order
+#   to the stream
+#   @param val [Integer]
+#
+# @method #writeDoubleBE(val)
+#   Write a double-precision IEEE 754 floating point number in big endian order
+#   to the stream
+#   @param val [Integer]
 class BufferStream extends stream.Writable
+  # @param options [Object] can be as for stream, but also:
+  # @option options [Buffer] bsInit initial buffer
+  # @option options [Integer] bsGrowSize the number of bytes to grow when needed (default: 512)
+  # @option options [Boolean] bsStartEmpty don't initialize with a growSize buffer (default: false)
+  # @option options [Boolean] bsStartEnded after bsInit is appended, should we end the stream?
+  #     if bsInit, defaults to `true`, else ignored
   constructor: (options={})->
     @clear()
     @_resetCB()
@@ -39,15 +113,26 @@ class BufferStream extends stream.Writable
     else if !options.bsStartEmpty
       @grow()
 
-  @isBufferStream: (b)->
-    b instanceof BufferStream
+  # Is the given object a BufferStream?
+  # @param obj [Object] the object to check
+  # @return [Boolean]
+  @isBufferStream: (obj)->
+    obj instanceof BufferStream
 
+  # Is the given Error an End Of File indicator?
+  # @param er [Error] the error object to check
+  # @return [Boolean]
   @isEOFError: (er)->
     er and (er instanceof Error) and (er.BufferStreamEOF == true)
 
-  encodeCBOR: (gen)->
-    gen._packBuffer @flatten()
+  # When this object gets passed to an Encoder, render it as a byte string.
+  # @nodoc
+  encodeCBOR: (enc)->
+    enc._packBuffer @flatten()
 
+  # Is this BufferStream valid?
+  # Checks `@length`, `@left`, and the internal buffer list for consistency
+  # @return [Boolean]
   isValid: ()->
     len = @bufs.reduce (prev, cur)->
       prev + cur.length
@@ -55,9 +140,11 @@ class BufferStream extends stream.Writable
     len -= @left
     len == @length
 
+  # @nodoc
   _bufSizes: ()->
     @bufs.map (b)-> b.length
 
+  # @nodoc
   _write: (chunk, encoding, cb)->
     unless Buffer.isBuffer chunk
       cb(new Error 'String encoding not supported')
@@ -65,21 +152,25 @@ class BufferStream extends stream.Writable
       @append chunk
       cb()
 
+  # @nodoc
   _resetCB: (args...)->
     [cb, @waitingCB, @waitingLen] = [@waitingCB, null, Number.MAX_VALUE]
     if cb and args.length
       cb.apply @, args
     cb
 
+  # @nodoc
   _notifyWaiter: ()->
     assert.ok @waitingCB
 
     buf = @read(@waitingLen);
     @_resetCB null, buf
 
-  # read(0) gives all
-  # read(-1) gives first buffer, up to @length
-  # else, reads length up to @length
+  # Read from the BufferStream
+  #
+  # @param length [Integer] number of bytes to read, up to `@length`.
+  # @option length [Integer] -1 get the first buffer
+  # @option length [Integer] 0 read all
   read: (length)->
     buf = null
     lenZ = @bufs[0].length
@@ -135,9 +226,19 @@ class BufferStream extends stream.Writable
     @length -= lenW
     buf
 
+  # Are we at the End of File?
+  # @return [Boolean]
   isEOF: ()->
     (@length == 0) and @_writableState.finished
 
+  # Wait for a given number of bytes to be available, then call the callback
+  # @param length [Integer] number of bytes to wait for
+  # @param cb [function] callback(error, buffer), where if the error is empty,
+  #   the buffer will be exactly `length` bytes
+  # @return [void]
+  # @throw [Error] invalid state, a second wait() while one was already pending
+  # @throw [Error] invalid `length`
+  # @throw [Error] no callback specified
   wait: (length, cb)->
     # TODO: should these be asserts?
     if @waitingCB
@@ -164,6 +265,8 @@ class BufferStream extends stream.Writable
         # Damn you, me from months ago.  You just rolled yourself.
         @_resetCB createEOF()
 
+  # Clear all bytes from the stream, without notifying any pending waits
+  # @return [void]
   clear: ()->
     # if someone is waiting, they will have to keep waiting;
     # everything currently read is tossed
@@ -171,7 +274,9 @@ class BufferStream extends stream.Writable
     @length = 0
     @left = 0
 
-  trimLast: ()->
+  # Trim the last buffer in the list, so that there are no unused bytes
+  # @nodoc
+  _trimLast: ()->
     # set left to 0, keeping any relevant info in the last buffer
     old = @left
     if @left > 0
@@ -182,14 +287,18 @@ class BufferStream extends stream.Writable
       @left = 0
     old
 
-  lengthen: (size)->
+  # @nodoc
+  _lengthen: (size)->
     assert.ok size>0
     @length += size
+    len = @length
     if @length >= @waitingLen
       @_notifyWaiter()
+    len
 
+  # @nodoc
   grow: (size)->
-    @trimLast()
+    @_trimLast()
 
     s = size ? @growSize
     b = new Buffer(s)
@@ -197,6 +306,9 @@ class BufferStream extends stream.Writable
     @left = s
     b
 
+  # Append a buffer to the stream
+  # @param buf [Buffer] the buffer to add
+  # @return [Integer] the number of bytes added
   append: (buf)->
     assert.ok Buffer.isBuffer(buf)
     len = buf.length
@@ -205,18 +317,22 @@ class BufferStream extends stream.Writable
     if @left == 0
       @bufs.push buf
     else if len > @left
-      @trimLast() # left always 0
+      @_trimLast() # left always 0
       @bufs.push buf # still nothing left
     else
       lastbuf = @bufs[@bufs.length-1]
       buf.copy lastbuf, lastbuf.length - @left
       @left -= len
 
-    @lengthen len
+    @_lengthen len
 
+  # Smoosh everything into one buffer, with nothing left over
+  # This probably should never be called aside from internally or from the
+  # unit tests.  May be changed to _flatten in the future.
+  #
+  # @note This does not fire any waiting callbacks, or remove bytes from the stream.
+  # @return [Buffer] the concatenated set of all bytes
   flatten: ()->
-    # smoosh everything into one buffer, with nothing left over
-    # return said buffer
     if @length == 0
       @left = 0
       @bufs = []
@@ -224,6 +340,8 @@ class BufferStream extends stream.Writable
 
     b = null
     switch @bufs.length
+      # Note: this really is an assert, since it's protected by the
+      # @length == 0 above
       when 0 then assert.fail @length, "Invalid state.  No buffers when length>0."
       when 1
         if @left == 0
@@ -244,24 +362,47 @@ class BufferStream extends stream.Writable
         @left = 0;
     b
 
+  # Generate a buffer cropped by `start` and `end`.  Negative indexes start from
+  # the end of the bytes currently in the stream.
+  #
+  # @note This does not fire any waiting callbacks, or remove bytes from the stream.
+  # @param start [Integer] start offset (default: 0)
+  # @param end [Integer] end offset (default: `@length`)
+  # @return [Buffer] the generated slice
   slice: (start, end)->
     @flatten().slice start, end
 
+  # Fill the buffer with a given value.
+  # @param val [Integer] the value to put in each byte
+  # @param offset [Integer] beginning offset to modify (default: 0)
+  # @param end [Integer] end offset (default: `@length`)
   fill: (val, offset, end)->
     @flatten().fill val, offset, end
 
+  # Convert the bytes to JSON, as a list of integers.
+  # @return [String] JSON representation
   toJSON: ()->
     @flatten().toJSON()
 
+  # Convert the bytes to a string, in the given encoding.
+  # @param encoding [String] encoding name (default: 'hex')
+  # @return [String] string representation
   toString: (encoding='hex')->
     @flatten().toString(encoding)
 
+  # Make sure that there are `len` bytes available for writing.
+  # @nodoc
   ensure: (len)->
     if @left < len
       @grow Math.max(@growSize, len)
     else
       @bufs[@bufs.length-1]
 
+  # Write a string into the stream
+  # @param value [String] the string to write
+  # @param length [Integer] the number of *bytes* to write (default: byte
+  #   length of string in the given encoding)
+  # @param encoding [String] The encoding to use for the string (default: 'utf8')
   writeString: (value, length, encoding='utf8')->
     length ?= Buffer.byteLength value, encoding
     return if length == 0
@@ -269,14 +410,15 @@ class BufferStream extends stream.Writable
     b = @ensure length
     b.write value, b.length - @left, length, encoding
     @left -= length
-    @lengthen length
+    @_lengthen length
 
+  # @nodoc
   @_write_gen: (meth, len)->
     (val)->
       b = @ensure len
       b[meth].call b, val, b.length - @left, true
       @left -= len
-      @lengthen len
+      @_lengthen len
 
   writeUInt8:    @_write_gen 'writeUInt8',    1
   writeUInt16LE: @_write_gen 'writeUInt16LE', 2

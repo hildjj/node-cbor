@@ -30,10 +30,13 @@ function buildTest(test) {
       cb();
     });
 
-    d.on('error', cb);
+    d.on('error', function(er) {
+        cb(er);
+    });
     d.start();
   };
 }
+
 
 exports.from_spec =  function(test) {
   var bt = buildTest(test);
@@ -142,6 +145,7 @@ exports.from_spec =  function(test) {
     [{"a": "A", "b": "B", "c": "C", "d": "D", "e": "E"}, '0xa56161614161626142616361436164614461656145'],
     [new Buffer('0102030405', 'hex'), '0x5f42010243030405ff'],
     ["streaming", '0x7f657374726561646d696e67ff'],
+    [[new Tagged(127,new Date(1363896240000))], '0x9fd87fc07f6a323031332d30332d323161546832303a30343a3030615affff'],
     [[], '0x9fff'],
     [[1, [2, 3], [4, 5]], '0x9f018202039f0405ffff'],
     [[1, [2, 3], [4, 5]], '0x9f01820203820405ff'],
@@ -192,6 +196,38 @@ exports.invalid = function(test) {
     '0xa20102'
   ], bt, function(er) {
     test.equal(er, null);
+    test.done();
+  });
+};
+
+exports.add_tag = function(test) {
+  function replace_tag(val) {
+
+  }
+  function new_tag(val) {
+    throw new Error('Invalid tag');
+  }
+  var d = new Decoder({
+    tags: {0: replace_tag, 127: new_tag}
+  });
+  test.deepEqual(d.tags[0], replace_tag);
+  test.deepEqual(d.tags[127], new_tag);
+
+  d.on('error', function(er) {
+    test.ok(false, er);
+  });
+  d.on('complete', function(val) {
+    test.deepEqual(val, new Tagged(127,1, new Error('Invalid tag')));
+    test.done();
+  });
+  var b = new Buffer('d87f01', 'hex');
+  d.end(b);
+};
+
+exports.parse_tag = function(test) {
+  cbor.decode('0xd87f01', function(er, vals){
+    test.equal(er, null);
+    test.deepEqual(vals, [new Tagged(127,1)]);
     test.done();
   });
 };

@@ -19,8 +19,16 @@ FALSE = (MT.SIMPLE_FLOAT<<5)|constants.SIMPLE.FALSE
 UNDEFINED = (MT.SIMPLE_FLOAT<<5)|constants.SIMPLE.UNDEFINED
 NULL = (MT.SIMPLE_FLOAT<<5)|constants.SIMPLE.NULL
 
-class Encoder extends stream.Readable
-  constructor: (options)->
+# A Readable stream of CBOR bytes.  Call `write` to get JSON objects translated
+# into the stream.
+module.exports = class Encoder extends stream.Readable
+  # Create an encoder
+  # @param options [Object] options for the encoder
+  # @option options [Array] genTypes array of pairs of `type`, `function(Encoder)`
+  #   for semantic types to be encoded.  (default: [Array, arrayFunc,
+  #   Date, dateFunc, Buffer, bufferFunc, RegExp, regexFunc,
+  #   url.Url, urlFunc, bignumber, bignumberFunc]
+  constructor: (options={})->
     super options
     @bs = new BufferStream options
     @going = false
@@ -34,10 +42,15 @@ class Encoder extends stream.Readable
       bignumber, @_packBigNumber
     ]
 
-    addTypes = options?.genTypes ? []
+    addTypes = options.genTypes ? []
     for typ,i in addTypes by 2
       @addSemanticType typ, addTypes[i+1]
 
+  # Add an encoding function to the list of supported semantic types.  This is
+  # useful for objects for which you can't add an encodeCBOR method
+  # @return [function(Encoder)] if this type already exists in the semantic type
+  #   list, replace that function with the new one, and return the old one.
+  #   Return null if this is a new type.
   addSemanticType: (type, fun) ->
     for typ,i in @semanticTypes by 2
       if typ == type
@@ -47,6 +60,7 @@ class Encoder extends stream.Readable
     @semanticTypes.push type, fun
     null
 
+  # @nodoc
   _read: (size)->
     @going = true
     while @going
@@ -58,18 +72,22 @@ class Encoder extends stream.Readable
           @going = @push null
         break
 
+  # @nodoc
   _packNaN: ()->
     @bs.write 'f97e00', 'hex' # Half-NaN
 
+  # @nodoc
   _packInfinity: (obj)->
     half = if obj < 0 then 'f9fc00' else 'f97c00'
     @bs.write half, 'hex'
 
+  # @nodoc
   _packFloat: (obj)->
     # TODO: see if we can write smaller ones.
     @bs.writeUInt8 DOUBLE
     @bs.writeDoubleBE obj
 
+  # @nodoc
   _packInt: (obj,mt)->
     mt = mt << 5
     switch
@@ -90,6 +108,7 @@ class Encoder extends stream.Readable
       else
         @_packFloat obj
 
+  # @nodoc
   _packNumber: (obj)->
     switch
       when isNaN(obj) then @_packNaN obj
@@ -102,42 +121,52 @@ class Encoder extends stream.Readable
       else
         @_packFloat obj
 
+  # @nodoc
   _packString: (obj)->
     len = Buffer.byteLength obj, 'utf8'
     @_packInt len, MT.UTF8_STRING
     @bs.writeString obj, len, 'utf8'
 
+  # @nodoc
   _packBoolean: (obj)->
     @bs.writeUInt8 if obj then TRUE else FALSE
 
+  # @nodoc
   _packUndefined: (obj)->
     @bs.writeUInt8 UNDEFINED
 
+  # @nodoc
   _packArray: (gen, obj)->
     len = obj.length
     @_packInt len, MT.ARRAY
     for x in obj
       @_pack x
 
+  # @nodoc
   _packTag: (tag)->
     @_packInt tag, MT.TAG
 
+  # @nodoc
   _packDate: (gen, obj)->
     @_packTag TAG.DATE_EPOCH
     @_pack obj / 1000
 
+  # @nodoc
   _packBuffer: (gen, obj)->
     @_packInt obj.length, MT.BYTE_STRING
     @bs.append obj
 
+  # @nodoc
   _packRegexp: (gen, obj)->
     @_packTag TAG.REGEXP
     @_pack obj.source
 
+  # @nodoc
   _packUrl: (gen, obj)->
     @_packTag TAG.URI
     @_pack obj.format()
 
+  # @nodoc
   _packBigint: (obj)->
     if obj.isNegative()
       obj = obj.negated().minus(1)
@@ -151,6 +180,7 @@ class Encoder extends stream.Readable
     @_packTag tag
     @_packBuffer this, buf, @bs
 
+  # @nodoc
   _packBigNumber: (gen, obj)->
     if obj.isNaN()
       return @_packNaN()
@@ -169,6 +199,7 @@ class Encoder extends stream.Readable
     slide.e = slide.c.length - 1
     @_packBigint slide
 
+  # @nodoc
   _packObject: (obj)->
     unless obj then return @bs.writeUInt8 NULL
     for typ,i in @semanticTypes by 2
@@ -186,6 +217,7 @@ class Encoder extends stream.Readable
       @_pack k
       @_pack obj[k]
 
+  # @nodoc
   _pack: (obj)->
     switch typeof(obj)
       when 'number'    then @_packNumber obj
@@ -195,6 +227,8 @@ class Encoder extends stream.Readable
       when 'object'    then @_packObject obj
       else throw new Error('Unknown type: ' + typeof(obj));
 
+  # Encode one or more JavaScript objects into the stream.
+  # @param objs... [Object+] the objects to encode
   write: (objs...)->
     for o in objs
       @_pack o
@@ -203,6 +237,8 @@ class Encoder extends stream.Readable
         if x.length
           @going = @push x
 
+  # Encode zero or more JavaScript objects into the stream, then end the stream.
+  # @param objs... [Object*] the objects to encode
   end: (objs...)->
     if objs.length then @write objs...
     if @going
@@ -211,9 +247,10 @@ class Encoder extends stream.Readable
     else
       @sendEOF = true
 
+  # Encode one or more JavaScript objects, and return a Buffer containing the
+  # CBOR bytes.
+  # @param objs... [Object+] the objects to encode
   @encode: (objs...)->
     g = new Encoder
     g.end objs...
     g.read()
-
-module.exports = Encoder

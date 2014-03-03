@@ -1,0 +1,5 @@
+--name "node-cbor"
+--title "node-cbor API Documentation"
+--readme README.md
+./src
+LICENSE.md

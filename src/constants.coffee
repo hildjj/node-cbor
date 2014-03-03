@@ -1,3 +1,4 @@
+# @nodoc
 class MT
   @POS_INT:      0
   @NEG_INT:      1
@@ -9,6 +10,7 @@ class MT
   @SIMPLE_FLOAT: 7
 exports.MT = MT
 
+# @nodoc
 class TAG
   @DATE_STRING:         0
   @DATE_EPOCH:          1
@@ -27,6 +29,7 @@ class TAG
   @MIME:               36
 exports.TAG = TAG
 
+# @nodoc
 class NUM_BYTES
   @ZERO:   0
   @ONE:   24
@@ -35,6 +38,7 @@ class NUM_BYTES
   @EIGHT: 27
 exports.NUM_BYTES = NUM_BYTES
 
+# @nodoc
 class SIMPLE
   @FALSE: 20
   @TRUE: 21

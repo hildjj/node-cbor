@@ -10,11 +10,74 @@ Simple = require '../lib/simple'
 constants = require './constants'
 MT = constants.MT
 
+# @nodoc
 BREAK = () ->
   "BREAK"
 
-module.exports = class EventedParser extends stream.Writable
+# A SAX-style syntactic parser for CBOR.  Either pipe another
+# stream into an instance of this class, or pass a string, Buffer, or
+# BufferStream into `options.input`, assign callbacks, then call `start()`.
+#
+# In the event callbacks, `kind` is one of the following strings:
+# - 'value': an atomic value was detected
+# - 'array-first': the first element of an array
+# - 'array': an item after the first in an array
+# - 'key-first': the first key in a map
+# - 'key': a key other than the first in a map
+# - 'stream-first': the first item in an indefinite encoding
+# - 'stream': an item other than the first in an indefinite encoding
+# - null: the end of a top-level CBOR item
+#
+# @event value(val,tags,kind) an atomic item (not a map or array) was detected
+#   @param val [any] the value
+#   @param tags [Array] an array of tags that preceded the value
+#   @param kind [String] see above
+#
+# @event array-start(count,tags,kind) the start of an array has been read.
+#   @param count [Integer] the number of items in the array.  -1 if indefinite length.
+#   @param tags [Array] an array of tags that preceded the list.
+#   @param kind [String] see above
+#
+# @event array-stop(count,tags,kind) the end of an array has been reached.
+#   @param count [Integer] the actual number of items in the array.
+#   @param tags [Array] an array of tags that preceded the list.
+#   @param kind [String] see above
+#
+# @event map-start(count,tags,kind) the start of a map has been read.
+#   @param count [Integer] the number of pairs in the map.  -1 if indefinite length.
+#   @param tags [Array] an array of tags that preceded the list
+#   @param kind [String] see above
+#
+# @event map-stop(count,tags,kind) the end of a map has been reached
+#   @param count [Integer] the actual number of pairs in the map.
+#   @param tags [Array] an array of tags that preceded the list
+#   @param kind [String] see above
+#
+# @event stream-start(mt,tags,kind) The start of a CBOR indefinite length
+#   bytestring or utf8-string.
+#   @param mt [] the major type for all of the items
+#   @param tags [Array] an array of tags that preceded the list
+#   @param kind [String] see above
+#
+# @event stream-stop(count,mt,tags,kind) we got to the end of a CBOR indefinite
+#   length bytestring or utf8-string.
+#   @param count [Integer] the number of constituent items
+#   @param mt [] the major type for all of the items
+#   @param tags [Array] an array of tags that preceded the list
+#   @param kind [String] see above
+#
+# @event end() the end of the input
+#
+# @event error(er) parse error such as invalid input
+#   @param er [Error]
+#
+module.exports = class Evented extends stream.Writable
 
+  # Create an event-based CBOR parser.
+  # @param options [Object] options for the parser
+  # @option options [Buffer,String,BufferStream] input
+  # @option options [String] encoding Encoding of a String `input` (default: 'hex')
+  # @option options [offset] *byte* offset into the input from which to start
   constructor: (options) ->
     super() # TODO: pass subset of options
     @options = utils.extend
@@ -33,76 +96,86 @@ module.exports = class EventedParser extends stream.Writable
       @bs.end()
 
     if @options.input?
-      @_start @options.input, @options.offset, @options.encoding
+      input = @options.input
+      if Buffer.isBuffer(input)
+        if @options.offset
+          input = input.slice @options.offset
+        @bs = new BufferStream
+          bsInit: input
+      else if typeof(input) == 'string'
+        if @options.encoding == 'hex'
+          input = input.replace /^0x/, ''
+        if @options.offset
+          input = input.slice @options.offset
+        @bs = new BufferStream
+          bsInit: new Buffer(input, @options.encoding)
+      else if !BufferStream.isBufferStream(input)
+        throw new Error "input must be Buffer, string, or BufferStream"
+
+      @_start
     else
       @bs = new BufferStream
       @_pump()
 
+  # All events have been hooked, start parsing the input.
+  #
+  # @note This MUST NOT be called if you're piping a Readable stream in.
   start: ()->
     @_pump()
 
-  _start: (input, offset, encoding)->
-    if Buffer.isBuffer(input)
-      if @options.offset
-        input = input.slice offset
-      @bs = new BufferStream
-        bsInit: input
-    else if typeof(input) == 'string'
-      if encoding == 'hex'
-        input = input.replace /^0x/, ''
-      if @options.offset
-        input = input.slice offset
-      @bs = new BufferStream
-        bsInit: new Buffer(input, @options.encoding)
-    else if !BufferStream.isBufferStream(input)
-      throw new Error "input must be Buffer, string, or BufferStream"
-
+  # @nodoc
   _write: (chunk, enc, next)->
     @bs.write chunk, enc, next
 
+  # @nodoc
   _drainState: () ->
     tags = @tags.slice()
     @tags.length = 0
     [@kind, kind] = [null, @kind]
     [tags, kind]
 
+  # @nodoc
   _val: (val,cb) ->
     [tags, kind] = @_drainState()
     @emit 'value', val, tags, kind
     cb.call this, null, val
 
+  # @nodoc
   _readBuf: (len,cb) ->
     @bs.wait len, (er,buf) =>
       return cb.call(this,er) if er
       @_val buf, cb
 
+  # @nodoc
   _readStr: (len,cb) ->
     @bs.wait len, (er,buf) =>
       return cb.call(this,er) if er
       @_val buf.toString('utf8'), cb
 
+  # @nodoc
   _readArray: (count,cb) ->
     [tags, kind] = @_drainState()
-    @emit 'array start', count, tags, kind
+    @emit 'array-start', count, tags, kind
 
     async.timesSeries count, (n,done) =>
-      @kind = if n then 'array' else 'array first'
+      @kind = if n then 'array' else 'array-first'
       @_unpack done
     , (er) =>
       return cb.call(this, er) if er
-      @emit 'array stop', count, tags, kind
+      @emit 'array-stop', count, tags, kind
       @mt = MT.ARRAY
       cb.call this
 
+  # @nodoc
   _readMap: (count,cb) ->
     [tags, kind] = @_drainState()
-    @emit 'map start', count, tags, kind
+    @emit 'map-start', count, tags, kind
     up = @_unpack.bind(this)
 
     async.timesSeries count, (n,done) =>
       async.series [
         (cb) =>
-          @kind = if n then 'key' else 'key first'
+          @kind = if n then 'key' else 'key-first'
           up cb
         , (cb) =>
           @kind = 'value'
@@ -110,14 +183,16 @@ module.exports = class EventedParser extends stream.Writable
       ], done
     , (er) =>
         return cb.call(this, er) if er
-        @emit 'map stop', count, tags, kind
+        @emit 'map-stop', count, tags, kind
         @mt = MT.MAP
         cb.call this
 
+  # @nodoc
   _readTag: (val,cb) ->
     @tags.push val
     @_unpack cb
 
+  # @nodoc
   _readSimple: (val,cb) ->
     switch val
       when 20 then @_val false, cb
@@ -126,6 +201,7 @@ module.exports = class EventedParser extends stream.Writable
       when 23 then @_val undefined, cb
       else @_val new Simple(val), cb
 
+  # @nodoc
   _getVal: (val,cb) ->
     switch @mt
       when MT.POS_INT then @_val val, cb
@@ -139,14 +215,15 @@ module.exports = class EventedParser extends stream.Writable
       else
         cb.call this, new Error("Unknown major type(#{@mt}): #{val}")
 
+  # @nodoc
   _stream_stringy: (cb) ->
     mt = @mt
     [tags, kind] = @_drainState()
     count = 0
-    @emit 'stream start', mt, tags, kind
+    @emit 'stream-start', mt, tags, kind
     keep_going = true
     async.doWhilst (done) =>
-      @kind = if count then 'stream' else 'stream first'
+      @kind = if count then 'stream' else 'stream-first'
       @_unpack (er,val) =>
         return done(er) if er
         if val == BREAK
@@ -160,18 +237,19 @@ module.exports = class EventedParser extends stream.Writable
       keep_going
     , (er) =>
       return cb.call(this, er) if er
-      @emit 'stream stop', count, mt, tags, kind
+      @emit 'stream-stop', count, mt, tags, kind
       cb.call this
 
+  # @nodoc
   _stream_array: (cb) ->
     mt = @mt
     [tags, kind] = @_drainState()
     count = 0
-    @emit 'array start', -1, tags, kind
+    @emit 'array-start', -1, tags, kind
     keep_going = true
 
     async.doWhilst (done) =>
-      @kind = if count then 'array' else 'array first'
+      @kind = if count then 'array' else 'array-first'
       @_unpack (er,val) =>
         return done(er) if er
         if val == BREAK
@@ -183,18 +261,19 @@ module.exports = class EventedParser extends stream.Writable
       keep_going
     , (er) =>
       return cb.call(this, er) if er
-      @emit 'array stop', count, tags, kind
+      @emit 'array-stop', count, tags, kind
       cb.call this
 
+  # @nodoc
   _stream_map: (cb) ->
     mt = @mt
     [tags, kind] = @_drainState()
     count = 0
-    @emit 'map start', -1, tags, kind
+    @emit 'map-start', -1, tags, kind
     keep_going = true
 
     async.doWhilst (done) =>
-      @kind = if count then 'key' else 'key first'
+      @kind = if count then 'key' else 'key-first'
       @_unpack (er,val) ->
         return done(er) if er
         if val == BREAK
@@ -208,9 +287,10 @@ module.exports = class EventedParser extends stream.Writable
       keep_going
     , (er) =>
       return cb.call(this, er) if er
-      @emit 'map stop', count, tags, kind
+      @emit 'map-stop', count, tags, kind
       cb.call this
 
+  # @nodoc
   _stream: (cb) ->
     switch @mt
       when MT.BYTE_STRING, MT.UTF8_STRING then @_stream_stringy cb
@@ -221,6 +301,7 @@ module.exports = class EventedParser extends stream.Writable
         cb.call this, null, BREAK
       else cb.call this, new Error("Invalid stream major type: #{@mt}")
 
+  # @nodoc
   _unpack: (cb) ->
     @bs.wait 1, (er,buf) =>
       return cb(er) if er
@@ -253,6 +334,7 @@ module.exports = class EventedParser extends stream.Writable
         when 31 then @_stream decrement
         else @_getVal @ai, decrement
 
+  # @nodoc
   _pump: (er)=>
     if er
       if BufferStream.isEOFError(er) && (@depth == 0)
