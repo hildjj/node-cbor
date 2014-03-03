@@ -1,5 +1,7 @@
 Encode and parse [CBOR](http://tools.ietf.org/html/draft-bormann-coap-misc-24#appendix-D.6.2) documents.
 
+See the [documentation](http://hildjj.github.io/node-cbor/doc/) and [test results](http://hildjj.github.io/node-cbor/covershot/).
+
 Installation:
 
 ```
