@@ -1,18 +1,11 @@
 /*jslint node: true */
 "use strict";
 
-var assert = require('nodeunit').assert;
 var csrequire = require('covershot').require.bind(null, require);
 var utils = csrequire('../lib/utils');
 var bignumber = require('bignumber.js');
 var hex = utils.hex;
 var bin = utils.bin;
-
-assert.approx = function(actual, expected, message) {
-  if (Math.abs(actual - expected) > (actual / 1000.0)) {
-    assert.fail(actual, expected, message, "Not approximately equal");
-  }
-}
 
 exports.bin = function(test) {
   test.deepEqual(utils.bin('1'), hex('01'));
@@ -53,7 +46,7 @@ exports.parseHalf = function(test) {
   test.deepEqual(utils.parseHalf(bin('0 01111 0000000000')), 1);
   test.deepEqual(utils.parseHalf(bin('1 10000 0000000000')), -2);
   test.deepEqual(utils.parseHalf(bin('0 11110 1111111111')), 65504);
-  test.approx(utils.parseHalf(bin('0 00001 0000000000')), 6.10352E-5);
+  test.deepEqual(utils.parseHalf(bin('0 00001 0000000000')), 0.00006103515625);
   test.deepEqual(utils.parseHalf(bin('0 00000 0000000000')), 0);
   test.deepEqual(utils.parseHalf(bin('1 00000 0000000000')), -0);
   test.deepEqual(utils.parseHalf(bin('0 11111 0000000000')), Infinity);
