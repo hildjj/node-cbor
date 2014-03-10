@@ -1,9 +1,8 @@
 /*jslint node: true */
 "use strict";
 
-var csrequire = require('covershot').require.bind(null, require);
-var Diagnose = csrequire('../lib/diagnose');
-var BufferStream = csrequire('../lib/BufferStream');
+var Diagnose = require('../lib/diagnose');
+var BufferStream = require('../lib/BufferStream');
 var async = require('async');
 
 

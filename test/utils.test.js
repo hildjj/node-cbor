@@ -1,8 +1,7 @@
 /*jslint node: true */
 "use strict";
 
-var csrequire = require('covershot').require.bind(null, require);
-var utils = csrequire('../lib/utils');
+var utils = require('../lib/utils');
 var bignumber = require('bignumber.js');
 var hex = utils.hex;
 var bin = utils.bin;

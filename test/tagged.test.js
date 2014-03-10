@@ -1,8 +1,7 @@
 /*jslint node: true */
 "use strict";
 
-var csrequire = require('covershot').require.bind(null, require);
-var cbor = csrequire('../lib/cbor');
+var cbor = require('../lib/cbor');
 
 exports.create = function(test) {
   var t = new cbor.Tagged(1, "one");
