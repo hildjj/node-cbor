@@ -9,10 +9,8 @@ Tagged = require '../lib/tagged'
 utils = require '../lib/utils'
 
 Evented = require './evented'
-constants = require './constants'
+{TAG, MT} = require './constants'
 
-TAG = constants.TAG
-MT = constants.MT
 MINUS_ONE = new bignumber -1
 TEN = new bignumber 10
 TWO = new bignumber 2
@@ -69,8 +67,10 @@ module.exports = class Decoder extends stream.Writable
 
   # @nodoc
   _process: (val,tags,kind)->
+    # unwrap tags from the inside-most first
     for t in tags by -1
       try
+        # if there's a function for this tag, call it
         f = @tags[t]
         if f?
           val = f.call(this, val) ? new Tagged(t, val)
