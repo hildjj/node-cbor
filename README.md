@@ -5,7 +5,7 @@ See the [documentation](http://hildjj.github.io/node-cbor/doc/) and [test result
 Installation:
 
 ```
-$ npm install node-cbor
+$ npm install cbor
 ```
 
 From the command line:
@@ -17,7 +17,7 @@ $ bin/cbor2diag package.cbor
 
 Example:
 ```javascript
-var cbor = require('node-cbor');
+var cbor = require('cbor');
 var encoded = cbor.encode(true); // returns <Buffer d9>
 cbor.decode(encoded, function(error, obj) {
   // error != null if there was an error
@@ -29,7 +29,7 @@ cbor.decode(encoded, function(error, obj) {
 Allows streaming as well:
 
 ```javascript
-var cbor = require('node-cbor');
+var cbor = require('cbor');
 var fs = require('fs');
 
 var d = new cbor.Decoder();
@@ -50,7 +50,7 @@ d2.start(); // needed when you don't use the stream interface
 And also a SAX-type mode (which the streaming mode wraps):
 
 ```javascript
-var cbor = require('node-cbor');
+var cbor = require('cbor');
 var fs = require('fs');
 
 var parser = new cbor.Evented();
