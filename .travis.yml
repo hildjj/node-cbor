@@ -1,0 +1,10 @@
+language: node_js
+node_js:
+  - "0.10"
+before_script:
+  - npm install -g grunt-cli nodeunit istanbul
+script:
+  - npm run-script ci
+env:
+  global:
+    - secure: "TODO set COVERALLS_REPO_TOKEN environment variable"
