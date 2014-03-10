@@ -91,12 +91,15 @@ class BufferStream extends stream.Writable
   # @option options [Boolean] bsStartEmpty don't initialize with a growSize buffer (default: false)
   # @option options [Boolean] bsStartEnded after bsInit is appended, should we end the stream?
   #     if bsInit, defaults to `true`, else ignored
+  # @option options [Boolean] bsZero whenever a new Buffer is added to the list,
+  #     initialize it to zero (default: false)
   constructor: (options={})->
     @clear()
     @_resetCB()
 
     super options
     @growSize = options.bsGrowSize ? 512
+    @zero = options.bsZero ? false
 
     @on "finish", ()=>
       @_resetCB createEOF()
@@ -128,7 +131,7 @@ class BufferStream extends stream.Writable
   # When this object gets passed to an Encoder, render it as a byte string.
   # @nodoc
   encodeCBOR: (enc)->
-    enc._packBuffer @flatten()
+    enc._packBuffer enc, @flatten()
 
   # Is this BufferStream valid?
   # Checks `@length`, `@left`, and the internal buffer list for consistency
@@ -141,6 +144,7 @@ class BufferStream extends stream.Writable
     len == @length
 
   # @nodoc
+  # Leave this in for debugging, please.
   _bufSizes: ()->
     @bufs.map (b)-> b.length
 
@@ -173,6 +177,8 @@ class BufferStream extends stream.Writable
   # @option length [Integer] 0 read all
   read: (length)->
     buf = null
+    if @length == 0
+      return EMPTY
     lenZ = @bufs[0].length
     length ?= 0
     lenW = switch length
@@ -302,6 +308,8 @@ class BufferStream extends stream.Writable
 
     s = size ? @growSize
     b = new Buffer(s)
+    if @zero
+      b.fill 0
     @bufs.push(b)
     @left = s
     b

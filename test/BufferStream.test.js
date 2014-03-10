@@ -1,6 +1,6 @@
 var csrequire = require('covershot').require.bind(null, require);
 var BufferStream = csrequire('../lib/BufferStream');
-
+var utils = csrequire('../lib/utils');
 var fs = require('fs');
 
 exports.create = function(test) {
@@ -124,6 +124,8 @@ exports.waitEdges = function(test) {
   bs.wait(100, function(er, buf) {
     // EOF while waiting
     test.ok(er);
+    test.ok(BufferStream.isEOFError(er));
+    test.ok(bs.isEOF(er));
     test.ok(!buf);
     test.done();
   });
@@ -216,3 +218,54 @@ exports.writeNums = function(test) {
      ]));
   test.done();
 };
+
+exports.read = function(test) {
+  var bs = new BufferStream();
+  var buf = bs.read();
+  test.deepEqual(buf.length, 0);
+  var probe = new Buffer([1,2,3,4]);
+  bs.append(probe);
+  buf = bs.read(-1);
+  test.ok(utils.bufferEqual(buf, probe));
+  bs.clear();
+  test.ok(utils.arrayEqual(bs._bufSizes(), []));
+  bs.append(probe);
+  bs.append(probe);
+  test.ok(utils.arrayEqual(bs._bufSizes(), [4, 4]));
+  buf = bs.read(8);
+  test.deepEqual(buf.length, 8);
+
+  bs.clear();
+  bs.append(probe);
+  bs.append(probe);
+  bs.grow(4);
+  test.ok(utils.arrayEqual(bs._bufSizes(), [4,4,4]));
+  buf = bs.read(8);
+  test.deepEqual(buf.length, 8);
+
+  bs.clear();
+  bs.append(probe);
+  bs.grow(6);
+  bs.append(probe);
+  test.ok(utils.arrayEqual(bs._bufSizes(), [4, 6]));
+  buf = bs.read(8);
+  test.deepEqual(buf.length, 8);
+
+  test.done();
+};
+
+exports.zero = function(test) {
+  var bs = new BufferStream({bsZero: true, bsStartEmpty: true, bsGrowSize: 4});
+  test.ok(utils.arrayEqual(bs._bufSizes(), []));
+  bs.grow();
+  test.ok(utils.arrayEqual(bs._bufSizes(), [4]));
+  test.ok(utils.bufferEqual(bs.bufs[0], new Buffer([0,0,0,0])));
+  test.done();
+}
+
+exports.string = function(test) {
+  var bs = new BufferStream();
+  bs.write('01020304', 'hex');
+  test.deepEqual(bs.toString(), "01020304");
+  test.done();
+}

@@ -5,10 +5,12 @@ var csrequire = require('covershot').require.bind(null, require);
 var cbor = csrequire('../lib/cbor');
 var Encoder = cbor.Encoder;
 var Simple = cbor.Simple;
+var Tagged = cbor.Tagged;
 var hex = csrequire('../lib/utils').hex;
 var url = require('url');
 var async = require('async');
 var bignumber =  require('bignumber.js');
+var BufferStream = csrequire('../lib/BufferStream');
 
 // If you pass a function as expected, catch errors and pass them
 // to the callback.  Avoids test.throws.
@@ -235,3 +237,9 @@ exports.addSemanticType = function(test) {
   test.done();
 };
 
+exports.internalTypes = function(test) {
+  test_all(test, [
+    [new BufferStream({bsInit: new Buffer([1,2,3,4])}), '0x4401020304'],
+    [new Tagged(256, 1), '0xd9010001']
+  ]);
+};
