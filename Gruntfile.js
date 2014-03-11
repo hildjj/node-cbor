@@ -53,9 +53,13 @@ module.exports = function(grunt) {
           livereload: true
         }
       }
+    },
+    release: {
+      options: {
+        tagName: 'v<%= version %>', //default: '<%= version %>'
+      }
     }
   });
-
 
   grunt.registerTask('default', ['test']);
   grunt.registerTask('doc', ['shell:doc']);
