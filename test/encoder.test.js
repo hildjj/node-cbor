@@ -1,16 +1,15 @@
 /*jslint node: true */
 "use strict";
 
-var csrequire = require('covershot').require.bind(null, require);
-var cbor = csrequire('../lib/cbor');
+var cbor = require('../lib/cbor');
 var Encoder = cbor.Encoder;
 var Simple = cbor.Simple;
 var Tagged = cbor.Tagged;
-var hex = csrequire('../lib/utils').hex;
+var hex = require('../lib/utils').hex;
 var url = require('url');
 var async = require('async');
 var bignumber =  require('bignumber.js');
-var BufferStream = csrequire('../lib/BufferStream');
+var BufferStream = require('../lib/BufferStream');
 
 // If you pass a function as expected, catch errors and pass them
 // to the callback.  Avoids test.throws.

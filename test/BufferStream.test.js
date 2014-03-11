@@ -1,6 +1,5 @@
-var csrequire = require('covershot').require.bind(null, require);
-var BufferStream = csrequire('../lib/BufferStream');
-var utils = csrequire('../lib/utils');
+var BufferStream = require('../lib/BufferStream');
+var utils = require('../lib/utils');
 var fs = require('fs');
 
 exports.create = function(test) {

@@ -4,12 +4,11 @@
 var temp = require('temp');
 var fs = require('fs');
 
-var csrequire = require('covershot').require.bind(null, require);
-var cbor = csrequire('../lib/cbor');
+var cbor = require('../lib/cbor');
 
 var Evented = cbor.Evented;
 
-var hex = csrequire('../lib/utils').hex;
+var hex = require('../lib/utils').hex;
 
 exports.input_string = function(test) {
   var parser = new Evented({
