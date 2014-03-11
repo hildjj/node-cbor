@@ -46,7 +46,8 @@
     "temp": "~0.7.0",
     "grunt-express": "^1.2.1",
     "grunt-contrib-watch": "^0.5.3",
-    "matchdep": "^0.3.0"
+    "matchdep": "^0.3.0",
+    "grunt-release": "^0.7.0"
   },
   "license": "MIT",
   "readmeFilename": "README.md",

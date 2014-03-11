@@ -27,6 +27,7 @@ module.exports = function(grunt) {
         command: 'istanbul cover nodeunit test'
       },
       doc: {
+        // https://github.com/coffeedoc/codo
         command: 'codo',
         options: {
           stdout: true
