@@ -1,17 +1,14 @@
-[![Build Status](https://api.travis-ci.org/hildjj/node-cbor.png)](https://travis-ci.org/hildjj/node-cbor)
-[![Coverage Status](https://coveralls.io/repos/hildjj/node-cbor/badge.png?branch=master)](https://coveralls.io/r/hildjj/node-cbor?branch=master)
-[![Dependency status](https://david-dm.org/hildjj/node-cbor/status.png)](https://david-dm.org/hildjj/node-cbor#info=dependencies&view=table)
-[![Dev Dependency Status](https://david-dm.org/hildjj/node-cbor/dev-status.png)](https://david-dm.org/hildjj/node-cbor#info=devDependencies&view=table)
+Encode and parse [CBOR](http://tools.ietf.org/html/rfc7049) documents.
 
-Encode and parse [CBOR](http://tools.ietf.org/html/draft-bormann-coap-misc-24#appendix-D.6.2) documents.
-
-See the [documentation](http://hildjj.github.io/node-cbor/doc/) and [test results](http://hildjj.github.io/node-cbor/covershot/).
 
 Installation:
+------------
 
-```
-$ npm install cbor
-```
+[![NPM](https://nodei.co/npm/cbor.png?mini=true)](https://nodei.co/npm/cbor/)
+
+Documentation:
+-------------
+See the full API [documentation](http://hildjj.github.io/node-cbor/doc/).
 
 From the command line:
 ```
@@ -121,4 +118,32 @@ var s = fs.createReadStream('foo');
 s.pipe(parser);
 ```
 
-Test coverage is currently above 95%.
+Developers
+----------
+
+For the moment, you'll need to manually install istanbul, nodeunit, and grunt-cli:
+
+```
+$ npm install -g grunt-cli nodeunit istanbul
+$ grunt
+Running "coffee:compile" (coffee) task
+
+Running "nodeunit:all" (nodeunit) task
+Testing BufferStream.test...............OK
+Testing decoder.test.....OK
+Testing diagnose.test...OK
+Testing encoder.test.......OK
+Testing evented.test....OK
+Testing simple.test.OK
+Testing tagged.test..OK
+Testing utils.test.......OK
+>> 459 assertions passed (129ms)
+
+Done, without errors.
+```
+
+
+[![Build Status](https://api.travis-ci.org/hildjj/node-cbor.png)](https://travis-ci.org/hildjj/node-cbor)
+[![Coverage Status](https://coveralls.io/repos/hildjj/node-cbor/badge.png?branch=master)](https://coveralls.io/r/hildjj/node-cbor?branch=master)
+[![Dependency status](https://david-dm.org/hildjj/node-cbor/status.png)](https://david-dm.org/hildjj/node-cbor#info=dependencies&view=table)
+[![Dev Dependency Status](https://david-dm.org/hildjj/node-cbor/dev-status.png)](https://david-dm.org/hildjj/node-cbor#info=devDependencies&view=table)
