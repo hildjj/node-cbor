@@ -39,7 +39,10 @@
     "grunt-contrib-nodeunit": "~0.3.2",
     "grunt-coveralls": "~0.3.0",
     "grunt-shell": "~0.6.4",
-    "temp": "~0.7.0"
+    "temp": "~0.7.0",
+    "grunt-express": "^1.2.1",
+    "grunt-contrib-watch": "^0.5.3",
+    "matchdep": "^0.3.0"
   },
   "license": "MIT",
   "readmeFilename": "README.md",
