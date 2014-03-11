@@ -29,6 +29,9 @@
     "name": "Joe Hildebrand",
     "email": "joe-github@cursive.net"
   },
+  "contributors": [
+    "Patrick Gansterer <paroga@paroga.com> (http://paroga.com/)"
+  ],
   "devDependencies": {
     "grunt": "~0.4.3",
     "grunt-cli": "~0.1.13",
