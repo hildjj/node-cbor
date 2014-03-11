@@ -4,7 +4,9 @@ Encode and parse [CBOR](http://tools.ietf.org/html/rfc7049) documents.
 Installation:
 ------------
 
-[![NPM](https://nodei.co/npm/cbor.png?mini=true)](https://nodei.co/npm/cbor/)
+```
+$ npm install cbor
+```
 
 Documentation:
 -------------
