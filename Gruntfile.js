@@ -64,6 +64,6 @@ module.exports = function(grunt) {
   grunt.registerTask('default', ['test']);
   grunt.registerTask('doc', ['shell:doc']);
   grunt.registerTask('test', ['coffee', 'nodeunit']);
-  grunt.registerTask('server', ['express', 'watch']);
+  grunt.registerTask('server', ['test', 'shell:istanbul', 'express', 'watch']);
   grunt.registerTask('ci', ['test', 'shell:istanbul', 'coveralls']);
 };
