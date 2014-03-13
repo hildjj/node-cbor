@@ -24,7 +24,7 @@ NULL = (MT.SIMPLE_FLOAT<<5)|constants.SIMPLE.NULL
 module.exports = class Encoder extends stream.Readable
   # Create an encoder
   # @param options [Object] options for the encoder
-  # @option options [Array] genTypes array of pairs of `type`, `function(Encoder)`
+  # @option options genTypes [Array] array of pairs of `type`, `function(Encoder)`
   #   for semantic types to be encoded.  (default: [Array, arrayFunc,
   #   Date, dateFunc, Buffer, bufferFunc, RegExp, regexFunc,
   #   url.Url, urlFunc, bignumber, bignumberFunc]

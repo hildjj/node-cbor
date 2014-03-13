@@ -4,7 +4,8 @@
 var Diagnose = require('../lib/diagnose');
 var BufferStream = require('../lib/BufferStream');
 var async = require('async');
-
+var temp = require('temp');
+var fs = require('fs');
 
 function diagTest(test, max_depth) {
   return function (hd, cb) {
@@ -182,9 +183,55 @@ exports.edges = function(test) {
 
 exports.diagnose = function(test) {
   var bs = new BufferStream();
-  Diagnose.diagnose('0xf5', null, bs, function(er) {
+  Diagnose.diagnose('0xf5', 'hex', bs, function(er) {
     test.ok(!er);
     test.deepEqual(bs.read().toString('utf8'), 'true\n');
     test.done();
   });
 };
+
+exports.options = function(test) {
+  var dt = new Diagnose();
+  test.deepEqual(dt.options.separator, "\n");
+  var bs = new BufferStream();
+  dt = new Diagnose({
+    streamErrors: true,
+    input: "7432303133",
+    output: bs
+  });
+  dt.on('error', function() {
+    test.deepEqual(bs.toString('utf8'), "Error: EOF");
+    test.done();
+  });
+  dt.start();
+};
+
+exports.inputs = function(test) {
+  test.throws(function() {
+    Diagnose.diagnose();
+  });
+  test.done();
+}
+
+exports.stream = function(test) {
+  var dt = new Diagnose({
+    output: new BufferStream(),
+    separator: '-'
+  });
+
+  dt.on('complete', function(s) {
+    test.deepEqual(s.toString('utf8'), '1-');
+  });
+  dt.on('end', function() {
+    test.done();
+  });
+  dt.on('error', function(er) {
+    test.ifError(er);
+  });
+
+  var f = temp.createWriteStream();
+  f.end(new Buffer('01', 'hex'), function(er){
+    var g = fs.createReadStream(f.path);
+    g.pipe(dt);
+  });
+}

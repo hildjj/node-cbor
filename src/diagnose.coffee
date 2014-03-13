@@ -21,18 +21,22 @@ utils = require '../lib/utils'
 module.exports = class Diagnose extends stream.Writable
   # Create a Diagnose.
   # @param options [Object] options for creation
-  # @option options [string] separator between detected objects (default: '\n')
-  # @option options [Writable] where the output should go (default: process.stdout)
-  # @option options [Buffer,String,BufferStream] optional input
-  # @option options [String] encoding Encoding of a String `input` (default: 'hex')
-  # @option options [offset] *byte* offset into the input from which to start
+  # @option options separator [String] output between detected objects (default: '\n')
+  # @option options output [Writable] where the output should go (default: process.stdout)
+  # @option options input [Buffer,String,BufferStream] optional input
+  # @option options encoding [String] encoding of a String `input` (default: 'hex')
+  # @option options offset [Integer] *byte* offset into the input from which to start
   constructor: (options={}) ->
     super()
 
     @options = utils.extend
       separator: '\n'
       output: process.stdout
+      streamErrors: false
     , options
+
+    @on 'finish', ()->
+      @parser.end()
 
     @parser = new Evented @options
 
@@ -54,10 +58,13 @@ module.exports = class Diagnose extends stream.Writable
   # Convenience function to print to (e.g.) stdout.
   # @param input [Buffer,String,BufferStream] the CBOR bytes to write
   # @param encoding [String] encoding if `input` is a string (default: 'hex')
-  # @param output [Writable] Writable stream to output diagnosis info
+  # @param output [Writable] Writable stream to output diagnosis info into
   #   (default: process.stdout)
   # @param done [function()]
   @diagnose: (input, encoding='hex', output=process.stdout, done)->
+    if !input?
+      throw new Error 'input required'
+
     d = new Diagnose
       input: input
       encoding: encoding
@@ -104,19 +111,19 @@ module.exports = class Diagnose extends stream.Writable
   # @nodoc
   _on_value: (val,tags,kind)=>
     @_fore kind
-    if tags
+    if tags? and tags.length
       @options.output.write "#{t}(" for t in tags
 
     @_stream_val val
 
-    if tags
+    if tags? and tags.length
       @options.output.write ")" for t in tags
     @_aft kind
 
   # @nodoc
   _on_array_start: (count,tags,kind)=>
     @_fore kind
-    if tags
+    if tags? and tags.length
       @options.output.write "#{t}(" for t in tags
     @options.output.write "["
     if count == -1
@@ -125,14 +132,14 @@ module.exports = class Diagnose extends stream.Writable
   # @nodoc
   _on_array_stop: (count,tags,kind)=>
     @options.output.write "]"
-    if tags
+    if tags? and tags.length
       @options.output.write ")" for t in tags
     @_aft kind
 
   # @nodoc
   _on_map_start: (count,tags,kind)=>
     @_fore kind
-    if tags
+    if tags? and tags.length
       @options.output.write "#{t}(" for t in tags
     @options.output.write "{"
     if count == -1
@@ -141,21 +148,21 @@ module.exports = class Diagnose extends stream.Writable
   # @nodoc
   _on_map_stop: (count,tags,kind)=>
     @options.output.write "}"
-    if tags
+    if tags? and tags.length
       @options.output.write ")" for t in tags
     @_aft kind
 
   # @nodoc
   _on_stream_start: (mt,tags,kind)=>
     @_fore kind
-    if tags
+    if tags? and tags.length
       @options.output.write "#{t}(" for t in tags
     @options.output.write "(_ "
 
   # @nodoc
   _on_stream_stop: (count,mt,tags,kind)=>
     @options.output.write ")"
-    if tags
+    if tags? and tags.length
       @options.output.write ")" for t in tags
     @_aft kind
 

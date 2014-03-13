@@ -28,10 +28,10 @@ DEFAULT_TAG_FUNCS = {}
 module.exports = class Decoder extends stream.Writable
   # Create a Decoder
   # @param options [Object] options for creation
-  # @option options [Buffer,String,BufferStream] input
-  # @option options [String] encoding Encoding of a String `input` (default: 'hex')
-  # @option options [offset] *byte* offset into the input from which to start
-  # @option options [Object] map of tag numbers to function(value), returning an
+  # @option options input [Buffer,String,BufferStream] optional input
+  # @option options encoding [String] encoding of a String `input` (default: 'hex')
+  # @option options offset [Integer] *byte* offset into the input from which to start
+  # @option options tags [Object] map of tag numbers to function(value), returning an
   #   object of the correct type for that tag.
   constructor: (@options={}) ->
     super()

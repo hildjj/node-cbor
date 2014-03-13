@@ -75,9 +75,9 @@ module.exports = class Evented extends stream.Writable
 
   # Create an event-based CBOR parser.
   # @param options [Object] options for the parser
-  # @option options [Buffer,String,BufferStream] input
-  # @option options [String] encoding Encoding of a String `input` (default: 'hex')
-  # @option options [offset] *byte* offset into the input from which to start
+  # @option options input [Buffer,String,BufferStream] optional input
+  # @option options encoding [String] encoding of a String `input` (default: 'hex')
+  # @option options offset [Integer] *byte* offset into the input from which to start
   constructor: (options) ->
     super() # TODO: pass subset of options
     @options = utils.extend
