@@ -84,13 +84,15 @@ exports.arrayEqual = (a, b)->
 
 # Do the two buffers contain the same bytes?
 exports.bufferEqual = (a,b)->
+  if !a? and !b? then return true
+  if !a? or !b? then return false
   unless Buffer.isBuffer(a) and Buffer.isBuffer(b) and (a.length == b.length)
     return false
 
   ret = true
   for byte,i in a
-    ret |= (b[i] == byte)
-  return ret
+    ret &= (b[i] == byte)
+  return !!ret
 
 # Convert a a buffer to a bignumber
 # @param buf [Buffer] the buffer to convert

@@ -174,7 +174,8 @@ exports.edges = function(test) {
   var dt = diagTest(test,2);
   async.each([
     [expectError, '0x7432303133'],
-    [expectError, '0x818181818100']
+    [expectError, '0x818181818100'],
+    [expectError, '0x7f01ff']
   ], dt, function(er) {
     test.equal(er, null);
     test.done();
@@ -229,9 +230,10 @@ exports.stream = function(test) {
     test.ifError(er);
   });
 
+  temp.track();
   var f = temp.createWriteStream();
   f.end(new Buffer('01', 'hex'), function(er){
     var g = fs.createReadStream(f.path);
     g.pipe(dt);
   });
-}
+};

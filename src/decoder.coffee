@@ -4,9 +4,9 @@ stream = require 'stream'
 url = require 'url'
 bignumber = require 'bignumber.js'
 
-BufferStream = require '../lib/BufferStream'
-Tagged = require '../lib/tagged'
-utils = require '../lib/utils'
+BufferStream = require './BufferStream'
+Tagged = require './tagged'
+utils = require './utils'
 
 Evented = require './evented'
 {TAG, MT} = require './constants'
@@ -83,11 +83,26 @@ module.exports = class Decoder extends stream.Writable
       when null then @emit 'complete', val
       when 'array-first', 'array' then @last.push val
       when 'key-first', 'key' then @stack.push val
-      when 'stream-first', 'stream' then @last.write val
+      when 'stream-first', 'stream'
+        switch @mt
+          when MT.BYTE_STRING
+            unless Buffer.isBuffer(val)
+              @parser.error(new Error 'Bad input in stream, expected buffer')
+              return
+          when MT.UTF8_STRING
+            unless typeof val == 'string'
+              @parser.error(new Error 'Bad input in stream, expected string')
+              return
+          else
+            `// istanbul ignore next`
+            throw new Error 'Unknown stream type'
+        @last.write val
       when 'value'
         key = @stack.pop()
         @last[key] = val
-      else console.log 'unknown', kind
+        `// istanbul ignore next`
+      else
+        @parser.error(new Error "Unknown event kind: #{kind}")
 
   # @nodoc
   _on_value: (val,tags,kind)=>
@@ -118,13 +133,16 @@ module.exports = class Decoder extends stream.Writable
   # @nodoc
   _on_stream_start: (mt,tags,kind)=>
     if @last?
-      @stack.push @last
+      @stack.push [@last, @mt]
+    @mt = mt
     @last = new BufferStream
 
   # @nodoc
   _on_stream_stop: (count,mt,tags,kind)=>
-    [val, @last] = [@last, @stack.pop()]
-    val = val.read()
+    val = @last.read()
+    lm = @stack.pop()
+    if lm
+      [@last, @mt] = lm
     if mt == MT.UTF8_STRING
       val = val.toString 'utf8'
     @_process val, tags, kind

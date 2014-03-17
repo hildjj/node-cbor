@@ -11,6 +11,9 @@ constants = require './constants'
 MT = constants.MT
 
 # @nodoc
+# Never executed, just an atom to compare against that can never happen in
+# a real stream.
+`// istanbul ignore next`
 BREAK = () ->
   "BREAK"
 
@@ -91,26 +94,30 @@ module.exports = class Evented extends stream.Writable
     @tags = []
     @kind = null
     @depth = 0
+    @last_err = null
 
     @on 'finish', ()->
       @bs.end()
 
     if @options.input?
       input = @options.input
+      buf = null
       if Buffer.isBuffer(input)
-        if @options.offset
-          input = input.slice @options.offset
-        @bs = new BufferStream
-          bsInit: input
+        buf = input
       else if typeof(input) == 'string'
         if @options.encoding == 'hex'
           input = input.replace /^0x/, ''
-        if @options.offset
-          input = input.slice @options.offset
-        @bs = new BufferStream
-          bsInit: new Buffer(input, @options.encoding)
-      else if !BufferStream.isBufferStream(input)
+        buf = new Buffer(input, @options.encoding)
+      else if BufferStream.isBufferStream(input)
+        @bs = input
+        return @_start
+      else
         throw new Error "input must be Buffer, string, or BufferStream"
+
+      if @options.offset
+        buf = buf.slice @options.offset
+      @bs = new BufferStream
+        bsInit: buf
 
       @_start
     else
@@ -122,6 +129,9 @@ module.exports = class Evented extends stream.Writable
   # @note This MUST NOT be called if you're piping a Readable stream in.
   start: ()->
     @_pump()
+
+  error: (er)->
+    @last_er = er
 
   # @nodoc
   _write: (chunk, enc, next)->
@@ -138,7 +148,7 @@ module.exports = class Evented extends stream.Writable
   _val: (val,cb) ->
     [tags, kind] = @_drainState()
     @emit 'value', val, tags, kind
-    cb.call this, null, val
+    cb.call this, @last_er, val
 
   # @nodoc
   _readBuf: (len,cb) ->
@@ -213,6 +223,9 @@ module.exports = class Evented extends stream.Writable
       when MT.TAG then @_readTag val, cb
       when MT.SIMPLE_FLOAT then @_readSimple val, cb
       else
+        # really should never happen, since the above are all of the cases
+        # of three bits
+        `// istanbul ignore next`
         cb.call this, new Error("Unknown major type(#{@mt}): #{val}")
 
   # @nodoc
@@ -230,7 +243,8 @@ module.exports = class Evented extends stream.Writable
           keep_going = false
         else
           if @mt != mt
-            return done(new Error("Invalid stream major type: #{@mt}, when anticipating only #{mt}"))
+            done(new Error "Invalid stream major type: #{@mt}, when anticipating only #{mt}")
+            return
           count++
         done()
     , () ->
@@ -299,7 +313,11 @@ module.exports = class Evented extends stream.Writable
       when MT.SIMPLE_FLOAT
         [tags, kind] = @_drainState()
         cb.call this, null, BREAK
-      else cb.call this, new Error("Invalid stream major type: #{@mt}")
+      else
+        # really should never happen, since the above are all of the cases
+        # of three bits
+        `// istanbul ignore next`
+        cb.call this, new Error("Invalid stream major type: #{@mt}")
 
   # @nodoc
   _unpack: (cb) ->

@@ -10,6 +10,8 @@ var Tagged = cbor.Tagged;
 
 var async = require('async');
 var bignumber = require('bignumber.js');
+var temp = require('temp');
+var fs = require('fs');
 
 function buildTest(test) {
   return function (hd, cb) {
@@ -138,6 +140,7 @@ exports.from_spec =  function(test) {
     [[1, [2, 3], [4, 5]], '0x8301820203820405'],
     [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25], '0x98190102030405060708090a0b0c0d0e0f101112131415161718181819'],
     [{}, '0xa0'],
+    [{}, '0xbfff'],
     [{1: 2, 3: 4}, '0xa201020304'],
     [{"a": 1, "b": [2, 3]}, '0xa26161016162820203'],
     [["a", {"b": "c"}], '0x826161a161626163'],
@@ -188,11 +191,21 @@ exports.invalid = function(test) {
   var bt = buildInvalidTest(test);
 
   async.each([
-    '0xFE',
-    '0x64494554',
-    '0x7f657374726561646d696e',
-    '0x44010203',
-    '0xa20102'
+    '0x7f01ff', // indeterminite string includes a non-string chunk
+    '0x5f01ff', // indeterminite bytestring includes a non-string chunk
+    '0xFE', // reserved AI
+    '0x81FE', // Array containaing invalid
+    '0x9fFEff', // streamed array containing invalid
+    '0xa1FE01', // Map containing invalid
+    '0xbfFE01ff', // streamed map containing invalid
+    '0x18', // missing the next byte for AI
+    '0x1c', // invalid AI
+    '0x1d', // invalid AI
+    '0x1e', // invalid AI
+    '0x64494554', // only 3 bytes, not 4, utf8
+    '0x7f657374726561646d696e', // no BREAK
+    '0x44010203', // only 3 bytes, not 4, bytestring
+    '0xa20102', // only 1 pair, not 2, map
   ], bt, function(er) {
     test.equal(er, null);
     test.done();
@@ -215,11 +228,19 @@ exports.add_tag = function(test) {
   d.on('error', function(er) {
     test.ok(false, er);
   });
+  var count = 0;
   d.on('complete', function(val) {
-    test.deepEqual(val, new Tagged(127,1, new Error('Invalid tag')));
-    test.done();
+    switch(count++) {
+    case 0:
+      test.deepEqual(val, new Tagged(127,1, new Error('Invalid tag')));
+      break;
+    case 1:
+      test.deepEqual(val, new Tagged(0,1));
+      test.done();
+      break;
+    }
   });
-  var b = new Buffer('d87f01', 'hex');
+  var b = new Buffer('d87f01c001', 'hex');
   d.end(b);
 };
 
@@ -230,3 +251,31 @@ exports.parse_tag = function(test) {
     test.done();
   });
 };
+
+exports.error = function(test) {
+  test.throws(function() {
+    var d = cbor.decode('d87f01c001');
+  });
+  test.done();
+};
+
+exports.stream = function(test) {
+  var dt = new Decoder();
+
+  dt.on('complete', function(v) {
+    test.deepEqual(v, 1);
+  });
+  dt.on('end', function() {
+    test.done();
+  });
+  dt.on('error', function(er) {
+    test.ifError(er);
+  });
+
+  temp.track();
+  var f = temp.createWriteStream();
+  f.end(new Buffer('01', 'hex'), function(er){
+    var g = fs.createReadStream(f.path);
+    g.pipe(dt);
+  });
+}

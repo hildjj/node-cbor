@@ -72,6 +72,16 @@ exports.arrayEqual = function(test) {
   test.done();
 };
 
+exports.bufferEqual = function(test) {
+  test.deepEqual(utils.bufferEqual(), true);
+  test.deepEqual(utils.bufferEqual(new Buffer(0)), false);
+  test.deepEqual(utils.bufferEqual(new Buffer(0), new Buffer(0)), true);
+  test.deepEqual(utils.bufferEqual(new Buffer([1]), new Buffer(0)), false);
+  test.deepEqual(utils.bufferEqual(new Buffer([1,2,3]), new Buffer([1,2,3])), true);
+  test.deepEqual(utils.bufferEqual(new Buffer([1,2,3]), new Buffer([1,2,4])), false);
+  test.done();
+};
+
 exports.bufferToBignumber = function(test) {
   var num = new bignumber(0x12345678).toString(16);
   var numbuf = new Buffer(num, 'hex');

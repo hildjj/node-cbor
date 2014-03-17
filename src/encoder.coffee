@@ -225,7 +225,9 @@ module.exports = class Encoder extends stream.Readable
       when 'boolean'   then @_packBoolean obj
       when 'undefined' then @_packUndefined obj
       when 'object'    then @_packObject obj
-      else throw new Error('Unknown type: ' + typeof(obj));
+      else
+        # e.g. function
+        throw new Error('Unknown type: ' + typeof(obj));
 
   # Encode one or more JavaScript objects into the stream.
   # @param objs... [Object+] the objects to encode

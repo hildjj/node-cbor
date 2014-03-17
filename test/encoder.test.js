@@ -163,7 +163,11 @@ exports.decimal = function(test) {
   test_all(test,[
     [new bignumber(10.1), '0xc48201c24165'],
     [new bignumber(100.1), '0xc48202c24203e9'],
-    [new bignumber(0), '0xc24100']
+    [new bignumber(0), '0xc24100'],
+    [new bignumber(-0), '0xc340'],
+    [new bignumber(NaN), '0xf97e00'],
+    [new bignumber(Infinity), '0xf97c00'],
+    [new bignumber(-Infinity), '0xf9fc00']
   ]);
 };
 
@@ -192,9 +196,16 @@ exports.specialObjects = function(test) {
     [new Buffer(0), '0x40'],
     [new Buffer([0,1,2,3,4]), '0x450001020304'],
     [new Simple(0xff), 'f8ff'],
-    [/a/, '0xd8236161'],
+    [/a/, '0xd8236161']
   ]);
 };
+
+exports.badFunc = function(test) {
+  test.throws(function() {
+    cbor.encode(function() {return 'hi';});
+  });
+  test.done();
+}
 
 exports.addSemanticType = function(test) {
   function TempClass(val) {
@@ -206,6 +217,7 @@ exports.addSemanticType = function(test) {
   // {"value": "foo"}
   var t = new TempClass('foo');
   test.deepEqual(Encoder.encode(t), hex('0xa16576616c756563666f6f'));
+  test.deepEqual(Encoder.encode(), null);
 
   TempClass.prototype.encodeCBOR = function(gen) {
     gen._packTag(0xffff);
@@ -230,6 +242,7 @@ exports.addSemanticType = function(test) {
   // replace Buffer serializer with hex strings
   gen.addSemanticType(Buffer, hexPackBuffer);
   gen.write(new Buffer('010203', 'hex'));
+  gen.write();
 
   test.deepEqual(gen.read(), hex('0x683078303130323033'));
 
@@ -241,4 +254,26 @@ exports.internalTypes = function(test) {
     [new BufferStream({bsInit: new Buffer([1,2,3,4])}), '0x4401020304'],
     [new Tagged(256, 1), '0xd9010001']
   ]);
+};
+
+exports.stream = function(test) {
+  var bs = new BufferStream();
+  var gen = new Encoder();
+  gen.on('end', function() {
+    test.deepEqual(bs.read(), new Buffer([1, 2]));
+    test.done();
+  });
+  gen.pipe(bs);
+  gen.end(1,2);
+};
+
+exports.streamNone = function(test) {
+  var bs = new BufferStream();
+  var gen = new Encoder();
+  gen.on('end', function() {
+    test.deepEqual(bs.read(), new Buffer(0));
+    test.done();
+  });
+  gen.pipe(bs);
+  gen.end();
 };
