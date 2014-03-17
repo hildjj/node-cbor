@@ -14,6 +14,9 @@ module.exports = function(grunt) {
         ext: '.js'
       }
     },
+    codo: {
+      options: {}
+    },
     coffeelint: {
       src: ['src/*.coffee'],
       options: {
@@ -32,13 +35,6 @@ module.exports = function(grunt) {
       istanbul: {
         command: 'istanbul cover nodeunit test'
       },
-      doc: {
-        // https://github.com/coffeedoc/codo
-        command: 'codo',
-        options: {
-          stdout: true
-        }
-      }
     },
     express: {
       all: {
@@ -68,7 +64,7 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('default', ['test']);
-  grunt.registerTask('doc', ['shell:doc']);
+  grunt.registerTask('doc', ['codo']);
   grunt.registerTask('test', ['coffee', 'nodeunit']);
   grunt.registerTask('server', ['test', 'shell:istanbul', 'express', 'watch']);
   grunt.registerTask('ci', ['test', 'shell:istanbul', 'coveralls']);

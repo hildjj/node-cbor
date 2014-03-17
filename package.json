@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "grunt": "~0.4.3",
+    "grunt-codo": "^0.1.0",
     "grunt-coffeelint": "0.0.8",
     "grunt-contrib-coffee": "~0.10.1",
     "grunt-contrib-nodeunit": "~0.3.2",
