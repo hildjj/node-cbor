@@ -14,6 +14,12 @@ module.exports = function(grunt) {
         ext: '.js'
       }
     },
+    coffeelint: {
+      src: ['src/*.coffee'],
+      options: {
+        configFile: 'coffeelint.json'
+      }
+    },
     coveralls: {
       all: {
         src: 'coverage/lcov.info'

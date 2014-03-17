@@ -13,22 +13,22 @@ MT = constants.MT
 NUM_BYTES = constants.NUM_BYTES
 TAG = constants.TAG
 SHIFT32 = Math.pow 2, 32
-DOUBLE = (MT.SIMPLE_FLOAT<<5)|NUM_BYTES.EIGHT
-TRUE = (MT.SIMPLE_FLOAT<<5)|constants.SIMPLE.TRUE
-FALSE = (MT.SIMPLE_FLOAT<<5)|constants.SIMPLE.FALSE
-UNDEFINED = (MT.SIMPLE_FLOAT<<5)|constants.SIMPLE.UNDEFINED
-NULL = (MT.SIMPLE_FLOAT<<5)|constants.SIMPLE.NULL
+DOUBLE = (MT.SIMPLE_FLOAT << 5) | NUM_BYTES.EIGHT
+TRUE = (MT.SIMPLE_FLOAT << 5) | constants.SIMPLE.TRUE
+FALSE = (MT.SIMPLE_FLOAT << 5) | constants.SIMPLE.FALSE
+UNDEFINED = (MT.SIMPLE_FLOAT << 5) | constants.SIMPLE.UNDEFINED
+NULL = (MT.SIMPLE_FLOAT << 5) | constants.SIMPLE.NULL
 
 # A Readable stream of CBOR bytes.  Call `write` to get JSON objects translated
 # into the stream.
 module.exports = class Encoder extends stream.Readable
   # Create an encoder
   # @param options [Object] options for the encoder
-  # @option options genTypes [Array] array of pairs of `type`, `function(Encoder)`
-  #   for semantic types to be encoded.  (default: [Array, arrayFunc,
-  #   Date, dateFunc, Buffer, bufferFunc, RegExp, regexFunc,
-  #   url.Url, urlFunc, bignumber, bignumberFunc]
-  constructor: (options={})->
+  # @option options genTypes [Array] array of pairs of `type`,
+  #   `function(Encoder)` for semantic types to be encoded.
+  #   (default: [Array, arrayFunc, Date, dateFunc, Buffer, bufferFunc, RegExp,
+  #   regexFunc, url.Url, urlFunc, bignumber, bignumberFunc]
+  constructor: (options = {}) ->
     super options
     @bs = new BufferStream options
     @going = false
@@ -44,7 +44,7 @@ module.exports = class Encoder extends stream.Readable
 
     addTypes = options.genTypes ? []
     for typ,i in addTypes by 2
-      @addSemanticType typ, addTypes[i+1]
+      @addSemanticType typ, addTypes[i + 1]
 
   # Add an encoding function to the list of supported semantic types.  This is
   # useful for objects for which you can't add an encodeCBOR method
@@ -54,14 +54,14 @@ module.exports = class Encoder extends stream.Readable
   addSemanticType: (type, fun) ->
     for typ,i in @semanticTypes by 2
       if typ == type
-        [old, @semanticTypes[i+1]] = [@semanticTypes[i+1], fun]
+        [old, @semanticTypes[i + 1]] = [@semanticTypes[i + 1], fun]
         return old
 
     @semanticTypes.push type, fun
     null
 
   # @nodoc
-  _read: (size)->
+  _read: (size) ->
     @going = true
     while @going
       x = @bs.read()
@@ -73,101 +73,101 @@ module.exports = class Encoder extends stream.Readable
         break
 
   # @nodoc
-  _packNaN: ()->
+  _packNaN: () ->
     @bs.write 'f97e00', 'hex' # Half-NaN
 
   # @nodoc
-  _packInfinity: (obj)->
+  _packInfinity: (obj) ->
     half = if obj < 0 then 'f9fc00' else 'f97c00'
     @bs.write half, 'hex'
 
   # @nodoc
-  _packFloat: (obj)->
+  _packFloat: (obj) ->
     # TODO: see if we can write smaller ones.
     @bs.writeUInt8 DOUBLE
     @bs.writeDoubleBE obj
 
   # @nodoc
-  _packInt: (obj,mt)->
+  _packInt: (obj,mt) ->
     mt = mt << 5
     switch
-      when obj < 24 then @bs.writeUInt8 mt|obj
+      when obj < 24 then @bs.writeUInt8 mt | obj
       when obj <= 0xff
-        @bs.writeUInt8 mt|NUM_BYTES.ONE
+        @bs.writeUInt8 mt | NUM_BYTES.ONE
         @bs.writeUInt8 obj
       when obj <= 0xffff
-        @bs.writeUInt8 mt|NUM_BYTES.TWO
+        @bs.writeUInt8 mt | NUM_BYTES.TWO
         @bs.writeUInt16BE obj
       when obj <= 0xffffffff
-        @bs.writeUInt8 mt|NUM_BYTES.FOUR
+        @bs.writeUInt8 mt | NUM_BYTES.FOUR
         @bs.writeUInt32BE obj
       when obj < 0x20000000000000
-        @bs.writeUInt8 mt|NUM_BYTES.EIGHT
+        @bs.writeUInt8 mt | NUM_BYTES.EIGHT
         @bs.writeUInt32BE Math.floor(obj / SHIFT32)
         @bs.writeUInt32BE (obj % SHIFT32)
       else
         @_packFloat obj
 
   # @nodoc
-  _packNumber: (obj)->
+  _packNumber: (obj) ->
     switch
       when isNaN(obj) then @_packNaN obj
       when !isFinite(obj) then @_packInfinity obj
       when Math.round(obj) == obj #int
-        if obj<0
-          @_packInt -obj-1, MT.NEG_INT
+        if obj < 0
+          @_packInt -obj - 1, MT.NEG_INT
         else
           @_packInt obj, MT.POS_INT
       else
         @_packFloat obj
 
   # @nodoc
-  _packString: (obj)->
+  _packString: (obj) ->
     len = Buffer.byteLength obj, 'utf8'
     @_packInt len, MT.UTF8_STRING
     @bs.writeString obj, len, 'utf8'
 
   # @nodoc
-  _packBoolean: (obj)->
+  _packBoolean: (obj) ->
     @bs.writeUInt8 if obj then TRUE else FALSE
 
   # @nodoc
-  _packUndefined: (obj)->
+  _packUndefined: (obj) ->
     @bs.writeUInt8 UNDEFINED
 
   # @nodoc
-  _packArray: (gen, obj)->
+  _packArray: (gen, obj) ->
     len = obj.length
     @_packInt len, MT.ARRAY
     for x in obj
       @_pack x
 
   # @nodoc
-  _packTag: (tag)->
+  _packTag: (tag) ->
     @_packInt tag, MT.TAG
 
   # @nodoc
-  _packDate: (gen, obj)->
+  _packDate: (gen, obj) ->
     @_packTag TAG.DATE_EPOCH
     @_pack obj / 1000
 
   # @nodoc
-  _packBuffer: (gen, obj)->
+  _packBuffer: (gen, obj) ->
     @_packInt obj.length, MT.BYTE_STRING
     @bs.append obj
 
   # @nodoc
-  _packRegexp: (gen, obj)->
+  _packRegexp: (gen, obj) ->
     @_packTag TAG.REGEXP
     @_pack obj.source
 
   # @nodoc
-  _packUrl: (gen, obj)->
+  _packUrl: (gen, obj) ->
     @_packTag TAG.URI
     @_pack obj.format()
 
   # @nodoc
-  _packBigint: (obj)->
+  _packBigint: (obj) ->
     if obj.isNegative()
       obj = obj.negated().minus(1)
       tag = TAG.NEG_BIGINT
@@ -175,13 +175,13 @@ module.exports = class Encoder extends stream.Readable
       tag = TAG.POS_BIGINT
     str = obj.toString(16)
     if str.length % 2
-      str = '0'+str
+      str = '0' + str
     buf = new Buffer str, 'hex'
     @_packTag tag
     @_packBuffer this, buf, @bs
 
   # @nodoc
-  _packBigNumber: (gen, obj)->
+  _packBigNumber: (gen, obj) ->
     if obj.isNaN()
       return @_packNaN()
     unless obj.isFinite()
@@ -200,11 +200,11 @@ module.exports = class Encoder extends stream.Readable
     @_packBigint slide
 
   # @nodoc
-  _packObject: (obj)->
+  _packObject: (obj) ->
     unless obj then return @bs.writeUInt8 NULL
     for typ,i in @semanticTypes by 2
       if obj instanceof typ
-        return @semanticTypes[i+1].call(this, this, obj)
+        return @semanticTypes[i + 1].call(this, this, obj)
 
     f = obj.encodeCBOR
     if typeof f == 'function'
@@ -218,7 +218,7 @@ module.exports = class Encoder extends stream.Readable
       @_pack obj[k]
 
   # @nodoc
-  _pack: (obj)->
+  _pack: (obj) ->
     switch typeof(obj)
       when 'number'    then @_packNumber obj
       when 'string'    then @_packString obj
@@ -227,11 +227,11 @@ module.exports = class Encoder extends stream.Readable
       when 'object'    then @_packObject obj
       else
         # e.g. function
-        throw new Error('Unknown type: ' + typeof(obj));
+        throw new Error('Unknown type: ' + typeof(obj))
 
   # Encode one or more JavaScript objects into the stream.
   # @param objs... [Object+] the objects to encode
-  write: (objs...)->
+  write: (objs...) ->
     for o in objs
       @_pack o
       if @going
@@ -241,7 +241,7 @@ module.exports = class Encoder extends stream.Readable
 
   # Encode zero or more JavaScript objects into the stream, then end the stream.
   # @param objs... [Object*] the objects to encode
-  end: (objs...)->
+  end: (objs...) ->
     if objs.length then @write objs...
     if @going
       # assert.ok(@bs.length == 0)
@@ -252,7 +252,7 @@ module.exports = class Encoder extends stream.Readable
   # Encode one or more JavaScript objects, and return a Buffer containing the
   # CBOR bytes.
   # @param objs... [Object+] the objects to encode
-  @encode: (objs...)->
+  @encode: (objs...) ->
     g = new Encoder
     g.end objs...
     g.read()

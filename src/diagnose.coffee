@@ -21,12 +21,16 @@ utils = require '../lib/utils'
 module.exports = class Diagnose extends stream.Writable
   # Create a Diagnose.
   # @param options [Object] options for creation
-  # @option options separator [String] output between detected objects (default: '\n')
-  # @option options output [Writable] where the output should go (default: process.stdout)
+  # @option options separator [String] output between detected objects
+  #   (default: '\n')
+  # @option options output [Writable] where the output should go
+  #   (default: process.stdout)
   # @option options input [Buffer,String,BufferStream] optional input
-  # @option options encoding [String] encoding of a String `input` (default: 'hex')
-  # @option options offset [Integer] *byte* offset into the input from which to start
-  constructor: (options={}) ->
+  # @option options encoding [String] encoding of a String `input`
+  #   (default: 'hex')
+  # @option options offset [Integer] *byte* offset into the input from which
+  #   to start
+  constructor: (options = {}) ->
     super()
 
     @options = utils.extend
@@ -35,7 +39,7 @@ module.exports = class Diagnose extends stream.Writable
       streamErrors: false
     , options
 
-    @on 'finish', ()->
+    @on 'finish', () =>
       @parser.end()
 
     @parser = new Evented @options
@@ -52,7 +56,7 @@ module.exports = class Diagnose extends stream.Writable
 
   # All events have been hooked, start parsing the input.
   # @note This MUST NOT be called if you're piping a Readable stream in.
-  start: ()->
+  start: () ->
     @parser.start()
 
   # Convenience function to print to (e.g.) stdout.
@@ -61,7 +65,7 @@ module.exports = class Diagnose extends stream.Writable
   # @param output [Writable] Writable stream to output diagnosis info into
   #   (default: process.stdout)
   # @param done [function()]
-  @diagnose: (input, encoding='hex', output=process.stdout, done)->
+  @diagnose: (input, encoding = 'hex', output = process.stdout, done) ->
     if !input?
       throw new Error 'input required'
 
@@ -109,7 +113,7 @@ module.exports = class Diagnose extends stream.Writable
         @emit 'complete', @options.output
 
   # @nodoc
-  _on_value: (val,tags,kind)=>
+  _on_value: (val,tags,kind) =>
     @_fore kind
     if tags? and tags.length
       @options.output.write "#{t}(" for t in tags
@@ -121,7 +125,7 @@ module.exports = class Diagnose extends stream.Writable
     @_aft kind
 
   # @nodoc
-  _on_array_start: (count,tags,kind)=>
+  _on_array_start: (count,tags,kind) =>
     @_fore kind
     if tags? and tags.length
       @options.output.write "#{t}(" for t in tags
@@ -130,14 +134,14 @@ module.exports = class Diagnose extends stream.Writable
       @options.output.write "_ "
 
   # @nodoc
-  _on_array_stop: (count,tags,kind)=>
+  _on_array_stop: (count,tags,kind) =>
     @options.output.write "]"
     if tags? and tags.length
       @options.output.write ")" for t in tags
     @_aft kind
 
   # @nodoc
-  _on_map_start: (count,tags,kind)=>
+  _on_map_start: (count,tags,kind) =>
     @_fore kind
     if tags? and tags.length
       @options.output.write "#{t}(" for t in tags
@@ -146,31 +150,31 @@ module.exports = class Diagnose extends stream.Writable
       @options.output.write "_ "
 
   # @nodoc
-  _on_map_stop: (count,tags,kind)=>
+  _on_map_stop: (count,tags,kind) =>
     @options.output.write "}"
     if tags? and tags.length
       @options.output.write ")" for t in tags
     @_aft kind
 
   # @nodoc
-  _on_stream_start: (mt,tags,kind)=>
+  _on_stream_start: (mt,tags,kind) =>
     @_fore kind
     if tags? and tags.length
       @options.output.write "#{t}(" for t in tags
     @options.output.write "(_ "
 
   # @nodoc
-  _on_stream_stop: (count,mt,tags,kind)=>
+  _on_stream_stop: (count,mt,tags,kind) =>
     @options.output.write ")"
     if tags? and tags.length
       @options.output.write ")" for t in tags
     @_aft kind
 
   # @nodoc
-  _on_end: ()=>
+  _on_end: () =>
     @emit 'end'
 
   # @nodoc
-  _write: (chunk, enc, next)->
+  _write: (chunk, enc, next) ->
     @parser.write chunk, enc, next
 

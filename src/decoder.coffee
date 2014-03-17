@@ -29,11 +29,13 @@ module.exports = class Decoder extends stream.Writable
   # Create a Decoder
   # @param options [Object] options for creation
   # @option options input [Buffer,String,BufferStream] optional input
-  # @option options encoding [String] encoding of a String `input` (default: 'hex')
-  # @option options offset [Integer] *byte* offset into the input from which to start
-  # @option options tags [Object] map of tag numbers to function(value), returning an
-  #   object of the correct type for that tag.
-  constructor: (@options={}) ->
+  # @option options encoding [String] encoding of a String `input`
+  #   (default: 'hex')
+  # @option options offset [Integer] *byte* offset into the input from
+  #   which to start
+  # @option options tags [Object] map of tag numbers to function(value),
+  #   returning an object of the correct type for that tag.
+  constructor: (@options = {}) ->
     super()
 
     @tags = utils.extend {}, DEFAULT_TAG_FUNCS, @options.tags
@@ -52,13 +54,13 @@ module.exports = class Decoder extends stream.Writable
     @parser.on 'end', @_on_end
     @parser.on 'error', @_on_error
 
-    @on 'finish', ->
+    @on 'finish', =>
       @parser.end()
 
   # All events have been hooked, start parsing the input.
   #
   # @note This MUST NOT be called if you're piping a Readable stream in.
-  start: ()->
+  start: () ->
     @parser.start()
 
   # @nodoc
@@ -66,7 +68,7 @@ module.exports = class Decoder extends stream.Writable
     @emit 'error', er
 
   # @nodoc
-  _process: (val,tags,kind)->
+  _process: (val,tags,kind) ->
     # unwrap tags from the inside-most first
     for t in tags by -1
       try
@@ -105,40 +107,40 @@ module.exports = class Decoder extends stream.Writable
         @parser.error(new Error "Unknown event kind: #{kind}")
 
   # @nodoc
-  _on_value: (val,tags,kind)=>
+  _on_value: (val,tags,kind) =>
     @_process val, tags, kind
 
   # @nodoc
-  _on_array_start: (count,tags,kind)=>
+  _on_array_start: (count,tags,kind) =>
     if @last?
       @stack.push @last
     @last = []
 
   # @nodoc
-  _on_array_stop: (count,tags,kind)=>
+  _on_array_stop: (count,tags,kind) =>
     [val, @last] = [@last, @stack.pop()]
     @_process val, tags, kind
 
   # @nodoc
-  _on_map_start: (count,tags,kind)=>
+  _on_map_start: (count,tags,kind) =>
     if @last?
       @stack.push @last
     @last = {}
 
   # @nodoc
-  _on_map_stop: (count,tags,kind)=>
+  _on_map_stop: (count,tags,kind) =>
     [val, @last] = [@last, @stack.pop()]
     @_process val, tags, kind
 
   # @nodoc
-  _on_stream_start: (mt,tags,kind)=>
+  _on_stream_start: (mt,tags,kind) =>
     if @last?
       @stack.push [@last, @mt]
     @mt = mt
     @last = new BufferStream
 
   # @nodoc
-  _on_stream_stop: (count,mt,tags,kind)=>
+  _on_stream_stop: (count,mt,tags,kind) =>
     val = @last.read()
     lm = @stack.pop()
     if lm
@@ -148,65 +150,65 @@ module.exports = class Decoder extends stream.Writable
     @_process val, tags, kind
 
   # @nodoc
-  _on_end: ()=>
+  _on_end: () =>
     @emit 'end'
 
   # @nodoc
-  _write: (buf, offset, encoding)->
+  _write: (buf, offset, encoding) ->
     @parser.write buf, offset, encoding
 
   # Decode CBOR objects from a Buffer, String, or BufferStream
   # @param buf [Buffer,String,BufferStream] the input
   # @param cb [function(Error, Array)] callback function
   # @note I am continually surprised this returns an array.
-  @decode: (buf, cb)->
+  @decode: (buf, cb) ->
     if !cb?
       throw new Error "cb must be specified"
     d = new Decoder
       input: buf
     actual = []
-    d.on 'complete', (v)->
+    d.on 'complete', (v) ->
       actual.push v
 
-    d.on 'end', ()->
+    d.on 'end', () ->
       cb(null, actual)
     d.on 'error', cb
     d.start()
 
   # @nodoc
-  @_tag_DATE_STRING: (val)->
+  @_tag_DATE_STRING: (val) ->
     new Date(val)
 
   # @nodoc
-  @_tag_DATE_EPOCH: (val)->
+  @_tag_DATE_EPOCH: (val) ->
     new Date(val * 1000)
 
   # @nodoc
-  @_tag_POS_BIGINT: (val)->
+  @_tag_POS_BIGINT: (val) ->
     utils.bufferToBignumber val
 
   # @nodoc
-  @_tag_NEG_BIGINT: (val)->
+  @_tag_NEG_BIGINT: (val) ->
     MINUS_ONE.minus(utils.bufferToBignumber val)
 
   # @nodoc
-  @_tag_DECIMAL_FRAC: (val)->
+  @_tag_DECIMAL_FRAC: (val) ->
     [e,m] = val
     # m*(10**e)
     TEN.pow(e).times(m)
 
   # @nodoc
-  @_tag_BIGFLOAT: (val)->
+  @_tag_BIGFLOAT: (val) ->
     [e,m] = val
     # m*(2**e)
     TWO.pow(e).times(m)
 
   # @nodoc
-  @_tag_URI: (val)->
+  @_tag_URI: (val) ->
     url.parse(val)
 
   # @nodoc
-  @_tag_REGEXP: (val)->
+  @_tag_REGEXP: (val) ->
     new RegExp val
 
 # run once

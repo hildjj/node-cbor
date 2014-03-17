@@ -6,18 +6,18 @@ module.exports = class Tagged
   # @param tag [Integer] the number of the tag
   # @param value [any] the value inside the tag
   # @param err [Error] the error that was thrown parsing the tag
-  constructor: (@tag,@value,@err)->
+  constructor: (@tag,@value,@err) ->
     unless typeof @tag == 'number'
       throw new Error "Invalid tag type (#{typeof @tag})"
-    if (@tag < 0) || ((@tag|0) != @tag)
+    if (@tag < 0) || ((@tag | 0) != @tag)
       throw new Error "Tag must be a positive integer: #{@tag}"
 
   # Convert to a String
   # @return [String]
-  toString: ()->
+  toString: () ->
     return "#{@tag}(#{JSON.stringify(@value)})"
 
   # @nodoc
-  encodeCBOR: (gen)->
+  encodeCBOR: (gen) ->
     gen._packTag @tag
     gen._pack(@value)

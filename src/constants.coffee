@@ -29,7 +29,8 @@ class @TAG
   @REGEXP:             35
   @MIME:               36
 
-# When encoding, use these constants to mean how many bytes follow the first one.
+# When encoding, use these constants to mean how many bytes follow
+# the first one.
 # @nodoc
 class @NUM_BYTES
   @ZERO:   0

@@ -6,7 +6,7 @@ SHIFT32 = Math.pow(2,32)
 # @param ai [Integer] the additional information from the input stream
 # @param buf [Buffer] the appropriate number of bytes based on `ai`
 # @return [Integer]
-exports.parseInt = (ai, buf)->
+exports.parseInt = (ai, buf) ->
   switch ai
     when 24 then buf.readUInt8 0, true
     when 25 then buf.readUInt16BE 0, true
@@ -14,13 +14,13 @@ exports.parseInt = (ai, buf)->
     when 27
       f = buf.readUInt32BE 0
       g = buf.readUInt32BE 4
-      (f * SHIFT32) + g;
+      (f * SHIFT32) + g
     else throw new Error "Invalid additional info for int: #{ai}"
 
 # Parse an IEEE754 half-precision float
 # @param buf [Buffer] two bytes to parse from
 # @return [Number]
-exports.parseHalf = parseHalf = (buf)->
+exports.parseHalf = parseHalf = (buf) ->
   sign = if (buf[0] & 0x80) then -1 else 1
   exp = (buf[0] & 0x7C) >> 2
   mant = ((buf[0] & 0x03) << 8) | buf[1]
@@ -31,12 +31,12 @@ exports.parseHalf = parseHalf = (buf)->
   else if exp == 0x1f
     sign * (if mant then NaN else Infinity)
   else
-    sign * Math.pow(2, exp-25) * (1024 + mant)
+    sign * Math.pow(2, exp - 25) * (1024 + mant)
 
 # Parse an IEEE754 half-,  single-, or double-precision float.
 # @param buf [Buffer] 2,4, or 8 bytes to parse from
 # @return [Number]
-exports.parseFloat = (ai, buf)->
+exports.parseFloat = (ai, buf) ->
   switch ai
     when 25 then parseHalf buf
     when 26 then buf.readFloatBE 0, true
@@ -45,27 +45,28 @@ exports.parseFloat = (ai, buf)->
 
 # Decode a hex string into a buffer
 # @return [Buffer]
-exports.hex = (s)->
+exports.hex = (s) ->
   new Buffer s.replace(/^0x/, ''), 'hex'
 
 # Decode a binary string (e.g. '1001') into a buffer
 # @return [Buffer]
-exports.bin = (s)->
+exports.bin = (s) ->
   s = s.replace(/\s/g, '')
   start = 0
-  end = s.length%8 or 8
+  end = (s.length % 8) or 8
   chunks = []
   while end <= s.length
     chunks.push parseInt(s.slice(start, end), 2)
-    start=end
+    start = end
     end += 8
   new Buffer chunks
 
 # Copy all of keys from the second and subsequent objects into the first object.
 # @param old [Object] optional object to copy into (default: {})
 # @param adds [Object*] optional additional objects to copy on top.  These get
-#   copied left to right, with later objects overwriting the keys from previous ones.
-exports.extend = (old, adds...)->
+#   copied left to right, with later objects overwriting the keys from
+#   previous ones.
+exports.extend = (old, adds...) ->
   old ?= {}
   for a in adds
     for k,v of a
@@ -76,14 +77,14 @@ exports.extend = (old, adds...)->
 # @param a [Array]
 # @param b [Array]
 # @return [Boolean]
-exports.arrayEqual = (a, b)->
+exports.arrayEqual = (a, b) ->
   if !a? and !b? then return true
   if !a? or !b? then return false
-  (a.length == b.length) && a.every (elem,i)->
-    elem == b[i];
+  (a.length == b.length) && a.every (elem,i) ->
+    elem == b[i]
 
 # Do the two buffers contain the same bytes?
-exports.bufferEqual = (a,b)->
+exports.bufferEqual = (a,b) ->
   if !a? and !b? then return true
   if !a? or !b? then return false
   unless Buffer.isBuffer(a) and Buffer.isBuffer(b) and (a.length == b.length)
@@ -97,7 +98,7 @@ exports.bufferEqual = (a,b)->
 # Convert a a buffer to a bignumber
 # @param buf [Buffer] the buffer to convert
 # @return [bignumber]
-exports.bufferToBignumber =  (buf)->
+exports.bufferToBignumber = (buf) ->
   # TODO: there's got to be a faster way to do this
   new bignumber buf.toString('hex'), 16
 

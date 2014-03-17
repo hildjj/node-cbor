@@ -37,7 +37,8 @@ BREAK = () ->
 #   @param kind [String] see above
 #
 # @event array-start(count,tags,kind) the start of an array has been read.
-#   @param count [Integer] the number of items in the array.  -1 if indefinite length.
+#   @param count [Integer] the number of items in the array.
+#     -1 if indefinite length.
 #   @param tags [Array] an array of tags that preceded the list.
 #   @param kind [String] see above
 #
@@ -47,7 +48,8 @@ BREAK = () ->
 #   @param kind [String] see above
 #
 # @event map-start(count,tags,kind) the start of a map has been read.
-#   @param count [Integer] the number of pairs in the map.  -1 if indefinite length.
+#   @param count [Integer] the number of pairs in the map.
+#     -1 if indefinite length.
 #   @param tags [Array] an array of tags that preceded the list
 #   @param kind [String] see above
 #
@@ -79,8 +81,10 @@ module.exports = class Evented extends stream.Writable
   # Create an event-based CBOR parser.
   # @param options [Object] options for the parser
   # @option options input [Buffer,String,BufferStream] optional input
-  # @option options encoding [String] encoding of a String `input` (default: 'hex')
-  # @option options offset [Integer] *byte* offset into the input from which to start
+  # @option options encoding [String] encoding of a String `input`
+  #   (default: 'hex')
+  # @option options offset [Integer] *byte* offset into the input from
+  #   which to start
   constructor: (options) ->
     super() # TODO: pass subset of options
     @options = utils.extend
@@ -96,7 +100,7 @@ module.exports = class Evented extends stream.Writable
     @depth = 0
     @last_err = null
 
-    @on 'finish', ()->
+    @on 'finish', () =>
       @bs.end()
 
     if @options.input?
@@ -127,14 +131,14 @@ module.exports = class Evented extends stream.Writable
   # All events have been hooked, start parsing the input.
   #
   # @note This MUST NOT be called if you're piping a Readable stream in.
-  start: ()->
+  start: () ->
     @_pump()
 
-  error: (er)->
+  error: (er) ->
     @last_er = er
 
   # @nodoc
-  _write: (chunk, enc, next)->
+  _write: (chunk, enc, next) ->
     @bs.write chunk, enc, next
 
   # @nodoc
@@ -192,10 +196,10 @@ module.exports = class Evented extends stream.Writable
           up cb
       ], done
     , (er) =>
-        return cb.call(this, er) if er
-        @emit 'map-stop', count, tags, kind
-        @mt = MT.MAP
-        cb.call this
+      return cb.call(this, er) if er
+      @emit 'map-stop', count, tags, kind
+      @mt = MT.MAP
+      cb.call this
 
   # @nodoc
   _readTag: (val,cb) ->
@@ -215,7 +219,7 @@ module.exports = class Evented extends stream.Writable
   _getVal: (val,cb) ->
     switch @mt
       when MT.POS_INT then @_val val, cb
-      when MT.NEG_INT then @_val -1-val, cb
+      when MT.NEG_INT then @_val -1 - val, cb
       when MT.BYTE_STRING then @_readBuf val, cb
       when MT.UTF8_STRING then @_readStr val, cb
       when MT.ARRAY then @_readArray val, cb
@@ -243,7 +247,8 @@ module.exports = class Evented extends stream.Writable
           keep_going = false
         else
           if @mt != mt
-            done(new Error "Invalid stream major type: #{@mt}, when anticipating only #{mt}")
+            done(new Error "Invalid stream major type: #{@mt},
+              when anticipating only #{mt}")
             return
           count++
         done()
@@ -264,7 +269,7 @@ module.exports = class Evented extends stream.Writable
 
     async.doWhilst (done) =>
       @kind = if count then 'array' else 'array-first'
-      @_unpack (er,val) =>
+      @_unpack (er,val) ->
         return done(er) if er
         if val == BREAK
           keep_going = false
@@ -288,7 +293,7 @@ module.exports = class Evented extends stream.Writable
 
     async.doWhilst (done) =>
       @kind = if count then 'key' else 'key-first'
-      @_unpack (er,val) ->
+      @_unpack (er,val) =>
         return done(er) if er
         if val == BREAK
           keep_going = false
@@ -338,7 +343,7 @@ module.exports = class Evented extends stream.Writable
 
       switch @ai
         when 24,25,26,27
-          @bs.wait 1<<(@ai-24), (er,buf) =>
+          @bs.wait 1 << (@ai - 24), (er,buf) =>
             return cb er if er
             if @mt == MT.SIMPLE_FLOAT # floating point or high simple
               if @ai == 24
