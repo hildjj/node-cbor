@@ -354,8 +354,10 @@ class BufferStream extends stream.Writable
     switch @bufs.length
       # Note: this really is an assert, since it's protected by the
       # @length == 0 above
-      when 0 then assert.fail @length,
-        "Invalid state.  No buffers when length>0."
+      when 0
+        `// istanbul ignore next`
+        assert.fail @length, "Invalid state.  No buffers when length>0."
+        `// istanbul ignore next`
       when 1
         if @left == 0
           # already flat

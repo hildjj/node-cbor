@@ -250,6 +250,17 @@ exports.read = function(test) {
   buf = bs.read(8);
   test.deepEqual(buf.length, 8);
 
+  var bs = new BufferStream({
+    bsInit: probe,
+    bsStartEnded: false
+  });
+
+  bs.append(probe);
+  bs.append(probe);
+  buf = bs.read(8);
+  test.deepEqual(buf.length, 8);
+  test.deepEqual(bs.length, 4);
+
   test.done();
 };
 
