@@ -3,6 +3,7 @@ node_js:
   - "0.10"
 install:
   - npm install -g grunt grunt-cli nodeunit istanbul
+  - npm install
 script:
   - npm run-script ci
 env:
