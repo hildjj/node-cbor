@@ -1,6 +1,6 @@
 {
   "name": "cbor",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Encode and parse CBOR documents.",
   "main": "./lib/cbor.js",
   "repository": {
