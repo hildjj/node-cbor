@@ -33,12 +33,12 @@
     "Patrick Gansterer <paroga@paroga.com> (http://paroga.com/)"
   ],
   "peerDependencies": {
+    "grunt-cli": "~0.1",
     "nodeunit": "~0.8",
     "istanbul": "~0.2"
   },
   "devDependencies": {
     "grunt": "~0.4.3",
-    "grunt-cli": "~0.1.13",
     "grunt-codo": "^0.1.0",
     "grunt-coffeelint": "0.0.8",
     "grunt-contrib-coffee": "~0.10.1",
