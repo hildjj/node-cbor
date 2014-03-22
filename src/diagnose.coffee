@@ -3,9 +3,9 @@
 stream = require 'stream'
 
 Evented = require './evented'
-BufferStream = require '../lib/BufferStream'
-Simple = require '../lib/simple'
-utils = require '../lib/utils'
+BufferStream = require './BufferStream'
+Simple = require './simple'
+utils = require './utils'
 
 # Output the diagnostic format from a set of CBOR bytes.  Either pipe another
 # stream into an instance of this class, or pass a string, Buffer, or
@@ -64,7 +64,7 @@ module.exports = class Diagnose extends stream.Writable
   # @param encoding [String] encoding if `input` is a string (default: 'hex')
   # @param output [Writable] Writable stream to output diagnosis info into
   #   (default: process.stdout)
-  # @param done [function()]
+  # @param done [function(error)]
   @diagnose: (input, encoding = 'hex', output = process.stdout, done) ->
     if !input?
       throw new Error 'input required'
@@ -75,6 +75,27 @@ module.exports = class Diagnose extends stream.Writable
       output: output
     if done
       d.on 'end', done
+      d.on 'error', done
+    d.start()
+
+  # Convenience function to return a string in diagnostic format.
+  # @param input [Buffer,String,BufferStream] the CBOR bytes to write
+  # @param done [function(error, String)]
+  @diagnoseString: (input, done) ->
+    if !input?
+      throw new Error 'input required'
+
+    if !done?
+      throw new Error 'callback required'
+
+    bs = new BufferStream
+    d = new Diagnose
+      input: input
+      output: bs
+
+    d.on 'end', ->
+      done(null, bs.toString('utf8'))
+    d.on 'error', done
     d.start()
 
   # @nodoc

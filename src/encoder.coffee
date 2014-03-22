@@ -2,9 +2,9 @@ stream = require 'stream'
 url = require 'url'
 bignumber =  require 'bignumber.js'
 
-BufferStream = require '../lib/BufferStream'
-Tagged = require '../lib/tagged'
-Simple = require '../lib/simple'
+BufferStream = require './BufferStream'
+Tagged = require './tagged'
+Simple = require './simple'
 
 constants = require './constants'
 
@@ -200,6 +200,15 @@ module.exports = class Encoder extends stream.Readable
     @_packBigint slide
 
   # @nodoc
+  _packMap: (obj) ->
+    keys = Object.keys obj
+    len = keys.length
+    @_packInt len, MT.MAP
+    for k in keys
+      @_pack k
+      @_pack obj[k]
+
+  # @nodoc
   _packObject: (obj) ->
     unless obj then return @bs.writeUInt8 NULL
     for typ,i in @semanticTypes by 2
@@ -210,12 +219,7 @@ module.exports = class Encoder extends stream.Readable
     if typeof f == 'function'
       return f.call(obj, this)
 
-    keys = Object.keys obj
-    len = keys.length
-    @_packInt len, MT.MAP
-    for k in keys
-      @_pack k
-      @_pack obj[k]
+    @_packMap obj
 
   # @nodoc
   _pack: (obj) ->

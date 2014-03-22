@@ -191,6 +191,18 @@ exports.diagnose = function(test) {
   });
 };
 
+exports.diagnoseString = function(test) {
+  Diagnose.diagnoseString('0xf5', function(er, out) {
+    test.ifError(er);
+    test.deepEqual(out, 'true\n');
+    Diagnose.diagnoseString('0xfe', function(er, out) {
+      test.ok(er);
+      test.ok(!out);
+      test.done();
+    });
+  });
+};
+
 exports.options = function(test) {
   var dt = new Diagnose();
   test.deepEqual(dt.options.separator, "\n");
@@ -210,6 +222,12 @@ exports.options = function(test) {
 exports.inputs = function(test) {
   test.throws(function() {
     Diagnose.diagnose();
+  });
+  test.throws(function() {
+    Diagnose.diagnoseString();
+  });
+  test.throws(function() {
+    Diagnose.diagnoseString('0xfe');
   });
   test.done();
 }

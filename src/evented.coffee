@@ -4,9 +4,9 @@ assert = require 'assert'
 stream = require 'stream'
 async = require 'async'
 
-BufferStream = require '../lib/BufferStream'
-utils = require '../lib/utils'
-Simple = require '../lib/simple'
+BufferStream = require './BufferStream'
+utils = require './utils'
+Simple = require './simple'
 constants = require './constants'
 MT = constants.MT
 
