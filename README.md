@@ -99,5 +99,4 @@ Done, without errors.
 
 [![Build Status](https://api.travis-ci.org/hildjj/node-cbor.png)](https://travis-ci.org/hildjj/node-cbor)
 [![Coverage Status](https://coveralls.io/repos/hildjj/node-cbor/badge.png?branch=master)](https://coveralls.io/r/hildjj/node-cbor?branch=master)
-[![Dependency status](https://david-dm.org/hildjj/node-cbor/status.png)](https://david-dm.org/hildjj/node-cbor#info=dependencies&view=table)
-[![Dev Dependency Status](https://david-dm.org/hildjj/node-cbor/dev-status.png)](https://david-dm.org/hildjj/node-cbor#info=devDependencies&view=table)
+[![Dependency Status](https://david-dm.org/hildjj/node-cbor.png)](https://david-dm.org/hildjj/node-cbor)
