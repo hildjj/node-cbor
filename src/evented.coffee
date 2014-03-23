@@ -10,10 +10,10 @@ Simple = require './simple'
 constants = require './constants'
 MT = constants.MT
 
+`// istanbul ignore next`
 # @nodoc
 # Never executed, just an atom to compare against that can never happen in
 # a real stream.
-`// istanbul ignore next`
 BREAK = () ->
   "BREAK"
 
@@ -134,6 +134,9 @@ module.exports = class Evented extends stream.Writable
   start: () ->
     @_pump()
 
+  # Report an error to the parser, typically by a callback that is checking
+  # its inputs
+  # @param er [Error] the error detected
   error: (er) ->
     @last_er = er
 
@@ -208,12 +211,13 @@ module.exports = class Evented extends stream.Writable
 
   # @nodoc
   _readSimple: (val,cb) ->
-    switch val
-      when 20 then @_val false, cb
-      when 21 then @_val true, cb
-      when 22 then @_val null, cb
-      when 23 then @_val undefined, cb
-      else @_val new Simple(val), cb
+    @_val switch val
+      when 20 then false
+      when 21 then true
+      when 22 then null
+      when 23 then undefined
+      else new Simple(val)
+    , cb
 
   # @nodoc
   _getVal: (val,cb) ->
@@ -299,10 +303,10 @@ module.exports = class Evented extends stream.Writable
           keep_going = false
           done()
         else
-          count++
           @kind = 'value'
           @_unpack done
     , () ->
+      count++
       keep_going
     , (er) =>
       return cb.call(this, er) if er
