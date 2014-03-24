@@ -233,6 +233,7 @@ class BufferStream extends stream.Writable
         @bufs.unshift last.slice(last.length - left)
 
     @length -= lenW
+    @emit 'read', buf
     buf
 
   # Are we at the End of File?

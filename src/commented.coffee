@@ -1,7 +1,6 @@
 # jslint node: true
 
 assert = require 'assert'
-events = require 'events'
 stream = require 'stream'
 util = require 'util'
 async = require 'async'
@@ -19,7 +18,7 @@ BREAK = () ->
   "BREAK"
 
 # A quick hack to generate the expanded format of RFC 7049, section 2.2.1
-module.exports = class Commented extends events.EventEmitter
+module.exports = class Commented extends stream.Writable
 
   # Create a CBOR commenter.  Call start() after you hook any events.
   # @param options [Object] options for the parser
@@ -32,9 +31,8 @@ module.exports = class Commented extends events.EventEmitter
     super()
     @bs = null
     @depth = 0
-
-    if !options?
-      throw new Error("options is required")
+    @asRead = new BufferStream
+      bsStartEmpty: true
 
     {input, @output, @max_depth, encoding} = utils.extend
       output: process.stdout
@@ -48,12 +46,18 @@ module.exports = class Commented extends events.EventEmitter
             input = input.replace /^0x/, ''
             new Buffer(input, encoding)
           else
-            throw new Error "input must be Buffer or string"
+            null
 
     @bs = new BufferStream
       bsInit: buf
 
-    @_out '0x%s\n', buf.toString('hex')
+    @bs.on 'read', (buf) =>
+      @asRead.append buf
+
+    @on 'finish', () =>
+      @bs.end()
+
+    @start() unless buf
 
   # Call this after you've set up any callbacks desired
   start: () ->
@@ -77,10 +81,14 @@ module.exports = class Commented extends events.EventEmitter
       output: bs
 
     c = new Commented options
-    c.on 'end', (er, buf) ->
-      cb(er, bs.toString('utf8'))
+    c.on 'end', (buf) ->
+      cb(null, bs.toString('utf8'))
     c.on 'error', cb
     c.start()
+
+  # @nodoc
+  _write: (chunk, enc, next) ->
+    @bs.write chunk, enc, next
 
   # @nodoc
   _out: () ->
@@ -309,12 +317,16 @@ module.exports = class Commented extends events.EventEmitter
   _pump: (er)=>
     if er
       if BufferStream.isEOFError(er) && (@depth == 0)
-        return @emit 'end'
+        buf = @asRead.read()
+        @_out '0x%s\n', buf.toString('hex')
+        return @emit 'end', buf
       else
         return @emit 'error', er
 
     async.nextTick ()=>
       if @bs.isEOF()
-        @emit 'end'
+        buf = @asRead.read()
+        @_out '0x%s\n', buf.toString('hex')
+        @emit 'end', buf
       else
         @_unpack @_pump

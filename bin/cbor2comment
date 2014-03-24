@@ -1,0 +1,42 @@
+#!/usr/bin/env node
+
+var fs = require('fs');
+var cbor = require('../lib/cbor');
+var argv = process.argv.slice(2);
+var async = require('async');
+
+var num_tabs = 10;
+
+if (argv[0] === '-t') {
+  argv.shift();
+  num_tabs = (argv.shift()|0) || 10;
+}
+
+if (argv.length === 0) {
+  argv = ['-'];
+}
+
+function parse(f, cb) {
+  if (f === '-') {
+    stream = process.stdin;
+  } else {
+    stream = fs.createReadStream(f);
+  }
+
+  var p = new cbor.Commented({
+    max_depth: num_tabs
+  });
+
+  p.on('error', cb);
+  p.on('end', function() {
+    cb();
+  });
+  stream.pipe(p);
+}
+
+async.eachSeries(argv, parse, function(er) {
+  if (er) {
+    process.stderr.write("\nERROR: " + er + "\n");
+  }
+});
+

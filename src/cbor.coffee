@@ -1,3 +1,4 @@
+exports.Commented = require './commented'
 exports.Diagnose = require './diagnose'
 exports.Decoder = require './decoder'
 exports.Encoder = require './encoder'
