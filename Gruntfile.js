@@ -4,6 +4,13 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    clean: {
+      all: ['coverage', 'doc', 'lib', 'man'],
+      coverage: ['coverage'],
+      doc: ['doc'],
+      lib: ['lib'],
+      man: ['man'],
+    },
     coffee: {
       compile: {
         expand: true,
@@ -26,6 +33,23 @@ module.exports = function(grunt) {
     coveralls: {
       all: {
         src: 'coverage/lcov.info'
+      }
+    },
+    markedman: {
+      options: {
+        version: '<%= pkg.version %>',
+        section: '3'
+      },
+      bin: {
+        files: [
+          {
+            expand: true,
+            cwd: 'man_src',
+            src: '*.md',
+            dest: 'man',
+            ext: '.1'
+          }
+        ]
       }
     },
     nodeunit: {
@@ -64,7 +88,9 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('default', ['test']);
-  grunt.registerTask('doc', ['codo']);
+  grunt.registerTask('prepublish', ['clean', 'coffee', 'codo', 'markedman']);
+  grunt.registerTask('man', ['clean:man', 'markedman'])
+  grunt.registerTask('doc', ['clean:doc', 'codo', 'clean:man', 'markedman']);
   grunt.registerTask('test', ['coffee', 'nodeunit']);
   grunt.registerTask('server', ['test', 'shell:istanbul', 'express', 'watch']);
   grunt.registerTask('ci', ['test', 'shell:istanbul', 'coveralls']);

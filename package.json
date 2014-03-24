@@ -9,7 +9,8 @@
   },
   "homepage": "http://hildjj.github.io/node-cbor/",
   "directories": {
-    "lib": "lib"
+    "lib": "lib",
+    "man": "man"
   },
   "bin": {
     "json2cbor": "./bin/json2cbor",
@@ -18,7 +19,7 @@
   "scripts": {
     "test": "grunt test",
     "ci": "grunt ci",
-    "prepublish": "grunt coffee"
+    "prepublish": "grunt prepublish"
   },
   "keywords": [
     "coap",
@@ -46,10 +47,12 @@
     "grunt-contrib-watch": "^0.5.3",
     "grunt-coveralls": "~0.3.0",
     "grunt-express": "^1.2.1",
+    "grunt-markedman": "^1.0.0",
     "grunt-release": "^0.7.0",
     "grunt-shell": "~0.6.4",
     "matchdep": "^0.3.0",
-    "temp": "~0.7.0"
+    "temp": "~0.7.0",
+    "grunt-contrib-clean": "^0.5.0"
   },
   "license": "MIT",
   "readmeFilename": "README.md",
