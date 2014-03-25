@@ -1,6 +1,6 @@
 module.exports = function(grunt) {
   // Load Grunt tasks declared in the package.json file
-  require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
+  require('jit-grunt')(grunt);
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
