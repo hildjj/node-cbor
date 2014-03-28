@@ -88,17 +88,18 @@ exports.simple = function(test) {
         '    ff              -- BREAK\n' +
         '0x5f44aabbccdd43eeff99ff\n'],
       ['0xfb3fb999999999999a',
-        '  fb3fb999999999999a -- 0.1' +
+        '  fb3fb999999999999a -- 0.1\n' +
         '0xfb3fb999999999999a\n'],
       ['0x0101',
         '  01                -- 1\n' +
         '  01                -- 1\n' +
         '0x0101\n'],
-      [new Buffer(0), "0x\n"]
+      ["", ""],
+      [new Buffer(0), ""]
     ], function(io, cb) {
       var i = io[0];
       var o = io[1];
-      comment({input: i}, function(er, s) {
+      comment(i, function(er, s) {
         if (er) {
           return cb(er);
         }
@@ -130,7 +131,7 @@ exports.encoding_errors = function(test) {
     '0x5f6161',
     '0x5f01',
   ], function(i, cb) {
-    comment({input: i}, function(er, s) {
+    comment(i, function(er, s) {
       if (!er) {
         cb(new Error('Expected error'));
       }
@@ -147,12 +148,21 @@ exports.input_errors = function(test) {
   test.throws(function() {
     comment(null, null);
   });
-  test.throws(function() {
-    comment({input: ""}, null);
-  });
+
+  comment("");
 
   test.done();
-}
+};
+
+exports.max_depth = function(test) {
+  comment("01", 2, function(er, str) {
+    test.ifError(er);
+    test.deepEqual(str,
+        '  01 -- 1\n' +
+        "0x01\n");
+    test.done();
+  })
+};
 
 exports.stream = function(test) {
   var parser = new Commented({output: new BufferStream()});

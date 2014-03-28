@@ -40,13 +40,14 @@ module.exports = class Commented extends stream.Writable
       encoding: 'hex'
     , options
 
-    buf = if Buffer.isBuffer(input)
-            input
-          else if typeof(input) == 'string'
-            input = input.replace /^0x/, ''
-            new Buffer(input, encoding)
-          else
-            null
+    buf =
+      if Buffer.isBuffer(input)
+        input
+      else if typeof(input) == 'string'
+        input = input.replace /^0x/, ''
+        new Buffer(input, encoding)
+      else
+        null
 
     @bs = new BufferStream
       bsInit: buf
@@ -64,26 +65,33 @@ module.exports = class Commented extends stream.Writable
     @_pump()
 
   # Comment on an input Buffer or string, creating a string passed to the
-  # callback.
-  # @param options [Object] options for the parser
-  # @option options input [Buffer,String,BufferStream] input
-  # @option options max_depth [Integer] how many times to indent the dashes
+  # callback.  If callback not specified,  output goes to stdout.
+  # @param input [Buffer,String,BufferStream] input
+  # @param max_depth [Integer] how many times to indent the dashes
   #   (default: 10)
-  # @param cb [function(Error, String)]
-  @comment: (options, cb) ->
-    if !options?
-      throw new Error("options is required")
-    if !cb?
-      throw new Error("cb is required")
+  # @param cb [function(Error, String)] optional.
+  @comment: (input, max_depth = 10, cb) ->
+    if !input?
+      throw new Error("input is required")
 
-    bs = new BufferStream
-    opts = utils.extend options,
-      output: bs
+    if typeof(max_depth) == 'function'
+      [cb, max_depth] = [max_depth, 10]
 
-    c = new Commented options
-    c.on 'end', (buf) ->
-      cb(null, bs.toString('utf8'))
-    c.on 'error', cb
+    c = output = null
+
+    if cb?
+      output = new BufferStream
+      c = new Commented
+        input: input
+        output: output
+        max_depth: max_depth
+      c.on 'end', (buf) ->
+        cb(null, output.toString('utf8'))
+      c.on 'error', cb
+    else
+      c = new Commented
+        input: input
+        max_depth: max_depth
     c.start()
 
   # @nodoc
@@ -96,13 +104,13 @@ module.exports = class Commented extends stream.Writable
 
   # @nodoc
   _indent: (prefix) ->
-    @_out(new Array(@depth+1).join("  "))
+    @_out(new Array(@depth + 1).join("  "))
     @_out prefix
     ind = (@max_depth - @depth) * 2
     ind -= prefix.length
     if ind < 1
       ind = 1
-    @_out(new Array(ind+1).join(" "))
+    @_out(new Array(ind + 1).join(" "))
     @_out "-- "
 
   # @nodoc
@@ -171,7 +179,7 @@ module.exports = class Commented extends stream.Writable
         @_out "%d\n", val
         @_val val, cb
       when MT.NEG_INT
-        @_out "%d\n", -1-val
+        @_out "%d\n", -1 - val
         @_val -1 - val, cb
       when MT.BYTE_STRING
         @_out "Byte string length %d\n", val
@@ -273,12 +281,12 @@ module.exports = class Commented extends stream.Writable
         cb.call this, new Error("Invalid stream major type: #{@mt}")
 
   # @nodoc
-  _unpack: (cb, extra="") ->
+  _unpack: (cb, extra = "") ->
     @bs.wait 1, (er,buf) =>
       return cb(er) if er
 
       @octet = buf[0]
-      hex = buf.toString('hex');
+      hex = buf.toString('hex')
       @mt = @octet >> 5
       @ai = @octet & 0x1f
 
@@ -299,7 +307,7 @@ module.exports = class Commented extends stream.Writable
                 @_readSimple utils.parseInt(@ai, buf), decrement
               else
                 fl = utils.parseFloat(@ai, buf)
-                @_out fl
+                @_out "#{fl}\n"
                 @_val fl, decrement
             else
               @_getVal utils.parseInt(@ai, buf), decrement
@@ -318,7 +326,8 @@ module.exports = class Commented extends stream.Writable
     if er
       if BufferStream.isEOFError(er) && (@depth == 0)
         buf = @asRead.read()
-        @_out '0x%s\n', buf.toString('hex')
+        if buf.length > 0
+          @_out '0x%s\n', buf.toString('hex')
         return @emit 'end', buf
       else
         return @emit 'error', er
@@ -326,7 +335,8 @@ module.exports = class Commented extends stream.Writable
     async.nextTick ()=>
       if @bs.isEOF()
         buf = @asRead.read()
-        @_out '0x%s\n', buf.toString('hex')
+        if buf.length > 0
+          @_out '0x%s\n', buf.toString('hex')
         @emit 'end', buf
       else
         @_unpack @_pump
