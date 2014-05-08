@@ -34,6 +34,7 @@
     "Patrick Gansterer <paroga@paroga.com> (http://paroga.com/)"
   ],
   "devDependencies": {
+    "garbage": "0.0.0",
     "grunt": "~0.4.3",
     "grunt-codo": "^0.1.0",
     "grunt-coffeelint": "0.0.8",

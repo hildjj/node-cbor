@@ -178,6 +178,9 @@ exports.edges = function(test) {
     [expectError, '0x7f01ff']
   ], dt, function(er) {
     test.equal(er, null);
+
+    var bs = new BufferStream();
+    Diagnose.diagnose('', 'hex', bs);
     test.done();
   });
 };

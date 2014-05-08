@@ -109,15 +109,18 @@ module.exports = class Encoder extends stream.Readable
         @_packFloat obj
 
   # @nodoc
+  _packIntNum: (obj) ->
+    if obj < 0
+      @_packInt -obj - 1, MT.NEG_INT
+    else
+      @_packInt obj, MT.POS_INT
+
+  # @nodoc
   _packNumber: (obj) ->
     switch
       when isNaN(obj) then @_packNaN obj
       when !isFinite(obj) then @_packInfinity obj
-      when Math.round(obj) == obj #int
-        if obj < 0
-          @_packInt -obj - 1, MT.NEG_INT
-        else
-          @_packInt obj, MT.POS_INT
+      when Math.round(obj) == obj then @_packIntNum obj
       else
         @_packFloat obj
 

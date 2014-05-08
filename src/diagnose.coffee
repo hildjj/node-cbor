@@ -99,16 +99,19 @@ module.exports = class Diagnose extends stream.Writable
     d.start()
 
   # @nodoc
+  _numStr: (val) ->
+    if isNaN(val) then "NaN"
+    else if !isFinite(val)
+      if val < 0 then '-Infinity' else 'Infinity'
+    else
+      JSON.stringify(val)
+
+  # @nodoc
   _stream_val: (val) ->
     @options.output.write switch
       when val == undefined then 'undefined'
       when val == null then 'nil'
-      when typeof(val) == 'number'
-        if isNaN(val) then "NaN"
-        else if !isFinite(val)
-          if val < 0 then '-Infinity' else 'Infinity'
-        else
-          JSON.stringify(val)
+      when typeof(val) == 'number' then @_numStr(val)
       when Simple.isSimple(val) then val.toString()
       when Buffer.isBuffer(val) then "h'" + val.toString('hex') + "'"
       else JSON.stringify(val)
