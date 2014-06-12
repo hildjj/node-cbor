@@ -14,6 +14,10 @@ var temp = require('temp');
 var fs = require('fs');
 
 function buildTest(test) {
+  function isArrayNaN(arr) {
+    return arr.length === 1 && typeof(arr[0]) === "number" && isNaN(arr[0]);
+  }
+
   return function (hd, cb) {
     var expected = hd[0];
     var hex = hd[1];
@@ -27,7 +31,11 @@ function buildTest(test) {
     });
 
     d.on('end', function() {
-      test.deepEqual(actual, expected, oexpected + " | " + hex + " != " + actual);
+      var message = oexpected + " s| " + hex + " != " + actual;
+      if (isArrayNaN(expected))
+        test.ok(isArrayNaN(actual), message);
+      else
+        test.deepEqual(actual, expected, message);
       cb();
     });
 
@@ -100,13 +108,13 @@ exports.from_spec =  function(test) {
 
     [-4.1, '0xfbc010666666666666'],
     [Infinity, '0xf97c00'],
-    //[NaN, '0xf97e00'],
+    [NaN, '0xf97e00'],
     [-Infinity, '0xf9fc00'],
     [Infinity, '0xfa7f800000'],
-    //[NaN, '0xfa7fc00000'],
+    [NaN, '0xfa7fc00000'],
     [-Infinity, '0xfaff800000'],
     [Infinity, '0xfb7ff0000000000000'],
-    //[NaN, '0xfb7ff8000000000000'],
+    [NaN, '0xfb7ff8000000000000'],
     [-Infinity, '0xfbfff0000000000000'],
     [false, '0xf4'],
     [true, '0xf5'],
@@ -167,6 +175,15 @@ exports.others =  function(test) {
   var bt = buildTest(test);
 
   async.each([
+    [NaN, '0xf97f00'],
+    [NaN, '0xf9fe00'],
+    [NaN, '0xf9ff00'],
+    [NaN, '0xfa7fe00000'],
+    [NaN, '0xfaffc00000'],
+    [NaN, '0xfaffe00000'],
+    [NaN, '0xfb7ffc000000000000'],
+    [NaN, '0xfbfff8000000000000'],
+    [NaN, '0xfbfffc000000000000'],
     [/^foo/, '0xd823645e666f6f'],
     [new bignumber(0.2), '0xc4822002'],
     [new bignumber(273.15), '0xc48221196ab3'],
