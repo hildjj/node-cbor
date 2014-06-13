@@ -1,5 +1,7 @@
-Encode and parse [CBOR](http://tools.ietf.org/html/rfc7049) documents.
+cbor
+====
 
+Encode and parse data in the Concise Binary Object Representation (CBOR) data format ([RFC7049](http://tools.ietf.org/html/rfc7049)).
 
 Installation:
 ------------
