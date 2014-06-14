@@ -158,7 +158,7 @@ exports.from_spec =  function(test) {
     [["a", {"b": "c"}], '0x826161bf61626163ff']
 
   ], bt, function(er) {
-    test.equal(er, null);
+    test.ifError(er);
     test.done();
   });
 };
@@ -173,7 +173,7 @@ exports.others =  function(test) {
     [new bignumber(0.25), '0xc5822101'],
     [new bignumber(1.5), '0xc5822003']
   ], bt, function(er) {
-    test.equal(er, null);
+    test.ifError(er);
     test.done();
   });
 };
@@ -206,8 +206,16 @@ exports.invalid = function(test) {
     '0x7f657374726561646d696e', // no BREAK
     '0x44010203', // only 3 bytes, not 4, bytestring
     '0xa20102', // only 1 pair, not 2, map
+    '0x81', // no items in array, expected 1
+    '0x8201', // 1 item in array, expected 2
+    '0x9f',  // indeterminate array without end
+    '0x9f01',  // indeterminate array without end
+    '0xbf', // indeterminate map without end
+    '0xbf6161', // indeterminate map without end
+    '0xbf616101', // indeterminate map without end
+    '0xa16161', // map without value
   ], bt, function(er) {
-    test.equal(er, null);
+    test.ifError(er);
     test.done();
   });
 };
@@ -246,7 +254,7 @@ exports.add_tag = function(test) {
 
 exports.parse_tag = function(test) {
   cbor.decode('0xd87f01', function(er, vals){
-    test.equal(er, null);
+    test.ifError(er);
     test.deepEqual(vals, [new Tagged(127,1)]);
     test.done();
   });
