@@ -24,9 +24,15 @@ OPTIONS
 
 `-`: read from stdin instead of a file.  This is the default.
 
-`-t NUM`: the number of 2-space tab indents to move the '--' to the right.
+`-t NUM, --tabsize NUM`: the number of 2-space tab indents to move the '--' to the right.
 Eventually, this will be replaced with an algorithm that takes two passes
 over the input.
+
+`-x`: assume the input file is hex-encoded CBOR, which makes testing easier some days.
+
+`-V, --version`: print the node-cbor version and exit
+
+`-h, --help`: print some help text and exit
 
 TODO
 ----

@@ -1,34 +1,31 @@
 #!/usr/bin/env node
 
 var fs = require('fs');
+var async = require('async');
 var cbor = require('../lib/cbor');
 var BufferStream = require('../lib/BufferStream');
-var argv = process.argv.slice(2);
-var async = require('async');
+var package = require('../package.json');
 
-var hex = false;
-if (argv[0] === '-h') {
-  hex = true;
-  argv.shift();
-}
+var opts = require('commander')
+.version(package.version)
+.usage('[options] <file ...>')
+.option('-x, --hex', 'Hex string input')
+.parse(process.argv)
 
+var argv = opts.args
 if (argv.length === 0) {
   argv = ['-'];
 }
 
-function convert(f, cb) {
-  if (f === '-') {
-    stream = process.stdin;
-  } else {
-    stream = fs.createReadStream(f);
-  }
+function convert(name, cb) {
+  var stream = (name == '-') ? process.stdin : fs.createReadStream(name);
 
   var bs = new BufferStream();
   bs.on('error', cb);
   bs.on('finish', function() {
     var j = JSON.parse(bs.flatten());
     buf = cbor.Encoder.encode(j);
-    if (hex) {
+    if (opts.hex) {
       console.log(buf.toString('hex'));
     } else {
       process.stdout.write(buf);

@@ -1,3 +1,4 @@
+stream = require 'stream'
 bignumber = require 'bignumber.js'
 
 SHIFT32 = Math.pow(2,32)
@@ -102,3 +103,15 @@ exports.bufferToBignumber = (buf) ->
   # TODO: there's got to be a faster way to do this
   new bignumber buf.toString('hex'), 16
 
+# @nodoc
+exports.DeHexStream = class DeHexStream extends stream.Transform
+  # @nodoc
+  constructor: (options) ->
+    super options
+
+  # @nodoc
+  _transform: (chunk, encoding, cb) ->
+    str = chunk.toString().replace /\s/, ''
+    str = str.replace /^0x/, ''
+    # TODO: hold on to odd characters
+    cb null, new Buffer(str, 'hex')

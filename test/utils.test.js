@@ -1,8 +1,13 @@
 /*jslint node: true */
 "use strict";
 
-var utils = require('../lib/utils');
+var fs = require('fs');
+var async = require('async');
 var bignumber = require('bignumber.js');
+var temp = require('temp');
+
+var BufferStream = require('../lib/BufferStream');
+var utils = require('../lib/utils');
 var hex = utils.hex;
 var bin = utils.bin;
 
@@ -87,4 +92,39 @@ exports.bufferToBignumber = function(test) {
   var numbuf = new Buffer(num, 'hex');
   test.deepEqual(utils.bufferToBignumber(numbuf), new bignumber(0x12345678));
   test.done();
+};
+
+function buildDeHexTest(test) {
+  return function (hd, cb) {
+    var actual = hd[0];
+    var expected = hd[1];
+
+    var d = new utils.DeHexStream();
+    var bs = new BufferStream();
+    bs.on('finish', function(){
+      var res = bs.toString('utf8');
+      test.deepEqual(res.toString(), expected);
+      cb()
+    });
+
+    d.pipe(bs);
+    temp.track();
+    var f = temp.createWriteStream();
+    f.end(new Buffer(actual, 'utf8'), function(er){
+      test.ifError(er);
+      var g = fs.createReadStream(f.path);
+      g.pipe(d);
+    });
+  }
+}
+
+exports.DeHexStream = function(test) {
+  var bt = buildDeHexTest(test);
+  async.each([
+    ['6161', 'aa'],
+    ['0x00', '\x00']
+  ], bt, function(er) {
+    test.equal(er, null);
+    test.done();
+  });
 };

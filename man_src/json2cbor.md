@@ -18,8 +18,13 @@ OPTIONS
 
 `-`: read from stdin instead of a file.  This is the default.
 
-`-h`: output a hex-encoded version of the CBOR data, instead of the native
+`-x, --hex`: output a hex-encoded version of the CBOR data, instead of the native
   CBOR data
+
+`-V, --version`: print the node-cbor version and exit
+
+`-h, --help`: print some help text and exit
+
 
 SEE ALSO
 --------

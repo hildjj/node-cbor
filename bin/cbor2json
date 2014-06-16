@@ -1,19 +1,30 @@
 #!/usr/bin/env node
 
 var fs = require('fs');
-var cbor = require('../lib/cbor');
-var argv = process.argv.slice(2);
+var Transform = require('stream').Transform;
+var util = require('util');
 var async = require('async');
+var cbor = require('../lib/cbor');
+var utils = require('../lib/utils');
+var package = require('../package.json');
 
+var opts = require('commander')
+.version(package.version)
+.usage('[options] <file ...>')
+.option('-x, --hex', 'Hex string input')
+.parse(process.argv)
+
+var argv = opts.args;
 if (argv.length === 0) {
   argv = ['-'];
 }
 
-function parse(f, cb) {
-  if (f === '-') {
-    stream = process.stdin;
-  } else {
-    stream = fs.createReadStream(f);
+function parse(name, cb) {
+  var stream = (name == '-') ? process.stdin : fs.createReadStream(name);
+  if (opts.hex) {
+    var s = new utils.DeHexStream();
+    stream.pipe(s);
+    stream = s;
   }
 
   var p = new cbor.Decoder();
@@ -33,4 +44,3 @@ async.eachSeries(argv, parse, function(er) {
     process.stderr.write("\n" + er + "\n");
   }
 });
-

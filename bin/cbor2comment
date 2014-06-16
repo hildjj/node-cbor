@@ -1,26 +1,31 @@
 #!/usr/bin/env node
 
 var fs = require('fs');
-var cbor = require('../lib/cbor');
-var argv = process.argv.slice(2);
 var async = require('async');
+var cbor = require('../lib/cbor');
+var utils = require('../lib/utils');
+var package = require('../package.json');
 
-var num_tabs = 10;
+var opts = require('commander')
+.version(package.version)
+.usage('[options] <file ...>')
+.option('-x, --hex', 'Hex string input')
+.option('-t, --tabsize [spaces]', 'Indent amount')
+.parse(process.argv)
 
-if (argv[0] === '-t') {
-  argv.shift();
-  num_tabs = (argv.shift()|0) || 10;
-}
+var argv = opts.args;
+var num_tabs = (opts.tabsize|0) || 10;
 
 if (argv.length === 0) {
   argv = ['-'];
 }
 
-function parse(f, cb) {
-  if (f === '-') {
-    stream = process.stdin;
-  } else {
-    stream = fs.createReadStream(f);
+function parse(name, cb) {
+  var stream = (name == '-') ? process.stdin : fs.createReadStream(name);
+  if (opts.hex) {
+    var s = new utils.DeHexStream();
+    stream.pipe(s);
+    stream = s;
   }
 
   var p = new cbor.Commented({
@@ -39,4 +44,3 @@ async.eachSeries(argv, parse, function(er) {
     process.stderr.write("\nERROR: " + er + "\n");
   }
 });
-

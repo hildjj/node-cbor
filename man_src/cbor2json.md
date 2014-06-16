@@ -31,6 +31,12 @@ OPTIONS
 
 `-`: read from stdin instead of a file.  This is the default.
 
+`-x`: assume the input file is hex-encoded CBOR, which makes testing easier some days.
+
+`-V, --version`: print the node-cbor version and exit
+
+`-h, --help`: print some help text and exit
+
 SEE ALSO
 --------
 
