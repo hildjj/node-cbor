@@ -31,7 +31,8 @@
     "email": "joe-github@cursive.net"
   },
   "contributors": [
-    "Patrick Gansterer <paroga@paroga.com> (http://paroga.com/)"
+    "Patrick Gansterer <paroga@paroga.com> (http://paroga.com/)",
+    "Artyom Yagilev <github@scorpi.org> (http://scorpi.org/)"
   ],
   "devDependencies": {
     "garbage": "0.0.0",

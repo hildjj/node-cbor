@@ -24,11 +24,13 @@ $ bin/cbor2diag package.cbor
 Example:
 ```javascript
 var cbor = require('cbor');
+var assert = require('assert');
+
 var encoded = cbor.encode(true); // returns <Buffer d9>
 cbor.decode(encoded, function(error, obj) {
   // error != null if there was an error
   // obj is the unpacked object
-  assert.ok(obj === true);
+  assert.ok(obj[0] === true);
 });
 ```
 
