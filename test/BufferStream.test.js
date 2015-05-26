@@ -172,7 +172,13 @@ exports.streamAppendSecond = function(test) {
 exports.JSON = function(test) {
   var bs = new BufferStream();
   bs.writeString('a');
-  test.deepEqual(bs.toJSON(), [97]);
+  var j = bs.toJSON();
+  if (Array.isArray(j)) {
+    // older node
+    test.deepEqual(j, [ 97 ]);
+  } else {
+    test.deepEqual(j, { type: 'Buffer', data: [ 97 ] });
+  }
   test.done();
 };
 
