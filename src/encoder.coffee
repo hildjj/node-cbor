@@ -18,6 +18,7 @@ TRUE = (MT.SIMPLE_FLOAT << 5) | constants.SIMPLE.TRUE
 FALSE = (MT.SIMPLE_FLOAT << 5) | constants.SIMPLE.FALSE
 UNDEFINED = (MT.SIMPLE_FLOAT << 5) | constants.SIMPLE.UNDEFINED
 NULL = (MT.SIMPLE_FLOAT << 5) | constants.SIMPLE.NULL
+MAXINT_BN = new bignumber '0x20000000000000'
 
 # A Readable stream of CBOR bytes.  Call `write` to get JSON objects translated
 # into the stream.
@@ -191,16 +192,21 @@ module.exports = class Encoder extends stream.Readable
       return @_packInfinity if obj.isNegative() then -Infinity else Infinity
 
     # if integer, just write a bigint.
-    if obj.c.length < (obj.e + 2)
+    if obj.isInteger()
       return @_packBigint obj
 
     @_packTag TAG.DECIMAL_FRAC
     @_packInt 2, MT.ARRAY
 
-    slide = new bignumber obj
-    @_packInt slide.e, MT.POS_INT
-    slide.e = slide.c.length - 1
-    @_packBigint slide
+    dec = obj.decimalPlaces()
+    slide = obj.mul(new bignumber(10).pow(dec))
+    @_packIntNum -dec
+
+    # just use an integer if possible.
+    if slide.abs().lessThan(MAXINT_BN)
+      @_packIntNum slide.toNumber()
+    else
+      @_packBigint slide
 
   # @nodoc
   _packMap: (obj) ->

@@ -13,8 +13,10 @@
     "man": "man"
   },
   "bin": {
-    "json2cbor": "./bin/json2cbor",
-    "cbor2json": "./bin/cbor2json"
+    "cbor2comment": "./bin/cbor2comment",
+    "cbor2diag": "./bin/cbor2diag",
+    "cbor2json": "./bin/cbor2json",
+    "json2cbor": "./bin/json2cbor"
   },
   "scripts": {
     "test": "grunt test",
@@ -35,6 +37,7 @@
     "Artyom Yagilev <github@scorpi.org> (http://scorpi.org/)"
   ],
   "devDependencies": {
+    "coffeelint": "^1.9.7",
     "garbage": "0.0.0",
     "grunt": "~0.4.5",
     "grunt-codo": "^0.2.0",
@@ -49,6 +52,7 @@
     "grunt-release": "^0.12.0",
     "grunt-shell": "~1.1.2",
     "jit-grunt": "^0.9.1",
+    "source-map-support": "^0.2.10",
     "temp": "~0.8.1"
   },
   "license": "MIT",

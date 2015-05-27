@@ -161,8 +161,10 @@ exports.from_spec = function(test) {
 
 exports.decimal = function(test) {
   test_all(test,[
-    [new bignumber(10.1), '0xc48201c24165'],
-    [new bignumber(100.1), '0xc48202c24203e9'],
+    [new bignumber(10.1), '0xc482201865'],
+    [new bignumber(100.1), '0xc482201903e9'],
+    [new bignumber(.1), '0xc4822001'],
+    [new bignumber(-0.1), '0xc4822020'],
     [new bignumber(0), '0xc24100'],
     [new bignumber(-0), '0xc340'],
     [new bignumber(NaN), '0xf97e00'],

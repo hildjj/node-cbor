@@ -12,6 +12,9 @@ module.exports = function(grunt) {
       man: ['man'],
     },
     coffee: {
+      options: {
+        sourceMap: true
+      },
       compile: {
         expand: true,
         flatten: true,

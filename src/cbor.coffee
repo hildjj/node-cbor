@@ -1,3 +1,7 @@
+try
+  require('source-map-support').install()
+catch
+
 exports.Commented = require './commented'
 exports.Diagnose = require './diagnose'
 exports.Decoder = require './decoder'

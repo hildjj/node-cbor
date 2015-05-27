@@ -8,7 +8,7 @@ class Simple
     unless typeof @value == 'number'
       throw new Error "Invalid Simple type: #{typeof @value}"
 
-    unless (0 <= value < 256) && ((@value | 0) == @value)
+    unless (0 <= @value < 256) && ((@value | 0) == @value)
       throw new Error "value must be a small positive integer: #{@value}"
 
   # Convert to a string
