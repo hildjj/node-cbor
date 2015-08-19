@@ -26,7 +26,7 @@ Example:
 var cbor = require('cbor');
 var assert = require('assert');
 
-var encoded = cbor.encode(true); // returns <Buffer d9>
+var encoded = cbor.encode(true); // returns <Buffer f5>
 cbor.decode(encoded, function(error, obj) {
   // error != null if there was an error
   // obj is the unpacked object
