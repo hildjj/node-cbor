@@ -12,6 +12,7 @@ var async = require('async');
 var bignumber = require('bignumber.js');
 var temp = require('temp');
 var fs = require('fs');
+var util = require('util');
 
 function buildTest(test) {
   function isArrayNaN(arr) {
@@ -20,29 +21,19 @@ function buildTest(test) {
 
   return function (hd, cb) {
     var expected = hd[0];
-    var hex = hd[1];
-    var d = new Decoder({input: hex});
-    var actual = [];
+    var hex = hd[1].replace(/^0x/i, '');
     var oexpected = expected;
     expected = [expected];
 
-    d.on('complete', function(v) {
-      actual.push(v);
-    });
-
-    d.on('end', function() {
-      var message = oexpected + " s| " + hex + " != " + actual;
+    Decoder.decodeAll(hex, 'hex')
+    .then(function(actual){
+      var message = util.inspect(oexpected, {depth:null}) + " s| " + hex + " != " + util.inspect(actual, {depth:null});
       if (isArrayNaN(expected))
         test.ok(isArrayNaN(actual), message);
       else
         test.deepEqual(actual, expected, message);
       cb();
-    });
-
-    d.on('error', function(er) {
-        cb(er);
-    });
-    d.start();
+    }, function(er) {cb(er)});
   };
 }
 
@@ -127,11 +118,8 @@ exports.from_spec =  function(test) {
     [new Date(1363896240000), '0xc074323031332d30332d32315432303a30343a30305a'],
     [new Date(1363896240000), '0xc11a514b67b0'],
     [new Date(1363896240500), '0xc1fb41d452d9ec200000'],
-
-    /*
-    ["23(h'01020304')", '0xd74401020304'],
-    ["24(h'6449455446')", '0xd818456449455446'],
-    */
+    [new Tagged(23, new Buffer('01020304', 'hex')), '0xd74401020304'],
+    [new Tagged(24, new Buffer('6449455446', 'hex')), '0xd818456449455446'],
 
     [url.parse("http://www.example.com"), '0xd82076687474703a2f2f7777772e6578616d706c652e636f6d'],
     [new Buffer(0), '0x40'],
@@ -149,7 +137,8 @@ exports.from_spec =  function(test) {
     [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25], '0x98190102030405060708090a0b0c0d0e0f101112131415161718181819'],
     [{}, '0xa0'],
     [{}, '0xbfff'],
-    [{1: 2, 3: 4}, '0xa201020304'],
+    // TODO: nodeunit doesn't check Maps correctly yet.
+    [new Map([[1,2], [3,4]]), '0xa201020304'],
     [{"a": 1, "b": [2, 3]}, '0xa26161016162820203'],
     [["a", {"b": "c"}], '0x826161a161626163'],
     [{"a": "A", "b": "B", "c": "C", "d": "D", "e": "E"}, '0xa56161614161626142616361436164614461656145'],
@@ -197,7 +186,7 @@ exports.others =  function(test) {
 
 function buildInvalidTest(test) {
   return function (hd, cb) {
-    Decoder.decode(hd, function(er, v) {
+    Decoder.decodeFirst(hd, function(er, v) {
       test.notEqual(er, null);
       cb();
     });
@@ -239,7 +228,7 @@ exports.invalid = function(test) {
 
 exports.add_tag = function(test) {
   function replace_tag(val) {
-
+    return {foo: val};
   }
   function new_tag(val) {
     throw new Error('Invalid tag');
@@ -254,13 +243,13 @@ exports.add_tag = function(test) {
     test.ok(false, er);
   });
   var count = 0;
-  d.on('complete', function(val) {
+  d.on('data', function(val) {
     switch(count++) {
     case 0:
-      test.deepEqual(val, new Tagged(127,1, new Error('Invalid tag')));
+      test.deepEqual(val, new Tagged(127, 1, new Error('Invalid tag')));
       break;
     case 1:
-      test.deepEqual(val, new Tagged(0,1));
+      test.deepEqual(val, {foo: 1});
       test.done();
       break;
     }
@@ -270,24 +259,24 @@ exports.add_tag = function(test) {
 };
 
 exports.parse_tag = function(test) {
-  cbor.decode('0xd87f01', function(er, vals){
+  cbor.decodeFirst('d87f01', 'hex', function(er, vals){
     test.ifError(er);
-    test.deepEqual(vals, [new Tagged(127,1)]);
+    test.deepEqual(vals, new Tagged(127,1));
     test.done();
   });
 };
 
 exports.error = function(test) {
-  test.throws(function() {
-    var d = cbor.decode('d87f01c001');
+  cbor.decodeFirst('d87f01c001', 'hex').catch(function(er){
+    test.ok(er);
+    test.done();
   });
-  test.done();
 };
 
 exports.stream = function(test) {
   var dt = new Decoder();
 
-  dt.on('complete', function(v) {
+  dt.on('data', function(v) {
     test.deepEqual(v, 1);
   });
   dt.on('end', function() {

@@ -11,8 +11,8 @@ exports.garbage = function(test) {
   async.times(REPEATS, function(n, next) {
     var g = garbage(100);
     var c = cbor.encode(g);
-    cbor.decode(c, function(er, ary) {
-      next(er, [ary[0], g]);
+    cbor.decodeFirst(c, function(er, val) {
+      next(er, [val, g]);
     });
   }, function(er, results) {
     test.ifError(er);

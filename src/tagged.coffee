@@ -1,3 +1,11 @@
+bignumber = require 'bignumber.js'
+utils = require './utils'
+url = require 'url'
+
+MINUS_ONE = new bignumber -1
+TEN = new bignumber 10
+TWO = new bignumber 2
+
 # A CBOR tagged item, where the tag does not have semantics specified at the
 # moment, or those semantics threw an error during parsing.
 # Typically this will be an extension point you're not yet expecting.
@@ -21,3 +29,63 @@ module.exports = class Tagged
   encodeCBOR: (gen) ->
     gen._packTag @tag
     gen._pack(@value)
+
+  # if we have a converter for this type, do the conversion
+  convert: (converters) ->
+    f = converters?[@tag]
+    if typeof(f) != 'function'
+      f = Tagged["_tag_#{@tag}"]
+      if typeof(f) != 'function'
+        return @
+    try
+      f.call Tagged, @value
+    catch er
+      @err = er
+      @
+
+  @addTag: (tag, converter) ->
+    Tagged.prototype["_tag_#{tag}"] = converter
+
+  # @nodoc
+  # DATE_STRING
+  @_tag_0: (v) ->
+    new Date(v)
+
+  # @nodoc
+  # DATE_EPOCH
+  @_tag_1: (v) ->
+    new Date(v * 1000)
+
+  # @nodoc
+  # POS_BIGINT
+  @_tag_2: (v) ->
+    utils.bufferToBignumber v
+
+  # @nodoc
+  # NEG_BIGINT
+  @_tag_3: (v) ->
+    MINUS_ONE.minus(utils.bufferToBignumber v)
+
+  # @nodoc
+  # DECIMAL_FRAC
+  @_tag_4: (v) ->
+    [e,m] = v
+    # m*(10**e)
+    TEN.pow(e).times(m)
+
+  # @nodoc
+  # BIGFLOAT
+  @_tag_5: (v) ->
+    [e,m] = v
+    # m*(2**e)
+    TWO.pow(e).times(m)
+
+  # @nodoc
+  # URI
+  @_tag_32: (v) ->
+    url.parse(v)
+
+  # @nodoc
+  # REGEXP
+  @_tag_35: (v) ->
+    new RegExp v
