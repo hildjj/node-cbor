@@ -220,6 +220,7 @@ exports.invalid = function(test) {
     '0xbf6161', // indeterminate map without end
     '0xbf616101', // indeterminate map without end
     '0xa16161', // map without value
+    '0xbf000103ff', // streaming map with odd number of items
   ], bt, function(er) {
     test.ifError(er);
     test.done();

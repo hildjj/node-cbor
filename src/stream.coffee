@@ -20,6 +20,7 @@ MAJOR = Symbol('major type')
 NULL = Symbol('null')
 NOTHING = Symbol('nothing')
 ERROR = Symbol('error')
+STREAM = Symbol('stream')
 
 parseCBORint = (ai, buf) ->
   switch ai
@@ -55,9 +56,17 @@ parentArray = (parent, typ, count) ->
   a[MAJOR]  = typ
   a
 
+parentBufferStream = (parent, typ) ->
+  b = new BufferStream
+  b[PARENT] = parent
+  b[MAJOR] = typ
+  b
+
 module.exports = class CborStream extends BinaryParseStream
   @PARENT: PARENT
   @NULL: NULL
+  @BREAK: BREAK
+  @STREAM: STREAM
 
   @nullcheck: (val) ->
     if val == NULL
@@ -182,10 +191,8 @@ module.exports = class CborStream extends BinaryParseStream
           switch ai
             when 0 then ai = new Buffer(0)
             when -1
-              b = new BufferStream
-              b[MAJOR] = mt
-              b[PARENT] = parent
-              parent = b
+              @emit 'start', mt, STREAM, parent?[MAJOR], parent?.length
+              parent = parentBufferStream parent, mt
               continue
             else
               ai = yield(ai)
@@ -193,22 +200,28 @@ module.exports = class CborStream extends BinaryParseStream
           switch ai
             when 0 then ai = ''
             when -1
-              b = new BufferStream
-              b[MAJOR] = mt
-              b[PARENT] = parent
-              parent = b
+              @emit 'start', mt, STREAM, parent?[MAJOR], parent?.length
+              parent = parentBufferStream parent, mt
               continue
             else
               ai = (yield(ai)).toString 'utf-8'
         when MT.ARRAY, MT.MAP
-          if ai == 0
-            ai = if (mt == MT.MAP) then {} else []
-            ai[PARENT] = parent
-          else
-            # 1 for Array, 2 for Map
-            parent = parentArray parent, mt, ai * (mt - 3)
-            continue
+          switch ai
+            when 0
+              ai = if (mt == MT.MAP) then {} else []
+              ai[PARENT] = parent
+            when -1
+              # streaming
+              @emit 'start', mt, STREAM, parent?[MAJOR], parent?.length
+              parent = parentArray parent, mt, -1
+              continue
+            else
+              @emit 'start', mt, NULL, parent?[MAJOR], parent?.length
+              # 1 for Array, 2 for Map
+              parent = parentArray parent, mt, ai * (mt - 3)
+              continue
         when MT.TAG
+          @emit 'start', mt, ai, parent?[MAJOR], parent?.length
           parent = parentArray parent, mt, 1
           parent.push ai
           continue
@@ -233,11 +246,12 @@ module.exports = class CborStream extends BinaryParseStream
           else
             ai = parseCBORfloat ai
 
+      @emit 'value', ai, parent?[MAJOR], parent?.length
       again = false
       while parent?
         switch
           when ai == BREAK
-            undefined # no action
+            undefined # do nothing
           when Array.isArray(parent)
             parent.push ai
           when parent instanceof BufferStream
@@ -255,6 +269,7 @@ module.exports = class CborStream extends BinaryParseStream
           break
 
         delete parent[COUNT]
+        @emit 'stop', parent[MAJOR]
         ai = switch
           when Array.isArray parent
             switch parent[MAJOR]
@@ -262,6 +277,8 @@ module.exports = class CborStream extends BinaryParseStream
                 parent
               when MT.MAP
                 allstrings = true
+                if (parent.length % 2) != 0
+                  throw new Error("Invalid map length: #{parent.length}")
                 for i in [0...parent.length] by 2
                   if typeof(parent[i]) != 'string'
                     allstrings = false

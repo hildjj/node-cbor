@@ -16,6 +16,9 @@ class Simple
   toString: () ->
     "simple(#{@value})"
 
+  inspect: (depth, opts) ->
+    "simple(#{@value})"
+
   # @nodoc
   encodeCBOR: (gen) ->
     gen._packInt @value, constants.MT.SIMPLE_FLOAT
