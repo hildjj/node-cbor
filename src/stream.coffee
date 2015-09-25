@@ -3,14 +3,16 @@ Tagged = require './tagged'
 Simple = require './simple'
 BufferStream = require './BufferStream'
 utils = require './utils'
-long = require 'long'
+bignumber = require 'bignumber.js'
 
 # TODO: check node version, fail nicely
 
 {MT, NUM_BYTES, SIMPLE} = require './constants'
 
-SHIFT_32 = Math.pow(2, 32)
-MAX_SAFE_HIGH = long.fromNumber(Number.MAX_SAFE_INTEGER).high
+SHIFT_32 = new bignumber(2).pow(32)
+NEG_ONE = new bignumber(-1)
+MAX_SAFE_BIG = new bignumber(Number.MAX_SAFE_INTEGER.toString(16), 16)
+MAX_SAFE_HIGH = 0x1fffff
 
 COUNT = Symbol('count')
 PENDING_KEY = Symbol('pending_key')
@@ -33,9 +35,7 @@ parseCBORint = (ai, buf) ->
       # 2^53-1 maxint
       if f > MAX_SAFE_HIGH
         # alternately, we could throw an error.
-        new long
-          high: f
-          low: g
+        new bignumber(f).times(SHIFT_32).plus(g)
       else
         (f * SHIFT_32) + g
     else
@@ -77,11 +77,17 @@ module.exports = class CborStream extends BinaryParseStream
   @decodeFirst: (buf, encoding = 'utf-8', cb) ->
     # stop parsing after the first item  (SECURITY!)
     # error if there are bytes left over
-    if typeof(encoding) == 'function'
-      cb = encoding
-      encoding = undefined
+    opts = {}
+    switch typeof(encoding)
+      when 'function'
+        cb = encoding
+        encoding = undefined
+      when 'object'
+        opts = encoding
+        encoding = opts.encoding
+        delete opts.encoding
 
-    c = new CborStream
+    c = new CborStream opts
     p = undefined
     v = NOTHING
     c.on 'data', (val) ->
@@ -120,11 +126,17 @@ module.exports = class CborStream extends BinaryParseStream
     p
 
   @decodeAll: (buf, encoding = 'utf-8', cb) ->
-    if typeof(encoding) == 'function'
-      cb = encoding
-      encoding = undefined
+    opts = {}
+    switch typeof(encoding)
+      when 'function'
+        cb = encoding
+        encoding = undefined
+      when 'object'
+        opts = encoding
+        encoding = opts.encoding
+        delete opts.encoding
 
-    c = new CborStream
+    c = new CborStream opts
     p = undefined
     if typeof(cb) == 'function'
       c.on 'data', (val) ->
@@ -147,6 +159,8 @@ module.exports = class CborStream extends BinaryParseStream
   constructor: (options) ->
     @tags = options?.tags
     delete options?.tags
+    @max_depth = options?.max_depth || -1
+    delete options?.max_depth
     @running = true
     super options
 
@@ -156,7 +170,11 @@ module.exports = class CborStream extends BinaryParseStream
 
   _parse: ->
     parent = null
+    depth = 0
     while true
+      if (@max_depth >= 0) and (depth > @max_depth)
+        throw new Error "Maximum depth #{@max_depth} exceeded"
+
       octet = yield(-1)
       if !@running
         throw new Error "Unexpected data: 0x#{octet.toString(16)}"
@@ -183,28 +201,25 @@ module.exports = class CborStream extends BinaryParseStream
       switch mt
         when MT.POS_INT then undefined # do nothing
         when MT.NEG_INT
-          if long.isLong(ai) or (ai == Number.MAX_SAFE_INTEGER)
-            ai = long.NEG_ONE.subtract ai
+          if ai == Number.MAX_SAFE_INTEGER
+            ai = MAX_SAFE_BIG
+          if ai instanceof bignumber
+            ai = NEG_ONE.sub ai
           else
             ai = -1 - ai
-        when MT.BYTE_STRING
+        when MT.BYTE_STRING, MT.UTF8_STRING
           switch ai
-            when 0 then ai = new Buffer(0)
+            when 0
+              ai = if (mt == MT.BYTE_STRING) then new Buffer(0) else ''
             when -1
               @emit 'start', mt, STREAM, parent?[MAJOR], parent?.length
               parent = parentBufferStream parent, mt
+              depth++
               continue
             else
               ai = yield(ai)
-        when MT.UTF8_STRING
-          switch ai
-            when 0 then ai = ''
-            when -1
-              @emit 'start', mt, STREAM, parent?[MAJOR], parent?.length
-              parent = parentBufferStream parent, mt
-              continue
-            else
-              ai = (yield(ai)).toString 'utf-8'
+              if mt == MT.UTF8_STRING
+                ai = ai.toString 'utf-8'
         when MT.ARRAY, MT.MAP
           switch ai
             when 0
@@ -214,16 +229,19 @@ module.exports = class CborStream extends BinaryParseStream
               # streaming
               @emit 'start', mt, STREAM, parent?[MAJOR], parent?.length
               parent = parentArray parent, mt, -1
+              depth++
               continue
             else
               @emit 'start', mt, NULL, parent?[MAJOR], parent?.length
               # 1 for Array, 2 for Map
               parent = parentArray parent, mt, ai * (mt - 3)
+              depth++
               continue
         when MT.TAG
           @emit 'start', mt, ai, parent?[MAJOR], parent?.length
           parent = parentArray parent, mt, 1
           parent.push ai
+          depth++
           continue
         when MT.SIMPLE_FLOAT
           if typeof(ai) == 'number' # simple values
@@ -268,6 +286,7 @@ module.exports = class CborStream extends BinaryParseStream
           again = true
           break
 
+        --depth
         delete parent[COUNT]
         @emit 'stop', parent[MAJOR]
         ai = switch
@@ -315,4 +334,6 @@ module.exports = class CborStream extends BinaryParseStream
 
         parent = parent[PARENT]
       if !again
+        if depth != 0
+          throw new Error 'Depth problem'
         return ai

@@ -10,40 +10,29 @@ var fs = require('fs');
 function diagTest(test, max_depth) {
   return function (hd, cb) {
     var expected = hd[0];
-    var hex = hd[1];
-    var d = new Diagnose({
-      output: new BufferStream(),
-      input: hex,
-      separator: null
-    });
-    var actual = [];
+    var hex = hd[1].replace(/^0x/, '');
     var aexpected = [expected];
-    if (max_depth) {
-      d.parser.options.max_depth = max_depth;
-    }
 
-    d.on('complete', function(s) {
-      actual.push(s.read().toString('utf8'));
-    });
-
-    d.on('end', function() {
+    Diagnose.diagnose(hex, {
+      encoding: 'hex',
+      max_depth: max_depth || -1
+    }).then(function(actual) {
+      actual = actual.split('\n').slice(0,-1);
       if (typeof(expected) === 'function') {
         cb(expected(test, null, actual));
       } else {
         test.deepEqual(actual, aexpected, expected + " | " + hex + " != " + actual);
         cb();
       }
-    });
-
-    d.on('error', function(er){
+    },
+    function(er) {
       if (typeof(expected) === 'function') {
-        cb(expected(test, er, actual));
+        cb(expected(test, er));
       } else {
         cb(er);
       }
     });
-    d.start();
-  };
+  }
 }
 
 exports.from_spec =  function(test) {
@@ -61,17 +50,13 @@ exports.from_spec =  function(test) {
     ['1000', '0x1903e8'],
     ['1000000', '0x1a000f4240'],
     ['1000000000000', '0x1b000000e8d4a51000'],
+    ['18446744073709551615', '0x1bffffffffffffffff'],
 
-    // JS rounding: 18446744073709552000
-    //['18446744073709551615', '0x1bffffffffffffffff'],
-
-    // draft-03 says 18446744073709551616 incorrectly
+    // draft-03 says 18446744073709551616, incorrectly
     ["2(h'010000000000000000')", '0xc249010000000000000000'],
+    ['-18446744073709551616', '0x3bffffffffffffffff'],
 
-    // JS rounding: -18446744073709552000
-    //['-18446744073709551616', '0x3bffffffffffffffff'],
-
-    // draft-03 says -18446744073709551617
+    // spec says -18446744073709551617, incorrectly
     ["3(h'010000000000000000')", '0xc349010000000000000000'],
     ['-1', '0x20'],
     ['-10', '0x29'],
@@ -81,7 +66,7 @@ exports.from_spec =  function(test) {
     // 0.0 is correct
     ['0', '0xf90000'],
     // -0.0 is correct
-    ['0', '0xf98000'],
+    ['-0', '0xf98000'],
 
     // 1.0 is correct
     ['1', '0xf93c00'],
@@ -117,7 +102,7 @@ exports.from_spec =  function(test) {
     ['-Infinity', '0xfbfff0000000000000'],
     ['false', '0xf4'],
     ['true', '0xf5'],
-    ['nil', '0xf6'],
+    ['null', '0xf6'],
     ['undefined', '0xf7'],
     ['simple(16)', '0xf0'],
     ['simple(24)', '0xf818'],
@@ -179,82 +164,25 @@ exports.edges = function(test) {
   ], dt, function(er) {
     test.equal(er, null);
 
-    var bs = new BufferStream();
-    Diagnose.diagnose('', 'hex', bs);
+    // var bs = new BufferStream();
+    // Diagnose.diagnose('', 'hex', bs);
     test.done();
   });
 };
-
-exports.diagnose = function(test) {
-  var bs = new BufferStream();
-  Diagnose.diagnose('0xf5', 'hex', bs, function(er) {
-    test.ok(!er);
-    test.deepEqual(bs.read().toString('utf8'), 'true\n');
-    test.done();
-  });
-};
-
-exports.diagnoseString = function(test) {
-  Diagnose.diagnoseString('0xf5', function(er, out) {
-    test.ifError(er);
-    test.deepEqual(out, 'true\n');
-    Diagnose.diagnoseString('0xfe', function(er, out) {
-      test.ok(er);
-      test.ok(!out);
-      test.done();
-    });
-  });
-};
-
-exports.options = function(test) {
-  var dt = new Diagnose();
-  test.deepEqual(dt.options.separator, "\n");
-  var bs = new BufferStream();
-  dt = new Diagnose({
-    streamErrors: true,
-    input: "7432303133",
-    output: bs
-  });
-  dt.on('error', function() {
-    test.deepEqual(bs.toString('utf8'), "Error: EOF");
-    test.done();
-  });
-  dt.start();
-};
-
-exports.inputs = function(test) {
-  test.throws(function() {
-    Diagnose.diagnose();
-  });
-  test.throws(function() {
-    Diagnose.diagnoseString();
-  });
-  test.throws(function() {
-    Diagnose.diagnoseString('0xfe');
-  });
-  test.done();
-}
 
 exports.stream = function(test) {
   var dt = new Diagnose({
-    output: new BufferStream(),
     separator: '-'
   });
+  var bs = new BufferStream();
 
-  dt.on('complete', function(s) {
-    test.deepEqual(s.toString('utf8'), '1-');
-  });
   dt.on('end', function() {
+    test.deepEqual(bs.toString('utf8'), '1-');
     test.done();
   });
   dt.on('error', function(er) {
     test.ifError(er);
   });
-
-  temp.track();
-  var f = temp.createWriteStream();
-  f.end(new Buffer('01', 'hex'), function(er){
-    var g = fs.createReadStream(f.path);
-    g.pipe(dt);
-  });
+  dt.pipe(bs);
+  dt.end(new Buffer('01', 'hex'));
 };

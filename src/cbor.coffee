@@ -1,6 +1,7 @@
 try
   require('source-map-support').install()
 catch
+  undefined
 
 #exports.Commented = require './commented'
 exports.Diagnose = require './diagnose'
