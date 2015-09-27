@@ -7,7 +7,7 @@ bignumber = require 'bignumber.js'
 
 # TODO: check node version, fail nicely
 
-{MT, NUM_BYTES, SIMPLE, SYMS} = require './constants'
+{MT, NUMBYTES, SIMPLE, SYMS} = require './constants'
 
 SHIFT_32 = new bignumber(2).pow(32)
 NEG_ONE = new bignumber(-1)
@@ -22,10 +22,10 @@ ERROR = Symbol('error')
 
 parseCBORint = (ai, buf) ->
   switch ai
-    when NUM_BYTES.ONE then buf.readUInt8(0, true)
-    when NUM_BYTES.TWO then buf.readUInt16BE(0, true)
-    when NUM_BYTES.FOUR then buf.readUInt32BE(0, true)
-    when NUM_BYTES.EIGHT
+    when NUMBYTES.ONE then buf.readUInt8(0, true)
+    when NUMBYTES.TWO then buf.readUInt16BE(0, true)
+    when NUMBYTES.FOUR then buf.readUInt32BE(0, true)
+    when NUMBYTES.EIGHT
       f = buf.readUInt32BE(0)
       g = buf.readUInt32BE(4)
       # 2^53-1 maxint
@@ -174,9 +174,9 @@ module.exports = class CborStream extends BinaryParseStream
       ai = octet & 0x1f
 
       switch ai
-        when NUM_BYTES.ONE
+        when NUMBYTES.ONE
           ai = yield(-1)
-        when NUM_BYTES.TWO, NUM_BYTES.FOUR, NUM_BYTES.EIGHT
+        when NUMBYTES.TWO, NUMBYTES.FOUR, NUMBYTES.EIGHT
           buf = yield(1 << (ai - 24))
           ai = if mt == MT.SIMPLE_FLOAT
             buf
@@ -185,7 +185,7 @@ module.exports = class CborStream extends BinaryParseStream
         when 28, 29, 30
           @running = false
           throw new Error "Additional info not implemented: #{ai}"
-        when NUM_BYTES.INDEFINITE
+        when NUMBYTES.INDEFINITE
           ai = -1
         # else ai is already correct
 

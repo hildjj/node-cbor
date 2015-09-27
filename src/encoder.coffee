@@ -7,10 +7,10 @@ Tagged = require './tagged'
 Simple = require './simple'
 
 # TODO: replace these with constants and add unit tests to verify
-{MT, NUM_BYTES, TAG, SIMPLE, SYMS} = require './constants'
+{MT, NUMBYTES, TAG, SIMPLE, SYMS} = require './constants'
 
 SHIFT32   = Math.pow 2, 32
-DOUBLE    = (MT.SIMPLE_FLOAT << 5) | NUM_BYTES.EIGHT
+DOUBLE    = (MT.SIMPLE_FLOAT << 5) | NUMBYTES.EIGHT
 TRUE      = (MT.SIMPLE_FLOAT << 5) | SIMPLE.TRUE
 FALSE     = (MT.SIMPLE_FLOAT << 5) | SIMPLE.FALSE
 UNDEFINED = (MT.SIMPLE_FLOAT << 5) | SIMPLE.UNDEFINED
@@ -102,16 +102,16 @@ module.exports = class Encoder extends stream.Transform
     switch
       when obj < 24 then @_pushUInt8 m | obj
       when obj <= 0xff
-        @_pushUInt8 m | NUM_BYTES.ONE
+        @_pushUInt8 m | NUMBYTES.ONE
         @_pushUInt8 obj
       when obj <= 0xffff
-        @_pushUInt8 m | NUM_BYTES.TWO
+        @_pushUInt8 m | NUMBYTES.TWO
         @_pushUInt16BE obj
       when obj <= 0xffffffff
-        @_pushUInt8 m | NUM_BYTES.FOUR
+        @_pushUInt8 m | NUMBYTES.FOUR
         @_pushUInt32BE obj
       when obj <= Number.MAX_SAFE_INTEGER
-        @_pushUInt8 m | NUM_BYTES.EIGHT
+        @_pushUInt8 m | NUMBYTES.EIGHT
         @_pushUInt32BE Math.floor(obj / SHIFT32)
         @_pushUInt32BE (obj % SHIFT32)
       else
