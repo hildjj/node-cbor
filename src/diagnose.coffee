@@ -3,7 +3,7 @@
 stream = require 'stream'
 util = require 'util'
 
-Decoder = require './stream'
+Decoder = require './decoder'
 BufferStream = require './BufferStream'
 Simple = require './simple'
 utils = require './utils'
