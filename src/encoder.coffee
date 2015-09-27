@@ -6,23 +6,20 @@ BufferStream = require './BufferStream'
 Tagged = require './tagged'
 Simple = require './simple'
 
-constants = require './constants'
-
 # TODO: replace these with constants and add unit tests to verify
-MT = constants.MT
-NUM_BYTES = constants.NUM_BYTES
-TAG = constants.TAG
-SHIFT32 = Math.pow 2, 32
-DOUBLE = (MT.SIMPLE_FLOAT << 5) | NUM_BYTES.EIGHT
-TRUE = (MT.SIMPLE_FLOAT << 5) | constants.SIMPLE.TRUE
-FALSE = (MT.SIMPLE_FLOAT << 5) | constants.SIMPLE.FALSE
-UNDEFINED = (MT.SIMPLE_FLOAT << 5) | constants.SIMPLE.UNDEFINED
-NULL = (MT.SIMPLE_FLOAT << 5) | constants.SIMPLE.NULL
+{MT, NUM_BYTES, TAG, SIMPLE, SYMS} = require './constants'
+
+SHIFT32   = Math.pow 2, 32
+DOUBLE    = (MT.SIMPLE_FLOAT << 5) | NUM_BYTES.EIGHT
+TRUE      = (MT.SIMPLE_FLOAT << 5) | SIMPLE.TRUE
+FALSE     = (MT.SIMPLE_FLOAT << 5) | SIMPLE.FALSE
+UNDEFINED = (MT.SIMPLE_FLOAT << 5) | SIMPLE.UNDEFINED
+NULL      = (MT.SIMPLE_FLOAT << 5) | SIMPLE.NULL
 MAXINT_BN = new bignumber '0x20000000000000'
 
 # A Readable stream of CBOR bytes.  Call `write` to get JSON objects translated
 # into the stream.
-module.exports = class Encoder extends stream.Readable
+module.exports = class Encoder extends stream.Transform
   # Create an encoder
   # @param options [Object] options for the encoder
   # @option options genTypes [Array] array of pairs of `type`,
@@ -30,22 +27,30 @@ module.exports = class Encoder extends stream.Readable
   #   (default: [Array, arrayFunc, Date, dateFunc, Buffer, bufferFunc, RegExp,
   #   regexFunc, url.Url, urlFunc, bignumber, bignumberFunc]
   constructor: (options = {}) ->
+    options.readableObjectMode = false
+    options.writableObjectMode = true
+
     super options
-    @bs = new BufferStream options
-    @going = false
-    @sendEOF = false
+
     @semanticTypes = [
-      Array, @_packArray
-      Date, @_packDate
-      Buffer, @_packBuffer
-      RegExp, @_packRegexp
-      url.Url, @_packUrl
-      bignumber, @_packBigNumber
+      Array, @_pushArray
+      Date, @_pushDate
+      Buffer, @_pushBuffer
+      RegExp, @_pushRegexp
+      url.Url, @_pushUrl
+      bignumber, @_pushBigNumber
     ]
 
     addTypes = options.genTypes ? []
     for typ,i in addTypes by 2
       @addSemanticType typ, addTypes[i + 1]
+
+  _transform: (fresh, encoding, cb) ->
+    @_pushAny fresh
+    cb()
+
+  _flush: (cb) ->
+    cb()
 
   # Add an encoding function to the list of supported semantic types.  This is
   # useful for objects for which you can't add an encodeCBOR method
@@ -61,117 +66,123 @@ module.exports = class Encoder extends stream.Readable
     @semanticTypes.push type, fun
     null
 
-  # @nodoc
-  _read: (size) ->
-    @going = true
-    while @going
-      x = @bs.read()
-      if x.length
-        @going = @push x
-      else
-        if @sendEOF
-          @going = @push null
-        break
+  @_push_gen: (meth, len) ->
+    (val) ->
+      b = new Buffer len
+      b[meth].call b, val, 0
+      @push b
+
+  _pushInt8:     @_push_gen 'writeInt8',     1
+  _pushUInt8:    @_push_gen 'writeUInt8',    1
+  _pushInt16BE:  @_push_gen 'writeInt16BE',  2
+  _pushUInt16BE: @_push_gen 'writeUInt16BE', 2
+  _pushInt32BE:  @_push_gen 'writeInt32BE',  4
+  _pushUInt32BE: @_push_gen 'writeUInt32BE', 4
+  _pushFloatBE:  @_push_gen 'writeFloatBE',  4
+  _pushDoubleBE: @_push_gen 'writeDoubleBE', 8
 
   # @nodoc
-  _packNaN: () ->
-    @bs.write 'f97e00', 'hex' # Half-NaN
+  _pushNaN: () ->
+    @push 'f97e00', 'hex' # Half-NaN
 
   # @nodoc
-  _packInfinity: (obj) ->
+  _pushInfinity: (obj) ->
     half = if obj < 0 then 'f9fc00' else 'f97c00'
-    @bs.write half, 'hex'
+    @push half, 'hex'
 
   # @nodoc
-  _packFloat: (obj) ->
+  _pushFloat: (obj) ->
     # TODO: see if we can write smaller ones.
-    @bs.writeUInt8 DOUBLE
-    @bs.writeDoubleBE obj
+    @_pushUInt8 DOUBLE
+    @_pushDoubleBE obj
 
   # @nodoc
-  _packInt: (obj,mt) ->
-    mt = mt << 5
+  _pushInt: (obj, mt) ->
+    m = mt << 5
     switch
-      when obj < 24 then @bs.writeUInt8 mt | obj
+      when obj < 24 then @_pushUInt8 m | obj
       when obj <= 0xff
-        @bs.writeUInt8 mt | NUM_BYTES.ONE
-        @bs.writeUInt8 obj
+        @_pushUInt8 m | NUM_BYTES.ONE
+        @_pushUInt8 obj
       when obj <= 0xffff
-        @bs.writeUInt8 mt | NUM_BYTES.TWO
-        @bs.writeUInt16BE obj
+        @_pushUInt8 m | NUM_BYTES.TWO
+        @_pushUInt16BE obj
       when obj <= 0xffffffff
-        @bs.writeUInt8 mt | NUM_BYTES.FOUR
-        @bs.writeUInt32BE obj
-      when obj < 0x20000000000000
-        @bs.writeUInt8 mt | NUM_BYTES.EIGHT
-        @bs.writeUInt32BE Math.floor(obj / SHIFT32)
-        @bs.writeUInt32BE (obj % SHIFT32)
+        @_pushUInt8 m | NUM_BYTES.FOUR
+        @_pushUInt32BE obj
+      when obj <= Number.MAX_SAFE_INTEGER
+        @_pushUInt8 m | NUM_BYTES.EIGHT
+        @_pushUInt32BE Math.floor(obj / SHIFT32)
+        @_pushUInt32BE (obj % SHIFT32)
       else
-        @_packFloat obj
+        # TODO: this doesn't work.
+        if mt == MT.NEG_INT
+          @_pushFloat -1 - obj
+        else
+          @_pushFloat obj
 
   # @nodoc
-  _packIntNum: (obj) ->
+  _pushIntNum: (obj) ->
     if obj < 0
-      @_packInt -obj - 1, MT.NEG_INT
+      @_pushInt -obj - 1, MT.NEG_INT
     else
-      @_packInt obj, MT.POS_INT
+      @_pushInt obj, MT.POS_INT
 
   # @nodoc
-  _packNumber: (obj) ->
+  _pushNumber: (obj) ->
     switch
-      when isNaN(obj) then @_packNaN obj
-      when !isFinite(obj) then @_packInfinity obj
-      when Math.round(obj) == obj then @_packIntNum obj
-      else
-        @_packFloat obj
+      when isNaN(obj) then @_pushNaN obj
+      when !isFinite(obj) then @_pushInfinity obj
+      when Math.round(obj) == obj then @_pushIntNum obj
+      else @_pushFloat obj
 
   # @nodoc
-  _packString: (obj) ->
+  _pushString: (obj) ->
     len = Buffer.byteLength obj, 'utf8'
-    @_packInt len, MT.UTF8_STRING
-    @bs.writeString obj, len, 'utf8'
+    @_pushInt len, MT.UTF8_STRING
+    @push obj, 'utf8'
 
   # @nodoc
-  _packBoolean: (obj) ->
-    @bs.writeUInt8 if obj then TRUE else FALSE
+  _pushBoolean: (obj) ->
+    @_pushUInt8 if obj then TRUE else FALSE
 
   # @nodoc
-  _packUndefined: (obj) ->
-    @bs.writeUInt8 UNDEFINED
+  _pushUndefined: (obj) ->
+    @_pushUInt8 UNDEFINED
 
   # @nodoc
-  _packArray: (gen, obj) ->
+  _pushArray: (gen, obj) ->
     len = obj.length
-    @_packInt len, MT.ARRAY
+    @_pushInt len, MT.ARRAY
     for x in obj
-      @_pack x
+      @_pushAny x
 
   # @nodoc
-  _packTag: (tag) ->
-    @_packInt tag, MT.TAG
+  _pushTag: (tag) ->
+    @_pushInt tag, MT.TAG
 
   # @nodoc
-  _packDate: (gen, obj) ->
-    @_packTag TAG.DATE_EPOCH
-    @_pack obj / 1000
+  _pushDate: (gen, obj) ->
+    @_pushTag TAG.DATE_EPOCH
+    @_pushAny obj / 1000
 
   # @nodoc
-  _packBuffer: (gen, obj) ->
-    @_packInt obj.length, MT.BYTE_STRING
-    @bs.append obj
+  _pushBuffer: (gen, obj) ->
+    @_pushInt obj.length, MT.BYTE_STRING
+    @push obj
 
   # @nodoc
-  _packRegexp: (gen, obj) ->
-    @_packTag TAG.REGEXP
-    @_pack obj.source
+  _pushRegexp: (gen, obj) ->
+    @_pushTag TAG.REGEXP
+    @_pushAny obj.source
 
   # @nodoc
-  _packUrl: (gen, obj) ->
-    @_packTag TAG.URI
-    @_pack obj.format()
+  _pushUrl: (gen, obj) ->
+    @_pushTag TAG.URI
+    @_pushAny obj.format()
 
   # @nodoc
-  _packBigint: (obj) ->
+  _pushBigint: (obj) ->
     if obj.isNegative()
       obj = obj.negated().minus(1)
       tag = TAG.NEG_BIGINT
@@ -181,45 +192,44 @@ module.exports = class Encoder extends stream.Readable
     if str.length % 2
       str = '0' + str
     buf = new Buffer str, 'hex'
-    @_packTag tag
-    @_packBuffer this, buf, @bs
+    @_pushTag tag
+    @_pushBuffer this, buf, @bs
 
   # @nodoc
-  _packBigNumber: (gen, obj) ->
+  _pushBigNumber: (gen, obj) ->
     if obj.isNaN()
-      return @_packNaN()
+      return @_pushNaN()
     unless obj.isFinite()
-      return @_packInfinity if obj.isNegative() then -Infinity else Infinity
+      return @_pushInfinity if obj.isNegative() then -Infinity else Infinity
 
     # if integer, just write a bigint.
     if obj.isInteger()
-      return @_packBigint obj
+      return @_pushBigint obj
 
-    @_packTag TAG.DECIMAL_FRAC
-    @_packInt 2, MT.ARRAY
+    @_pushTag TAG.DECIMAL_FRAC
+    @_pushInt 2, MT.ARRAY
 
     dec = obj.decimalPlaces()
     slide = obj.mul(new bignumber(10).pow(dec))
-    @_packIntNum -dec
+    @_pushIntNum -dec
 
     # just use an integer if possible.
     if slide.abs().lessThan(MAXINT_BN)
-      @_packIntNum slide.toNumber()
+      @_pushIntNum slide.toNumber()
     else
-      @_packBigint slide
+      @_pushBigint slide
 
   # @nodoc
-  _packMap: (obj) ->
+  _pushMap: (obj) ->
     keys = Object.keys obj
-    len = keys.length
-    @_packInt len, MT.MAP
+    @_pushInt keys.length, MT.MAP
     for k in keys
-      @_pack k
-      @_pack obj[k]
+      @_pushAny k
+      @_pushAny obj[k]
 
   # @nodoc
-  _packObject: (obj) ->
-    unless obj then return @bs.writeUInt8 NULL
+  _pushObject: (obj) ->
+    unless obj then return @_pushUInt8 NULL
     for typ,i in @semanticTypes by 2
       if obj instanceof typ
         return @semanticTypes[i + 1].call(this, this, obj)
@@ -228,44 +238,36 @@ module.exports = class Encoder extends stream.Readable
     if typeof f == 'function'
       return f.call(obj, this)
 
-    @_packMap obj
+    @_pushMap obj
 
   # @nodoc
-  _pack: (obj) ->
+  _pushAny: (obj) ->
     switch typeof(obj)
-      when 'number'    then @_packNumber obj
-      when 'string'    then @_packString obj
-      when 'boolean'   then @_packBoolean obj
-      when 'undefined' then @_packUndefined obj
-      when 'object'    then @_packObject obj
+      when 'number'    then @_pushNumber obj
+      when 'string'    then @_pushString obj
+      when 'boolean'   then @_pushBoolean obj
+      when 'undefined' then @_pushUndefined obj
+      when 'object'    then @_pushObject obj
+      when 'symbol'
+        switch obj
+          when SYMS.NULL then @_pushObject null
+          when SYMS.UNDEFINED then @_pushUndefined undefined
+          else throw new Error('Unknown symbol: ' + obj.toString())
       else
         # e.g. function
-        throw new Error('Unknown type: ' + typeof(obj))
-
-  # Encode one or more JavaScript objects into the stream.
-  # @param objs... [Object+] the objects to encode
-  write: (objs...) ->
-    for o in objs
-      @_pack o
-      if @going
-        x = @bs.read()
-        if x.length
-          @going = @push x
-
-  # Encode zero or more JavaScript objects into the stream, then end the stream.
-  # @param objs... [Object*] the objects to encode
-  end: (objs...) ->
-    if objs.length then @write objs...
-    if @going
-      # assert.ok(@bs.length == 0)
-      @going = @push null
-    else
-      @sendEOF = true
+        throw new Error('Unknown type: ' + typeof(obj) + ', ' + obj.toString())
 
   # Encode one or more JavaScript objects, and return a Buffer containing the
   # CBOR bytes.
   # @param objs... [Object+] the objects to encode
   @encode: (objs...) ->
-    g = new Encoder
-    g.end objs...
-    g.read()
+    enc = new Encoder
+    bs = new BufferStream
+    enc.pipe bs
+    for o in objs
+      switch
+        when typeof(o) == 'undefned' then enc._pushUndefined()
+        when (o == null) then enc._pushObject(null)
+        else enc.write o
+    enc.end()
+    bs.read()

@@ -134,7 +134,7 @@ class BufferStream extends stream.Writable
   # When this object gets passed to an Encoder, render it as a byte string.
   # @nodoc
   encodeCBOR: (enc) ->
-    enc._packBuffer enc, @flatten()
+    enc._pushBuffer enc, @flatten()
 
   # Is this BufferStream valid?
   # Checks `@length`, `@left`, and the internal buffer list for consistency

@@ -1,3 +1,4 @@
+fs = require 'fs'
 stream = require 'stream'
 bignumber = require 'bignumber.js'
 
@@ -104,14 +105,37 @@ exports.bufferToBignumber = (buf) ->
   new bignumber buf.toString('hex'), 16
 
 # @nodoc
-exports.DeHexStream = class DeHexStream extends stream.Transform
+class @DeHexStream extends stream.Readable
   # @nodoc
-  constructor: (options) ->
-    super options
+  constructor: (hex) ->
+    super()
+    hex = hex.replace /^0x/, ''
+    if hex
+      @push new Buffer(hex, 'hex')
 
   # @nodoc
-  _transform: (chunk, encoding, cb) ->
-    str = chunk.toString().replace /\s/, ''
-    str = str.replace /^0x/, ''
-    # TODO: hold on to odd characters
-    cb null, new Buffer(str, 'hex')
+  _read: ->
+
+printError = (er) ->
+  if er?
+    console.log er
+
+exports.streamFiles = (files, streamFunc, cb = printError) ->
+  try
+    f = files.shift()
+    if !f
+      return cb()
+
+    sf = streamFunc()
+    sf.on 'end', ->
+      exports.streamFiles files, streamFunc, cb
+    sf.on 'error', (er) ->
+      cb(er)
+
+    s = switch
+      when f == "-" then process.stdin
+      when f instanceof stream.Stream then f
+      else fs.createReadStream(f)
+    s.pipe sf
+  catch er
+    cb(er)

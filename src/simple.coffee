@@ -21,7 +21,7 @@ class Simple
 
   # @nodoc
   encodeCBOR: (gen) ->
-    gen._packInt @value, constants.MT.SIMPLE_FLOAT
+    gen._pushInt @value, constants.MT.SIMPLE_FLOAT
 
   # Is the given object a Simple?
   # @param obj the object to check

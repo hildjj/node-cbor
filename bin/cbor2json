@@ -1,9 +1,5 @@
 #!/usr/bin/env node
 
-var fs = require('fs');
-var Transform = require('stream').Transform;
-var util = require('util');
-var async = require('async');
 var cbor = require('../lib/cbor');
 var utils = require('../lib/utils');
 var package = require('../package.json');
@@ -11,36 +7,22 @@ var package = require('../package.json');
 var opts = require('commander')
 .version(package.version)
 .usage('[options] <file ...>')
-.option('-x, --hex', 'Hex string input')
+.option('-x, --hex [STRING]', 'Hex string input')
 .parse(process.argv)
 
 var argv = opts.args;
+if (opts.hex) {
+  argv.push(new utils.DeHexStream(opts.hex));
+}
+
 if (argv.length === 0) {
-  argv = ['-'];
+  argv.push('-');
 }
 
-function parse(name, cb) {
-  var stream = (name == '-') ? process.stdin : fs.createReadStream(name);
-  if (opts.hex) {
-    var s = new utils.DeHexStream();
-    stream.pipe(s);
-    stream = s;
-  }
-
-  var p = new cbor.Decoder();
-
-  p.on('error', function(er) {
-    cb(er);
+utils.streamFiles(argv, function(){
+  var d = new cbor.Decoder();
+  d.on('data', function(v) {
+    console.log(JSON.stringify(v));
   });
-  p.on('complete', function(obj) {
-    console.log(JSON.stringify(obj, null, 2));
-  });
-  p.on('end', cb);
-  stream.pipe(p);
-}
-
-async.eachSeries(argv, parse, function(er) {
-  if (er) {
-    process.stderr.write("\n" + er + "\n");
-  }
+  return d;
 });

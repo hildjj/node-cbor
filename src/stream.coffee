@@ -7,7 +7,7 @@ bignumber = require 'bignumber.js'
 
 # TODO: check node version, fail nicely
 
-{MT, NUM_BYTES, SIMPLE} = require './constants'
+{MT, NUM_BYTES, SIMPLE, SYMS} = require './constants'
 
 SHIFT_32 = new bignumber(2).pow(32)
 NEG_ONE = new bignumber(-1)
@@ -16,13 +16,9 @@ MAX_SAFE_HIGH = 0x1fffff
 
 COUNT = Symbol('count')
 PENDING_KEY = Symbol('pending_key')
-PARENT = Symbol('parent')
-BREAK = Symbol('break')
 MAJOR = Symbol('major type')
-NULL = Symbol('null')
 NOTHING = Symbol('nothing')
 ERROR = Symbol('error')
-STREAM = Symbol('stream')
 
 parseCBORint = (ai, buf) ->
   switch ai
@@ -52,27 +48,22 @@ parseCBORfloat = (buf) ->
 parentArray = (parent, typ, count) ->
   a         = []
   a[COUNT]  = count
-  a[PARENT] = parent
+  a[SYMS.PARENT] = parent
   a[MAJOR]  = typ
   a
 
 parentBufferStream = (parent, typ) ->
   b = new BufferStream
-  b[PARENT] = parent
+  b[SYMS.PARENT] = parent
   b[MAJOR] = typ
   b
 
 module.exports = class CborStream extends BinaryParseStream
-  @PARENT: PARENT
-  @NULL: NULL
-  @BREAK: BREAK
-  @STREAM: STREAM
-
   @nullcheck: (val) ->
-    if val == NULL
-      null
-    else
-      val
+    switch val
+      when SYMS.NULL then null
+      when SYMS.UNDEFINED then undefined
+      else val
 
   @decodeFirst: (buf, encoding = 'utf-8', cb) ->
     # stop parsing after the first item  (SECURITY!)
@@ -212,7 +203,7 @@ module.exports = class CborStream extends BinaryParseStream
             when 0
               ai = if (mt == MT.BYTE_STRING) then new Buffer(0) else ''
             when -1
-              @emit 'start', mt, STREAM, parent?[MAJOR], parent?.length
+              @emit 'start', mt, SYMS.STREAM, parent?[MAJOR], parent?.length
               parent = parentBufferStream parent, mt
               depth++
               continue
@@ -224,15 +215,15 @@ module.exports = class CborStream extends BinaryParseStream
           switch ai
             when 0
               ai = if (mt == MT.MAP) then {} else []
-              ai[PARENT] = parent
+              ai[SYMS.PARENT] = parent
             when -1
               # streaming
-              @emit 'start', mt, STREAM, parent?[MAJOR], parent?.length
+              @emit 'start', mt, SYMS.STREAM, parent?[MAJOR], parent?.length
               parent = parentArray parent, mt, -1
               depth++
               continue
             else
-              @emit 'start', mt, NULL, parent?[MAJOR], parent?.length
+              @emit 'start', mt, SYMS.NULL, parent?[MAJOR], parent?.length
               # 1 for Array, 2 for Map
               parent = parentArray parent, mt, ai * (mt - 3)
               depth++
@@ -249,17 +240,17 @@ module.exports = class CborStream extends BinaryParseStream
               when SIMPLE.FALSE then false
               when SIMPLE.TRUE then true
               when SIMPLE.NULL
-                if parent?
-                  null
-                else
-                  NULL # HACK
-              when SIMPLE.UNDEFINED then undefined
+                if parent? then null
+                else SYMS.NULL # HACK
+              when SIMPLE.UNDEFINED
+                if parent? then undefined
+                else SYMS.UNDEFINED
               when -1
                 if !parent?
                   @running = false
                   throw new Error 'Invalid BREAK'
                 parent[COUNT] = 1
-                BREAK
+                SYMS.BREAK
               else new Simple(ai)
           else
             ai = parseCBORfloat ai
@@ -268,7 +259,7 @@ module.exports = class CborStream extends BinaryParseStream
       again = false
       while parent?
         switch
-          when ai == BREAK
+          when ai == SYMS.BREAK
             undefined # do nothing
           when Array.isArray(parent)
             parent.push ai
@@ -332,8 +323,9 @@ module.exports = class CborStream extends BinaryParseStream
             throw new Error 'Invalid state'
             parent
 
-        parent = parent[PARENT]
+        parent = parent[SYMS.PARENT]
       if !again
+        # remove this check later
         if depth != 0
           throw new Error 'Depth problem'
         return ai

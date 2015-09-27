@@ -47,3 +47,10 @@ class @SIMPLE
   @TRUE:      21
   @NULL:      22
   @UNDEFINED: 23
+
+class @SYMS
+  @NULL:      Symbol('null')
+  @UNDEFINED: Symbol('undef')
+  @PARENT:    Symbol('parent')
+  @BREAK:     Symbol('break')
+  @STREAM:    Symbol('stream')

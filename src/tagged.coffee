@@ -27,8 +27,8 @@ module.exports = class Tagged
 
   # @nodoc
   encodeCBOR: (gen) ->
-    gen._packTag @tag
-    gen._pack(@value)
+    gen._pushTag @tag
+    gen._pushAny(@value)
 
   # if we have a converter for this type, do the conversion
   convert: (converters) ->

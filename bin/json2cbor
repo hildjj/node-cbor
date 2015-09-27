@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-var fs = require('fs');
-var async = require('async');
 var cbor = require('../lib/cbor');
 var BufferStream = require('../lib/BufferStream');
 var package = require('../package.json');
@@ -9,34 +7,42 @@ var package = require('../package.json');
 var opts = require('commander')
 .version(package.version)
 .usage('[options] <file ...>')
-.option('-x, --hex', 'Hex string input')
+.option('-x, --hex', 'Hex string output')
 .parse(process.argv)
 
 var argv = opts.args
 if (argv.length === 0) {
-  argv = ['-'];
+  argv.push('-');
 }
 
-function convert(name, cb) {
-  var stream = (name == '-') ? process.stdin : fs.createReadStream(name);
-
-  var bs = new BufferStream();
-  bs.on('error', cb);
-  bs.on('finish', function() {
-    var j = JSON.parse(bs.flatten());
-    buf = cbor.Encoder.encode(j);
-    if (opts.hex) {
-      console.log(buf.toString('hex'));
-    } else {
-      process.stdout.write(buf);
-    }
-    cb();
-  });
-  stream.pipe(bs);
-}
-
-async.eachSeries(argv, convert, function(er) {
-  if (er) {
-    console.log("\n"+er);
-  }
-});
+// utils.streamFiles(argv, function() {
+//   var d = new cbor.Encoder();
+//   d.on('data', function(v) {
+//     console.log(JSON.stringify(v));
+//   });
+//   return d;
+// });
+//
+// function convert(name, cb) {
+//   var stream = (name == '-') ? process.stdin : fs.createReadStream(name);
+//
+//   var bs = new BufferStream();
+//   bs.on('error', cb);
+//   bs.on('finish', function() {
+//     var j = JSON.parse(bs.flatten());
+//     buf = cbor.Encoder.encode(j);
+//     if (opts.hex) {
+//       console.log(buf.toString('hex'));
+//     } else {
+//       process.stdout.write(buf);
+//     }
+//     cb();
+//   });
+//   stream.pipe(bs);
+// }
+//
+// async.eachSeries(argv, convert, function(er) {
+//   if (er) {
+//     console.log("\n"+er);
+//   }
+// });

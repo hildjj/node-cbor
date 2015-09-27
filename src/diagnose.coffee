@@ -7,7 +7,7 @@ Decoder = require './stream'
 BufferStream = require './BufferStream'
 Simple = require './simple'
 utils = require './utils'
-{MT} = require './constants'
+{MT, SYMS} = require './constants'
 bignumber = require 'bignumber.js'
 
 # Output the diagnostic format from a set of CBOR bytes.
@@ -17,17 +17,17 @@ module.exports = class Diagnose extends stream.Transform
   # @option options separator [String] output between detected objects
   #   (default: '\n')
   constructor: (options = {}) ->
-    @separator = options?.separator ? '\n'
-    delete options?.separator
-    @stream_errors = options?.stream_errors ? false
-    delete options?.stream_errors
+    @separator = options.separator ? '\n'
+    delete options.separator
+    @stream_errors = options.stream_errors ? false
+    delete options.stream_errors
+
+    options.readableObjectMode = false
+    options.writableObjectMode = true
 
     super(options)
-    @_writableState.objectMode = false
-    @_readableState.objectMode = false
 
     @parser = new Decoder options
-
     @parser.on 'value', @_on_value
     @parser.on 'start', @_on_start
     @parser.on 'stop', @_on_stop
@@ -37,6 +37,9 @@ module.exports = class Diagnose extends stream.Transform
   _transform: (fresh, encoding, cb) ->
     @parser.write fresh, encoding, (er)->
       cb er
+
+  _flush: (cb) ->
+    @parser._flush cb
 
   # Convenience function to return a string in diagnostic format.
   # @param input [Buffer,String] the CBOR bytes to write
@@ -74,9 +77,6 @@ module.exports = class Diagnose extends stream.Transform
     d.end input, encoding
     p
 
-  _flush: (cb) ->
-    @parser._flush cb
-
   # @nodoc
   _on_error: (er) =>
     if @stream_errors
@@ -94,12 +94,14 @@ module.exports = class Diagnose extends stream.Transform
 
   # @nodoc
   _on_value: (val, parent_mt, pos) =>
-    if val == Decoder.BREAK
+    if val == SYMS.BREAK
       return
     @_fore parent_mt, pos
     @push switch
-      when val == Decoder.NULL
+      when val == SYMS.NULL
         "null"
+      when val == SYMS.UNDEFINED
+        "undefined"
       when typeof(val) == 'string'
         JSON.stringify val
       when Buffer.isBuffer val
@@ -118,7 +120,7 @@ module.exports = class Diagnose extends stream.Transform
       when MT.BYTE_STRING, MT.UTF8_STRING then "("
       else
         throw new Error "Unknown diagnostic type: #{mt}"
-    if tag == Decoder.STREAM
+    if tag == SYMS.STREAM
       @push "_ "
 
   _on_stop: (mt) =>

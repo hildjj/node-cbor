@@ -99,22 +99,9 @@ function buildDeHexTest(test) {
     var actual = hd[0];
     var expected = hd[1];
 
-    var d = new utils.DeHexStream();
-    var bs = new BufferStream();
-    bs.on('finish', function(){
-      var res = bs.toString('utf8');
-      test.deepEqual(res.toString(), expected);
-      cb()
-    });
-
-    d.pipe(bs);
-    temp.track();
-    var f = temp.createWriteStream();
-    f.end(new Buffer(actual, 'utf8'), function(er){
-      test.ifError(er);
-      var g = fs.createReadStream(f.path);
-      g.pipe(d);
-    });
+    var d = new utils.DeHexStream(actual);
+    test.deepEqual(d.read().toString(), expected);
+    cb();
   }
 }
 

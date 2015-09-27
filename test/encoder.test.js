@@ -219,16 +219,16 @@ exports.addSemanticType = function(test) {
   // {"value": "foo"}
   var t = new TempClass('foo');
   test.deepEqual(Encoder.encode(t), hex('0xa16576616c756563666f6f'));
-  test.deepEqual(Encoder.encode(), null);
+  test.deepEqual(Encoder.encode(), new Buffer(0));
 
   TempClass.prototype.encodeCBOR = function(gen) {
-    gen._packTag(0xffff);
-    gen._pack(this.value);
+    gen._pushTag(0xffff);
+    gen._pushAny(this.value);
   };
 
   function TempClassToCBOR(gen, obj){
-    gen._packTag(0xfffe);
-    gen._pack(obj.value);
+    gen._pushTag(0xfffe);
+    gen._pushAny(obj.value);
   }
 
   test.deepEqual(Encoder.encode(t), hex('0xd9ffff63666f6f'));
@@ -244,7 +244,6 @@ exports.addSemanticType = function(test) {
   // replace Buffer serializer with hex strings
   gen.addSemanticType(Buffer, hexPackBuffer);
   gen.write(new Buffer('010203', 'hex'));
-  gen.write();
 
   test.deepEqual(gen.read(), hex('0x683078303130323033'));
 
@@ -266,7 +265,8 @@ exports.stream = function(test) {
     test.done();
   });
   gen.pipe(bs);
-  gen.end(1,2);
+  gen.write(1);
+  gen.end(2);
 };
 
 exports.streamNone = function(test) {
