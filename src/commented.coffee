@@ -90,41 +90,38 @@ module.exports = class Commented extends stream.Transform
     p
 
   _on_error: (er) =>
-    @push "ERROR:"
+    @push 'ERROR: '
     @push er.toString()
+    @push '\n'
 
-  # @nodoc
-  _indent: (prefix) ->
-    @push(new Array(@depth + 1).join("  "))
-    @push prefix
+  _on_read: (buf) =>
+    @push(new Array(@depth + 1).join('  '))
+    @push buf.toString('hex')
     ind = (@max_depth - @depth) * 2
     ind -= prefix.length
     if ind < 1
       ind = 1
-    @push(new Array(ind + 1).join(" "))
-    @push "-- "
-
-  _on_read: (buf) =>
-    @_indent(buf.toString('hex'))
+    @push(new Array(ind + 1).join(' '))
+    @push '-- '
 
   _on_more: (mt, len, parent_mt, pos) =>
     @depth++
     @push switch mt
       when MT.POS_INT
-        "Positive number,"
+        'Positive number,'
       when MT.NEG_INT
-        "Negative number,"
+        'Negative number,'
       when MT.ARRAY
-        "Array, length"
+        'Array, length'
       when MT.Map
-        "Map, count"
+        'Map, count'
       when MT.BYTE_STRING
-        "Bytes, length"
+        'Bytes, length'
       when MT.UTF8_STRING
-        "String, length"
+        'String, length'
       when MT.SIMPLE_FLOAT
-        if len == 1 then "Simple value,"
-        else "Float,"
+        if len == 1 then 'Simple value,'
+        else 'Float,'
 
     @push " next #{len} byte#{plural(len)}\n"
 
@@ -132,14 +129,14 @@ module.exports = class Commented extends stream.Transform
     @depth++
     @push switch mt
       when MT.BYTE_STRING
-        if tag == SYMS.STREAM then "Bytes (streaming)"
+        if tag == SYMS.STREAM then 'Bytes (streaming)'
         else "Bytes, length: #{tag}"
       when MT.UTF8_STRING
-        if tag == SYMS.STREAM then "String (streaming)"
+        if tag == SYMS.STREAM then 'String (streaming)'
         else "String, length: #{tag.toString()}"
       else
         throw new Error "Unknown comment type: #{mt}"
-    @push "\n"
+    @push '\n'
 
   _on_start: (mt, tag, parent_mt, pos) =>
     @depth++
@@ -153,20 +150,20 @@ module.exports = class Commented extends stream.Transform
     @push switch mt
       when MT.TAG then "Tag ##{tag}"
       when MT.ARRAY
-        if tag == SYMS.STREAM then "Array (streaming)"
+        if tag == SYMS.STREAM then 'Array (streaming)'
         else "Array, #{tag} item#{plural(tag)}"
       when MT.MAP
-        if tag == SYMS.STREAM then "Map (streaming)"
+        if tag == SYMS.STREAM then 'Map (streaming)'
         else "Map, #{tag} pair#{plural(tag)}"
       when MT.BYTE_STRING
-        if tag == SYMS.STREAM then "Bytes (streaming)"
+        if tag == SYMS.STREAM then 'Bytes (streaming)'
         else "Bytes, length: #{tag}"
       when MT.UTF8_STRING
-        if tag == SYMS.STREAM then "String (streaming)"
+        if tag == SYMS.STREAM then 'String (streaming)'
         else "String, length: #{tag.toString()}"
       else
         throw new Error "Unknown comment type: #{mt}"
-    @push "\n"
+    @push '\n'
 
   _on_stop: (mt) =>
     @depth--
@@ -189,7 +186,7 @@ module.exports = class Commented extends stream.Transform
         JSON.stringify val
       when Buffer.isBuffer val
         @depth--
-        val.toString("hex")
+        val.toString('hex')
       when val instanceof bignumber
         val.toString()
       else
@@ -197,4 +194,4 @@ module.exports = class Commented extends stream.Transform
     switch ai
       when NUMBYTES.ONE, NUMBYTES.TWO, NUMBYTES.FOUR, NUMBYTES.EIGHT
         @depth--
-    @push "\n"
+    @push '\n'
