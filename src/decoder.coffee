@@ -1,4 +1,4 @@
-BinaryParseStream = require 'binary-parse-stream'
+BinaryParseStream = require '../vendor/binary-parse-stream'
 Tagged = require './tagged'
 Simple = require './simple'
 BufferStream = require './BufferStream'
@@ -162,11 +162,12 @@ module.exports = class CborStream extends BinaryParseStream
   _parse: ->
     parent = null
     depth = 0
+    val = null
     while true
       if (@max_depth >= 0) and (depth > @max_depth)
         throw new Error "Maximum depth #{@max_depth} exceeded"
 
-      octet = yield(-1)
+      octet = (yield(1))[0]
       if !@running
         throw new Error "Unexpected data: 0x#{octet.toString(16)}"
 
@@ -175,10 +176,13 @@ module.exports = class CborStream extends BinaryParseStream
 
       switch ai
         when NUMBYTES.ONE
-          ai = yield(-1)
+          @emit 'more-bytes', mt, 1, parent?[MAJOR], parent?.length
+          val = (yield(1))[0]
         when NUMBYTES.TWO, NUMBYTES.FOUR, NUMBYTES.EIGHT
-          buf = yield(1 << (ai - 24))
-          ai = if mt == MT.SIMPLE_FLOAT
+          numbytes = 1 << (ai - 24)
+          @emit 'more-bytes', mt, numbytes, parent?[MAJOR], parent?.length
+          buf = yield(numbytes)
+          val = if mt == MT.SIMPLE_FLOAT
             buf
           else
             parseCBORint(ai, buf)
@@ -186,36 +190,39 @@ module.exports = class CborStream extends BinaryParseStream
           @running = false
           throw new Error "Additional info not implemented: #{ai}"
         when NUMBYTES.INDEFINITE
-          ai = -1
-        # else ai is already correct
+          val = -1
+        else
+          # ai is already correct
+          val = ai
 
       switch mt
         when MT.POS_INT then undefined # do nothing
         when MT.NEG_INT
-          if ai == Number.MAX_SAFE_INTEGER
-            ai = MAX_SAFE_BIG
-          if ai instanceof bignumber
-            ai = NEG_ONE.sub ai
+          if val == Number.MAX_SAFE_INTEGER
+            val = MAX_SAFE_BIG
+          else if val instanceof bignumber
+            val = NEG_ONE.sub val
           else
-            ai = -1 - ai
+            val = -1 - val
         when MT.BYTE_STRING, MT.UTF8_STRING
-          switch ai
+          switch val
             when 0
-              ai = if (mt == MT.BYTE_STRING) then new Buffer(0) else ''
+              val = if (mt == MT.BYTE_STRING) then new Buffer(0) else ''
             when -1
               @emit 'start', mt, SYMS.STREAM, parent?[MAJOR], parent?.length
               parent = parentBufferStream parent, mt
               depth++
               continue
             else
-              ai = yield(ai)
+              @emit 'start-string', mt, val, parent?[MAJOR], parent?.length
+              val = yield(val)
               if mt == MT.UTF8_STRING
-                ai = ai.toString 'utf-8'
+                val = val.toString 'utf-8'
         when MT.ARRAY, MT.MAP
-          switch ai
+          switch val
             when 0
-              ai = if (mt == MT.MAP) then {} else []
-              ai[SYMS.PARENT] = parent
+              val = if (mt == MT.MAP) then {} else []
+              val[SYMS.PARENT] = parent
             when -1
               # streaming
               @emit 'start', mt, SYMS.STREAM, parent?[MAJOR], parent?.length
@@ -223,52 +230,37 @@ module.exports = class CborStream extends BinaryParseStream
               depth++
               continue
             else
-              @emit 'start', mt, SYMS.NULL, parent?[MAJOR], parent?.length
+              @emit 'start', mt, val, parent?[MAJOR], parent?.length
               # 1 for Array, 2 for Map
-              parent = parentArray parent, mt, ai * (mt - 3)
+              parent = parentArray parent, mt, val * (mt - 3)
               depth++
               continue
         when MT.TAG
-          @emit 'start', mt, ai, parent?[MAJOR], parent?.length
+          @emit 'start', mt, val, parent?[MAJOR], parent?.length
           parent = parentArray parent, mt, 1
-          parent.push ai
+          parent.push val
           depth++
           continue
         when MT.SIMPLE_FLOAT
-          if typeof(ai) == 'number' # simple values
-            ai = switch ai
-              when SIMPLE.FALSE then false
-              when SIMPLE.TRUE then true
-              when SIMPLE.NULL
-                if parent? then null
-                else SYMS.NULL # HACK
-              when SIMPLE.UNDEFINED
-                if parent? then undefined
-                else SYMS.UNDEFINED
-              when -1
-                if !parent?
-                  @running = false
-                  throw new Error 'Invalid BREAK'
-                parent[COUNT] = 1
-                SYMS.BREAK
-              else new Simple(ai)
+          if typeof(val) == 'number' # simple values
+            val = Simple.decode(val, parent?)
           else
-            ai = parseCBORfloat ai
+            val = parseCBORfloat val
 
-      @emit 'value', ai, parent?[MAJOR], parent?.length
+      @emit 'value', val, parent?[MAJOR], parent?.length, ai
       again = false
       while parent?
         switch
-          when ai == SYMS.BREAK
-            undefined # do nothing
+          when val == SYMS.BREAK
+            parent[COUNT] = 1
           when Array.isArray(parent)
-            parent.push ai
+            parent.push val
           when parent instanceof BufferStream
             pm = parent[MAJOR]
             if pm? and (pm != mt)
               @running = false
               throw new Error 'Invalid major type in indefinite encoding'
-            parent.write ai
+            parent.write val
           else
             @running = false
             throw new Error 'Unknown parent type'
@@ -280,7 +272,7 @@ module.exports = class CborStream extends BinaryParseStream
         --depth
         delete parent[COUNT]
         @emit 'stop', parent[MAJOR]
-        ai = switch
+        val = switch
           when Array.isArray parent
             switch parent[MAJOR]
               when MT.ARRAY
@@ -328,4 +320,4 @@ module.exports = class CborStream extends BinaryParseStream
         # remove this check later
         if depth != 0
           throw new Error 'Depth problem'
-        return ai
+        return val

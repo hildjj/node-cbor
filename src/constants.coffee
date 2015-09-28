@@ -32,7 +32,7 @@ class @TAG
 # When encoding, use these constants to mean how many bytes follow
 # the first one.
 # @nodoc
-class @NUMBYTES
+NUMBYTES = class @NUMBYTES
   @ZERO:        0
   @ONE:        24
   @TWO:        25

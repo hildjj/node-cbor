@@ -1,4 +1,4 @@
-constants = require './constants'
+{MT, SIMPLE, SYMS} = require './constants'
 
 # A CBOR Simple Value that does not map onto a known constant.
 class Simple
@@ -21,12 +21,28 @@ class Simple
 
   # @nodoc
   encodeCBOR: (gen) ->
-    gen._pushInt @value, constants.MT.SIMPLE_FLOAT
+    gen._pushInt @value, MT.SIMPLE_FLOAT
 
   # Is the given object a Simple?
   # @param obj the object to check
   # @return [Boolean]
   @isSimple = (obj) ->
     obj instanceof Simple
+
+  @decode = (val, has_parent = true) ->
+    switch val
+      when SIMPLE.FALSE then false
+      when SIMPLE.TRUE then true
+      when SIMPLE.NULL
+        if has_parent then null
+        else SYMS.NULL # HACK
+      when SIMPLE.UNDEFINED
+        if has_parent then undefined
+        else SYMS.UNDEFINED
+      when -1
+        if !has_parent
+          throw new Error 'Invalid BREAK'
+        SYMS.BREAK
+      else new Simple(val)
 
 module.exports = Simple

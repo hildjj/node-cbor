@@ -104,7 +104,7 @@ class BufferStream extends stream.Writable
     @growSize = options.bsGrowSize ? 512
     @zero = options.bsZero ? false
 
-    @on "finish", ()=>
+    @on "finish", () =>
       @_resetCB createEOF()
 
     # Sometimes we'll know the buffer we're working with,
@@ -262,7 +262,7 @@ class BufferStream extends stream.Writable
 
     if length == 0
       # I totally waited.  Really.
-      process.nextTick ()=>
+      process.nextTick () =>
         cb.call @, null, EMPTY
     else
       @waitingCB = cb

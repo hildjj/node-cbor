@@ -23,7 +23,7 @@ module.exports = class Diagnose extends stream.Transform
     delete options.stream_errors
 
     options.readableObjectMode = false
-    options.writableObjectMode = true
+    options.writableObjectMode = false
 
     super(options)
 
@@ -35,7 +35,7 @@ module.exports = class Diagnose extends stream.Transform
     @parser.on 'error', @_on_error
 
   _transform: (fresh, encoding, cb) ->
-    @parser.write fresh, encoding, (er)->
+    @parser.write fresh, encoding, (er) ->
       cb er
 
   _flush: (cb) ->

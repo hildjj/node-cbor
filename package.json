@@ -60,7 +60,6 @@
   "readmeFilename": "README.md",
   "dependencies": {
     "bignumber.js": "~2.0",
-    "binary-parse-stream": "^1.3",
     "commander": "^2.8"
   },
   "engines": {
