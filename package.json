@@ -53,8 +53,7 @@
     "grunt-release": "^0.13",
     "grunt-shell": "~1.1",
     "jit-grunt": "^0.9",
-    "source-map-support": "^0.3",
-    "temp": "~0.8"
+    "source-map-support": "^0.3"
   },
   "license": "MIT",
   "readmeFilename": "README.md",

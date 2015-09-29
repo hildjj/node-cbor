@@ -4,7 +4,6 @@
 var fs = require('fs');
 var async = require('async');
 var bignumber = require('bignumber.js');
-var temp = require('temp');
 
 var BufferStream = require('../lib/BufferStream');
 var utils = require('../lib/utils');

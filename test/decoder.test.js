@@ -7,10 +7,10 @@ var cbor = require('../lib/cbor');
 var Decoder = cbor.Decoder;
 var Simple = cbor.Simple;
 var Tagged = cbor.Tagged;
+var utils = require('../lib/utils');
 
 var async = require('async');
 var bignumber = require('bignumber.js');
-var temp = require('temp');
 var fs = require('fs');
 var util = require('util');
 
@@ -287,10 +287,6 @@ exports.stream = function(test) {
     test.ifError(er);
   });
 
-  temp.track();
-  var f = temp.createWriteStream();
-  f.end(new Buffer('01', 'hex'), function(er){
-    var g = fs.createReadStream(f.path);
-    g.pipe(dt);
-  });
+  var d = new utils.DeHexStream('01');
+  d.pipe(dt);
 }

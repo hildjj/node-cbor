@@ -3,8 +3,9 @@
 
 var Diagnose = require('../lib/diagnose');
 var BufferStream = require('../lib/BufferStream');
+var utils = require('../lib/utils');
+
 var async = require('async');
-var temp = require('temp');
 var fs = require('fs');
 
 function diagTest(test, max_depth) {
