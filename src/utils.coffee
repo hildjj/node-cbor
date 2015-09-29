@@ -112,6 +112,7 @@ class @DeHexStream extends stream.Readable
     hex = hex.replace /^0x/, ''
     if hex
       @push new Buffer(hex, 'hex')
+    @push null
 
   # @nodoc
   _read: ->

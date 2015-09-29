@@ -186,13 +186,18 @@ exports.stream = function(test) {
   var parser = new Commented();
   parser.pipe(bs);
 
-  parser.on('end', function(buf) {
-    test.deepEqual(buf, new Buffer([0x61, 0x61]));
+  parser.on('end', function() {
+    test.deepEqual(bs.toString('utf8'),
+  `  61                -- String, length: 1
+    61              -- "a"
+0x6161
+`);
     test.done();
   });
   parser.on('error', function(er) {
     test.fail(er);
   });
 
-  new utils.DeHexStream('6161').pipe(parser);
+  var h = new utils.DeHexStream('6161')
+  h.pipe(parser);
 };
