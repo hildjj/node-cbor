@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var cbor = require('../lib/cbor');
-var BufferStream = require('../lib/BufferStream');
+var utils = require('../lib/utils');
 var package = require('../package.json');
 
 var opts = require('commander')
@@ -15,34 +15,16 @@ if (argv.length === 0) {
   argv.push('-');
 }
 
-// utils.streamFiles(argv, function() {
-//   var d = new cbor.Encoder();
-//   d.on('data', function(v) {
-//     console.log(JSON.stringify(v));
-//   });
-//   return d;
-// });
-//
-// function convert(name, cb) {
-//   var stream = (name == '-') ? process.stdin : fs.createReadStream(name);
-//
-//   var bs = new BufferStream();
-//   bs.on('error', cb);
-//   bs.on('finish', function() {
-//     var j = JSON.parse(bs.flatten());
-//     buf = cbor.Encoder.encode(j);
-//     if (opts.hex) {
-//       console.log(buf.toString('hex'));
-//     } else {
-//       process.stdout.write(buf);
-//     }
-//     cb();
-//   });
-//   stream.pipe(bs);
-// }
-//
-// async.eachSeries(argv, convert, function(er) {
-//   if (er) {
-//     console.log("\n"+er);
-//   }
-// });
+utils.streamFiles(argv, function(){
+  var p = new utils.JSONparser();
+  var d = new cbor.Encoder();
+  p.pipe(d);
+  var o = d
+  if (opts.hex) {
+    o = new utils.HexStream();
+    d.pipe(o);
+    o.on('end', function(){ process.stdout.write('\n') });
+  }
+  o.pipe(process.stdout);
+  return p;
+});

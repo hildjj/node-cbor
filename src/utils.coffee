@@ -116,6 +116,30 @@ class @DeHexStream extends stream.Readable
   # @nodoc
   _read: ->
 
+class @HexStream extends stream.Transform
+  constructor: (options) ->
+    super(options)
+
+  _transform: (fresh, encoding, cb) ->
+    @push fresh.toString('hex')
+    cb()
+
+  _flush: (cb) ->
+    cb()
+
+class @JSONparser extends stream.Transform
+  constructor: (options = {}) ->
+    options.readableObjectMode = true
+    options.writableObjectMode = false
+    super(options)
+
+  _transform: (fresh, encoding, cb) ->
+    @push JSON.parse(fresh)
+    cb()
+
+  _flush: (cb) ->
+    cb()
+
 printError = (er) ->
   if er?
     console.log er

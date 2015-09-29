@@ -30,7 +30,8 @@ module.exports = class Commented extends stream.Transform
     delete options.max_depth
 
     super(options)
-    @depth = 0
+    @depth = 1
+    @all = new BufferStream
 
     @parser = new Decoder options
     @parser.on 'value', @_on_value
@@ -39,6 +40,7 @@ module.exports = class Commented extends stream.Transform
     @parser.on 'stop',  @_on_stop
     @parser.on 'more-bytes', @_on_more
     @parser.on 'error', @_on_error
+    @parser.on 'data', @_on_data
     @parser.bs.on 'read', @_on_read
 
   _transform: (fresh, encoding, cb) ->
@@ -95,10 +97,12 @@ module.exports = class Commented extends stream.Transform
     @push '\n'
 
   _on_read: (buf) =>
+    @all.append buf
+    hex = buf.toString('hex')
     @push(new Array(@depth + 1).join('  '))
-    @push buf.toString('hex')
+    @push hex
     ind = (@max_depth - @depth) * 2
-    ind -= prefix.length
+    ind -= hex.length
     if ind < 1
       ind = 1
     @push(new Array(ind + 1).join(' '))
@@ -194,4 +198,9 @@ module.exports = class Commented extends stream.Transform
     switch ai
       when NUMBYTES.ONE, NUMBYTES.TWO, NUMBYTES.FOUR, NUMBYTES.EIGHT
         @depth--
+    @push '\n'
+
+  _on_data: =>
+    @push '0x'
+    @push @all.read().toString('hex')
     @push '\n'

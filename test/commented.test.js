@@ -1,47 +1,54 @@
 var async = require('async');
 
-var temp = require('temp');
-var fs = require('fs');
-
 var BufferStream = require('../lib/BufferStream');
 var Commented = require('../lib/commented');
 var comment = Commented.comment;
 var encode = require('../lib/encoder').encode;
 var Simple = require('../lib/simple');
+var utils = require('../lib/utils');
 
 exports.simple = function(test) {
   async.each([
       ['01',
-        '  01                -- 1\n' +
-        "0x01\n"],
+`  01                -- 1
+0x01
+`],
       ['20',
-        '  20                -- -1\n' +
-        '0x20\n'],
+`  20                -- -1
+0x20
+`],
       ['1819',
-        '  1819              -- 25\n' +
-        '0x1819\n'],
+`  18                -- Positive number, next 1 byte
+    19              -- 25
+0x1819
+`],
       [encode(new Buffer([1,2,3])),
-        '  43                -- Byte string length 3\n' +
-        '    010203          -- Bytes content\n' +
-        '0x43010203\n'],
+`  43                -- Bytes, length: 3
+    010203          -- 010203
+0x43010203
+`],
       [encode("foo"),
-        '  63                -- UTF-8 string length 3\n' +
-        '    666f6f          -- "foo"\n' +
-        '0x63666f6f\n'],
+`  63                -- String, length: 3
+    666f6f          -- "foo"
+0x63666f6f
+`],
       [encode([1]),
-        '  81                -- Array of length 1\n' +
-        '    01              -- Array[0]: 1\n' +
-        '0x8101\n'],
+`  81                -- Array, 1 item
+    01              -- [0], 1
+0x8101
+`],
       [encode({foo: 1}),
-        '  a1                -- Map with 1 pairs\n' +
-        '    63              -- Map[0].key: UTF-8 string length 3\n' +
-        '      666f6f        -- "foo"\n' +
-        '    01              -- Map[0].value: 1\n' +
-        '0xa163666f6f01\n'],
+`  a1                -- Map, 1 pair
+    63              -- String, length: 3
+      666f6f        -- {Key:0}, "foo"
+    01              -- {Val:0}, 1
+0xa163666f6f01
+`],
       [encode(new Date(0)),
-        '  c1                -- Tag 1\n' +
-        '    00              -- 0\n' +
-        '0xc100\n'],
+`  c1                -- Tag #1
+    00              -- 0
+0xc100
+`],
       [encode(false),
         '  f4                -- false\n' +
         '0xf4\n'],
@@ -55,45 +62,54 @@ exports.simple = function(test) {
         '  f7                -- undefined\n' +
         '0xf7\n'],
       [encode(new Simple(255)),
-        '  f8ff              -- simple(255)\n' +
-        '0xf8ff\n'],
-      ['0x9f018202039f0405ffff',
-        '  9f                -- Start indefinite-length array\n' +
-        '    01              -- 1\n' +
-        '    82              -- Array of length 2\n' +
-        '      02            -- Array[0]: 2\n' +
-        '      03            -- Array[1]: 3\n' +
-        '    9f              -- Start indefinite-length array\n' +
-        '      04            -- 4\n' +
-        '      05            -- 5\n' +
-        '      ff            -- BREAK\n' +
-        '    ff              -- BREAK\n' +
-        '0x9f018202039f0405ffff\n'],
-      ['0xbf6346756ef563416d7421ff',
-        '  bf                -- Start indefinite-length map\n' +
-        '    63              -- Map[0].key: UTF-8 string length 3\n' +
-        '      46756e        -- "Fun"\n' +
-        '    f5              -- Map[0].value: true\n' +
-        '    63              -- Map[1].key: UTF-8 string length 3\n' +
-        '      416d74        -- "Amt"\n' +
-        '    21              -- Map[1].value: -2\n' +
-        '    ff              -- BREAK\n' +
-        '0xbf6346756ef563416d7421ff\n'],
-      ['0x5F44aabbccdd43eeff99FF',
-        '  5f                -- Start indefinite-length string\n' +
-        '    44              -- Byte string length 4\n' +
-        '      aabbccdd      -- Bytes content\n' +
-        '    43              -- Byte string length 3\n' +
-        '      eeff99        -- Bytes content\n' +
-        '    ff              -- BREAK\n' +
-        '0x5f44aabbccdd43eeff99ff\n'],
-      ['0xfb3fb999999999999a',
-        '  fb3fb999999999999a -- 0.1\n' +
-        '0xfb3fb999999999999a\n'],
-      ['0x0101',
-        '  01                -- 1\n' +
-        '  01                -- 1\n' +
-        '0x0101\n'],
+`  f8                -- Simple value, next 1 byte
+    ff              -- simple(255)
+0xf8ff
+`],
+      ['9f018202039f0405ffff',
+`  9f                -- Array (streaming)
+    01              -- [0], 1
+    82              -- [1], Array, 2 items
+      02            -- [0], 2
+      03            -- [1], 3
+    9f              -- [2], Array (streaming)
+      04            -- [0], 4
+      05            -- [1], 5
+      ff            -- BREAK
+    ff              -- BREAK
+0x9f018202039f0405ffff
+`],
+      ['bf6346756ef563416d7421ff',
+`  bf                -- Map (streaming)
+    63              -- String, length: 3
+      46756e        -- {Key:0}, "Fun"
+    f5              -- {Val:0}, true
+    63              -- String, length: 3
+      416d74        -- {Key:1}, "Amt"
+    21              -- {Val:1}, -2
+    ff              -- BREAK
+0xbf6346756ef563416d7421ff
+`],
+      ['5F44aabbccdd43eeff99FF',
+`  5f                -- Bytes (streaming)
+    44              -- Bytes, length: 4
+      aabbccdd      -- aabbccdd
+    43              -- Bytes, length: 3
+      eeff99        -- eeff99
+    ff              -- BREAK
+0x5f44aabbccdd43eeff99ff
+`],
+      ['fb3fb999999999999a',
+`  fb                -- Float, next 8 bytes
+    3fb999999999999a -- 0.1
+0xfb3fb999999999999a
+`],
+      ['0101',
+`  01                -- 1
+0x01
+  01                -- 1
+0x01
+`],
       ["", ""],
       [new Buffer(0), ""]
     ], function(io, cb) {
@@ -103,7 +119,7 @@ exports.simple = function(test) {
         if (er) {
           return cb(er);
         }
-        test.deepEqual(s, o);
+        test.deepEqual(s, o, `Input '${i}' -> '${s}'`);
         cb();
       });
     }, function(er) {
@@ -131,6 +147,7 @@ exports.encoding_errors = function(test) {
     '0x5f6161',
     '0x5f01',
   ], function(i, cb) {
+    i = i.replace(/^0x/, '');
     comment(i, function(er, s) {
       if (!er) {
         cb(new Error('Expected error'));
@@ -165,7 +182,9 @@ exports.max_depth = function(test) {
 };
 
 exports.stream = function(test) {
-  var parser = new Commented({output: new BufferStream()});
+  var bs = new BufferStream()
+  var parser = new Commented();
+  parser.pipe(bs);
 
   parser.on('end', function(buf) {
     test.deepEqual(buf, new Buffer([0x61, 0x61]));
@@ -175,10 +194,5 @@ exports.stream = function(test) {
     test.fail(er);
   });
 
-  temp.track();
-  var f = temp.createWriteStream();
-  f.end(new Buffer('6161', 'hex'), function(er){
-    var g = fs.createReadStream(f.path);
-    g.pipe(parser);
-  });
+  new utils.DeHexStream('6161').pipe(parser);
 };
