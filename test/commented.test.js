@@ -90,6 +90,12 @@ exports.simple = function(test) {
     ff              -- BREAK
 0xbf6346756ef563416d7421ff
 `],
+      ['581e000102030405060708090001020304050607080900010203040506070809',
+`  58                -- Bytes, length next 1 byte
+    1e              -- Bytes, length: 30
+      000102030405060708090001020304050607080900010203040506070809 -- 000102030405060708090001020304050607080900010203040506070809
+0x581e000102030405060708090001020304050607080900010203040506070809
+`],
       ['5F44aabbccdd43eeff99FF',
 `  5f                -- Bytes (streaming)
     44              -- Bytes, length: 4
@@ -200,4 +206,63 @@ exports.stream = function(test) {
 
   var h = new utils.DeHexStream('6161')
   h.pipe(parser);
+};
+
+exports.inputs = function(test) {
+  comment('mB4AAQIDBAUGBwgJAAECAwQFBgcICQABAgMEBQYHCAk=', 'base64')
+  .then(function(c) {
+    test.deepEqual(c,
+`  98                -- Array, length next 1 byte
+    1e              -- Array, 30 items
+      00            -- [0], 0
+      01            -- [1], 1
+      02            -- [2], 2
+      03            -- [3], 3
+      04            -- [4], 4
+      05            -- [5], 5
+      06            -- [6], 6
+      07            -- [7], 7
+      08            -- [8], 8
+      09            -- [9], 9
+      00            -- [10], 0
+      01            -- [11], 1
+      02            -- [12], 2
+      03            -- [13], 3
+      04            -- [14], 4
+      05            -- [15], 5
+      06            -- [16], 6
+      07            -- [17], 7
+      08            -- [18], 8
+      09            -- [19], 9
+      00            -- [20], 0
+      01            -- [21], 1
+      02            -- [22], 2
+      03            -- [23], 3
+      04            -- [24], 4
+      05            -- [25], 5
+      06            -- [26], 6
+      07            -- [27], 7
+      08            -- [28], 8
+      09            -- [29], 9
+0x981e000102030405060708090001020304050607080900010203040506070809
+`);
+    return comment('x\u001e012345678901234567890123456789', {encoding: 'utf8'})
+  })
+  .then(function(c) {
+    test.deepEqual(c,
+`  78                -- String, length next 1 byte
+    1e              -- String, length: 30
+      303132333435363738393031323334353637383930313233343536373839 -- "012345678901234567890123456789"
+0x781e303132333435363738393031323334353637383930313233343536373839
+`);
+    return comment('381d', {max_depth: 12})
+  })
+  .then(function(c) {
+    test.deepEqual(c,
+`  38                    -- Negative number, next 1 byte
+    1d                  -- -30
+0x381d
+`);
+    test.done();
+  });
 };

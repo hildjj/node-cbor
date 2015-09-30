@@ -165,10 +165,33 @@ exports.edges = function(test) {
   ], dt, function(er) {
     test.equal(er, null);
 
-    // var bs = new BufferStream();
-    // Diagnose.diagnose('', 'hex', bs);
+    Diagnose.diagnose(new Buffer(0), function(er) {
+      test.ifError(er);
+      try {
+        Diagnose.diagnose();
+      } catch (er) {
+        test.ok(er);
+        Diagnose.diagnose('01', function(er, out){
+          test.ifError(er);
+          test.deepEqual(out, '1\n');
+          test.done();
+        });
+      }
+    });
+  });
+};
+
+exports.construct = function (test) {
+  var d = new Diagnose();
+  test.equal(false, d.stream_errors);
+  d.stream_errors = true;
+  var bs = new BufferStream();
+  d.pipe(bs);
+  d.on('end', function() {
+    test.deepEqual('Error: unexpected end of input', bs.toString('utf8'));
     test.done();
   });
+  d.end(new Buffer([0x18]));
 };
 
 exports.stream = function(test) {

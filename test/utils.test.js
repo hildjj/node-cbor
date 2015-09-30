@@ -105,12 +105,55 @@ function buildDeHexTest(test) {
 }
 
 exports.DeHexStream = function(test) {
-  var bt = buildDeHexTest(test);
   async.each([
     ['6161', 'aa'],
     ['0x00', '\x00']
-  ], bt, function(er) {
+  ], function(hd, cb) {
+    var d = new utils.DeHexStream(hd[0]);
+    test.deepEqual(d.read().toString(), hd[1]);
+    cb();
+  }, function(er) {
     test.equal(er, null);
     test.done();
   });
+};
+
+exports.HexStream = function(test) {
+  var h = new utils.HexStream();
+  var bs = new BufferStream();
+  h.pipe(bs);
+  h.on('end', function() {
+    test.deepEqual(bs.toString('utf8'), '61');
+    test.done();
+  })
+  h.end(new Buffer([0x61]));
+};
+
+exports.JSONparser = function(test) {
+  var h = new utils.JSONparser();
+  h.on('data', function(v) {
+    test.deepEqual({a:1}, v);
+    test.done();
+  });
+
+  h.end(new Buffer('{"a": 1}'));
+};
+
+exports.streamFilesNone = function(test) {
+  utils.streamFiles([], function(){}, function() {
+    test.done();
+  })
+};
+
+exports.streamFilesDash = function(test) {
+  var u = new utils.HexStream()
+  var bs = new BufferStream();
+  u.pipe(bs);
+  utils.streamFiles([new utils.DeHexStream('6161')], function(){
+    return u;
+  }, function(er) {
+    test.ifError(er);
+    test.deepEqual(bs.toString('utf8'), '6161');
+    test.done();
+  })
 };

@@ -35,11 +35,15 @@ module.exports = class Diagnose extends stream.Transform
     @parser.on 'error', @_on_error
 
   _transform: (fresh, encoding, cb) ->
-    @parser.write fresh, encoding, (er) ->
-      cb er
+    @parser.write fresh, encoding, cb
 
   _flush: (cb) ->
-    @parser._flush cb
+    @parser._flush (er) =>
+      if @stream_errors
+        @_on_error(er)
+        cb()
+      else
+        cb(er)
 
   # Convenience function to return a string in diagnostic format.
   # @param input [Buffer,String] the CBOR bytes to write
@@ -81,7 +85,8 @@ module.exports = class Diagnose extends stream.Transform
   _on_error: (er) =>
     if @stream_errors
       @push er.toString()
-    @emit 'error', er
+    else
+      @emit 'error', er
 
   _fore: (parent_mt, pos) ->
     switch parent_mt
@@ -119,6 +124,7 @@ module.exports = class Diagnose extends stream.Transform
       when MT.MAP then "{"
       when MT.BYTE_STRING, MT.UTF8_STRING then "("
       else
+        `// istanbul ignore next`
         throw new Error "Unknown diagnostic type: #{mt}"
     if tag == SYMS.STREAM
       @push "_ "
@@ -130,6 +136,7 @@ module.exports = class Diagnose extends stream.Transform
       when MT.MAP then "}"
       when MT.BYTE_STRING, MT.UTF8_STRING then ")"
       else
+        `// istanbul ignore next`
         throw new Error "Unknown diagnostic type: #{mt}"
 
   _on_data: =>
