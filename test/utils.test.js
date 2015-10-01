@@ -142,10 +142,8 @@ exports.JSONparser = function(test) {
 exports.streamFilesNone = function(test) {
   utils.streamFiles([], function(){}, function() {
     utils.streamFiles(['/tmp/hopefully-does-not-exist'], function(){
-      console.log(1)
       return new utils.HexStream();
     }, function(er) {
-      console.log(2)
       test.ok(er);
       test.done();
     });
