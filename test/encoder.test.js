@@ -10,6 +10,7 @@ var url = require('url');
 var async = require('async');
 var bignumber =  require('bignumber.js');
 var BufferStream = require('../lib/BufferStream');
+var SYMS = require('../lib/constants').SYMS;
 
 // If you pass a function as expected, catch errors and pass them
 // to the callback.  Avoids test.throws.
@@ -123,8 +124,6 @@ exports.from_spec = function(test) {
     [new Simple(255), '0xf8ff'],
     [new Date(1363896240000), '0xc11a514b67b0'],
 
-
-
     /*
     ["23(h'01020304')", '0xd74401020304'],
     ["24(h'6449455446')", '0xd818456449455446'],
@@ -167,6 +166,7 @@ exports.decimal = function(test) {
     [new bignumber(-0.1), '0xc4822020'],
     [new bignumber(0), '0xc24100'],
     [new bignumber(-0), '0xc340'],
+    [new bignumber('18446744073709551615.1'), 'c48220c24909fffffffffffffff7'],
     [new bignumber(NaN), '0xf97e00'],
     [new bignumber(Infinity), '0xf97c00'],
     [new bignumber(-Infinity), '0xf9fc00']
@@ -183,6 +183,7 @@ exports.ints = function(test) {
     [0x1ffffffff, '0x1b00000001ffffffff'],
     [0x1fffffffffffff, '0x1b001fffffffffffff'],
     [0x20000000000000, '0xfb4340000000000000'], // switch to float
+    [-0x7fffffffffffffff, '0xfbc3e0000000000000']
   ]);
 };
 
@@ -198,14 +199,24 @@ exports.specialObjects = function(test) {
     [new Buffer(0), '0x40'],
     [new Buffer([0,1,2,3,4]), '0x450001020304'],
     [new Simple(0xff), 'f8ff'],
-    [/a/, '0xd8236161']
+    [/a/, '0xd8236161'],
+    [SYMS.NULL, 'f6'],
+    [SYMS.UNDEFINED, 'f7']
   ]);
 };
+
+exports.undef = function(test) {
+  test.deepEqual(cbor.encode(undefined, 2).toString('hex'), 'f702');
+  test.done();
+}
 
 exports.badFunc = function(test) {
   test.throws(function() {
     cbor.encode(function() {return 'hi';});
   });
+  test.throws(function() {
+    cbor.encode(Symbol('foo'));
+  })
   test.done();
 }
 

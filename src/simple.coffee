@@ -34,10 +34,10 @@ class Simple
       when SIMPLE.FALSE then false
       when SIMPLE.TRUE then true
       when SIMPLE.NULL
-        if has_parent then null
+        return if has_parent then null
         else SYMS.NULL # HACK
       when SIMPLE.UNDEFINED
-        if has_parent then undefined
+        return if has_parent then undefined
         else SYMS.UNDEFINED
       when -1
         if !has_parent

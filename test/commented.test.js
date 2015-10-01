@@ -116,7 +116,45 @@ exports.simple = function(test) {
   01                -- 1
 0x01
 `],
-      ["", ""],
+      ['b8010101',
+`  b8                -- Map, count next 1 byte
+    01              -- Map, 1 pair
+      01            -- {Key:0}, 1
+      01            -- {Val:0}, 1
+0xb8010101
+`],
+      ['7f6161ff',
+`  7f                -- String (streaming)
+    61              -- String, length: 1
+      61            -- "a"
+    ff              -- BREAK
+0x7f6161ff
+`],
+      ['5f420102ff',
+`  5f                -- Bytes (streaming)
+    42              -- Bytes, length: 2
+      0102          -- 0102
+    ff              -- BREAK
+0x5f420102ff
+`],
+      ['a1a1616201a1616201',
+`  a1                -- Map, 1 pair
+    a1              -- {Key:0}, Map, 1 pair
+      61            -- String, length: 1
+        62          -- {Key:0}, "b"
+      01            -- {Val:0}, 1
+    a1              -- {Val:0}, Map, 1 pair
+      61            -- String, length: 1
+        62          -- {Key:0}, "b"
+      01            -- {Val:0}, 1
+0xa1a1616201a1616201
+`],
+      ['3bffffffffffffffff',
+`  3b                -- Negative number, next 8 bytes
+    ffffffffffffffff -- -18446744073709551616
+0x3bffffffffffffffff
+`],
+      ['',``],
       [new Buffer(0), ""]
     ], function(io, cb) {
       var i = io[0];

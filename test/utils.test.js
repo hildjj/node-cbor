@@ -17,29 +17,29 @@ exports.bin = function(test) {
   test.done();
 }
 
-exports.parseInt = function(test) {
-  test.deepEqual(utils.parseInt(24, hex('ff')), 255);
-  test.deepEqual(utils.parseInt(25, hex('ffff')), 65535);
-  test.deepEqual(utils.parseInt(26, hex('00010000')), 65536);
-  test.deepEqual(utils.parseInt(27, hex('0000000100000000')), 4294967296);
+exports.parseCBORint = function(test) {
+  test.deepEqual(utils.parseCBORint(24, hex('ff')), 255);
+  test.deepEqual(utils.parseCBORint(25, hex('ffff')), 65535);
+  test.deepEqual(utils.parseCBORint(26, hex('00010000')), 65536);
+  test.deepEqual(utils.parseCBORint(27, hex('0000000100000000')), 4294967296);
   test.throws(function(){
-    utils.parseInt(28, hex('ff'));
+    utils.parseCBORint(28, hex('ff'));
   });
   test.throws(function(){
-    utils.parseInt(27, hex('ff'));
+    utils.parseCBORint(27, hex('ff'));
   });
   test.done();
 };
 
-exports.parseFloat = function(test) {
-  test.deepEqual(utils.parseFloat(25, bin('0 00000 0000000000')), 0);
-  test.deepEqual(utils.parseFloat(26, bin('0 00000000 00000000000000000000000')), 0);
-  test.deepEqual(utils.parseFloat(27, bin('0 00000000000 0000000000000000000000000000000000000000000000000000')), 0);
+exports.parseCBORfloat = function(test) {
+  test.deepEqual(utils.parseCBORfloat(bin('0 00000 0000000000')), 0);
+  test.deepEqual(utils.parseCBORfloat(bin('0 00000000 00000000000000000000000')), 0);
+  test.deepEqual(utils.parseCBORfloat(bin('0 00000000000 0000000000000000000000000000000000000000000000000000')), 0);
   test.throws(function(){
-    utils.parseFloat(28, hex('ff'));
+    utils.parseCBORfloat(hex('ff'));
   });
   test.throws(function(){
-    utils.parseFloat(24, hex('ff'));
+    utils.parseCBORfloat(hex('ff'));
   });
 
   test.done();
@@ -141,7 +141,14 @@ exports.JSONparser = function(test) {
 
 exports.streamFilesNone = function(test) {
   utils.streamFiles([], function(){}, function() {
-    test.done();
+    utils.streamFiles(['/tmp/hopefully-does-not-exist'], function(){
+      console.log(1)
+      return new utils.HexStream();
+    }, function(er) {
+      console.log(2)
+      test.ok(er);
+      test.done();
+    });
   })
 };
 
@@ -157,3 +164,11 @@ exports.streamFilesDash = function(test) {
     test.done();
   })
 };
+
+exports.guessEncoding = function(test) {
+  try {
+    utils.guessEncoding();
+  } catch (er) {
+    test.done();
+  }
+}

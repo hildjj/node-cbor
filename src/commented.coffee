@@ -117,7 +117,7 @@ module.exports = class Commented extends stream.Transform
         'Negative number,'
       when MT.ARRAY
         'Array, length'
-      when MT.Map
+      when MT.MAP
         'Map, count'
       when MT.BYTE_STRING
         'Bytes, length'
@@ -133,13 +133,12 @@ module.exports = class Commented extends stream.Transform
     @depth++
     @push switch mt
       when MT.BYTE_STRING
-        if tag == SYMS.STREAM then 'Bytes (streaming)'
-        else "Bytes, length: #{tag}"
+        "Bytes, length: #{tag}"
       when MT.UTF8_STRING
-        if tag == SYMS.STREAM then 'String (streaming)'
-        else "String, length: #{tag.toString()}"
-      else
-        throw new Error "Unknown comment type: #{mt}"
+        "String, length: #{tag.toString()}"
+      # Not possible
+      # else
+      #   throw new Error "Unknown comment type: #{mt}"
     @push '\n'
 
   _on_start: (mt, tag, parent_mt, pos) =>
@@ -160,13 +159,12 @@ module.exports = class Commented extends stream.Transform
         if tag == SYMS.STREAM then 'Map (streaming)'
         else "Map, #{tag} pair#{plural(tag)}"
       when MT.BYTE_STRING
-        if tag == SYMS.STREAM then 'Bytes (streaming)'
-        else "Bytes, length: #{tag}"
+        'Bytes (streaming)'
       when MT.UTF8_STRING
-        if tag == SYMS.STREAM then 'String (streaming)'
-        else "String, length: #{tag.toString()}"
-      else
-        throw new Error "Unknown comment type: #{mt}"
+        'String (streaming)'
+      # Not possible
+      # else
+      #   throw new Error "Unknown comment type: #{mt}"
     @push '\n'
 
   _on_stop: (mt) =>

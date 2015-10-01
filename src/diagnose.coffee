@@ -58,10 +58,10 @@ module.exports = class Diagnose extends stream.Transform
     switch typeof(encoding)
       when 'function'
         cb = encoding
-        encoding = if (typeof(input) == 'string') then 'hex' else undefined
+        encoding = utils.guessEncoding(input)
       when 'object'
         opts = encoding
-        encoding = opts.encoding
+        encoding = opts.encoding ? utils.guessEncoding(input)
         delete opts.encoding
 
     bs = new BufferStream

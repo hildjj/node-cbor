@@ -177,7 +177,8 @@ exports.others =  function(test) {
     [new bignumber(0.2), '0xc4822002'],
     [new bignumber(273.15), '0xc48221196ab3'],
     [new bignumber(0.25), '0xc5822101'],
-    [new bignumber(1.5), '0xc5822003']
+    [new bignumber(1.5), '0xc5822003'],
+    [new bignumber('-0x20000000000000'), '3b001fffffffffffff']
   ], bt, function(er) {
     test.ifError(er);
     test.done();
@@ -186,8 +187,9 @@ exports.others =  function(test) {
 
 function buildInvalidTest(test) {
   return function (hd, cb) {
+    hd = hd.replace(/^0x/, '');
     Decoder.decodeFirst(hd, function(er, v) {
-      test.notEqual(er, null);
+      test.ok(er);
       cb();
     });
   }
@@ -290,3 +292,52 @@ exports.stream = function(test) {
   var d = new utils.DeHexStream('01');
   d.pipe(dt);
 }
+
+exports.decodeFirst = function(test) {
+  cbor.decodeFirst('01')
+  .then(function(v) {
+    test.equal(1, v);
+    return cbor.decodeFirst('AQ==', {
+      encoding: 'base64'
+    });
+  })
+  .then(function(v) {
+    test.equal(1, v);
+    return cbor.decodeFirst('');
+  })
+  .then(function(v) {
+    test.equal(cbor.Decoder.NOT_FOUND, v);
+    return cbor.decodeFirst('', {required: true});
+  })
+  .catch(function(er) {
+    test.ok(er);
+    cbor.decodeFirst(new Buffer(0), function(er, v) {
+      test.ifError(er);
+      test.equal(cbor.Decoder.NOT_FOUND, v);
+      cbor.decodeFirst(new Buffer(0), {required: true}, function(er, v) {
+        test.ok(er);
+        test.done();
+      });
+    });
+  });
+};
+
+exports.decodeAll = function(test) {
+  cbor.decodeAll('01')
+  .then(function(v) {
+    test.deepEqual([1], v);
+    return cbor.decodeAll('7f');
+  })
+  .catch(function() {
+    cbor.decodeAll('01', function(er, v){
+      test.deepEqual([1], v);
+      cbor.decodeAll('AQ==', {encoding:'base64'}, function(er, v) {
+        test.deepEqual([1], v);
+        cbor.decodeAll('7f', {}, function(er, v) {
+          test.ok(er);
+          test.done();
+        });
+      });
+    });
+  });
+};

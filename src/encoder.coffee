@@ -97,7 +97,7 @@ module.exports = class Encoder extends stream.Transform
     @_pushDoubleBE obj
 
   # @nodoc
-  _pushInt: (obj, mt) ->
+  _pushInt: (obj, mt, orig) ->
     m = mt << 5
     switch
       when obj < 24 then @_pushUInt8 m | obj
@@ -117,14 +117,14 @@ module.exports = class Encoder extends stream.Transform
       else
         # TODO: this doesn't work.
         if mt == MT.NEG_INT
-          @_pushFloat -1 - obj
+          @_pushFloat orig
         else
           @_pushFloat obj
 
   # @nodoc
   _pushIntNum: (obj) ->
     if obj < 0
-      @_pushInt -obj - 1, MT.NEG_INT
+      @_pushInt -obj - 1, MT.NEG_INT, obj
     else
       @_pushInt obj, MT.POS_INT
 
@@ -266,7 +266,7 @@ module.exports = class Encoder extends stream.Transform
     enc.pipe bs
     for o in objs
       switch
-        when typeof(o) == 'undefned' then enc._pushUndefined()
+        when typeof(o) == 'undefined' then enc._pushUndefined()
         when (o == null) then enc._pushObject(null)
         else enc.write o
     enc.end()

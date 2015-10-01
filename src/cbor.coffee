@@ -1,6 +1,7 @@
 try
   require('source-map-support').install()
 catch
+  `// istanbul ignore next`
   undefined
 
 exports.Commented = require './commented'

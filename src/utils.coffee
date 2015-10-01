@@ -1,23 +1,30 @@
 fs = require 'fs'
 stream = require 'stream'
 bignumber = require 'bignumber.js'
-
+{NUMBYTES} = require './constants'
 SHIFT32 = Math.pow(2,32)
+MAX_SAFE_HIGH = 0x1fffff
 
 # Parse an integer of 1,4, or 8 bytes.
 # @param ai [Integer] the additional information from the input stream
 # @param buf [Buffer] the appropriate number of bytes based on `ai`
-# @return [Integer]
-exports.parseInt = (ai, buf) ->
+# @return [Integer or bignum]
+exports.parseCBORint = (ai, buf) ->
   switch ai
-    when 24 then buf.readUInt8 0, true
-    when 25 then buf.readUInt16BE 0, true
-    when 26 then buf.readUInt32BE 0, true
-    when 27
-      f = buf.readUInt32BE 0
-      g = buf.readUInt32BE 4
-      (f * SHIFT32) + g
-    else throw new Error "Invalid additional info for int: #{ai}"
+    when NUMBYTES.ONE then buf.readUInt8(0, true)
+    when NUMBYTES.TWO then buf.readUInt16BE(0, true)
+    when NUMBYTES.FOUR then buf.readUInt32BE(0, true)
+    when NUMBYTES.EIGHT
+      f = buf.readUInt32BE(0)
+      g = buf.readUInt32BE(4)
+      # 2^53-1 maxint
+      if f > MAX_SAFE_HIGH
+        # alternately, we could throw an error.
+        new bignumber(f).times(SHIFT32).plus(g)
+      else
+        (f * SHIFT32) + g
+    else
+      throw new Error "Invalid additional info for int: #{ai}"
 
 # Parse an IEEE754 half-precision float
 # @param buf [Buffer] two bytes to parse from
@@ -38,12 +45,13 @@ exports.parseHalf = parseHalf = (buf) ->
 # Parse an IEEE754 half-,  single-, or double-precision float.
 # @param buf [Buffer] 2,4, or 8 bytes to parse from
 # @return [Number]
-exports.parseFloat = (ai, buf) ->
-  switch ai
-    when 25 then parseHalf buf
-    when 26 then buf.readFloatBE 0, true
-    when 27 then buf.readDoubleBE 0, true
-    else throw new Error "Invalid additional info for float: #{ai}"
+exports.parseCBORfloat = (buf) ->
+  switch buf.length
+    when 2 then exports.parseHalf buf
+    when 4 then buf.readFloatBE 0, true
+    when 8 then buf.readDoubleBE 0, true
+    else
+      throw new Error "Invalid float size: #{buf.length}"
 
 # Decode a hex string into a buffer
 # @return [Buffer]
@@ -146,21 +154,26 @@ printError = (er) ->
     console.log er
 
 exports.streamFiles = (files, streamFunc, cb = printError) ->
-  try
-    f = files.shift()
-    if !f
-      return cb()
+  f = files.shift()
+  if !f
+    return cb()
 
-    sf = streamFunc()
-    sf.on 'end', ->
-      exports.streamFiles files, streamFunc, cb
-    sf.on 'error', (er) ->
-      cb(er)
+  sf = streamFunc()
+  sf.on 'end', ->
+    exports.streamFiles files, streamFunc, cb
+  sf.on 'error', cb
 
-    s = switch
-      when f == "-" then process.stdin
-      when f instanceof stream.Stream then f
-      else fs.createReadStream(f)
-    s.pipe sf
-  catch er
-    cb(er)
+  s = if f == "-" then process.stdin
+  else if f instanceof stream.Stream then f
+  else fs.createReadStream(f)
+  s.on 'error', cb
+  s.pipe sf
+
+exports.guessEncoding = (input) ->
+  switch
+    when typeof(input) == 'string'
+      'hex'
+    when Buffer.isBuffer(input)
+      undefined
+    else
+      throw new Error 'Unknown input type'

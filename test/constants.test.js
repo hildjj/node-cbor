@@ -9,5 +9,6 @@ exports.constants = function(test) {
   new constants.TAG();
   new constants.NUMBYTES();
   new constants.SIMPLE();
+  new constants.SYMS();
   test.done();
 };
