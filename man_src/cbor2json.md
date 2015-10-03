@@ -31,7 +31,7 @@ OPTIONS
 
 `-`: read from stdin instead of a file.  This is the default.
 
-`-x`: assume the input file is hex-encoded CBOR, which makes testing easier some days.
+`-x [string]`: read the input from the hex-encoded string on the command line
 
 `-V, --version`: print the node-cbor version and exit
 

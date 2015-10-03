@@ -138,20 +138,6 @@ class @HexStream extends stream.Transform
     cb()
 
 # @nodoc
-class @JSONparser extends stream.Transform
-  constructor: (options = {}) ->
-    options.readableObjectMode = true
-    options.writableObjectMode = false
-    super(options)
-
-  _transform: (fresh, encoding, cb) ->
-    @push JSON.parse(fresh)
-    cb()
-
-  _flush: (cb) ->
-    cb()
-
-# @nodoc
 printError = (er) ->
   if er?
     console.log er

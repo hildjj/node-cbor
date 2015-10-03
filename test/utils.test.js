@@ -129,16 +129,6 @@ exports.HexStream = function(test) {
   h.end(new Buffer([0x61]));
 };
 
-exports.JSONparser = function(test) {
-  var h = new utils.JSONparser();
-  h.on('data', function(v) {
-    test.deepEqual({a:1}, v);
-    test.done();
-  });
-
-  h.end(new Buffer('{"a": 1}'));
-};
-
 exports.streamFilesNone = function(test) {
   utils.streamFiles([], function(){}, function() {
     utils.streamFiles(['/tmp/hopefully-does-not-exist'], function(){

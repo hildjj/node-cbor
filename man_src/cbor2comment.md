@@ -15,7 +15,7 @@ DESCRIPTION
 example, if the input contained the two bytes (in hex) `61 61`, the output
 would be:
 
-      61                -- UTF-8 string length 1
+      61                -- String, length: 1
         61              -- "a"
     0x6161
 
@@ -28,7 +28,7 @@ OPTIONS
 Eventually, this will be replaced with an algorithm that takes two passes
 over the input.
 
-`-x`: assume the input file is hex-encoded CBOR, which makes testing easier some days.
+`-x [string]`: read the input from the hex-encoded string on the command line
 
 `-V, --version`: print the node-cbor version and exit
 

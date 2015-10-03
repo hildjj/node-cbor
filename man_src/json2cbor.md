@@ -11,7 +11,24 @@ json2cbor test.json > test.cbor
 DESCRIPTION
 -----------
 
-`json2cbor` output a CBOR data stream for an input set of files.
+`json2cbor` output a CBOR data stream for an input set of files.  The files
+can either consist of a single JSON item, or an
+[RFC 7464](https://tools.ietf.org/html/rfc7464) encoded JSON text series.  
+In the latter case, each JSON item starts with the byte "1e" (hex), "30" (dec),
+otherwise known as "Record Separator" (RS), and finishes with a newline.
+
+An example sequence:
+
+    ␞{"d":"2014-09-22T21:58:35.270Z","value":6}␤
+    ␞{"d":"2014-09-22T21:59:15.117Z","value":12}␤
+
+You can generate a sequence like this from a newline-separated JSON file like
+this:
+
+    sed -e s/^/\x1e/g [FILE]
+
+(note: your shell might need $'' around the sed pattern to work.  I'll look
+for a more shell-inspecific way of encdoding this later.)
 
 OPTIONS
 -------
