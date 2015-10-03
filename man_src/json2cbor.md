@@ -30,6 +30,18 @@ this:
 (note: your shell might need $'' around the sed pattern to work.  I'll look
 for a more shell-inspecific way of encdoding this later.)
 
+The reason I'm making you go through this pain is that more of your JSON items
+have newlines embedded in them than you think.  Ideally, you would write
+your files out using RFC 7464, and you'd also get some of the benefits of
+that format, including:
+
+ * Detect a truncated file due to a process dying in the middle of writing
+   your data.
+ * Recovery while parsing from such a truncated file that was later appended to.
+ * Detect when multiple processes are writing to the same file in an
+   uncoordinated way.
+ * Maintain newlines in your JSON.  They'll sneak in there anyway.
+
 OPTIONS
 -------
 
