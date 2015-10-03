@@ -194,6 +194,11 @@ exports.negativeInts = function(test) {
 };
 
 exports.specialObjects = function(test) {
+  var m = new Map();
+  m.set(1,2);
+  var s = new Set();
+  s.add(1);
+  s.add(2);
   test_all(test, [
     [new Date(0), '0xc100'],
     [new Buffer(0), '0x40'],
@@ -201,7 +206,9 @@ exports.specialObjects = function(test) {
     [new Simple(0xff), 'f8ff'],
     [/a/, '0xd8236161'],
     [SYMS.NULL, 'f6'],
-    [SYMS.UNDEFINED, 'f7']
+    [SYMS.UNDEFINED, 'f7'],
+    [m, '0xa10102'],
+    [s, '0x820102']
   ]);
 };
 

@@ -36,7 +36,9 @@ module.exports = class Encoder extends stream.Transform
       Array, @_pushArray
       Date, @_pushDate
       Buffer, @_pushBuffer
+      Map, @_pushMap
       RegExp, @_pushRegexp
+      Set, @_pushSet
       url.Url, @_pushUrl
       bignumber, @_pushBigNumber
     ]
@@ -177,6 +179,12 @@ module.exports = class Encoder extends stream.Transform
     @_pushAny obj.source
 
   # @nodoc
+  _pushSet: (gen, obj) ->
+    gen._pushInt obj.size, MT.ARRAY
+    obj.forEach (x) ->
+      gen._pushAny x
+
+  # @nodoc
   _pushUrl: (gen, obj) ->
     @_pushTag TAG.URI
     @_pushAny obj.format()
@@ -220,12 +228,11 @@ module.exports = class Encoder extends stream.Transform
       @_pushBigint slide
 
   # @nodoc
-  _pushMap: (obj) ->
-    keys = Object.keys obj
-    @_pushInt keys.length, MT.MAP
-    for k in keys
-      @_pushAny k
-      @_pushAny obj[k]
+  _pushMap: (gen, obj) ->
+    gen._pushInt obj.size, MT.MAP
+    obj.forEach (v,k) ->
+      gen._pushAny k
+      gen._pushAny v
 
   # @nodoc
   _pushObject: (obj) ->
@@ -238,7 +245,11 @@ module.exports = class Encoder extends stream.Transform
     if typeof f == 'function'
       return f.call(obj, this)
 
-    @_pushMap obj
+    keys = Object.keys obj
+    @_pushInt keys.length, MT.MAP
+    for k in keys
+      @_pushAny k
+      @_pushAny obj[k]
 
   # @nodoc
   _pushAny: (obj) ->
@@ -249,7 +260,7 @@ module.exports = class Encoder extends stream.Transform
       when 'undefined' then @_pushUndefined obj
       when 'object'    then @_pushObject obj
       when 'symbol'
-        switch obj
+        return switch obj
           when SYMS.NULL then @_pushObject null
           when SYMS.UNDEFINED then @_pushUndefined undefined
           else throw new Error('Unknown symbol: ' + obj.toString())

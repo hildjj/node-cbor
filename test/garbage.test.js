@@ -5,7 +5,8 @@ var cbor = require('../lib/cbor');
 var async = require('async');
 var garbage = require('garbage');
 
-var REPEATS = 10000;
+var REPEATS = process.env['NODE_CBOR_GARBAGE'] || 10000;
+REPEATS = parseInt(REPEATS);
 
 exports.garbage = function(test) {
   async.times(REPEATS, function(n, next) {

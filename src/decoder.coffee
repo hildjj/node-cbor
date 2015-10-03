@@ -16,6 +16,7 @@ MAJOR = Symbol('major type')
 ERROR = Symbol('error')
 NOT_FOUND = Symbol('not found')
 
+# @nodoc
 parentArray = (parent, typ, count) ->
   a              = []
   a[COUNT]       = count
@@ -23,49 +24,98 @@ parentArray = (parent, typ, count) ->
   a[MAJOR]       = typ
   a
 
+# @nodoc
 parentBufferStream = (parent, typ) ->
   b = new BufferStream
   b[SYMS.PARENT] = parent
   b[MAJOR]       = typ
   b
 
-module.exports = class CborStream extends BinaryParseStream
+# Decode a stream of CBOR bytes by transforming them into equivalent
+# JavaScript data.  Because of the limitations of Node object streams,
+# special symbols are emitted instead of NULL or UNDEFINED.  Fix those
+# up by calling {Decoder.nullcheck}.
+#
+# @event 'data'  (object) A complete top-level CBOR item has been parsed
+# @event 'end'   The input stream is fully parsed
+# @event 'error' (Error) An error has occurred in parsing
+#
+# Several other internal events are emitted, but I hope you never need to
+# care about them.
+#
+module.exports = class Decoder extends BinaryParseStream
+  # A symbol returned from {Decoder.decodeFirst} when no object was found.
   @NOT_FOUND = NOT_FOUND
 
+  # Check the given value for a symbol encoding a NULL or UNDEFINED
+  # value in the CBOR stream.
+  #
+  # @param value [Any] the value to check
+  #
+  # @example
+  #   myDecoder.on('data', function(val) {
+  #     val = Decoder.nullcheck(val);
+  #     ...
+  #   });
   @nullcheck: (val) ->
     switch val
       when SYMS.NULL then null
       when SYMS.UNDEFINED then undefined
       else val
 
-  @decodeFirst: (input, encoding = 'hex', cb) ->
-    # stop parsing after the first item  (SECURITY!)
-    # error if there are bytes left over
+  # Decode the first CBOR item in the input.  This will error if there are more
+  # bytes left over at the end, and optionally if there were no valid
+  # CBOR bytes in the input.  Emits the {Decoder.NOT_FOUND} Symbol in the
+  # callback if no data was found and the `required` option is false.
+  #
+  # @param input [String, Buffer] the input to parse
+  # @param options [Object, String] options Decoding options.
+  #   If string, the input encoding.
+  # @option options encoding [String] the input encoding, when the input is
+  #   a string.
+  # @option options required [Boolean] give an error if no valid CBOR is
+  #   found in the inoput.
+  # @option options tags [Object] mapping from tag number to function(v), where
+  #   v is the decoded value that comes after the tag, and where the function
+  #   returns the correctly-created value for that tag.
+  # @option options max_depth [Number] the maximum depth to parse.  -1 (the
+  #   default) for "until you run out of memory".  Set this to a finite positive
+  #   number for un-trusted inputs.  Most standard inputs won't nest more than
+  #   100 or so levels; I've tested into the millions before running out of
+  #   memory.
+  # @param cb [Function] an (error, value) callback.
+  # @return [undefined, Promise] If cb not specified, returns a Promise
+  #   fulfilled with the first parsed value.
+  @decodeFirst: (input, options = {encoding: 'hex'}, cb) ->
     opts = {}
     required = false
-    switch typeof(encoding)
+    encod = undefined
+    switch typeof(options)
       when 'function'
-        cb = encoding
-        encoding = utils.guessEncoding(input)
+        cb = options
+        encod = utils.guessEncoding(input)
+      when 'string'
+        encod = options
       when 'object'
-        opts = encoding
-        encoding = opts.encoding ? utils.guessEncoding(input)
+        opts = utils.extend({}, options)
+        encod = opts.encoding ? utils.guessEncoding(input)
         delete opts.encoding
         required = opts.required ? false
         delete opts.required
 
-    c = new CborStream opts
+    c = new Decoder opts
     p = undefined
     v = NOT_FOUND
     c.on 'data', (val) ->
-      v = CborStream.nullcheck val
+      v = Decoder.nullcheck val
       c.close()
     if typeof(cb) == 'function'
       c.once 'error', (er) ->
         # don't think this can fire callback multiple times
+        u = v
         v = ERROR
         c.close()
-        cb er
+        cb er, u
       c.once 'end', ->
         switch v
           when NOT_FOUND
@@ -95,25 +145,47 @@ module.exports = class CborStream extends BinaryParseStream
             else
               resolve v
 
-    c.end input, encoding
+    c.end input, encod
     p
 
-  @decodeAll: (input, encoding = 'hex', cb) ->
+  # Decode all of the CBOR items in the input.  This will error if there are
+  # more bytes left over at the end.
+  #
+  # @param input [String, Buffer] the input to parse
+  # @param options [Object, String] options Decoding options.
+  #   If string, the input encoding.
+  # @option options encoding [String] the input encoding, when the input is
+  #   a string.
+  # @option options tags [Object] mapping from tag number to function(v), where
+  #   v is the decoded value that comes after the tag, and where the function
+  #   returns the correctly-created value for that tag.
+  # @option options max_depth [Number] the maximum depth to parse.  -1 (the
+  #   default) for "until you run out of memory".  Set this to a finite positive
+  #   number for un-trusted inputs.  Most standard inputs won't nest more than
+  #   100 or so levels; I've tested into the millions before running out of
+  #   memory.
+  # @param cb [Function] an (error, [values]) callback.
+  # @return [undefined, Promise] If cb not specified, returns a Promise
+  #   fulfilled with an array of the parsed values.
+  @decodeAll: (input, options = {encoding: 'hex'}, cb) ->
     opts = {}
-    switch typeof(encoding)
+    encod = undefined
+    switch typeof(options)
       when 'function'
-        cb = encoding
-        encoding = utils.guessEncoding(input)
+        cb = options
+        encod = utils.guessEncoding(input)
+      when 'string'
+        encod = options
       when 'object'
-        opts = encoding
-        encoding = opts.encoding ? utils.guessEncoding(input)
+        opts = utils.extend({}, options)
+        encod = opts.encoding ? utils.guessEncoding(input)
         delete opts.encoding
 
-    c = new CborStream opts
+    c = new Decoder opts
     p = undefined
     vals = []
     c.on 'data', (val) ->
-      vals.push CborStream.nullcheck(val)
+      vals.push Decoder.nullcheck(val)
 
     if typeof(cb) == 'function'
       c.on 'error', (er) ->
@@ -127,9 +199,20 @@ module.exports = class CborStream extends BinaryParseStream
         c.on 'end', ->
           resolve vals
 
-    c.end input, encoding
+    c.end input, encod
     p
 
+  # Create a parsing stream.
+  #
+  # @param options [Object, String] options Decoding options.
+  # @option options tags [Object] mapping from tag number to function(v), where
+  #   v is the decoded value that comes after the tag, and where the function
+  #   returns the correctly-created value for that tag.
+  # @option options max_depth [Number] the maximum depth to parse.  -1 (the
+  #   default) for "until you run out of memory".  Set this to a finite positive
+  #   number for un-trusted inputs.  Most standard inputs won't nest more than
+  #   100 or so levels; I've tested into the millions before running out of
+  #   memory.
   constructor: (options) ->
     @tags = options?.tags
     delete options?.tags
@@ -138,10 +221,12 @@ module.exports = class CborStream extends BinaryParseStream
     @running = true
     super options
 
+  # @nodoc
   close: ->
     @running = false
     @__fresh = true
 
+  # @nodoc
   _parse: ->
     parent = null
     depth = 0

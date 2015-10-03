@@ -29,10 +29,8 @@ class @TAG
   @REGEXP:             35
   @MIME:               36
 
-# When encoding, use these constants to mean how many bytes follow
-# the first one.
 # @nodoc
-NUMBYTES = class @NUMBYTES
+class @NUMBYTES
   @ZERO:        0
   @ONE:        24
   @TWO:        25
@@ -40,7 +38,6 @@ NUMBYTES = class @NUMBYTES
   @EIGHT:      27
   @INDEFINITE: 31
 
-# The currently-defined Simple values.
 # @nodoc
 class @SIMPLE
   @FALSE:     20
@@ -48,6 +45,7 @@ class @SIMPLE
   @NULL:      22
   @UNDEFINED: 23
 
+# @nodoc
 class @SYMS
   @NULL:      Symbol('null')
   @UNDEFINED: Symbol('undef')
