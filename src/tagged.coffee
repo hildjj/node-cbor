@@ -30,7 +30,15 @@ module.exports = class Tagged
     gen._pushTag @tag
     gen._pushAny(@value)
 
-  # if we have a converter for this type, do the conversion
+  # If we have a converter for this type, do the conversion.  Some converters
+  # are built-in.  Additional ones can be passed in.  If you want to remove
+  # a built-in converter, pass a converter in whose value is 'null' instead
+  # of a function.
+  #
+  # @param converters [Object] keys in the object are a tag number, the value
+  #   is a function that takes the decoded CBOR and returns a JavaScript value
+  #   of the appropriate type.  Throw an exception in the function on errors.
+  # @return [Any] the converted item
   convert: (converters) ->
     f = converters?[@tag]
     if typeof(f) != 'function'
@@ -42,9 +50,6 @@ module.exports = class Tagged
     catch er
       @err = er
       @
-
-  @addTag: (tag, converter) ->
-    Tagged.prototype["_tag_#{tag}"] = converter
 
   # @nodoc
   # DATE_STRING

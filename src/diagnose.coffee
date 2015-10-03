@@ -10,12 +10,19 @@ utils = require './utils'
 {MT, SYMS} = require './constants'
 bignumber = require 'bignumber.js'
 
-# Output the diagnostic format from a set of CBOR bytes.
+# Output the diagnostic format from a stream of CBOR bytes.
 module.exports = class Diagnose extends stream.Transform
   # Create a Diagnose.
   # @param options [Object] options for creation
   # @option options separator [String] output between detected objects
   #   (default: '\n')
+  # @option options stream_errors [Boolean] put error info into the
+  #   output stream (default: false)
+  # @option options max_depth [Number] the maximum depth to parse.  -1 (the
+  #   default) for "until you run out of memory".  Set this to a finite positive
+  #   number for un-trusted inputs.  Most standard inputs won't nest more than
+  #   100 or so levels; I've tested into the millions before running out of
+  #   memory.
   constructor: (options = {}) ->
     @separator = options.separator ? '\n'
     delete options.separator
@@ -34,9 +41,11 @@ module.exports = class Diagnose extends stream.Transform
     @parser.on 'data', @_on_data
     @parser.on 'error', @_on_error
 
+  # @nodoc
   _transform: (fresh, encoding, cb) ->
     @parser.write fresh, encoding, cb
 
+  # @nodoc
   _flush: (cb) ->
     @parser._flush (er) =>
       if @stream_errors
@@ -47,8 +56,10 @@ module.exports = class Diagnose extends stream.Transform
 
   # Convenience function to return a string in diagnostic format.
   # @param input [Buffer,String] the CBOR bytes to write
-  # @param encoding the encoding, if input is a stream (defaults to 'hex')
+  # @param encoding the encoding, if input is a string (defaults to 'hex')
   # @param cb [function(error, String)]
+  # @return [undefined, Promise] if cb is not specified, returns a Promise
+  #   fulfilled with the diagnostic string
   @diagnose: (input, encoding, cb) ->
     if !input?
       throw new Error 'input required'
@@ -88,6 +99,7 @@ module.exports = class Diagnose extends stream.Transform
     else
       @emit 'error', er
 
+  # @nodoc
   _fore: (parent_mt, pos) ->
     switch parent_mt
       when MT.BYTE_STRING, MT.UTF8_STRING, MT.ARRAY
@@ -116,6 +128,7 @@ module.exports = class Diagnose extends stream.Transform
       else
         util.inspect(val)
 
+  # @nodoc
   _on_start: (mt, tag, parent_mt, pos) =>
     @_fore parent_mt, pos
     @push switch mt
@@ -129,6 +142,7 @@ module.exports = class Diagnose extends stream.Transform
     if tag == SYMS.STREAM
       @push "_ "
 
+  # @nodoc
   _on_stop: (mt) =>
     @push switch mt
       when MT.TAG then ")"
@@ -139,5 +153,6 @@ module.exports = class Diagnose extends stream.Transform
         `// istanbul ignore next`
         throw new Error "Unknown diagnostic type: #{mt}"
 
+  # @nodoc
   _on_data: =>
     @push @separator

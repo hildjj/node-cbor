@@ -18,7 +18,7 @@ exports.parseCBORint = (ai, buf) ->
       f = buf.readUInt32BE(0)
       g = buf.readUInt32BE(4)
       # 2^53-1 maxint
-      if f > MAX_SAFE_HIGH
+      return if f > MAX_SAFE_HIGH
         # alternately, we could throw an error.
         new bignumber(f).times(SHIFT32).plus(g)
       else
@@ -125,6 +125,7 @@ class @DeHexStream extends stream.Readable
   # @nodoc
   _read: ->
 
+# @nodoc
 class @HexStream extends stream.Transform
   constructor: (options) ->
     super(options)
@@ -136,6 +137,7 @@ class @HexStream extends stream.Transform
   _flush: (cb) ->
     cb()
 
+# @nodoc
 class @JSONparser extends stream.Transform
   constructor: (options = {}) ->
     options.readableObjectMode = true
@@ -149,10 +151,12 @@ class @JSONparser extends stream.Transform
   _flush: (cb) ->
     cb()
 
+# @nodoc
 printError = (er) ->
   if er?
     console.log er
 
+# @nodoc
 exports.streamFiles = (files, streamFunc, cb = printError) ->
   f = files.shift()
   if !f
@@ -169,6 +173,7 @@ exports.streamFiles = (files, streamFunc, cb = printError) ->
   s.on 'error', cb
   s.pipe sf
 
+# @nodoc
 exports.guessEncoding = (input) ->
   switch
     when typeof(input) == 'string'

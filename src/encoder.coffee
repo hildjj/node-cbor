@@ -17,8 +17,8 @@ UNDEFINED = (MT.SIMPLE_FLOAT << 5) | SIMPLE.UNDEFINED
 NULL      = (MT.SIMPLE_FLOAT << 5) | SIMPLE.NULL
 MAXINT_BN = new bignumber '0x20000000000000'
 
-# A Readable stream of CBOR bytes.  Call `write` to get JSON objects translated
-# into the stream.
+# Transform JavaScript values into CBOR bytes.  The `Writable` side of
+# the stream is in object mode.
 module.exports = class Encoder extends stream.Transform
   # Create an encoder
   # @param options [Object] options for the encoder
@@ -47,10 +47,12 @@ module.exports = class Encoder extends stream.Transform
     for typ,i in addTypes by 2
       @addSemanticType typ, addTypes[i + 1]
 
+  # @nodoc
   _transform: (fresh, encoding, cb) ->
     @_pushAny fresh
     cb()
 
+  # @nodoc
   _flush: (cb) ->
     cb()
 
@@ -68,6 +70,7 @@ module.exports = class Encoder extends stream.Transform
     @semanticTypes.push type, fun
     null
 
+  # @nodoc
   @_push_gen: (meth, len) ->
     (val) ->
       b = new Buffer len

@@ -12,10 +12,14 @@ class Simple
       throw new Error "value must be a small positive integer: #{@value}"
 
   # Convert to a string
+  #
   # @return [String]
   toString: () ->
     "simple(#{@value})"
 
+  # Convert to a string when inspecting
+  # 
+  # @return [String]
   inspect: (depth, opts) ->
     "simple(#{@value})"
 
@@ -24,11 +28,20 @@ class Simple
     gen._pushInt @value, MT.SIMPLE_FLOAT
 
   # Is the given object a Simple?
-  # @param obj the object to check
+  #
+  # @param obj [Object] the object to check
   # @return [Boolean]
   @isSimple = (obj) ->
     obj instanceof Simple
 
+  # Decode from the CBOR additional information into a JavaScript value.
+  # If the CBOR item has no parent, return a "safe" symbol instead of
+  # `null` or `undefined`, so that the value can be passed through a
+  # stream in object mode.
+  #
+  # @param val [Number] the CBOR additional info to convert
+  # @param has_parent [Boolean] Does the CBOR item have a parent?
+  # @return [null, undefined, Boolean, Symbol] the decoded value
   @decode = (val, has_parent = true) ->
     switch val
       when SIMPLE.FALSE then false
