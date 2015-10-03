@@ -59,7 +59,8 @@
   "readmeFilename": "README.md",
   "dependencies": {
     "bignumber.js": "~2.0",
-    "commander": "^2.8"
+    "commander": "^2.8",
+    "json-text-sequence": "^0.1"
   },
   "engines": {
     "node": ">=4.1.0"

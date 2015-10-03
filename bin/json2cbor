@@ -4,6 +4,7 @@ var cbor = require('../lib/cbor');
 var utils = require('../lib/utils');
 var package = require('../package.json');
 
+var jts = require('json-text-sequence');
 var opts = require('commander')
 .version(package.version)
 .usage('[options] <file ...>')
@@ -16,9 +17,18 @@ if (argv.length === 0) {
 }
 
 utils.streamFiles(argv, function(){
-  var p = new utils.JSONparser();
+  var p = new jts.parser();
   var d = new cbor.Encoder();
   p.pipe(d);
+  p.on('truncated', function(b) {
+    try {
+      d.write(JSON.parse(b));
+    }
+    catch (e) {
+      e.message += " for input " + b.inspect();
+      throw e;
+    }
+  });
   var o = d
   if (opts.hex) {
     o = new utils.HexStream();
