@@ -18,7 +18,7 @@ class Simple
     "simple(#{@value})"
 
   # Convert to a string when inspecting
-  # 
+  #
   # @return [String]
   inspect: (depth, opts) ->
     "simple(#{@value})"
