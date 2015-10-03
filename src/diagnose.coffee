@@ -34,7 +34,9 @@ module.exports = class Diagnose extends stream.Transform
 
     super(options)
 
+    @float_bytes = -1
     @parser = new Decoder options
+    @parser.on 'more-bytes', @_on_more
     @parser.on 'value', @_on_value
     @parser.on 'start', @_on_start
     @parser.on 'stop', @_on_stop
@@ -100,6 +102,14 @@ module.exports = class Diagnose extends stream.Transform
       @emit 'error', er
 
   # @nodoc
+  _on_more: (mt, len, parent_mt, pos) =>
+    if mt == MT.SIMPLE_FLOAT
+      @float_bytes = switch(len)
+        when 2 then 1
+        when 4 then 2
+        when 8 then 3
+
+  # @nodoc
   _fore: (parent_mt, pos) ->
     switch parent_mt
       when MT.BYTE_STRING, MT.UTF8_STRING, MT.ARRAY
@@ -121,6 +131,10 @@ module.exports = class Diagnose extends stream.Transform
         "undefined"
       when typeof(val) == 'string'
         JSON.stringify val
+      when @float_bytes > 0
+        fb = @float_bytes
+        @float_bytes = -1
+        "#{util.inspect(val)}_#{fb}"
       when Buffer.isBuffer val
         "h'#{val.toString("hex")}'"
       when val instanceof bignumber
