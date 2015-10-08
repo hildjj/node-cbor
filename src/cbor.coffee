@@ -10,6 +10,7 @@ exports.Decoder = require './decoder'
 exports.Encoder = require './encoder'
 exports.Simple = require './simple'
 exports.Tagged = require './tagged'
+exports.BinaryParser = require '../vendor/binary-parse-stream'
 
 exports.comment = exports.Commented.comment
 exports.decodeAll = exports.Decoder.decodeAll
