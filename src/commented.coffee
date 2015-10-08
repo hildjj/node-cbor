@@ -4,12 +4,12 @@ assert = require 'assert'
 stream = require 'stream'
 util = require 'util'
 
-BufferStream = require './BufferStream'
 utils = require './utils'
 Simple = require './simple'
 Decoder = require './decoder'
 {MT, NUMBYTES, SYMS} = require './constants'
 bignumber = require 'bignumber.js'
+NoFilter = require 'nofilter'
 
 plural = (c) ->
   if c > 1 then 's'
@@ -31,7 +31,7 @@ module.exports = class Commented extends stream.Transform
 
     super(options)
     @depth = 1
-    @all = new BufferStream
+    @all = new NoFilter
 
     @parser = new Decoder options
     @parser.on 'value', @_on_value
@@ -52,7 +52,7 @@ module.exports = class Commented extends stream.Transform
 
   # Comment on an input Buffer or string, creating a string passed to the
   # callback.  If callback not specified,  output goes to stdout.
-  # @param input [Buffer,String,BufferStream] input
+  # @param input [Buffer,String,NoFilter] input
   # @param max_depth [Integer] how many times to indent the dashes
   #   (default: 10)
   # @param cb [function(Error, String)] optional.
@@ -73,7 +73,7 @@ module.exports = class Commented extends stream.Transform
         encoding = options.encoding ? encoding
         max_depth = options.max_depth ? max_depth
 
-    bs = new BufferStream
+    bs = new NoFilter
     d = new Commented
       max_depth: max_depth
     p = null
@@ -97,7 +97,7 @@ module.exports = class Commented extends stream.Transform
     @push '\n'
 
   _on_read: (buf) =>
-    @all.append buf
+    @all.write buf
     hex = buf.toString('hex')
     @push(new Array(@depth + 1).join('  '))
     @push hex

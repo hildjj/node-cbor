@@ -87,7 +87,6 @@ $ grunt
 Running "coffee:compile" (coffee) task
 
 Running "nodeunit:all" (nodeunit) task
-Testing BufferStream.test...............OK
 Testing decoder.test.....OK
 Testing diagnose.test...OK
 Testing encoder.test.......OK

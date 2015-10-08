@@ -1,6 +1,6 @@
 var async = require('async');
+var NoFilter = require('nofilter');
 
-var BufferStream = require('../lib/BufferStream');
 var Commented = require('../lib/commented');
 var comment = Commented.comment;
 var encode = require('../lib/encoder').encode;
@@ -226,7 +226,7 @@ exports.max_depth = function(test) {
 };
 
 exports.stream = function(test) {
-  var bs = new BufferStream()
+  var bs = new NoFilter()
   var parser = new Commented();
   parser.pipe(bs);
 

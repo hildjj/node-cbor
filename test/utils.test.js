@@ -4,8 +4,8 @@
 var fs = require('fs');
 var async = require('async');
 var bignumber = require('bignumber.js');
+var NoFilter = require('nofilter');
 
-var BufferStream = require('../lib/BufferStream');
 var utils = require('../lib/utils');
 var hex = utils.hex;
 var bin = utils.bin;
@@ -120,7 +120,7 @@ exports.DeHexStream = function(test) {
 
 exports.HexStream = function(test) {
   var h = new utils.HexStream();
-  var bs = new BufferStream();
+  var bs = new NoFilter();
   h.pipe(bs);
   h.on('end', function() {
     test.deepEqual(bs.toString('utf8'), '61');
@@ -142,7 +142,7 @@ exports.streamFilesNone = function(test) {
 
 exports.streamFilesDash = function(test) {
   var u = new utils.HexStream()
-  var bs = new BufferStream();
+  var bs = new NoFilter();
   u.pipe(bs);
   utils.streamFiles([new utils.DeHexStream('6161')], function(){
     return u;

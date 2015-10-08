@@ -1,6 +1,6 @@
 // Tweaked version of nathan7's binary-parse-stream
 // (see https://github.com/nathan7/binary-parse-stream)
-// Uses BufferStream instead of the readable in the original.  Removes
+// Uses NoFilter instead of the readable in the original.  Removes
 // the ability to read -1, which was odd and un-needed.
 // License for binary-parse-stream: MIT
 
@@ -9,7 +9,7 @@ exports = module.exports = BinaryParseStream
 var Stream = require('stream')
   , TransformStream = Stream.Transform
   , inherits = require('util').inherits
-  , BufferStream = require('../lib/BufferStream')
+  , NoFilter = require('nofilter')
 
 exports.One = -1
 
@@ -19,7 +19,7 @@ function BinaryParseStream(options) {
   this._writableState.objectMode = false
   this._readableState.objectMode = true
 
-  this.bs = new BufferStream()
+  this.bs = new NoFilter()
   this.__restart()
 }
 

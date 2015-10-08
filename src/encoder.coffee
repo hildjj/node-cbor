@@ -1,8 +1,8 @@
 stream = require 'stream'
 url = require 'url'
 bignumber =  require 'bignumber.js'
+NoFilter = require 'nofilter'
 
-BufferStream = require './BufferStream'
 Tagged = require './tagged'
 Simple = require './simple'
 
@@ -37,6 +37,7 @@ module.exports = class Encoder extends stream.Transform
       Date, @_pushDate
       Buffer, @_pushBuffer
       Map, @_pushMap
+      NoFilter, @_pushNoFilter
       RegExp, @_pushRegexp
       Set, @_pushSet
       url.Url, @_pushUrl
@@ -176,6 +177,9 @@ module.exports = class Encoder extends stream.Transform
     @_pushInt obj.length, MT.BYTE_STRING
     @push obj
 
+  _pushNoFilter: (gen, obj) ->
+    @_pushBuffer gen, obj.slice()
+
   # @nodoc
   _pushRegexp: (gen, obj) ->
     @_pushTag TAG.REGEXP
@@ -276,7 +280,7 @@ module.exports = class Encoder extends stream.Transform
   # @param objs... [Object+] the objects to encode
   @encode: (objs...) ->
     enc = new Encoder
-    bs = new BufferStream
+    bs = new NoFilter
     enc.pipe bs
     for o in objs
       switch

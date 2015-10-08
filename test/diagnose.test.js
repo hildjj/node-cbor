@@ -2,11 +2,11 @@
 "use strict";
 
 var Diagnose = require('../lib/diagnose');
-var BufferStream = require('../lib/BufferStream');
 var utils = require('../lib/utils');
 
 var async = require('async');
 var fs = require('fs');
+var NoFilter = require('nofilter');
 
 function diagTest(test, max_depth) {
   return function (hd, cb) {
@@ -185,7 +185,7 @@ exports.construct = function (test) {
   var d = new Diagnose();
   test.equal(false, d.stream_errors);
   d.stream_errors = true;
-  var bs = new BufferStream();
+  var bs = new NoFilter();
   d.pipe(bs);
   d.on('end', function() {
     test.deepEqual('Error: unexpected end of input', bs.toString('utf8'));
@@ -198,7 +198,7 @@ exports.stream = function(test) {
   var dt = new Diagnose({
     separator: '-'
   });
-  var bs = new BufferStream();
+  var bs = new NoFilter();
 
   dt.on('end', function() {
     test.deepEqual(bs.toString('utf8'), '1-');

@@ -1,7 +1,7 @@
 BinaryParseStream = require '../vendor/binary-parse-stream'
 Tagged = require './tagged'
 Simple = require './simple'
-BufferStream = require './BufferStream'
+NoFilter = require 'nofilter'
 utils = require './utils'
 bignumber = require 'bignumber.js'
 
@@ -26,7 +26,7 @@ parentArray = (parent, typ, count) ->
 
 # @nodoc
 parentBufferStream = (parent, typ) ->
-  b = new BufferStream
+  b = new NoFilter
   b[SYMS.PARENT] = parent
   b[MAJOR]       = typ
   b
@@ -323,7 +323,7 @@ module.exports = class Decoder extends BinaryParseStream
             parent[COUNT] = 1
           when Array.isArray(parent)
             parent.push val
-          when parent instanceof BufferStream
+          when parent instanceof NoFilter
             pm = parent[MAJOR]
             if pm? and (pm != mt)
               @running = false
@@ -371,10 +371,10 @@ module.exports = class Decoder extends BinaryParseStream
               # else
               #   throw new Error 'Invalid state'
 
-          when parent instanceof BufferStream
+          when parent instanceof NoFilter
             switch parent[MAJOR]
               when MT.BYTE_STRING
-                parent.flatten()
+                parent.slice()
               when MT.UTF8_STRING
                 parent.toString('utf-8')
               # Not possible

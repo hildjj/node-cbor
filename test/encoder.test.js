@@ -1,15 +1,16 @@
 /*jslint node: true */
 "use strict";
 
+var url = require('url');
+var async = require('async');
+var bignumber =  require('bignumber.js');
+var NoFilter = require('nofilter');
+
 var cbor = require('../lib/cbor');
 var Encoder = cbor.Encoder;
 var Simple = cbor.Simple;
 var Tagged = cbor.Tagged;
 var hex = require('../lib/utils').hex;
-var url = require('url');
-var async = require('async');
-var bignumber =  require('bignumber.js');
-var BufferStream = require('../lib/BufferStream');
 var SYMS = require('../lib/constants').SYMS;
 
 // If you pass a function as expected, catch errors and pass them
@@ -237,7 +238,7 @@ exports.addSemanticType = function(test) {
   // {"value": "foo"}
   var t = new TempClass('foo');
   test.deepEqual(Encoder.encode(t), hex('0xa16576616c756563666f6f'));
-  test.deepEqual(Encoder.encode(), new Buffer(0));
+  test.deepEqual(Encoder.encode(), null);
 
   TempClass.prototype.encodeCBOR = function(gen) {
     gen._pushTag(0xffff);
@@ -270,13 +271,13 @@ exports.addSemanticType = function(test) {
 
 exports.internalTypes = function(test) {
   test_all(test, [
-    [new BufferStream({bsInit: new Buffer([1,2,3,4])}), '0x4401020304'],
+    [new NoFilter(new Buffer([1,2,3,4])), '0x4401020304'],
     [new Tagged(256, 1), '0xd9010001']
   ]);
 };
 
 exports.stream = function(test) {
-  var bs = new BufferStream();
+  var bs = new NoFilter();
   var gen = new Encoder();
   gen.on('end', function() {
     test.deepEqual(bs.read(), new Buffer([1, 2]));
@@ -288,10 +289,10 @@ exports.stream = function(test) {
 };
 
 exports.streamNone = function(test) {
-  var bs = new BufferStream();
+  var bs = new NoFilter();
   var gen = new Encoder();
   gen.on('end', function() {
-    test.deepEqual(bs.read(), new Buffer(0));
+    test.deepEqual(bs.read(), null);
     test.done();
   });
   gen.pipe(bs);

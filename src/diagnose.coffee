@@ -4,11 +4,11 @@ stream = require 'stream'
 util = require 'util'
 
 Decoder = require './decoder'
-BufferStream = require './BufferStream'
 Simple = require './simple'
 utils = require './utils'
 {MT, SYMS} = require './constants'
 bignumber = require 'bignumber.js'
+NoFilter = require 'nofilter'
 
 # Output the diagnostic format from a stream of CBOR bytes.
 module.exports = class Diagnose extends stream.Transform
@@ -77,7 +77,7 @@ module.exports = class Diagnose extends stream.Transform
         encoding = opts.encoding ? utils.guessEncoding(input)
         delete opts.encoding
 
-    bs = new BufferStream
+    bs = new NoFilter
     d = new Diagnose opts
     p = null
 
