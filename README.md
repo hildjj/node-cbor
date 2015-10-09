@@ -6,8 +6,16 @@ Encode and parse data in the Concise Binary Object Representation (CBOR) data fo
 Installation:
 ------------
 
+```bash
+$ npm install --save cbor
 ```
-$ npm install cbor
+
+**NOTE**
+This package now requires node.js 4.1 or higher.  If you want a version that
+works with older node.js versions, you can install like this:
+
+```bash
+npm install 'hildjj/node-cbor#node0' --save
 ```
 
 Documentation:
