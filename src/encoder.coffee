@@ -177,6 +177,7 @@ module.exports = class Encoder extends stream.Transform
     @_pushInt obj.length, MT.BYTE_STRING
     @push obj
 
+  # @nodoc
   _pushNoFilter: (gen, obj) ->
     @_pushBuffer gen, obj.slice()
 

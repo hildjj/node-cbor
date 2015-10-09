@@ -11,6 +11,7 @@ Decoder = require './decoder'
 bignumber = require 'bignumber.js'
 NoFilter = require 'nofilter'
 
+# @nodoc
 plural = (c) ->
   if c > 1 then 's'
   else ''
@@ -43,10 +44,12 @@ module.exports = class Commented extends stream.Transform
     @parser.on 'data', @_on_data
     @parser.bs.on 'read', @_on_read
 
+  # @nodoc
   _transform: (fresh, encoding, cb) ->
     @parser.write fresh, encoding, (er) ->
       cb er
 
+  # @nodoc
   _flush: (cb) ->
     @parser._flush cb
 
@@ -91,11 +94,13 @@ module.exports = class Commented extends stream.Transform
     d.end input, encoding
     p
 
+  # @nodoc
   _on_error: (er) =>
     @push 'ERROR: '
     @push er.toString()
     @push '\n'
 
+  # @nodoc
   _on_read: (buf) =>
     @all.write buf
     hex = buf.toString('hex')
@@ -108,6 +113,7 @@ module.exports = class Commented extends stream.Transform
     @push(new Array(ind + 1).join(' '))
     @push '-- '
 
+  # @nodoc
   _on_more: (mt, len, parent_mt, pos) =>
     @depth++
     @push switch mt
@@ -129,6 +135,7 @@ module.exports = class Commented extends stream.Transform
 
     @push " next #{len} byte#{plural(len)}\n"
 
+  # @nodoc
   _on_start_string: (mt, tag, parent_mt, pos) =>
     @depth++
     @push switch mt
@@ -136,11 +143,9 @@ module.exports = class Commented extends stream.Transform
         "Bytes, length: #{tag}"
       when MT.UTF8_STRING
         "String, length: #{tag.toString()}"
-      # Not possible
-      # else
-      #   throw new Error "Unknown comment type: #{mt}"
     @push '\n'
 
+  # @nodoc
   _on_start: (mt, tag, parent_mt, pos) =>
     @depth++
     if tag != SYMS.BREAK
@@ -162,14 +167,13 @@ module.exports = class Commented extends stream.Transform
         'Bytes (streaming)'
       when MT.UTF8_STRING
         'String (streaming)'
-      # Not possible
-      # else
-      #   throw new Error "Unknown comment type: #{mt}"
     @push '\n'
 
+  # @nodoc
   _on_stop: (mt) =>
     @depth--
 
+  # @nodoc
   _on_value: (val, parent_mt, pos, ai) =>
     if val != SYMS.BREAK
       @push switch parent_mt
@@ -198,6 +202,7 @@ module.exports = class Commented extends stream.Transform
         @depth--
     @push '\n'
 
+  # @nodoc
   _on_data: =>
     @push '0x'
     @push @all.read().toString('hex')
