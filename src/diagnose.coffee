@@ -1,204 +1,172 @@
 # jslint node: true
 
 stream = require 'stream'
+util = require 'util'
 
-Evented = require './evented'
-BufferStream = require './BufferStream'
+Decoder = require './decoder'
 Simple = require './simple'
 utils = require './utils'
+{MT, SYMS} = require './constants'
+bignumber = require 'bignumber.js'
+NoFilter = require 'nofilter'
 
-# Output the diagnostic format from a set of CBOR bytes.  Either pipe another
-# stream into an instance of this class, or pass a string, Buffer, or
-# BufferStream into `options.input`, assign callbacks, then call `start()`.
-#
-# @event end() Done processing the input
-# @event error(er) An error has occured
-#   @param er [Error]
-# @event complete(obj) A complete CBOR object has been read from the stream
-#   There is no need to hook this event usually, it's mostly for testing.
-#   @param obj [Stream] the stream that was written to
-# @todo Consider turning this into a Transform stream
-module.exports = class Diagnose extends stream.Writable
+# Output the diagnostic format from a stream of CBOR bytes.
+module.exports = class Diagnose extends stream.Transform
   # Create a Diagnose.
   # @param options [Object] options for creation
   # @option options separator [String] output between detected objects
   #   (default: '\n')
-  # @option options output [Writable] where the output should go
-  #   (default: process.stdout)
-  # @option options input [Buffer,String,BufferStream] optional input
-  # @option options encoding [String] encoding of a String `input`
-  #   (default: 'hex')
-  # @option options offset [Integer] *byte* offset into the input from which
-  #   to start
+  # @option options stream_errors [Boolean] put error info into the
+  #   output stream (default: false)
+  # @option options max_depth [Number] the maximum depth to parse.  -1 (the
+  #   default) for "until you run out of memory".  Set this to a finite positive
+  #   number for un-trusted inputs.  Most standard inputs won't nest more than
+  #   100 or so levels; I've tested into the millions before running out of
+  #   memory.
   constructor: (options = {}) ->
-    super()
+    @separator = options.separator ? '\n'
+    delete options.separator
+    @stream_errors = options.stream_errors ? false
+    delete options.stream_errors
 
-    @options = utils.extend
-      separator: '\n'
-      output: process.stdout
-      streamErrors: false
-    , options
+    options.readableObjectMode = false
+    options.writableObjectMode = false
 
-    @on 'finish', () =>
-      @parser.end()
+    super(options)
 
-    @parser = new Evented @options
-
+    @float_bytes = -1
+    @parser = new Decoder options
+    @parser.on 'more-bytes', @_on_more
     @parser.on 'value', @_on_value
-    @parser.on 'array-start', @_on_array_start
-    @parser.on 'array-stop', @_on_array_stop
-    @parser.on 'map-start', @_on_map_start
-    @parser.on 'map-stop', @_on_map_stop
-    @parser.on 'stream-start', @_on_stream_start
-    @parser.on 'stream-stop', @_on_stream_stop
-    @parser.on 'end', @_on_end
+    @parser.on 'start', @_on_start
+    @parser.on 'stop', @_on_stop
+    @parser.on 'data', @_on_data
     @parser.on 'error', @_on_error
 
-  # All events have been hooked, start parsing the input.
-  # @note This MUST NOT be called if you're piping a Readable stream in.
-  start: () ->
-    @parser.start()
+  # @nodoc
+  _transform: (fresh, encoding, cb) ->
+    @parser.write fresh, encoding, cb
 
-  # Convenience function to print to (e.g.) stdout.
-  # @param input [Buffer,String,BufferStream] the CBOR bytes to write
-  # @param encoding [String] encoding if `input` is a string (default: 'hex')
-  # @param output [Writable] Writable stream to output diagnosis info into
-  #   (default: process.stdout)
-  # @param done [function(error)]
-  @diagnose: (input, encoding = 'hex', output = process.stdout, done) ->
-    if !input?
-      throw new Error 'input required'
-
-    d = new Diagnose
-      input: input
-      encoding: encoding
-      output: output
-    if done
-      d.on 'end', done
-      d.on 'error', done
-    d.start()
+  # @nodoc
+  _flush: (cb) ->
+    @parser._flush (er) =>
+      if @stream_errors
+        @_on_error(er)
+        cb()
+      else
+        cb(er)
 
   # Convenience function to return a string in diagnostic format.
-  # @param input [Buffer,String,BufferStream] the CBOR bytes to write
-  # @param done [function(error, String)]
-  @diagnoseString: (input, done) ->
+  # @param input [Buffer,String] the CBOR bytes to write
+  # @param encoding the encoding, if input is a string (defaults to 'hex')
+  # @param cb [function(error, String)]
+  # @return [undefined, Promise] if cb is not specified, returns a Promise
+  #   fulfilled with the diagnostic string
+  @diagnose: (input, encoding, cb) ->
     if !input?
       throw new Error 'input required'
 
-    if !done?
-      throw new Error 'callback required'
+    opts = {}
 
-    bs = new BufferStream
-    d = new Diagnose
-      input: input
-      output: bs
+    switch typeof(encoding)
+      when 'function'
+        cb = encoding
+        encoding = utils.guessEncoding(input)
+      when 'object'
+        opts = encoding
+        encoding = opts.encoding ? utils.guessEncoding(input)
+        delete opts.encoding
 
-    d.on 'end', ->
-      done(null, bs.toString('utf8'))
-    d.on 'error', done
-    d.start()
+    bs = new NoFilter
+    d = new Diagnose opts
+    p = null
 
-  # @nodoc
-  _numStr: (val) ->
-    if isNaN(val) then "NaN"
-    else if !isFinite(val)
-      if val < 0 then '-Infinity' else 'Infinity'
+    if typeof(cb) == 'function'
+      d.on 'end', ->
+        cb(null, bs.toString('utf8'))
+      d.on 'error', cb
     else
-      JSON.stringify(val)
-
-  # @nodoc
-  _stream_val: (val) ->
-    @options.output.write switch
-      when val == undefined then 'undefined'
-      when val == null then 'nil'
-      when typeof(val) == 'number' then @_numStr(val)
-      when Simple.isSimple(val) then val.toString()
-      when Buffer.isBuffer(val) then "h'" + val.toString('hex') + "'"
-      else JSON.stringify(val)
+      p = new Promise (resolve, reject) ->
+        d.on 'end', ->
+          resolve bs.toString('utf8')
+        d.on 'error', reject
+    d.pipe bs
+    d.end input, encoding
+    p
 
   # @nodoc
   _on_error: (er) =>
-    if @options.streamErrors
-      @options.output.write er.toString()
-    @emit 'error', er
+    if @stream_errors
+      @push er.toString()
+    else
+      @emit 'error', er
 
   # @nodoc
-  _fore: (kind) ->
-    switch kind
-      when 'array', 'key', 'stream' then @options.output.write ', '
+  _on_more: (mt, len, parent_mt, pos) =>
+    if mt == MT.SIMPLE_FLOAT
+      @float_bytes = switch(len)
+        when 2 then 1
+        when 4 then 2
+        when 8 then 3
 
   # @nodoc
-  _aft: (kind) ->
-    switch kind
-      when 'key', 'key-first' then @options.output.write ': '
-      when null
-        if @options.separator?
-          @options.output.write @options.separator
-        @emit 'complete', @options.output
+  _fore: (parent_mt, pos) ->
+    switch parent_mt
+      when MT.BYTE_STRING, MT.UTF8_STRING, MT.ARRAY
+        if pos > 0 then @push ', '
+      when MT.MAP
+        if pos > 0
+          if pos % 2 then @push ': '
+          else @push ', '
 
   # @nodoc
-  _on_value: (val,tags,kind) =>
-    @_fore kind
-    if tags? and tags.length
-      @options.output.write "#{t}(" for t in tags
-
-    @_stream_val val
-
-    if tags? and tags.length
-      @options.output.write ")" for t in tags
-    @_aft kind
-
-  # @nodoc
-  _on_array_start: (count,tags,kind) =>
-    @_fore kind
-    if tags? and tags.length
-      @options.output.write "#{t}(" for t in tags
-    @options.output.write "["
-    if count == -1
-      @options.output.write "_ "
-
-  # @nodoc
-  _on_array_stop: (count,tags,kind) =>
-    @options.output.write "]"
-    if tags? and tags.length
-      @options.output.write ")" for t in tags
-    @_aft kind
+  _on_value: (val, parent_mt, pos) =>
+    if val == SYMS.BREAK
+      return
+    @_fore parent_mt, pos
+    @push switch
+      when val == SYMS.NULL
+        "null"
+      when val == SYMS.UNDEFINED
+        "undefined"
+      when typeof(val) == 'string'
+        JSON.stringify val
+      when @float_bytes > 0
+        fb = @float_bytes
+        @float_bytes = -1
+        "#{util.inspect(val)}_#{fb}"
+      when Buffer.isBuffer val
+        "h'#{val.toString("hex")}'"
+      when val instanceof bignumber
+        val.toString()
+      else
+        util.inspect(val)
 
   # @nodoc
-  _on_map_start: (count,tags,kind) =>
-    @_fore kind
-    if tags? and tags.length
-      @options.output.write "#{t}(" for t in tags
-    @options.output.write "{"
-    if count == -1
-      @options.output.write "_ "
+  _on_start: (mt, tag, parent_mt, pos) =>
+    @_fore parent_mt, pos
+    @push switch mt
+      when MT.TAG then "#{tag}("
+      when MT.ARRAY then "["
+      when MT.MAP then "{"
+      when MT.BYTE_STRING, MT.UTF8_STRING then "("
+      else
+        `// istanbul ignore next`
+        throw new Error "Unknown diagnostic type: #{mt}"
+    if tag == SYMS.STREAM
+      @push "_ "
 
   # @nodoc
-  _on_map_stop: (count,tags,kind) =>
-    @options.output.write "}"
-    if tags? and tags.length
-      @options.output.write ")" for t in tags
-    @_aft kind
+  _on_stop: (mt) =>
+    @push switch mt
+      when MT.TAG then ")"
+      when MT.ARRAY then "]"
+      when MT.MAP then "}"
+      when MT.BYTE_STRING, MT.UTF8_STRING then ")"
+      else
+        `// istanbul ignore next`
+        throw new Error "Unknown diagnostic type: #{mt}"
 
   # @nodoc
-  _on_stream_start: (mt,tags,kind) =>
-    @_fore kind
-    if tags? and tags.length
-      @options.output.write "#{t}(" for t in tags
-    @options.output.write "(_ "
-
-  # @nodoc
-  _on_stream_stop: (count,mt,tags,kind) =>
-    @options.output.write ")"
-    if tags? and tags.length
-      @options.output.write ")" for t in tags
-    @_aft kind
-
-  # @nodoc
-  _on_end: () =>
-    @emit 'end'
-
-  # @nodoc
-  _write: (chunk, enc, next) ->
-    @parser.write chunk, enc, next
-
+  _on_data: =>
+    @push @separator

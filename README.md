@@ -6,8 +6,16 @@ Encode and parse data in the Concise Binary Object Representation (CBOR) data fo
 Installation:
 ------------
 
+```bash
+$ npm install --save cbor
 ```
-$ npm install cbor
+
+**NOTE**
+This package now requires node.js 4.1 or higher.  If you want a version that
+works with older node.js versions, you can install like this:
+
+```bash
+npm install 'hildjj/node-cbor#node0' --save
 ```
 
 Documentation:
@@ -27,7 +35,7 @@ var cbor = require('cbor');
 var assert = require('assert');
 
 var encoded = cbor.encode(true); // returns <Buffer f5>
-cbor.decode(encoded, function(error, obj) {
+cbor.decodeFirst(encoded, function(error, obj) {
   // error != null if there was an error
   // obj is the unpacked object
   assert.ok(obj[0] === true);
@@ -41,7 +49,7 @@ var cbor = require('cbor');
 var fs = require('fs');
 
 var d = new cbor.Decoder();
-d.on('complete', function(obj){
+d.on('data', function(obj){
   console.log(obj);
 });
 
@@ -49,31 +57,10 @@ var s = fs.createReadStream('foo');
 s.pipe(d);
 
 var d2 = new cbor.Decoder({input: '00', encoding: 'hex'});
-d.on('complete', function(obj){
+d.on('data', function(obj){
   console.log(obj);
 });
 d2.start(); // needed when you don't use the stream interface
-```
-
-And also a SAX-type mode (which the streaming mode wraps):
-
-```javascript
-var cbor = require('cbor');
-var fs = require('fs');
-
-var parser = new cbor.Evented();
-
-parser.on('value',function(val,tags) {
-  // An atomic item (not a map or array) was detected
-  // `val`: the value
-  // `tags`: an array of tags that preceded the list
-  console.log(val);
-});
-
-// See the [docs](http://hildjj.github.io/node-cbor/doc/class/Evented.html) for a list of all of the events.
-
-var s = fs.createReadStream('foo');
-s.pipe(parser);
 ```
 
 Developers
@@ -87,7 +74,6 @@ $ grunt
 Running "coffee:compile" (coffee) task
 
 Running "nodeunit:all" (nodeunit) task
-Testing BufferStream.test...............OK
 Testing decoder.test.....OK
 Testing diagnose.test...OK
 Testing encoder.test.......OK

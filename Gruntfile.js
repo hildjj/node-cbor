@@ -77,7 +77,7 @@ module.exports = function(grunt) {
     watch: {
       all: {
         files: ['src/*.coffee', 'test/*.js'],
-        tasks: ['test', 'shell:istanbul'],
+        tasks: ['cover'],
         options: {
           livereload: true
         }
@@ -95,6 +95,7 @@ module.exports = function(grunt) {
   grunt.registerTask('man', ['clean:man', 'markedman'])
   grunt.registerTask('doc', ['clean:doc', 'codo', 'clean:man', 'markedman']);
   grunt.registerTask('test', ['coffee', 'nodeunit']);
-  grunt.registerTask('server', ['test', 'shell:istanbul', 'express', 'watch']);
+  grunt.registerTask('cover', ['coffee', 'shell:istanbul']);
+  grunt.registerTask('server', ['cover', 'express', 'watch']);
   grunt.registerTask('ci', ['test', 'shell:istanbul', 'coveralls']);
 };

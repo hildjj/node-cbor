@@ -1,42 +1,40 @@
 #!/usr/bin/env node
 
-var fs = require('fs');
-var async = require('async');
 var cbor = require('../lib/cbor');
-var BufferStream = require('../lib/BufferStream');
+var utils = require('../lib/utils');
 var package = require('../package.json');
 
+var jts = require('json-text-sequence');
 var opts = require('commander')
 .version(package.version)
 .usage('[options] <file ...>')
-.option('-x, --hex', 'Hex string input')
+.option('-x, --hex', 'Hex string output')
 .parse(process.argv)
 
 var argv = opts.args
 if (argv.length === 0) {
-  argv = ['-'];
+  argv.push('-');
 }
 
-function convert(name, cb) {
-  var stream = (name == '-') ? process.stdin : fs.createReadStream(name);
-
-  var bs = new BufferStream();
-  bs.on('error', cb);
-  bs.on('finish', function() {
-    var j = JSON.parse(bs.flatten());
-    buf = cbor.Encoder.encode(j);
-    if (opts.hex) {
-      console.log(buf.toString('hex'));
-    } else {
-      process.stdout.write(buf);
+utils.streamFiles(argv, function(){
+  var p = new jts.parser();
+  var d = new cbor.Encoder();
+  p.pipe(d);
+  p.on('truncated', function(b) {
+    try {
+      d.write(JSON.parse(b));
     }
-    cb();
+    catch (e) {
+      e.message += " for input " + b.inspect();
+      throw e;
+    }
   });
-  stream.pipe(bs);
-}
-
-async.eachSeries(argv, convert, function(er) {
-  if (er) {
-    console.log("\n"+er);
+  var o = d
+  if (opts.hex) {
+    o = new utils.HexStream();
+    d.pipe(o);
+    o.on('end', function(){ process.stdout.write('\n') });
   }
+  o.pipe(process.stdout);
+  return p;
 });

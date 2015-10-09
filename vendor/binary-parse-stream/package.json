@@ -1,0 +1,23 @@
+{
+  "name": "binary-parse-stream",
+  "version": "1.3.1",
+  "description": "Painless streaming binary protocol parsers using generators.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/nathan7/binary-parse-stream.git"
+  },
+  "keywords": [
+    "generator",
+    "binary",
+    "stream",
+    "parse",
+    "parser"
+  ],
+  "author": "Nathan Zadoks",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nathan7/binary-parse-stream/issues"
+  },
+  "homepage": "https://github.com/nathan7/binary-parse-stream"
+}

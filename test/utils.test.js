@@ -4,9 +4,8 @@
 var fs = require('fs');
 var async = require('async');
 var bignumber = require('bignumber.js');
-var temp = require('temp');
+var NoFilter = require('nofilter');
 
-var BufferStream = require('../lib/BufferStream');
 var utils = require('../lib/utils');
 var hex = utils.hex;
 var bin = utils.bin;
@@ -18,29 +17,29 @@ exports.bin = function(test) {
   test.done();
 }
 
-exports.parseInt = function(test) {
-  test.deepEqual(utils.parseInt(24, hex('ff')), 255);
-  test.deepEqual(utils.parseInt(25, hex('ffff')), 65535);
-  test.deepEqual(utils.parseInt(26, hex('00010000')), 65536);
-  test.deepEqual(utils.parseInt(27, hex('0000000100000000')), 4294967296);
+exports.parseCBORint = function(test) {
+  test.deepEqual(utils.parseCBORint(24, hex('ff')), 255);
+  test.deepEqual(utils.parseCBORint(25, hex('ffff')), 65535);
+  test.deepEqual(utils.parseCBORint(26, hex('00010000')), 65536);
+  test.deepEqual(utils.parseCBORint(27, hex('0000000100000000')), 4294967296);
   test.throws(function(){
-    utils.parseInt(28, hex('ff'));
+    utils.parseCBORint(28, hex('ff'));
   });
   test.throws(function(){
-    utils.parseInt(27, hex('ff'));
+    utils.parseCBORint(27, hex('ff'));
   });
   test.done();
 };
 
-exports.parseFloat = function(test) {
-  test.deepEqual(utils.parseFloat(25, bin('0 00000 0000000000')), 0);
-  test.deepEqual(utils.parseFloat(26, bin('0 00000000 00000000000000000000000')), 0);
-  test.deepEqual(utils.parseFloat(27, bin('0 00000000000 0000000000000000000000000000000000000000000000000000')), 0);
+exports.parseCBORfloat = function(test) {
+  test.deepEqual(utils.parseCBORfloat(bin('0 00000 0000000000')), 0);
+  test.deepEqual(utils.parseCBORfloat(bin('0 00000000 00000000000000000000000')), 0);
+  test.deepEqual(utils.parseCBORfloat(bin('0 00000000000 0000000000000000000000000000000000000000000000000000')), 0);
   test.throws(function(){
-    utils.parseFloat(28, hex('ff'));
+    utils.parseCBORfloat(hex('ff'));
   });
   test.throws(function(){
-    utils.parseFloat(24, hex('ff'));
+    utils.parseCBORfloat(hex('ff'));
   });
 
   test.done();
@@ -99,32 +98,65 @@ function buildDeHexTest(test) {
     var actual = hd[0];
     var expected = hd[1];
 
-    var d = new utils.DeHexStream();
-    var bs = new BufferStream();
-    bs.on('finish', function(){
-      var res = bs.toString('utf8');
-      test.deepEqual(res.toString(), expected);
-      cb()
-    });
-
-    d.pipe(bs);
-    temp.track();
-    var f = temp.createWriteStream();
-    f.end(new Buffer(actual, 'utf8'), function(er){
-      test.ifError(er);
-      var g = fs.createReadStream(f.path);
-      g.pipe(d);
-    });
+    var d = new utils.DeHexStream(actual);
+    test.deepEqual(d.read().toString(), expected);
+    cb();
   }
 }
 
 exports.DeHexStream = function(test) {
-  var bt = buildDeHexTest(test);
   async.each([
     ['6161', 'aa'],
     ['0x00', '\x00']
-  ], bt, function(er) {
+  ], function(hd, cb) {
+    var d = new utils.DeHexStream(hd[0]);
+    test.deepEqual(d.read().toString(), hd[1]);
+    cb();
+  }, function(er) {
     test.equal(er, null);
     test.done();
   });
 };
+
+exports.HexStream = function(test) {
+  var h = new utils.HexStream();
+  var bs = new NoFilter();
+  h.pipe(bs);
+  h.on('end', function() {
+    test.deepEqual(bs.toString('utf8'), '61');
+    test.done();
+  })
+  h.end(new Buffer([0x61]));
+};
+
+exports.streamFilesNone = function(test) {
+  utils.streamFiles([], function(){}, function() {
+    utils.streamFiles(['/tmp/hopefully-does-not-exist'], function(){
+      return new utils.HexStream();
+    }, function(er) {
+      test.ok(er);
+      test.done();
+    });
+  })
+};
+
+exports.streamFilesDash = function(test) {
+  var u = new utils.HexStream()
+  var bs = new NoFilter();
+  u.pipe(bs);
+  utils.streamFiles([new utils.DeHexStream('6161')], function(){
+    return u;
+  }, function(er) {
+    test.ifError(er);
+    test.deepEqual(bs.toString('utf8'), '6161');
+    test.done();
+  })
+};
+
+exports.guessEncoding = function(test) {
+  try {
+    utils.guessEncoding();
+  } catch (er) {
+    test.done();
+  }
+}

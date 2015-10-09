@@ -2,48 +2,38 @@
 "use strict";
 
 var Diagnose = require('../lib/diagnose');
-var BufferStream = require('../lib/BufferStream');
+var utils = require('../lib/utils');
+
 var async = require('async');
-var temp = require('temp');
 var fs = require('fs');
+var NoFilter = require('nofilter');
 
 function diagTest(test, max_depth) {
   return function (hd, cb) {
     var expected = hd[0];
-    var hex = hd[1];
-    var d = new Diagnose({
-      output: new BufferStream(),
-      input: hex,
-      separator: null
-    });
-    var actual = [];
+    var hex = hd[1].replace(/^0x/, '');
     var aexpected = [expected];
-    if (max_depth) {
-      d.parser.options.max_depth = max_depth;
-    }
 
-    d.on('complete', function(s) {
-      actual.push(s.read().toString('utf8'));
-    });
-
-    d.on('end', function() {
+    Diagnose.diagnose(hex, {
+      encoding: 'hex',
+      max_depth: max_depth || -1
+    }).then(function(actual) {
+      actual = actual.split('\n').slice(0,-1);
       if (typeof(expected) === 'function') {
         cb(expected(test, null, actual));
       } else {
         test.deepEqual(actual, aexpected, expected + " | " + hex + " != " + actual);
         cb();
       }
-    });
-
-    d.on('error', function(er){
+    },
+    function(er) {
       if (typeof(expected) === 'function') {
-        cb(expected(test, er, actual));
+        cb(expected(test, er));
       } else {
         cb(er);
       }
     });
-    d.start();
-  };
+  }
 }
 
 exports.from_spec =  function(test) {
@@ -61,17 +51,13 @@ exports.from_spec =  function(test) {
     ['1000', '0x1903e8'],
     ['1000000', '0x1a000f4240'],
     ['1000000000000', '0x1b000000e8d4a51000'],
+    ['18446744073709551615', '0x1bffffffffffffffff'],
 
-    // JS rounding: 18446744073709552000
-    //['18446744073709551615', '0x1bffffffffffffffff'],
-
-    // draft-03 says 18446744073709551616 incorrectly
+    // draft-03 says 18446744073709551616, incorrectly
     ["2(h'010000000000000000')", '0xc249010000000000000000'],
+    ['-18446744073709551616', '0x3bffffffffffffffff'],
 
-    // JS rounding: -18446744073709552000
-    //['-18446744073709551616', '0x3bffffffffffffffff'],
-
-    // draft-03 says -18446744073709551617
+    // spec says -18446744073709551617, incorrectly
     ["3(h'010000000000000000')", '0xc349010000000000000000'],
     ['-1', '0x20'],
     ['-10', '0x29'],
@@ -79,52 +65,52 @@ exports.from_spec =  function(test) {
     ['-1000', '0x3903e7'],
 
     // 0.0 is correct
-    ['0', '0xf90000'],
+    ['0_1', '0xf90000'],
     // -0.0 is correct
-    ['0', '0xf98000'],
+    ['-0_1', '0xf98000'],
 
     // 1.0 is correct
-    ['1', '0xf93c00'],
+    ['1_1', '0xf93c00'],
 
-    ['1.1', '0xfb3ff199999999999a'],
-    ['1.5', '0xf93e00'],
+    ['1.1_3', '0xfb3ff199999999999a'],
+    ['1.5_1', '0xf93e00'],
 
     // 65504.0 is correct
-    ['65504', '0xf97bff'],
+    ['65504_1', '0xf97bff'],
 
     // 100000.0 is correct
-    ['100000', '0xfa47c35000'],
-    ['3.4028234663852886e+38', '0xfa7f7fffff'],
+    ['100000_2', '0xfa47c35000'],
+    ['3.4028234663852886e+38_2', '0xfa7f7fffff'],
 
     // 1.0e+300 is correct
-    ['1e+300', '0xfb7e37e43c8800759c'],
+    ['1e+300_3', '0xfb7e37e43c8800759c'],
 
-    ['5.960464477539063e-8', '0xf90001'],
-    ['0.00006103515625', '0xf90400'],
+    ['5.960464477539063e-8_1', '0xf90001'],
+    ['0.00006103515625_1', '0xf90400'],
 
     // -4.0 is correct
-    ['-4', '0xf9c400'],
+    ['-4_1', '0xf9c400'],
 
-    ['-4.1', '0xfbc010666666666666'],
-    ['Infinity', '0xf97c00'],
-    ['NaN', '0xf97e00'],
-    ['-Infinity', '0xf9fc00'],
-    ['Infinity', '0xfa7f800000'],
-    ['NaN', '0xfa7fc00000'],
-    ['-Infinity', '0xfaff800000'],
-    ['Infinity', '0xfb7ff0000000000000'],
-    ['NaN', '0xfb7ff8000000000000'],
-    ['-Infinity', '0xfbfff0000000000000'],
+    ['-4.1_3', '0xfbc010666666666666'],
+    ['Infinity_1', '0xf97c00'],
+    ['NaN_1', '0xf97e00'],
+    ['-Infinity_1', '0xf9fc00'],
+    ['Infinity_2', '0xfa7f800000'],
+    ['NaN_2', '0xfa7fc00000'],
+    ['-Infinity_2', '0xfaff800000'],
+    ['Infinity_3', '0xfb7ff0000000000000'],
+    ['NaN_3', '0xfb7ff8000000000000'],
+    ['-Infinity_3', '0xfbfff0000000000000'],
     ['false', '0xf4'],
     ['true', '0xf5'],
-    ['nil', '0xf6'],
+    ['null', '0xf6'],
     ['undefined', '0xf7'],
     ['simple(16)', '0xf0'],
     ['simple(24)', '0xf818'],
     ['simple(255)', '0xf8ff'],
     ['0("2013-03-21T20:04:00Z")', '0xc074323031332d30332d32315432303a30343a30305a'],
     ['1(1363896240)', '0xc11a514b67b0'],
-    ['1(1363896240.5)', '0xc1fb41d452d9ec200000'],
+    ['1(1363896240.5_3)', '0xc1fb41d452d9ec200000'],
     ["23(h'01020304')", '0xd74401020304'],
     ["24(h'6449455446')", '0xd818456449455446'],
     ['32("http://www.example.com")', '0xd82076687474703a2f2f7777772e6578616d706c652e636f6d'],
@@ -179,82 +165,48 @@ exports.edges = function(test) {
   ], dt, function(er) {
     test.equal(er, null);
 
-    var bs = new BufferStream();
-    Diagnose.diagnose('', 'hex', bs);
-    test.done();
-  });
-};
-
-exports.diagnose = function(test) {
-  var bs = new BufferStream();
-  Diagnose.diagnose('0xf5', 'hex', bs, function(er) {
-    test.ok(!er);
-    test.deepEqual(bs.read().toString('utf8'), 'true\n');
-    test.done();
-  });
-};
-
-exports.diagnoseString = function(test) {
-  Diagnose.diagnoseString('0xf5', function(er, out) {
-    test.ifError(er);
-    test.deepEqual(out, 'true\n');
-    Diagnose.diagnoseString('0xfe', function(er, out) {
-      test.ok(er);
-      test.ok(!out);
-      test.done();
+    Diagnose.diagnose(new Buffer(0), function(er) {
+      test.ifError(er);
+      try {
+        Diagnose.diagnose();
+      } catch (er) {
+        test.ok(er);
+        Diagnose.diagnose('01', function(er, out){
+          test.ifError(er);
+          test.deepEqual(out, '1\n');
+          test.done();
+        });
+      }
     });
   });
 };
 
-exports.options = function(test) {
-  var dt = new Diagnose();
-  test.deepEqual(dt.options.separator, "\n");
-  var bs = new BufferStream();
-  dt = new Diagnose({
-    streamErrors: true,
-    input: "7432303133",
-    output: bs
-  });
-  dt.on('error', function() {
-    test.deepEqual(bs.toString('utf8'), "Error: EOF");
+exports.construct = function (test) {
+  var d = new Diagnose();
+  test.equal(false, d.stream_errors);
+  d.stream_errors = true;
+  var bs = new NoFilter();
+  d.pipe(bs);
+  d.on('end', function() {
+    test.deepEqual('Error: unexpected end of input', bs.toString('utf8'));
     test.done();
   });
-  dt.start();
+  d.end(new Buffer([0x18]));
 };
-
-exports.inputs = function(test) {
-  test.throws(function() {
-    Diagnose.diagnose();
-  });
-  test.throws(function() {
-    Diagnose.diagnoseString();
-  });
-  test.throws(function() {
-    Diagnose.diagnoseString('0xfe');
-  });
-  test.done();
-}
 
 exports.stream = function(test) {
   var dt = new Diagnose({
-    output: new BufferStream(),
     separator: '-'
   });
+  var bs = new NoFilter();
 
-  dt.on('complete', function(s) {
-    test.deepEqual(s.toString('utf8'), '1-');
-  });
   dt.on('end', function() {
+    test.deepEqual(bs.toString('utf8'), '1-');
     test.done();
   });
   dt.on('error', function(er) {
     test.ifError(er);
   });
-
-  temp.track();
-  var f = temp.createWriteStream();
-  f.end(new Buffer('01', 'hex'), function(er){
-    var g = fs.createReadStream(f.path);
-    g.pipe(dt);
-  });
+  dt.pipe(bs);
+  dt.end(new Buffer('01', 'hex'));
 };

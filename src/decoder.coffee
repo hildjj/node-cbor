@@ -1,218 +1,391 @@
-# jslint node: true
-
-stream = require 'stream'
-url = require 'url'
+BinaryParseStream = require '../vendor/binary-parse-stream'
+Tagged = require './tagged'
+Simple = require './simple'
+NoFilter = require 'nofilter'
+utils = require './utils'
 bignumber = require 'bignumber.js'
 
-BufferStream = require './BufferStream'
-Tagged = require './tagged'
-utils = require './utils'
+{MT, NUMBYTES, SIMPLE, SYMS} = require './constants'
 
-Evented = require './evented'
-{TAG, MT} = require './constants'
+NEG_ONE = new bignumber(-1)
+NEG_MAX = NEG_ONE.sub(new bignumber(Number.MAX_SAFE_INTEGER.toString(16), 16))
 
-MINUS_ONE = new bignumber -1
-TEN = new bignumber 10
-TWO = new bignumber 2
-DEFAULT_TAG_FUNCS = {}
+COUNT = Symbol('count')
+PENDING_KEY = Symbol('pending_key')
+MAJOR = Symbol('major type')
+ERROR = Symbol('error')
+NOT_FOUND = Symbol('not found')
 
-# Decode a CBOR byte stream into JavaScript objects.  Either pipe another stream
-# into an instance of this class, or pass a string, Buffer, or BufferStream into
-# `options.input`, assign callbacks, then call `start()`.
-# @event end() Done processing the input
-# @event error(er) An error has occured
-#   @param er [Error]
-# @event complete(obj) A complete CBOR object has been read from the stream
-#   This is the main event to hook.
-#   @param obj [Object] the object that was detected
-module.exports = class Decoder extends stream.Writable
-  # Create a Decoder
-  # @param options [Object] options for creation
-  # @option options input [Buffer,String,BufferStream] optional input
-  # @option options encoding [String] encoding of a String `input`
-  #   (default: 'hex')
-  # @option options offset [Integer] *byte* offset into the input from
-  #   which to start
-  # @option options tags [Object] map of tag numbers to function(value),
-  #   returning an object of the correct type for that tag.
-  constructor: (@options = {}) ->
-    super()
+# @nodoc
+parentArray = (parent, typ, count) ->
+  a              = []
+  a[COUNT]       = count
+  a[SYMS.PARENT] = parent
+  a[MAJOR]       = typ
+  a
 
-    @tags = utils.extend {}, DEFAULT_TAG_FUNCS, @options.tags
-    @stack = []
+# @nodoc
+parentBufferStream = (parent, typ) ->
+  b = new NoFilter
+  b[SYMS.PARENT] = parent
+  b[MAJOR]       = typ
+  b
 
-    @parser = new Evented
-      input: @options.input
+# Decode a stream of CBOR bytes by transforming them into equivalent
+# JavaScript data.  Because of the limitations of Node object streams,
+# special symbols are emitted instead of NULL or UNDEFINED.  Fix those
+# up by calling {Decoder.nullcheck}.
+#
+# @event 'data'  (object) A complete top-level CBOR item has been parsed
+# @event 'end'   The input stream is fully parsed
+# @event 'error' (Error) An error has occurred in parsing
+#
+# Several other internal events are emitted, but I hope you never need to
+# care about them.
+#
+module.exports = class Decoder extends BinaryParseStream
+  # A symbol returned from {Decoder.decodeFirst} when no object was found.
+  @NOT_FOUND = NOT_FOUND
 
-    @parser.on 'value', @_on_value
-    @parser.on 'array-start', @_on_array_start
-    @parser.on 'array-stop', @_on_array_stop
-    @parser.on 'map-start', @_on_map_start
-    @parser.on 'map-stop', @_on_map_stop
-    @parser.on 'stream-start', @_on_stream_start
-    @parser.on 'stream-stop', @_on_stream_stop
-    @parser.on 'end', @_on_end
-    @parser.on 'error', @_on_error
-
-    @on 'finish', =>
-      @parser.end()
-
-  # All events have been hooked, start parsing the input.
+  # Check the given value for a symbol encoding a NULL or UNDEFINED
+  # value in the CBOR stream.
   #
-  # @note This MUST NOT be called if you're piping a Readable stream in.
-  start: () ->
-    @parser.start()
+  # @param value [Any] the value to check
+  #
+  # @example
+  #   myDecoder.on('data', function(val) {
+  #     val = Decoder.nullcheck(val);
+  #     ...
+  #   });
+  @nullcheck: (val) ->
+    switch val
+      when SYMS.NULL then null
+      when SYMS.UNDEFINED then undefined
+      else val
 
-  # @nodoc
-  _on_error: (er) =>
-    @emit 'error', er
+  # Decode the first CBOR item in the input.  This will error if there are more
+  # bytes left over at the end, and optionally if there were no valid
+  # CBOR bytes in the input.  Emits the {Decoder.NOT_FOUND} Symbol in the
+  # callback if no data was found and the `required` option is false.
+  #
+  # @param input [String, Buffer] the input to parse
+  # @param options [Object, String] options Decoding options.
+  #   If string, the input encoding.
+  # @option options encoding [String] the input encoding, when the input is
+  #   a string.
+  # @option options required [Boolean] give an error if no valid CBOR is
+  #   found in the inoput.
+  # @option options tags [Object] mapping from tag number to function(v), where
+  #   v is the decoded value that comes after the tag, and where the function
+  #   returns the correctly-created value for that tag.
+  # @option options max_depth [Number] the maximum depth to parse.  -1 (the
+  #   default) for "until you run out of memory".  Set this to a finite positive
+  #   number for un-trusted inputs.  Most standard inputs won't nest more than
+  #   100 or so levels; I've tested into the millions before running out of
+  #   memory.
+  # @param cb [Function] an (error, value) callback.
+  # @return [undefined, Promise] If cb not specified, returns a Promise
+  #   fulfilled with the first parsed value.
+  @decodeFirst: (input, options = {encoding: 'hex'}, cb) ->
+    opts = {}
+    required = false
+    encod = undefined
+    switch typeof(options)
+      when 'function'
+        cb = options
+        encod = utils.guessEncoding(input)
+      when 'string'
+        encod = options
+      when 'object'
+        opts = utils.extend({}, options)
+        encod = opts.encoding ? utils.guessEncoding(input)
+        delete opts.encoding
+        required = opts.required ? false
+        delete opts.required
 
-  # @nodoc
-  _process: (val,tags,kind) ->
-    # unwrap tags from the inside-most first
-    for t in tags by -1
-      try
-        # if there's a function for this tag, call it
-        f = @tags[t]
-        if f?
-          val = f.call(this, val) ? new Tagged(t, val)
-        else
-          val = new Tagged t, val
-      catch er
-        val = new Tagged t, val, er
-
-    switch kind
-      when null then @emit 'complete', val
-      when 'array-first', 'array' then @last.push val
-      when 'key-first', 'key' then @stack.push val
-      when 'stream-first', 'stream'
-        switch @mt
-          when MT.BYTE_STRING
-            unless Buffer.isBuffer(val)
-              @parser.error(new Error 'Bad input in stream, expected buffer')
-              return
-          when MT.UTF8_STRING
-            unless typeof val == 'string'
-              @parser.error(new Error 'Bad input in stream, expected string')
-              return
+    c = new Decoder opts
+    p = undefined
+    v = NOT_FOUND
+    c.on 'data', (val) ->
+      v = Decoder.nullcheck val
+      c.close()
+    if typeof(cb) == 'function'
+      c.once 'error', (er) ->
+        # don't think this can fire callback multiple times
+        u = v
+        v = ERROR
+        c.close()
+        cb er, u
+      c.once 'end', ->
+        switch v
+          when NOT_FOUND
+            return if required
+              cb new Error 'No CBOR found'
+            else
+              cb null, v
+          when ERROR
+            undefined
           else
-            `// istanbul ignore next`
-            throw new Error 'Unknown stream type'
-        @last.write val
-      when 'value'
-        key = @stack.pop()
-        @last[key] = val
-        `// istanbul ignore next`
-      else
-        @parser.error(new Error "Unknown event kind: #{kind}")
+            cb null, v
+    else
+      p = new Promise (resolve, reject) ->
+        c.once 'error', (er) ->
+          v = ERROR
+          c.close()
+          reject er
+        c.once 'end', ->
+          switch v
+            when NOT_FOUND
+              return if required
+                reject new Error 'No CBOR found'
+              else
+                resolve v
+            when ERROR
+              undefined
+            else
+              resolve v
+
+    c.end input, encod
+    p
+
+  # Decode all of the CBOR items in the input.  This will error if there are
+  # more bytes left over at the end.
+  #
+  # @param input [String, Buffer] the input to parse
+  # @param options [Object, String] options Decoding options.
+  #   If string, the input encoding.
+  # @option options encoding [String] the input encoding, when the input is
+  #   a string.
+  # @option options tags [Object] mapping from tag number to function(v), where
+  #   v is the decoded value that comes after the tag, and where the function
+  #   returns the correctly-created value for that tag.
+  # @option options max_depth [Number] the maximum depth to parse.  -1 (the
+  #   default) for "until you run out of memory".  Set this to a finite positive
+  #   number for un-trusted inputs.  Most standard inputs won't nest more than
+  #   100 or so levels; I've tested into the millions before running out of
+  #   memory.
+  # @param cb [Function] an (error, [values]) callback.
+  # @return [undefined, Promise] If cb not specified, returns a Promise
+  #   fulfilled with an array of the parsed values.
+  @decodeAll: (input, options = {encoding: 'hex'}, cb) ->
+    opts = {}
+    encod = undefined
+    switch typeof(options)
+      when 'function'
+        cb = options
+        encod = utils.guessEncoding(input)
+      when 'string'
+        encod = options
+      when 'object'
+        opts = utils.extend({}, options)
+        encod = opts.encoding ? utils.guessEncoding(input)
+        delete opts.encoding
+
+    c = new Decoder opts
+    p = undefined
+    vals = []
+    c.on 'data', (val) ->
+      vals.push Decoder.nullcheck(val)
+
+    if typeof(cb) == 'function'
+      c.on 'error', (er) ->
+        cb er
+      c.on 'end', ->
+        cb null, vals
+    else
+      p = new Promise (resolve, reject) ->
+        c.on 'error', (er) ->
+          reject er
+        c.on 'end', ->
+          resolve vals
+
+    c.end input, encod
+    p
+
+  # Create a parsing stream.
+  #
+  # @param options [Object, String] options Decoding options.
+  # @option options tags [Object] mapping from tag number to function(v), where
+  #   v is the decoded value that comes after the tag, and where the function
+  #   returns the correctly-created value for that tag.
+  # @option options max_depth [Number] the maximum depth to parse.  -1 (the
+  #   default) for "until you run out of memory".  Set this to a finite positive
+  #   number for un-trusted inputs.  Most standard inputs won't nest more than
+  #   100 or so levels; I've tested into the millions before running out of
+  #   memory.
+  constructor: (options) ->
+    @tags = options?.tags
+    delete options?.tags
+    @max_depth = options?.max_depth || -1
+    delete options?.max_depth
+    @running = true
+    super options
 
   # @nodoc
-  _on_value: (val,tags,kind) =>
-    @_process val, tags, kind
+  close: ->
+    @running = false
+    @__fresh = true
 
   # @nodoc
-  _on_array_start: (count,tags,kind) =>
-    if @last?
-      @stack.push @last
-    @last = []
+  _parse: ->
+    parent = null
+    depth = 0
+    val = null
+    while true
+      if (@max_depth >= 0) and (depth > @max_depth)
+        throw new Error "Maximum depth #{@max_depth} exceeded"
 
-  # @nodoc
-  _on_array_stop: (count,tags,kind) =>
-    [val, @last] = [@last, @stack.pop()]
-    @_process val, tags, kind
+      octet = (yield(1))[0]
+      if !@running
+        throw new Error "Unexpected data: 0x#{octet.toString(16)}"
 
-  # @nodoc
-  _on_map_start: (count,tags,kind) =>
-    if @last?
-      @stack.push @last
-    @last = {}
+      mt = octet >> 5
+      ai = octet & 0x1f
 
-  # @nodoc
-  _on_map_stop: (count,tags,kind) =>
-    [val, @last] = [@last, @stack.pop()]
-    @_process val, tags, kind
+      switch ai
+        when NUMBYTES.ONE
+          @emit 'more-bytes', mt, 1, parent?[MAJOR], parent?.length
+          val = (yield(1))[0]
+        when NUMBYTES.TWO, NUMBYTES.FOUR, NUMBYTES.EIGHT
+          numbytes = 1 << (ai - 24)
+          @emit 'more-bytes', mt, numbytes, parent?[MAJOR], parent?.length
+          buf = yield(numbytes)
+          val = if mt == MT.SIMPLE_FLOAT
+            buf
+          else
+            utils.parseCBORint(ai, buf)
+        when 28, 29, 30
+          @running = false
+          throw new Error "Additional info not implemented: #{ai}"
+        when NUMBYTES.INDEFINITE
+          val = -1
+        else
+          # ai is already correct
+          val = ai
 
-  # @nodoc
-  _on_stream_start: (mt,tags,kind) =>
-    if @last?
-      @stack.push [@last, @mt]
-    @mt = mt
-    @last = new BufferStream
+      switch mt
+        when MT.POS_INT then undefined # do nothing
+        when MT.NEG_INT
+          if val == Number.MAX_SAFE_INTEGER
+            val = NEG_MAX
+          else if val instanceof bignumber
+            val = NEG_ONE.sub val
+          else
+            val = -1 - val
+        when MT.BYTE_STRING, MT.UTF8_STRING
+          switch val
+            when 0
+              val = if (mt == MT.BYTE_STRING) then new Buffer(0) else ''
+            when -1
+              @emit 'start', mt, SYMS.STREAM, parent?[MAJOR], parent?.length
+              parent = parentBufferStream parent, mt
+              depth++
+              continue
+            else
+              @emit 'start-string', mt, val, parent?[MAJOR], parent?.length
+              val = yield(val)
+              if mt == MT.UTF8_STRING
+                val = val.toString 'utf-8'
+        when MT.ARRAY, MT.MAP
+          switch val
+            when 0
+              val = if (mt == MT.MAP) then {} else []
+              val[SYMS.PARENT] = parent
+            when -1
+              # streaming
+              @emit 'start', mt, SYMS.STREAM, parent?[MAJOR], parent?.length
+              parent = parentArray parent, mt, -1
+              depth++
+              continue
+            else
+              @emit 'start', mt, val, parent?[MAJOR], parent?.length
+              # 1 for Array, 2 for Map
+              parent = parentArray parent, mt, val * (mt - 3)
+              depth++
+              continue
+        when MT.TAG
+          @emit 'start', mt, val, parent?[MAJOR], parent?.length
+          parent = parentArray parent, mt, 1
+          parent.push val
+          depth++
+          continue
+        when MT.SIMPLE_FLOAT
+          if typeof(val) == 'number' # simple values
+            val = Simple.decode(val, parent?)
+          else
+            val = utils.parseCBORfloat val
 
-  # @nodoc
-  _on_stream_stop: (count,mt,tags,kind) =>
-    val = @last.read()
-    lm = @stack.pop()
-    if lm
-      [@last, @mt] = lm
-    if mt == MT.UTF8_STRING
-      val = val.toString 'utf8'
-    @_process val, tags, kind
+      @emit 'value', val, parent?[MAJOR], parent?.length, ai
+      again = false
+      while parent?
+        switch
+          when val == SYMS.BREAK
+            parent[COUNT] = 1
+          when Array.isArray(parent)
+            parent.push val
+          when parent instanceof NoFilter
+            pm = parent[MAJOR]
+            if pm? and (pm != mt)
+              @running = false
+              throw new Error 'Invalid major type in indefinite encoding'
+            parent.write val
+          # Not possible?
+          # else
+          #   @running = false
+          #   throw new Error 'Unknown parent type'
 
-  # @nodoc
-  _on_end: () =>
-    @emit 'end'
+        if (--parent[COUNT]) != 0
+          again = true
+          break
 
-  # @nodoc
-  _write: (buf, offset, encoding) ->
-    @parser.write buf, offset, encoding
+        --depth
+        delete parent[COUNT]
+        @emit 'stop', parent[MAJOR]
+        val = switch
+          when Array.isArray parent
+            switch parent[MAJOR]
+              when MT.ARRAY
+                parent
+              when MT.MAP
+                allstrings = true
+                if (parent.length % 2) != 0
+                  throw new Error("Invalid map length: #{parent.length}")
+                for i in [0...parent.length] by 2
+                  if typeof(parent[i]) != 'string'
+                    allstrings = false
+                    break
+                if allstrings
+                  a = {}
+                  for i in [0...parent.length] by 2
+                    a[parent[i]] = parent[i + 1]
+                  a
+                else
+                  a = new Map
+                  for i in [0...parent.length] by 2
+                    a.set parent[i], parent[i + 1]
+                  a
+              when MT.TAG
+                t = new Tagged parent[0], parent[1]
+                t.convert @tags
+              # Not possible
+              # else
+              #   throw new Error 'Invalid state'
 
-  # Decode CBOR objects from a Buffer, String, or BufferStream
-  # @param buf [Buffer,String,BufferStream] the input
-  # @param cb [function(Error, Array)] callback function
-  # @note I am continually surprised this returns an array.
-  @decode: (buf, cb) ->
-    if !cb?
-      throw new Error "cb must be specified"
-    d = new Decoder
-      input: buf
-    actual = []
-    d.on 'complete', (v) ->
-      actual.push v
+          when parent instanceof NoFilter
+            switch parent[MAJOR]
+              when MT.BYTE_STRING
+                parent.slice()
+              when MT.UTF8_STRING
+                parent.toString('utf-8')
+              # Not possible
+              # else
+              #   @running = false
+              #   throw new Error 'Invalid stream major type'
+          # Not possible
+          # else
+          #   throw new Error 'Invalid state'
+          #   parent
 
-    d.on 'end', () ->
-      cb(null, actual)
-    d.on 'error', cb
-    d.start()
-
-  # @nodoc
-  @_tag_DATE_STRING: (val) ->
-    new Date(val)
-
-  # @nodoc
-  @_tag_DATE_EPOCH: (val) ->
-    new Date(val * 1000)
-
-  # @nodoc
-  @_tag_POS_BIGINT: (val) ->
-    utils.bufferToBignumber val
-
-  # @nodoc
-  @_tag_NEG_BIGINT: (val) ->
-    MINUS_ONE.minus(utils.bufferToBignumber val)
-
-  # @nodoc
-  @_tag_DECIMAL_FRAC: (val) ->
-    [e,m] = val
-    # m*(10**e)
-    TEN.pow(e).times(m)
-
-  # @nodoc
-  @_tag_BIGFLOAT: (val) ->
-    [e,m] = val
-    # m*(2**e)
-    TWO.pow(e).times(m)
-
-  # @nodoc
-  @_tag_URI: (val) ->
-    url.parse(val)
-
-  # @nodoc
-  @_tag_REGEXP: (val) ->
-    new RegExp val
-
-# run once
-for k,v of TAG
-  f = Decoder["_tag_" + k]
-  if typeof(f) == 'function'
-    DEFAULT_TAG_FUNCS[v] = f
+        parent = parent[SYMS.PARENT]
+      if !again
+        return val

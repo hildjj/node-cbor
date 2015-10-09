@@ -3,340 +3,207 @@
 assert = require 'assert'
 stream = require 'stream'
 util = require 'util'
-async = require 'async'
 
-BufferStream = require './BufferStream'
 utils = require './utils'
 Simple = require './simple'
-{MT} = require './constants'
+Decoder = require './decoder'
+{MT, NUMBYTES, SYMS} = require './constants'
+bignumber = require 'bignumber.js'
+NoFilter = require 'nofilter'
 
-`// istanbul ignore next`
 # @nodoc
-# Never executed, just an atom to compare against that can never happen in
-# a real stream.
-BREAK = () ->
-  "BREAK"
+plural = (c) ->
+  if c > 1 then 's'
+  else ''
 
-# A quick hack to generate the expanded format of RFC 7049, section 2.2.1
-module.exports = class Commented extends stream.Writable
+# Generate the expanded format of RFC 7049, section 2.2.1
+module.exports = class Commented extends stream.Transform
 
-  # Create a CBOR commenter.  Call start() after you hook any events.
+  # Create a CBOR commenter.
   # @param options [Object] options for the parser
-  # @option options input [Buffer,String,BufferStream] input
   # @option options max_depth [Integer] how many times to indent the dashes
   #   (default: 10)
-  # @option options output [Writable] where to send the output
-  #   (default: process.stdout)
-  constructor: (options) ->
-    super()
-    @bs = null
-    @depth = 0
-    @asRead = new BufferStream
-      bsStartEmpty: true
+  constructor: (options = {}) ->
+    options.readableObjectMode = false
+    options.writableObjectMode = false
 
-    {input, @output, @max_depth, encoding} = utils.extend
-      output: process.stdout
-      max_depth: 10
-      encoding: 'hex'
-    , options
+    @max_depth = options.max_depth ? 10
+    delete options.max_depth
 
-    buf =
-      if Buffer.isBuffer(input)
-        input
-      else if typeof(input) == 'string'
-        input = input.replace /^0x/, ''
-        new Buffer(input, encoding)
-      else
-        null
+    super(options)
+    @depth = 1
+    @all = new NoFilter
 
-    @bs = new BufferStream
-      bsInit: buf
+    @parser = new Decoder options
+    @parser.on 'value', @_on_value
+    @parser.on 'start', @_on_start
+    @parser.on 'start-string', @_on_start_string
+    @parser.on 'stop',  @_on_stop
+    @parser.on 'more-bytes', @_on_more
+    @parser.on 'error', @_on_error
+    @parser.on 'data', @_on_data
+    @parser.bs.on 'read', @_on_read
 
-    @bs.on 'read', (buf) =>
-      @asRead.append buf
+  # @nodoc
+  _transform: (fresh, encoding, cb) ->
+    @parser.write fresh, encoding, (er) ->
+      cb er
 
-    @on 'finish', () =>
-      @bs.end()
-
-    @start() unless buf
-
-  # Call this after you've set up any callbacks desired
-  start: () ->
-    @_pump()
+  # @nodoc
+  _flush: (cb) ->
+    @parser._flush cb
 
   # Comment on an input Buffer or string, creating a string passed to the
   # callback.  If callback not specified,  output goes to stdout.
-  # @param input [Buffer,String,BufferStream] input
+  # @param input [Buffer,String,NoFilter] input
   # @param max_depth [Integer] how many times to indent the dashes
   #   (default: 10)
   # @param cb [function(Error, String)] optional.
-  @comment: (input, max_depth = 10, cb) ->
+  @comment: (input, options, cb) ->
     if !input?
-      throw new Error("input is required")
+      throw new Error 'input required'
 
-    if typeof(max_depth) == 'function'
-      [cb, max_depth] = [max_depth, 10]
+    encoding = if typeof(input) == 'string' then 'hex' else undefined
+    max_depth = 10
+    switch typeof(options)
+      when 'function'
+        cb = options
+      when 'string'
+        encoding = options
+      when 'number'
+        max_depth = options
+      when 'object'
+        encoding = options.encoding ? encoding
+        max_depth = options.max_depth ? max_depth
 
-    c = output = null
+    bs = new NoFilter
+    d = new Commented
+      max_depth: max_depth
+    p = null
 
-    if cb?
-      output = new BufferStream
-      c = new Commented
-        input: input
-        output: output
-        max_depth: max_depth
-      c.on 'end', (buf) ->
-        cb(null, output.toString('utf8'))
-      c.on 'error', cb
+    if typeof(cb) == 'function'
+      d.on 'end', ->
+        cb(null, bs.toString('utf8'))
+      d.on 'error', cb
     else
-      c = new Commented
-        input: input
-        max_depth: max_depth
-    c.start()
+      p = new Promise (resolve, reject) ->
+        d.on 'end', ->
+          resolve bs.toString('utf8')
+        d.on 'error', reject
+    d.pipe bs
+    d.end input, encoding
+    p
 
   # @nodoc
-  _write: (chunk, enc, next) ->
-    @bs.write chunk, enc, next
+  _on_error: (er) =>
+    @push 'ERROR: '
+    @push er.toString()
+    @push '\n'
 
   # @nodoc
-  _out: () ->
-    @output.write(util.format.apply util, arguments)
-
-  # @nodoc
-  _indent: (prefix) ->
-    @_out(new Array(@depth + 1).join("  "))
-    @_out prefix
+  _on_read: (buf) =>
+    @all.write buf
+    hex = buf.toString('hex')
+    @push(new Array(@depth + 1).join('  '))
+    @push hex
     ind = (@max_depth - @depth) * 2
-    ind -= prefix.length
+    ind -= hex.length
     if ind < 1
       ind = 1
-    @_out(new Array(ind + 1).join(" "))
-    @_out "-- "
+    @push(new Array(ind + 1).join(' '))
+    @push '-- '
 
   # @nodoc
-  _val: (val,cb) ->
-    cb.call this, null, val
-
-  # @nodoc
-  _readBuf: (len,cb) ->
-    @bs.wait len, (er,buf) =>
-      return cb.call(this,er) if er
-      @depth++
-      @_indent buf.toString('hex')
-      @_out "Bytes content\n"
-      @depth--
-      @_val buf, cb
-
-  # @nodoc
-  _readStr: (len,cb) ->
-    @bs.wait len, (er,buf) =>
-      return cb.call(this,er) if er
-      u = buf.toString 'utf8'
-      @depth++
-      @_indent buf.toString('hex')
-      @_out '"%s"\n', u
-      @depth--
-      @_val u, cb
-
-  # @nodoc
-  _readArray: (count,cb) ->
-    async.timesSeries count, (n,done) =>
-      @_unpack done, "Array[#{n}]: "
-    , (er) =>
-      return cb.call(this, er) if er
-      @mt = MT.ARRAY
-      cb.call this
-
-  # @nodoc
-  _readMap: (count,cb) ->
-    async.timesSeries count, (n,done) =>
-      async.series [
-        (cb) =>
-          @_unpack cb, "Map[#{n}].key: "
-        , (cb) =>
-          @_unpack cb, "Map[#{n}].value: "
-      ], done
-    , (er) =>
-      return cb.call(this, er) if er
-      @mt = MT.MAP
-      cb.call this
-
-  # @nodoc
-  _readSimple: (val,cb) ->
-    v = switch val
-      when 20 then false
-      when 21 then true
-      when 22 then null
-      when 23 then undefined
-      else new Simple(val)
-    @_out "%s\n", v
-    @_val v, cb
-
-  # @nodoc
-  _getVal: (val,cb) ->
-    switch @mt
+  _on_more: (mt, len, parent_mt, pos) =>
+    @depth++
+    @push switch mt
       when MT.POS_INT
-        @_out "%d\n", val
-        @_val val, cb
+        'Positive number,'
       when MT.NEG_INT
-        @_out "%d\n", -1 - val
-        @_val -1 - val, cb
-      when MT.BYTE_STRING
-        @_out "Byte string length %d\n", val
-        @_readBuf val, cb
-      when MT.UTF8_STRING
-        @_out "UTF-8 string length %d\n", val
-        @_readStr val, cb
+        'Negative number,'
       when MT.ARRAY
-        @_out "Array of length %d\n", val
-        @_readArray val, cb
+        'Array, length'
       when MT.MAP
-        @_out "Map with %d pairs\n", val
-        @_readMap val, cb
-      when MT.TAG
-        @_out "Tag %d\n", val
-        @_unpack cb
-      when MT.SIMPLE_FLOAT then @_readSimple val, cb
-      else
-        # really should never happen, since the above are all of the cases
-        # of three bits
-        `// istanbul ignore next`
-        cb.call this, new Error("Unknown major type(#{@mt}): #{val}")
-
-  # @nodoc
-  _stream_stringy: (cb) ->
-    mt = @mt
-    count = 0
-    keep_going = true
-    @_out "Start indefinite-length string\n"
-
-    async.doWhilst (done) =>
-      @_unpack (er,val) =>
-        return done(er) if er
-        if val == BREAK
-          keep_going = false
-        else
-          if @mt != mt
-            done(new Error "Invalid stream major type: #{@mt},
-              when anticipating only #{mt}")
-            return
-        done()
-    , () ->
-      count++
-      keep_going
-    , cb
-
-  # @nodoc
-  _stream_array: (cb) ->
-    mt = @mt
-    count = 0
-    keep_going = true
-    @_out "Start indefinite-length array\n"
-
-    async.doWhilst (done) =>
-      @_unpack (er,val) ->
-        return done(er) if er
-        if val == BREAK
-          keep_going = false
-        done()
-    , () ->
-      count++
-      keep_going
-    , cb
-
-  # @nodoc
-  _stream_map: (cb) ->
-    mt = @mt
-    count = 0
-    keep_going = true
-    @_out "Start indefinite-length map\n"
-
-    async.doWhilst (done) =>
-      @_unpack (er,val) =>
-        return done(er) if er
-        if val == BREAK
-          keep_going = false
-          done()
-        else
-          @_unpack done, "Map[#{count}].value: "
-      , "Map[#{count}].key: "
-    , () ->
-      count++
-      keep_going
-    , cb
-
-  # @nodoc
-  _stream: (cb) ->
-    switch @mt
-      when MT.BYTE_STRING, MT.UTF8_STRING then @_stream_stringy cb
-      when MT.ARRAY then @_stream_array cb
-      when MT.MAP then @_stream_map cb
+        'Map, count'
+      when MT.BYTE_STRING
+        'Bytes, length'
+      when MT.UTF8_STRING
+        'String, length'
       when MT.SIMPLE_FLOAT
-        @_out 'BREAK\n'
-        cb.call this, null, BREAK
-      else
-        # really should never happen, since the above are all of the cases
-        # of three bits
-        `// istanbul ignore next`
-        cb.call this, new Error("Invalid stream major type: #{@mt}")
+        if len == 1 then 'Simple value,'
+        else 'Float,'
+
+    @push " next #{len} byte#{plural(len)}\n"
 
   # @nodoc
-  _unpack: (cb, extra = "") ->
-    @bs.wait 1, (er,buf) =>
-      return cb(er) if er
-
-      @octet = buf[0]
-      hex = buf.toString('hex')
-      @mt = @octet >> 5
-      @ai = @octet & 0x1f
-
-      decrement = (er)=>
-        unless er instanceof Error
-          @depth--
-        cb.apply this, arguments
-
-      @depth++
-      switch @ai
-        when 24,25,26,27
-          @bs.wait 1 << (@ai - 24), (er,buf) =>
-            return cb er if er
-            @_indent(hex + buf.toString('hex'))
-            @_out extra
-            if @mt == MT.SIMPLE_FLOAT # floating point or high simple
-              if @ai == 24
-                @_readSimple utils.parseInt(@ai, buf), decrement
-              else
-                fl = utils.parseFloat(@ai, buf)
-                @_out "#{fl}\n"
-                @_val fl, decrement
-            else
-              @_getVal utils.parseInt(@ai, buf), decrement
-        when 28,29,30
-          return cb(new Error("Additional info not implemented: #{@ai}"))
-        when 31
-          @_indent hex
-          @_stream decrement
-        else
-          @_indent hex
-          @_out extra
-          @_getVal @ai, decrement
+  _on_start_string: (mt, tag, parent_mt, pos) =>
+    @depth++
+    @push switch mt
+      when MT.BYTE_STRING
+        "Bytes, length: #{tag}"
+      when MT.UTF8_STRING
+        "String, length: #{tag.toString()}"
+    @push '\n'
 
   # @nodoc
-  _pump: (er)=>
-    if er
-      if BufferStream.isEOFError(er) && (@depth == 0)
-        buf = @asRead.read()
-        if buf.length > 0
-          @_out '0x%s\n', buf.toString('hex')
-        return @emit 'end', buf
-      else
-        return @emit 'error', er
+  _on_start: (mt, tag, parent_mt, pos) =>
+    @depth++
+    if tag != SYMS.BREAK
+      @push switch parent_mt
+        when MT.ARRAY
+          "[#{pos}], "
+        when MT.MAP
+          if pos % 2 then "{Val:#{pos // 2}}, "
+          else "{Key:#{pos // 2}}, "
+    @push switch mt
+      when MT.TAG then "Tag ##{tag}"
+      when MT.ARRAY
+        if tag == SYMS.STREAM then 'Array (streaming)'
+        else "Array, #{tag} item#{plural(tag)}"
+      when MT.MAP
+        if tag == SYMS.STREAM then 'Map (streaming)'
+        else "Map, #{tag} pair#{plural(tag)}"
+      when MT.BYTE_STRING
+        'Bytes (streaming)'
+      when MT.UTF8_STRING
+        'String (streaming)'
+    @push '\n'
 
-    async.nextTick ()=>
-      if @bs.isEOF()
-        buf = @asRead.read()
-        if buf.length > 0
-          @_out '0x%s\n', buf.toString('hex')
-        @emit 'end', buf
+  # @nodoc
+  _on_stop: (mt) =>
+    @depth--
+
+  # @nodoc
+  _on_value: (val, parent_mt, pos, ai) =>
+    if val != SYMS.BREAK
+      @push switch parent_mt
+        when MT.ARRAY
+          "[#{pos}], "
+        when MT.MAP
+          if pos % 2 then "{Val:#{pos // 2}}, "
+          else "{Key:#{pos // 2}}, "
+
+    @push switch
+      when val == SYMS.BREAK then 'BREAK'
+      when val == SYMS.NULL then  'null'
+      when val == SYMS.UNDEFINED then 'undefined'
+      when typeof(val) == 'string'
+        @depth--
+        JSON.stringify val
+      when Buffer.isBuffer val
+        @depth--
+        val.toString('hex')
+      when val instanceof bignumber
+        val.toString()
       else
-        @_unpack @_pump
+        util.inspect(val)
+    switch ai
+      when NUMBYTES.ONE, NUMBYTES.TWO, NUMBYTES.FOUR, NUMBYTES.EIGHT
+        @depth--
+    @push '\n'
+
+  # @nodoc
+  _on_data: =>
+    @push '0x'
+    @push @all.read().toString('hex')
+    @push '\n'
