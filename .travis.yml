@@ -1,7 +1,8 @@
 language: node_js
 sudo: false
 node_js:
-- '4.1.1'
+- 'node'
+- '4.1'
 install:
 - npm install -g grunt grunt-cli nodeunit istanbul
 - npm install
