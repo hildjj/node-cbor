@@ -40,6 +40,11 @@ cbor.decodeFirst(encoded, function(error, obj) {
   // obj is the unpacked object
   assert.ok(obj[0] === true);
 });
+
+// Use integers as keys?
+var m = new Map();
+m.set(1, 2);
+encoded = cbor.encode(m); // <Buffer a1 01 02>
 ```
 
 Allows streaming as well:
