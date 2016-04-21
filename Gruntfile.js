@@ -24,9 +24,6 @@ module.exports = function(grunt) {
         ext: '.js'
       }
     },
-    codo: {
-      options: {}
-    },
     coffeelint: {
       src: ['src/*.coffee'],
       options: {
@@ -91,9 +88,9 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('default', ['test']);
-  grunt.registerTask('prepublish', ['clean', 'coffee', 'codo', 'markedman']);
+  grunt.registerTask('prepublish', ['clean', 'coffee', 'markedman']);
   grunt.registerTask('man', ['clean:man', 'markedman'])
-  grunt.registerTask('doc', ['clean:doc', 'codo', 'clean:man', 'markedman']);
+  grunt.registerTask('doc', ['clean:doc', 'clean:man', 'markedman']);
   grunt.registerTask('test', ['coffee', 'nodeunit']);
   grunt.registerTask('cover', ['coffee', 'shell:istanbul']);
   grunt.registerTask('server', ['cover', 'express', 'watch']);

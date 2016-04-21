@@ -41,7 +41,6 @@
     "coffeelint": "^1.15",
     "garbage": "0.0",
     "grunt": "~1.0",
-    "grunt-codo": "^0.2",
     "grunt-coffeelint": "0.0",
     "grunt-contrib-clean": "^1.0",
     "grunt-contrib-coffee": "~1.0",
