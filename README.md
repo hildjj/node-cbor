@@ -71,25 +71,9 @@ d2.start(); // needed when you don't use the stream interface
 Developers
 ----------
 
-For the moment, you'll need to manually install istanbul, nodeunit, and grunt-cli:
-
-```
-$ npm install -g grunt-cli nodeunit istanbul
-$ grunt
-Running "coffee:compile" (coffee) task
-
-Running "nodeunit:all" (nodeunit) task
-Testing decoder.test.....OK
-Testing diagnose.test...OK
-Testing encoder.test.......OK
-Testing evented.test....OK
-Testing simple.test.OK
-Testing tagged.test..OK
-Testing utils.test.......OK
->> 459 assertions passed (129ms)
-
-Done, without errors.
-```
+Get a list of build steps with `npm run`.  I use `npm run dev`, which rebuilds,
+runs tests, and refreshes a browser window with coverage metrics every time I
+save a `.coffee` file.
 
 
 [![Build Status](https://api.travis-ci.org/hildjj/node-cbor.png)](https://travis-ci.org/hildjj/node-cbor)
