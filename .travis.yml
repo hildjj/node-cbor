@@ -3,11 +3,11 @@ sudo: false
 node_js:
 - 'node'
 - '4.1'
+- '5'
 install:
-- npm install -g grunt grunt-cli nodeunit istanbul
 - npm install
 script:
-- npm run-script ci
+- npm run ci
 cache:
   directories:
     - node_modules
