@@ -24,7 +24,7 @@
     "coffee": "coffee -cm -o lib/ src",
     "coverage": "istanbul cover nodeunit test/*.test.js",
     "precoverage": "npm run coffee -s",
-    "test": "nodeunit test/*.coffee",
+    "test": "nodeunit test/*.test.js",
     "pretest": "npm run coffee -s",
     "codo": "codo src",
     "man": "mkdir -p man; for f in man_src/*.md; do b=`basename $f`; marked-man $f -o man/${b%.md}.1; gzip -9f man/${b%.md}.1; done",
