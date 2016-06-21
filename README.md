@@ -38,7 +38,7 @@ var encoded = cbor.encode(true); // returns <Buffer f5>
 cbor.decodeFirst(encoded, function(error, obj) {
   // error != null if there was an error
   // obj is the unpacked object
-  assert.ok(obj[0] === true);
+  assert.ok(obj === true);
 });
 
 // Use integers as keys?
@@ -65,7 +65,6 @@ var d2 = new cbor.Decoder({input: '00', encoding: 'hex'});
 d.on('data', function(obj){
   console.log(obj);
 });
-d2.start(); // needed when you don't use the stream interface
 ```
 
 Developers
