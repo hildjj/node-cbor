@@ -72,10 +72,19 @@ var d2 = new cbor.Decoder({input: &#39;00&#39;, encoding: &#39;hex&#39;});
 d.on(&#39;data&#39;, function(obj){
   console.log(obj);
 });
-</code></pre>
-<h2 id="developers">Developers</h2><p>Get a list of build steps with <code>npm run</code>.  I use <code>npm run dev</code>, which rebuilds,
+</code></pre><p>There is also support for synchronous decodes:</p><pre><code>try {
+  console.log(cbor.decodeFirstSync(&#39;02&#39;)); // 2
+  console.log(cbor.decodeAllSync(&#39;0202&#39;)); // [2, 2]
+} catch (e) {
+  // throws on invalid input
+}
+</code></pre><p>The sync encoding and decoding are exported as a
+<a href="https://github.com/Level/levelup#custom_encodings">leveldb encoding</a>, as
+<code>cbor.leveldb</code>.</p><h2 id="developers">Developers</h2><p>Get a list of build steps with <code>npm run</code>.  I use <code>npm run dev</code>, which rebuilds,
 runs tests, and refreshes a browser window with coverage metrics every time I
-save a <code>.coffee</code> file.</p><p><a href="https://travis-ci.org/hildjj/node-cbor"><img src="https://api.travis-ci.org/hildjj/node-cbor.png" alt="Build Status"></a>
+save a <code>.coffee</code> file.  If you don&#39;t want to run the fuzz tests every time, set
+a <code>NO_GARBAGE</code> environment variable:</p><pre><code>env NO_GARBAGE=1 npm run dev
+</code></pre><p><a href="https://travis-ci.org/hildjj/node-cbor"><img src="https://api.travis-ci.org/hildjj/node-cbor.png" alt="Build Status"></a>
 <a href="https://coveralls.io/r/hildjj/node-cbor?branch=master"><img src="https://coveralls.io/repos/hildjj/node-cbor/badge.png?branch=master" alt="Coverage Status"></a>
 <a href="https://david-dm.org/hildjj/node-cbor"><img src="https://david-dm.org/hildjj/node-cbor.png" alt="Dependency Status"></a></p>
       </div>
