@@ -1,9 +1,9 @@
 BinaryParseStream = require '../vendor/binary-parse-stream'
 Tagged = require './tagged'
 Simple = require './simple'
-NoFilter = require 'nofilter'
 utils = require './utils'
 bignumber = require 'bignumber.js'
+NoFilter = require 'nofilter'
 
 {MT, NUMBYTES, SIMPLE, SYMS} = require './constants'
 
@@ -62,6 +62,88 @@ module.exports = class Decoder extends BinaryParseStream
       when SYMS.NULL then null
       when SYMS.UNDEFINED then undefined
       else val
+
+  # Decode the first CBOR item in the input, synchronously.  This will throw an
+  # exception if the input is not valid CBOR.
+  #
+  # @param input [String, Buffer] the input to parse
+  # @param options [Object, String] options Decoding options.
+  #   If string, the input encoding.
+  # @option options encoding [String] the input encoding, when the input is
+  #   a string.
+  # @option options tags [Object] mapping from tag number to function(v), where
+  #   v is the decoded value that comes after the tag, and where the function
+  #   returns the correctly-created value for that tag.
+  # @option options max_depth [Number] the maximum depth to parse.  -1 (the
+  #   default) for "until you run out of memory".  Set this to a finite positive
+  #   number for un-trusted inputs.  Most standard inputs won't nest more than
+  #   100 or so levels; I've tested into the millions before running out of
+  #   memory.
+  # @return [anything] The parsed value
+  @decodeFirstSync: (input, options = {encoding: 'hex'}) ->
+    opts = {}
+    encod = undefined
+    switch typeof(options)
+      when 'string'
+        encod = options
+      when 'object'
+        opts = utils.extend({}, options)
+        encod = opts.encoding
+        delete opts.encoding
+
+    c = new Decoder opts
+    s = new NoFilter input, (encod ? utils.guessEncoding(input))
+    parser = c._parse()
+    state = parser.next()
+    while !state.done
+      b = s.read state.value
+      if !b? or (b.length != state.value)
+        throw new Error 'Insufficient data'
+      state = parser.next b
+    state.value
+
+  # Decode all of the CBOR items in the input.  This will throw an exception
+  # if the input is not valid CBOR; a zero-length input will return an empty
+  # array.
+  #
+  # @param input [String, Buffer] the input to parse
+  # @param options [Object, String] options Decoding options.
+  #   If string, the input encoding.
+  # @option options encoding [String] the input encoding, when the input is
+  #   a string.
+  # @option options tags [Object] mapping from tag number to function(v), where
+  #   v is the decoded value that comes after the tag, and where the function
+  #   returns the correctly-created value for that tag.
+  # @option options max_depth [Number] the maximum depth to parse.  -1 (the
+  #   default) for "until you run out of memory".  Set this to a finite positive
+  #   number for un-trusted inputs.  Most standard inputs won't nest more than
+  #   100 or so levels; I've tested into the millions before running out of
+  #   memory.
+  # @return [anything] An array of the parsed values.
+  @decodeAllSync: (input, options = {encoding: 'hex'}) ->
+    opts = {}
+    encod = undefined
+    switch typeof(options)
+      when 'string'
+        encod = options
+      when 'object'
+        opts = utils.extend({}, options)
+        encod = opts.encoding
+        delete opts.encoding
+
+    c = new Decoder
+    s = new NoFilter input, (encod ? utils.guessEncoding(input))
+    res = []
+    while s.length > 0
+      parser = c._parse()
+      state = parser.next()
+      while !state.done
+        b = s.read state.value
+        if !b? or (b.length != state.value)
+          throw new Error 'Insufficient data'
+        state = parser.next b
+      res.push state.value
+    res
 
   # Decode the first CBOR item in the input.  This will error if there are more
   # bytes left over at the end, and optionally if there were no valid

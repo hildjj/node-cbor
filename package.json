@@ -19,21 +19,23 @@
     "json2cbor": "./bin/json2cbor"
   },
   "scripts": {
-    "clean": "rm -rf coverage lib doc man/*",
+    "clean": "rm -rf coverage lib docs/doc man/*",
     "lint": "coffeelint src test",
     "coffee": "coffee -cm -o lib/ src",
-    "coverage": "istanbul cover nodeunit test/*.test.js",
+    "coverage": "nyc npm test",
     "precoverage": "npm run coffee -s",
+    "coveragehtml": "nyc report -r html",
+    "precoveragehtml": "npm run coverage",
     "test": "nodeunit test/*.test.js",
     "pretest": "npm run coffee -s",
     "codo": "codo src",
     "man": "mkdir -p man; for f in man_src/*.md; do b=`basename $f`; marked-man $f -o man/${b%.md}.1; gzip -9f man/${b%.md}.1; done",
     "doc": "npm-run-all --silent man codo",
     "prepublish": "npm-run-all --silent coffee doc",
-    "watch": "watch 'npm run coverage' src/",
+    "watch": "watch 'npm run coveragehtml' src/ test/",
     "release": "npm version patch && git push --follow-tags && npm publish",
     "ci": "npm run coverage -s && cat ./coverage/lcov.info | coveralls",
-    "live": "live-server --port=4002 --ignorePattern='(js|css|png)$' coverage/lcov-report",
+    "live": "live-server --port=4002 --ignorePattern='(js|css|png)$' coverage",
     "dev": "npm-run-all -p --silent watch live"
   },
   "keywords": [
@@ -56,7 +58,7 @@
     "coffee-script": "latest",
     "coveralls": "latest",
     "garbage": "latest",
-    "istanbul": "latest",
+    "nyc": "latest",
     "live-server": "latest",
     "marked-man": "latest",
     "nodeunit": "latest",
@@ -67,10 +69,10 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {
-    "bignumber.js": "~2.3",
+    "bignumber.js": "~2.4",
     "commander": "^2.9",
     "json-text-sequence": "^0.1",
-    "nofilter": "^0.0"
+    "nofilter": "^0.0.3"
   },
   "engines": {
     "node": ">=4.1.0"

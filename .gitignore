@@ -1,6 +1,5 @@
-node_modules
-coverage
-doc
+node_modules/
+coverage/
 .DS_Store
 TAGS
-output/
+.nyc_output/

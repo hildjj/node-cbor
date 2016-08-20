@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="node-cbor : Encode and decode CBOR documents, with both easy mode, streaming mode, and SAX-style evented mode." />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>node-cbor</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/hildjj/node-cbor">View on GitHub</a>
+
+          <h1 id="project_title">cbor</h1>
+          <h2 id="project_tagline">Encode and decode CBOR documents, with both easy mode, streaming mode, and SAX-style evented mode.</h2>
+
+            <p><a href="doc/">Documentation</a> <a href="https://coveralls.io/r/hildjj/node-cbor?branch=master">Tests</a></p>
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/hildjj/node-cbor/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/hildjj/node-cbor/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p>Installation:</p>
+
+<pre><code>$ npm install cbor
+</code></pre>
+
+<p>Full <a href='doc/'>documentation</a> available.</p>
+
+<p>From the command line:</p>
+
+<pre><code>$ bin/json2cbor package.json &gt; package.cbor
+$ bin/cbor2json package.cbor
+$ bin/cbor2diag package.cbor
+</code></pre>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">cbor</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'cbor'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">encoded</span> <span class="o">=</span> <span class="nx">cbor</span><span class="p">.</span><span class="nx">encode</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span> <span class="c1">// returns &lt;Buffer d9&gt;</span>
+<span class="nx">cbor</span><span class="p">.</span><span class="nx">decode</span><span class="p">(</span><span class="nx">encoded</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// error != null if there was an error</span>
+  <span class="c1">// obj is the unpacked object</span>
+  <span class="nx">assert</span><span class="p">.</span><span class="nx">ok</span><span class="p">(</span><span class="nx">obj</span> <span class="o">===</span> <span class="kc">true</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>Allows streaming as well:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">cbor</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'cbor'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'fs'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">cbor</span><span class="p">.</span><span class="nx">Decoder</span><span class="p">();</span>
+<span class="nx">d</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'complete'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">obj</span><span class="p">){</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="kd">var</span> <span class="nx">s</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">createReadStream</span><span class="p">(</span><span class="s1">'foo'</span><span class="p">);</span>
+<span class="nx">s</span><span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">d</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">d2</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">cbor</span><span class="p">.</span><span class="nx">Decoder</span><span class="p">({</span><span class="nx">input</span><span class="o">:</span> <span class="s1">'00'</span><span class="p">,</span> <span class="nx">encoding</span><span class="o">:</span> <span class="s1">'hex'</span><span class="p">});</span>
+<span class="nx">d</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'complete'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">obj</span><span class="p">){</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+<span class="p">});</span>
+<span class="nx">d2</span><span class="p">.</span><span class="nx">start</span><span class="p">();</span> <span class="c1">// needed when you don't use the stream interface</span>
+</pre></div>
+
+<p>And also a SAX-type mode (which the streaming mode wraps):</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">cbor</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'cbor'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'fs'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">parser</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">cbor</span><span class="p">.</span><span class="nx">Evented</span><span class="p">();</span>
+
+<span class="c1">// `kind` is one of the following strings:</span>
+<span class="c1">// 'value': an atomic value was detected</span>
+<span class="c1">// 'array-first': the first element of an array</span>
+<span class="c1">// 'array': an item after the first in an array</span>
+<span class="c1">// 'key-first': the first key in a map</span>
+<span class="c1">// 'key': a key other than the first in a map</span>
+<span class="c1">// 'stream-first': the first item in an indefinite encoding</span>
+<span class="c1">// 'stream': an item other than the first in an indefinite encoding</span>
+<span class="c1">// null: the end of a top-level CBOR item</span>
+
+<span class="nx">parser</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'value'</span><span class="p">,</span><span class="kd">function</span><span class="p">(</span><span class="nx">val</span><span class="p">,</span><span class="nx">tags</span><span class="p">,</span><span class="nx">kind</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// An atomic item (not a map or array) was detected</span>
+  <span class="c1">// `val`: the value</span>
+  <span class="c1">// `tags`: an array of tags that preceded the list</span>
+  <span class="c1">// `kind`: see above</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">val</span><span class="p">);</span>
+<span class="p">});</span>
+<span class="nx">parser</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'array-start'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">count</span><span class="p">,</span><span class="nx">tags</span><span class="p">,</span><span class="nx">kind</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// `count`: The number of items in the array.  -1 if indefinite length.</span>
+  <span class="c1">// `tags`: An array of tags that preceded the list</span>
+  <span class="c1">// `kind`: see above</span>
+<span class="p">});</span>
+<span class="nx">parser</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'array-stop'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">count</span><span class="p">,</span><span class="nx">tags</span><span class="p">,</span><span class="nx">kind</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// `count`: The actual number of items in the array.</span>
+  <span class="c1">// `tags`: An array of tags that preceded the list</span>
+  <span class="c1">// `kind`: see above</span>
+<span class="p">});</span>
+<span class="nx">parser</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'map-start'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">count</span><span class="p">,</span><span class="nx">tags</span><span class="p">,</span><span class="nx">kind</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// `count`: The number of pairs in the map.  -1 if indefinite length.</span>
+  <span class="c1">// `tags`: An array of tags that preceded the list</span>
+  <span class="c1">// `kind`: see above</span>
+<span class="p">});</span>
+<span class="nx">parser</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'map-stop'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">count</span><span class="p">,</span><span class="nx">tags</span><span class="p">,</span><span class="nx">kind</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// `count`: The actual number of pairs in the map.</span>
+  <span class="c1">// `tags`: An array of tags that preceded the list</span>
+  <span class="c1">// `kind`: see above</span>
+<span class="p">});</span>
+<span class="nx">parser</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'stream-start'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">mt</span><span class="p">,</span><span class="nx">tags</span><span class="p">,</span><span class="nx">kind</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// The start of a CBOR indefinite length bytestring or utf8-string.</span>
+  <span class="c1">// `mt`: The major type for all of the items</span>
+  <span class="c1">// `tags`: An array of tags that preceded the list</span>
+  <span class="c1">// `kind`: see above</span>
+<span class="p">});</span>
+<span class="nx">parser</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'stream-stop'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">count</span><span class="p">,</span><span class="nx">mt</span><span class="p">,</span><span class="nx">tags</span><span class="p">,</span><span class="nx">kind</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// We got to the end of a CBOR indefinite length bytestring or utf8-string.</span>
+  <span class="c1">// `count`: The number of constituent items</span>
+  <span class="c1">// `mt`: The major type for all of the items</span>
+  <span class="c1">// `tags`: An array of tags that preceded the list</span>
+  <span class="c1">// `kind`: see above</span>
+<span class="p">});</span>
+<span class="nx">parser</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'end'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1">// the end of the input</span>
+<span class="p">});</span>
+<span class="nx">parser</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'error'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">er</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// parse error such as invalid input</span>
+<span class="p">});</span>
+
+<span class="kd">var</span> <span class="nx">s</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">createReadStream</span><span class="p">(</span><span class="s1">'foo'</span><span class="p">);</span>
+<span class="nx">s</span><span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">parser</span><span class="p">);</span>
+</pre></div>
+
+
+<a href='https://coveralls.io/r/hildjj/node-cbor?branch=master'><img src='https://coveralls.io/repos/hildjj/node-cbor/badge.png?branch=master' alt='Coverage Status' /></a>
+
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">node-cbor maintained by <a href="https://github.com/hildjj">hildjj</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+
+
+  </body>
+</html>

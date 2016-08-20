@@ -1,5 +1,7 @@
 --name "node cbor"
 --title "cbor API Documentation"
 --readme README.md
+--output docs/doc
+--undocumented
 ./src
 LICENSE.md

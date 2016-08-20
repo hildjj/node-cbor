@@ -37,6 +37,24 @@ function buildTest(test) {
   };
 }
 
+exports.decodeFirstSync = function(test) {
+  test.deepEqual(Decoder.decodeFirstSync('02'), 2);
+  test.deepEqual(Decoder.decodeFirstSync('Ag==', 'base64'), 2);
+  test.deepEqual(Decoder.decodeFirstSync('02', {}), 2);
+  test.throws(() => Decoder.decodeFirstSync(), Error);
+  test.throws(() => Decoder.decodeFirstSync(''), Error);
+  test.throws(() => Decoder.decodeFirstSync('63666f'), Error);
+  test.done();
+}
+
+exports.decodeAllSync = function(test) {
+  test.deepEqual(Decoder.decodeAllSync('0202'), [2,2]);
+  test.deepEqual(Decoder.decodeAllSync('AgI=', 'base64'), [2,2]);
+  test.deepEqual(Decoder.decodeAllSync('0202', {}), [2,2]);
+  test.deepEqual(Decoder.decodeAllSync(''), []);
+  test.throws(() => Decoder.decodeAllSync('63666f'), Error);
+  test.done();
+}
 
 exports.from_spec =  function(test) {
   var bt = buildTest(test);
