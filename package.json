@@ -34,9 +34,9 @@
     "prepublish": "npm-run-all --silent coffee doc",
     "watch": "watch 'npm run coveragehtml' src/ test/",
     "release": "npm version patch && git push --follow-tags && npm publish",
-    "ci": "npm run coverage -s && cat ./coverage/lcov.info | coveralls",
     "live": "live-server --port=4002 --ignorePattern='(js|css|png)$' coverage",
-    "dev": "npm-run-all -p --silent watch live"
+    "dev": "npm-run-all -p --silent watch live",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "keywords": [
     "coap",
