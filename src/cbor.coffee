@@ -19,6 +19,7 @@ exports.decodeAllSync = exports.Decoder.decodeAllSync
 exports.decodeFirstSync = exports.Decoder.decodeFirstSync
 exports.diagnose = exports.Diagnose.diagnose
 exports.encode = exports.Encoder.encode
+exports.decode = exports.Decoder.decodeFirstSync
 exports.leveldb =
   decode: exports.Decoder.decodeAllSync,
   encode: exports.Encoder.encode

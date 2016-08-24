@@ -100,7 +100,7 @@ module.exports = class Decoder extends BinaryParseStream
       if !b? or (b.length != state.value)
         throw new Error 'Insufficient data'
       state = parser.next b
-    state.value
+    Decoder.nullcheck state.value
 
   # Decode all of the CBOR items in the input.  This will throw an exception
   # if the input is not valid CBOR; a zero-length input will return an empty
@@ -142,7 +142,7 @@ module.exports = class Decoder extends BinaryParseStream
         if !b? or (b.length != state.value)
           throw new Error 'Insufficient data'
         state = parser.next b
-      res.push state.value
+      res.push Decoder.nullcheck(state.value)
     res
 
   # Decode the first CBOR item in the input.  This will error if there are more
