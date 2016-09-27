@@ -39,49 +39,6 @@
           </td>
         </tr>
       </table>
-      <h2>Overview</h2>
-      <div class='docstring'>
-  <p>Decode a stream of CBOR bytes by transforming them into equivalent
-JavaScript data.  Because of the limitations of Node object streams,
-special symbols are emitted instead of NULL or UNDEFINED.  Fix those
-up by calling <a href='../class/Decoder.html#nullcheck-static'>Decoder.nullcheck</a>.</p><p>Several other internal events are emitted, but I hope you never need to
-care about them.</p>
-</div>
-<div class='tags'>
-  <div class='events'>
-    <h3>Events:</h3>
-    <div class='event'>
-      <p class='signature'>
-        &#39;data&#39;
-      </p>
-      <div class='docstring'>
-  <p>(object) A complete top-level CBOR item has been parsed</p>
-</div>
-<div class='tags'>
-</div>
-    </div>
-    <div class='event'>
-      <p class='signature'>
-        &#39;end&#39;
-      </p>
-      <div class='docstring'>
-  <p>The input stream is fully parsed</p>
-</div>
-<div class='tags'>
-</div>
-    </div>
-    <div class='event'>
-      <p class='signature'>
-        &#39;error&#39;
-      </p>
-      <div class='docstring'>
-  <p>(Error) An error has occurred in parsing</p>
-</div>
-<div class='tags'>
-</div>
-    </div>
-  </div>
-</div>
       <h2>Variables Summary</h2>
       <dl class='constants'>
   <dt id='NOT_FOUND-variable'>
