@@ -1,31 +1,30 @@
-/*jslint node: true */
-"use strict";
+'use strict'
 
-var cbor = require('../lib/cbor');
+var cbor = require('../lib/cbor')
 
-exports.create = function(test) {
-  var t = new cbor.Tagged(1, "one");
-  test.ok(t);
-  test.deepEqual(t.tag, 1);
-  test.deepEqual(t.value, "one");
-  test.deepEqual(t.toString(), '1("one")');
+exports.create = function (test) {
+  var t = new cbor.Tagged(1, 'one')
+  test.ok(t)
+  test.deepEqual(t.tag, 1)
+  test.deepEqual(t.value, 'one')
+  test.deepEqual(t.toString(), '1("one")')
 
   test.deepEqual(cbor.encode(t), new Buffer('c1636f6e65', 'hex'))
-  test.done();
-};
+  test.done()
+}
 
-exports.edges = function(test) {
-  test.throws(function() {
-    new cbor.Tagged(-11, "one");
-  });
+exports.edges = function (test) {
+  test.throws(function () {
+    new cbor.Tagged(-11, 'one') // eslint-disable-line
+  })
 
-  test.throws(function() {
-    new cbor.Tagged(1.1, "one");
-  });
+  test.throws(function () {
+    new cbor.Tagged(1.1, 'one') // eslint-disable-line
+  })
 
-  test.throws(function() {
-    new cbor.Tagged("zero", "one");
-  });
+  test.throws(function () {
+    new cbor.Tagged('zero', 'one') // eslint-disable-line
+  })
 
-  test.done();
-};
+  test.done()
+}
