@@ -1,31 +1,30 @@
 #!/usr/bin/env node
 
-var fs = require('fs');
-var cbor = require('../lib/cbor');
-var utils = require('../lib/utils');
-var package = require('../package.json');
+const cbor = require('../lib/cbor')
+const utils = require('../lib/utils')
+const pkg = require('../package.json')
 
-var opts = require('commander')
-.version(package.version)
-.usage('[options] <file ...>')
-.option('-x, --hex [string]', 'Hex string input')
-.option('-t, --tabsize [spaces]', 'Indent amount')
-.parse(process.argv)
+const opts = require('commander')
+  .version(pkg.version)
+  .usage('[options] <file ...>')
+  .option('-x, --hex [string]', 'Hex string input')
+  .option('-t, --tabsize [spaces]', 'Indent amount')
+  .parse(process.argv)
 
-var num_tabs = (opts.tabsize|0) || 10;
-var argv = opts.args;
+const numTabs = (opts.tabsize | 0) || 10
+const argv = opts.args
 if (opts.hex) {
-  argv.push(new utils.DeHexStream(opts.hex));
+  argv.push(new utils.DeHexStream(opts.hex))
 }
 
 if (argv.length === 0) {
-  argv.push('-');
+  argv.push('-')
 }
 
-utils.streamFiles(argv, function() {
-  var c = new cbor.Commented({
-    max_depth: num_tabs
-  });
-  c.pipe(process.stdout);
-  return c;
-});
+utils.streamFiles(argv, function () {
+  const c = new cbor.Commented({
+    max_depth: numTabs
+  })
+  c.pipe(process.stdout)
+  return c
+})

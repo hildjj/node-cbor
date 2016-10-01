@@ -1,40 +1,39 @@
 #!/usr/bin/env node
 
-var cbor = require('../lib/cbor');
-var utils = require('../lib/utils');
-var package = require('../package.json');
+const cbor = require('../lib/cbor')
+const utils = require('../lib/utils')
+const pkg = require('../package.json')
 
-var jts = require('json-text-sequence');
-var opts = require('commander')
-.version(package.version)
-.usage('[options] <file ...>')
-.option('-x, --hex', 'Hex string output')
-.parse(process.argv)
+const opts = require('commander')
+  .version(pkg.version)
+  .usage('[options] <file ...>')
+  .option('-x, --hex', 'Hex string output')
+  .parse(process.argv)
 
-var argv = opts.args
+const argv = opts.args
 if (argv.length === 0) {
-  argv.push('-');
+  argv.push('-')
 }
 
-utils.streamFiles(argv, function(){
-  var p = new jts.parser();
-  var d = new cbor.Encoder();
-  p.pipe(d);
-  p.on('truncated', function(b) {
+utils.streamFiles(argv, function () {
+  const Parser = require('json-text-sequence').parser
+  const p = new Parser()
+  const d = new cbor.Encoder()
+  p.pipe(d)
+  p.on('truncated', function (b) {
     try {
-      d.write(JSON.parse(b));
+      d.write(JSON.parse(b))
+    } catch (e) {
+      e.message += ' for input ' + b.inspect()
+      throw e
     }
-    catch (e) {
-      e.message += " for input " + b.inspect();
-      throw e;
-    }
-  });
-  var o = d
+  })
+  let o = d
   if (opts.hex) {
-    o = new utils.HexStream();
-    d.pipe(o);
-    o.on('end', function(){ process.stdout.write('\n') });
+    o = new utils.HexStream()
+    d.pipe(o)
+    o.on('end', function () { process.stdout.write('\n') })
   }
-  o.pipe(process.stdout);
-  return p;
-});
+  o.pipe(process.stdout)
+  return p
+})
