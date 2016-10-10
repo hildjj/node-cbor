@@ -1,9 +1,10 @@
 'use strict'
 
-const NoFilter = require('nofilter')
 const cbor = require('../')
 const test = require('ava')
 const cases = require('./cases')
+const NoFilter = require('nofilter')
+const BigNum = require('bignumber.js')
 
 function testAll(t, list) {
   t.plan(list.length)
@@ -72,4 +73,14 @@ test.cb('streamNone', t => {
   })
   gen.pipe(bs)
   gen.end()
+})
+
+test('pushFails', t => {
+  cases.EncodeFailer.tryAll(t, [1,2,3])
+  cases.EncodeFailer.tryAll(t, new Set([1,2,3]))
+  cases.EncodeFailer.tryAll(t, new BigNum(0))
+  cases.EncodeFailer.tryAll(t, new BigNum(1.1))
+  cases.EncodeFailer.tryAll(t, new Map([[1,2], ['a', null]]))
+  cases.EncodeFailer.tryAll(t, {a: 1, b: null})
+  cases.EncodeFailer.tryAll(t, undefined)
 })

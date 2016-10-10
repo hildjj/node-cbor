@@ -40,7 +40,6 @@ function failFirstAllCB(t, list) {
     } else {
       t.throws(() => cbor.Decoder.nullcheck(d))
     }
-
   }))
 }
 
@@ -175,11 +174,20 @@ test('decodeAll', t => {
       cbor.decodeAll('01', function (er, v) {
         t.deepEqual([1], v)
         cbor.decodeAll('AQ==', {encoding: 'base64'}, function (er, v) {
+          t.ifError(er)
           t.deepEqual([1], v)
           return cbor.decodeAll('7f', {}, function (er, v) {
             t.truthy(er)
+            return cbor.decodeAll('AQ==', 'base64', (er, v) => {
+              t.ifError(er)
+              t.deepEqual([1], v)
+            })
           })
         })
       })
     })
+})
+
+test('depth', t => {
+  t.throws(cbor.decodeFirst('818180', {max_depth: 1}))
 })

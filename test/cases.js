@@ -682,10 +682,20 @@ exports.decodeGood = [
   1b                -- Positive number, next 8 bytes
     7fffffffffffffff -- 9223372036854775807
 0x1b7fffffffffffffff`],
+  [new BigNum('-9223372036854775808'),  '-9223372036854775808', `
+  3b                -- Negative number, next 8 bytes
+    7fffffffffffffff -- -9223372036854775808
+0x3b7fffffffffffffff`],
   [0.00006103515625, "0.00006103515625_1", `
   f9                -- Float, next 2 bytes
     0400            -- 0.00006103515625
 0xf90400`],
+  [new BigNum(1.5), "5([-1, 3])", `
+  c5                -- Tag #5
+    82              -- Array, 2 items
+      20            -- [0], -1
+      03            -- [1], 3
+0xc5822003`],
   [-4, "-4_1", `
   f9                -- Float, next 2 bytes
     c400            -- -4
@@ -917,3 +927,36 @@ exports.toString = function (c) {
   const match = c.match(HEX)
   return match[1]
 }
+
+class EncodeFailer extends cbor.Encoder {
+  constructor (count) {
+    super()
+    if (count == null) {
+      count = Number.MAX_SAFE_INTEGER
+    }
+    this.count = count
+    this.start = count
+  }
+  push(fresh, encoding) {
+    if (this.count-- <= 0) {
+      super.push(null)
+      return false
+    }
+    return super.push(fresh, encoding)
+  }
+  get used() {
+    return this.start - this.count
+  }
+  static tryAll(t, f) {
+    let enc = new EncodeFailer()
+    t.truthy(enc._pushAny(f))
+    let used = enc.used
+    for (let i=0; i<used; i++) {
+      enc = new EncodeFailer(i)
+      t.falsy(enc._pushAny(f))
+    }
+    enc = new EncodeFailer(used)
+    t.truthy(enc._pushAny(f))
+  }
+}
+exports.EncodeFailer = EncodeFailer

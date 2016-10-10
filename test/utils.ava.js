@@ -121,13 +121,16 @@ test.cb('streamFilesDash', t => {
   var u = new utils.HexStream()
   var bs = new NoFilter()
   u.pipe(bs)
-  utils.streamFiles([new utils.DeHexStream('6161')], function () {
-    return u
-  }, function (er) {
+  utils.streamFiles([new utils.DeHexStream('6161')], () => u, (er) => {
     t.ifError(er)
     t.deepEqual(bs.toString('utf8'), '6161')
     t.end()
   })
+})
+
+test('streamFilesInputs', t => {
+  // TODO: get error to fire
+  utils.streamFiles([new utils.DeHexStream('48656c6c6f2c20576f726c64210a')], () => new utils.HexStream())
 })
 
 test.cb('guessEncoding', t => {
