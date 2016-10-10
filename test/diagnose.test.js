@@ -1,44 +1,39 @@
-/*jslint node: true */
-"use strict";
+'use strict'
 
-var Diagnose = require('../lib/diagnose');
-var utils = require('../lib/utils');
+var Diagnose = require('../lib/diagnose')
+var async = require('async')
+var NoFilter = require('nofilter')
 
-var async = require('async');
-var fs = require('fs');
-var NoFilter = require('nofilter');
-
-function diagTest(test, max_depth) {
+function diagTest (test, maxDepth) {
   return function (hd, cb) {
-    var expected = hd[0];
-    var hex = hd[1].replace(/^0x/, '');
-    var aexpected = [expected];
+    var expected = hd[0]
+    var hex = hd[1].replace(/^0x/, '')
+    var aexpected = [expected]
 
     Diagnose.diagnose(hex, {
       encoding: 'hex',
-      max_depth: max_depth || -1
-    }).then(function(actual) {
-      actual = actual.split('\n').slice(0,-1);
-      if (typeof(expected) === 'function') {
-        cb(expected(test, null, actual));
+      max_depth: maxDepth || -1
+    }).then(function (actual) {
+      actual = actual.split('\n').slice(0, -1)
+      if (typeof (expected) === 'function') {
+        cb(expected(test, null, actual))
       } else {
-        test.deepEqual(actual, aexpected, expected + " | " + hex + " != " + actual);
-        cb();
+        test.deepEqual(actual, aexpected, expected + ' | ' + hex + ' != ' + actual)
+        cb()
       }
     },
-    function(er) {
-      if (typeof(expected) === 'function') {
-        cb(expected(test, er));
-      } else {
-        cb(er);
-      }
-    });
+      function (er) {
+        if (typeof (expected) === 'function') {
+          cb(expected(test, er))
+        } else {
+          cb(er)
+        }
+      })
   }
 }
 
-exports.from_spec =  function(test) {
-
-  var dt = diagTest(test);
+exports.from_spec = function (test) {
+  var dt = diagTest(test)
 
   async.each([
     ['0', '0x00'],
@@ -142,71 +137,71 @@ exports.from_spec =  function(test) {
     ['[_ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]', '0x9f0102030405060708090a0b0c0d0e0f101112131415161718181819ff'],
     ['{_ "a": 1, "b": [_ 2, 3]}', '0xbf61610161629f0203ffff'],
     ['["a", {_ "b": "c"}]', '0x826161bf61626163ff'],
-    ["1([1, 2, 3])", '0xc183010203'],
-    ["1({1: 2})", '0xc1a10102'],
+    ['1([1, 2, 3])', '0xc183010203'],
+    ['1({1: 2})', '0xc1a10102'],
     ['1(1([_ ]))', '0xc1c19fff'],
-    ['1((_ h\'aabbccdd\', h\'eeff99\'))', '0xc15f44aabbccdd43eeff99ff']
-  ], dt, function(er) {
-    test.equal(er, null);
-    test.done();
-  });
-};
-
-function expectError(test, er, val) {
-  test.ok(er);
+    ["1((_ h'aabbccdd', h'eeff99'))", '0xc15f44aabbccdd43eeff99ff']
+  ], dt, function (er) {
+    test.equal(er, null)
+    test.done()
+  })
 }
 
-exports.edges = function(test) {
-  var dt = diagTest(test,2);
+function expectError (test, er, val) {
+  test.ok(er)
+}
+
+exports.edges = function (test) {
+  var dt = diagTest(test, 2)
   async.each([
     [expectError, '0x7432303133'],
     [expectError, '0x818181818100'],
     [expectError, '0x7f01ff']
-  ], dt, function(er) {
-    test.equal(er, null);
+  ], dt, function (er) {
+    test.equal(er, null)
 
-    Diagnose.diagnose(new Buffer(0), function(er) {
-      test.ifError(er);
+    Diagnose.diagnose(new Buffer(0), function (er) {
+      test.ifError(er)
       try {
-        Diagnose.diagnose();
+        Diagnose.diagnose()
       } catch (er) {
-        test.ok(er);
-        Diagnose.diagnose('01', function(er, out){
-          test.ifError(er);
-          test.deepEqual(out, '1\n');
-          test.done();
-        });
+        test.ok(er)
+        Diagnose.diagnose('01', function (er, out) {
+          test.ifError(er)
+          test.deepEqual(out, '1\n')
+          test.done()
+        })
       }
-    });
-  });
-};
+    })
+  })
+}
 
 exports.construct = function (test) {
-  var d = new Diagnose();
-  test.equal(false, d.stream_errors);
-  d.stream_errors = true;
-  var bs = new NoFilter();
-  d.pipe(bs);
-  d.on('end', function() {
-    test.deepEqual('Error: unexpected end of input', bs.toString('utf8'));
-    test.done();
-  });
-  d.end(new Buffer([0x18]));
-};
+  var d = new Diagnose()
+  test.equal(false, d.stream_errors)
+  d.stream_errors = true
+  var bs = new NoFilter()
+  d.pipe(bs)
+  d.on('end', function () {
+    test.deepEqual('Error: unexpected end of input', bs.toString('utf8'))
+    test.done()
+  })
+  d.end(new Buffer([0x18]))
+}
 
-exports.stream = function(test) {
+exports.stream = function (test) {
   var dt = new Diagnose({
     separator: '-'
-  });
-  var bs = new NoFilter();
+  })
+  var bs = new NoFilter()
 
-  dt.on('end', function() {
-    test.deepEqual(bs.toString('utf8'), '1-');
-    test.done();
-  });
-  dt.on('error', function(er) {
-    test.ifError(er);
-  });
-  dt.pipe(bs);
-  dt.end(new Buffer('01', 'hex'));
-};
+  dt.on('end', function () {
+    test.deepEqual(bs.toString('utf8'), '1-')
+    test.done()
+  })
+  dt.on('error', function (er) {
+    test.ifError(er)
+  })
+  dt.pipe(bs)
+  dt.end(new Buffer('01', 'hex'))
+}

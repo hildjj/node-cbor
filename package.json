@@ -20,21 +20,17 @@
   },
   "scripts": {
     "clean": "rm -rf coverage lib docs/doc man/*",
-    "lint": "coffeelint src test",
-    "coffee": "coffee -cm -o lib/ src",
+    "lint": "standard src/*.js test/*.js",
+    "doc": "jsdoc -c .jsdoc.conf",
     "coverage": "nyc npm test",
-    "precoverage": "npm run coffee -s",
     "coveragehtml": "nyc report -r html",
     "precoveragehtml": "npm run coverage",
     "test": "nodeunit test/*.test.js",
-    "pretest": "npm run coffee -s",
-    "codo": "codo src",
     "man": "mkdir -p man; for f in man_src/*.md; do b=`basename $f`; marked-man $f -o man/${b%.md}.1; gzip -9f man/${b%.md}.1; done",
-    "doc": "npm-run-all --silent man codo",
-    "prepublish": "npm-run-all --silent coffee doc",
-    "watch": "watch 'npm run coveragehtml' src/ test/",
+    "watch": "watch 'npm run coveragehtml' lib/ test/",
     "release": "npm version patch && git push --follow-tags && npm publish",
     "live": "live-server --port=4002 --ignorePattern='(js|css|png)$' coverage",
+    "predev": "if [ ! -f coverage/index.html ]; then mkdir coverage; cp .waiting.html coverage/index.html; fi",
     "dev": "npm-run-all -p --silent watch live",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
@@ -52,19 +48,16 @@
     "Artyom Yagilev <github@scorpi.org> (http://scorpi.org/)"
   ],
   "devDependencies": {
-    "async": "latest",
-    "codo": "latest",
-    "coffeelint": "latest",
-    "coffee-script": "latest",
-    "coveralls": "latest",
-    "garbage": "latest",
-    "nyc": "latest",
-    "live-server": "latest",
-    "marked-man": "latest",
-    "nodeunit": "latest",
-    "npm-run-all": "latest",
-    "source-map-support": "latest",
-    "watch": "latest"
+    "async": "*",
+    "garbage": "*",
+    "nyc": "*",
+    "live-server": "*",
+    "marked-man": "*",
+    "nodeunit": "*",
+    "npm-run-all": "*",
+    "source-map-support": "*",
+    "standard": "*",
+    "watch": "*"
   },
   "license": "MIT",
   "readmeFilename": "README.md",
@@ -75,6 +68,6 @@
     "nofilter": "^0.0.3"
   },
   "engines": {
-    "node": ">=4.1.0"
+    "node": ">=4"
   }
 }
