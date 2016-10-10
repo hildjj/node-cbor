@@ -19,7 +19,7 @@
     "json2cbor": "./bin/json2cbor"
   },
   "scripts": {
-    "clean": "rm -rf coverage .nyc_output/ docs/doc man/*",
+    "clean": "rm -rf coverage .nyc_output/ docs/api man/*",
     "lint": "standard src/*.js bin/* test/*.js",
     "doc": "jsdoc -c .jsdoc.conf",
     "coverage": "nyc npm test",
@@ -53,15 +53,12 @@
     ]
   },
   "devDependencies": {
-    "async": "*",
     "ava": "*",
     "garbage": "*",
     "live-server": "*",
     "marked-man": "*",
-    "nodeunit": "*",
     "npm-run-all": "*",
     "nyc": "*",
-    "source-map-support": "*",
     "standard": "*",
     "watch": "*"
   },
