@@ -1,28 +1,29 @@
 #!/usr/bin/env node
+'use strict'
 
-var cbor = require('../lib/cbor');
-var utils = require('../lib/utils');
-var package = require('../package.json');
+const cbor = require('../lib/cbor')
+const utils = require('../lib/utils')
+const pkg = require('../package.json')
 
-var opts = require('commander')
-.version(package.version)
-.usage('[options] <file ...>')
-.option('-x, --hex [STRING]', 'Hex string input')
-.parse(process.argv)
+const opts = require('commander')
+  .version(pkg.version)
+  .usage('[options] <file ...>')
+  .option('-x, --hex [STRING]', 'Hex string input')
+  .parse(process.argv)
 
-var argv = opts.args;
+const argv = opts.args
 if (opts.hex) {
-  argv.push(new utils.DeHexStream(opts.hex));
+  argv.push(new utils.DeHexStream(opts.hex))
 }
 
 if (argv.length === 0) {
-  argv.push('-');
+  argv.push('-')
 }
 
-utils.streamFiles(argv, function(){
-  var d = new cbor.Decoder();
-  d.on('data', function(v) {
-    console.log(JSON.stringify(v));
-  });
-  return d;
-});
+utils.streamFiles(argv, function () {
+  const d = new cbor.Decoder()
+  d.on('data', function (v) {
+    console.log(JSON.stringify(v))
+  })
+  return d
+})

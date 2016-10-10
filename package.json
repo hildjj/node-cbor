@@ -19,13 +19,13 @@
     "json2cbor": "./bin/json2cbor"
   },
   "scripts": {
-    "clean": "rm -rf coverage lib docs/doc man/*",
-    "lint": "standard src/*.js test/*.js",
+    "clean": "rm -rf coverage .nyc_output/ docs/api man/*",
+    "lint": "standard src/*.js bin/* test/*.js",
     "doc": "jsdoc -c .jsdoc.conf",
     "coverage": "nyc npm test",
     "coveragehtml": "nyc report -r html",
     "precoveragehtml": "npm run coverage",
-    "test": "nodeunit test/*.test.js",
+    "test": "ava",
     "man": "mkdir -p man; for f in man_src/*.md; do b=`basename $f`; marked-man $f -o man/${b%.md}.1; gzip -9f man/${b%.md}.1; done",
     "watch": "watch 'npm run coveragehtml' lib/ test/",
     "release": "npm version patch && git push --follow-tags && npm publish",
@@ -47,15 +47,20 @@
     "Patrick Gansterer <paroga@paroga.com> (http://paroga.com/)",
     "Artyom Yagilev <github@scorpi.org> (http://scorpi.org/)"
   ],
+  "ava": {
+    "files": [
+      "test/*.ava.js"
+    ]
+  },
   "devDependencies": {
-    "async": "*",
+    "ava": "*",
     "garbage": "*",
-    "nyc": "*",
+    "ink-docstrap": "*",
+    "jsdoc": "*",
     "live-server": "*",
     "marked-man": "*",
-    "nodeunit": "*",
     "npm-run-all": "*",
-    "source-map-support": "*",
+    "nyc": "*",
     "standard": "*",
     "watch": "*"
   },

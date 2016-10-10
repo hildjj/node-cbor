@@ -4,3 +4,7 @@ coverage/
 TAGS
 .nyc_output/
 *.js.map
+jsconfig.json
+typings/
+typings.json
+.vscode/
