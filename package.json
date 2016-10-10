@@ -61,7 +61,7 @@
     "marked-man": "*",
     "npm-run-all": "*",
     "nyc": "*",
-    "standard": "*",
+    "standard": "8.4.0",
     "watch": "*"
   },
   "license": "MIT",
