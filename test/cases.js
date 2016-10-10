@@ -65,6 +65,10 @@ exports.good = [
   1b                -- Positive number, next 8 bytes
     001fffffffffffff -- 9007199254740991
 0x1b001fffffffffffff`],
+  [Number.MAX_VALUE, '1.7976931348623157e+308_3', `
+  fb                -- Float, next 8 bytes
+    7fefffffffffffff -- 1.7976931348623157e+308
+0xfb7fefffffffffffff`],
   [new BigNum('-1c0000000000000001', 16), "3(h'1c0000000000000000')", `
   c3                -- Tag #3
     49              -- Bytes, length: 9
@@ -674,6 +678,10 @@ exports.decodeGood = [
   f9                -- Float, next 2 bytes
     0001            -- 5.960464477539063e-8
 0xf90001`],
+  [new BigNum('9223372036854775807'),  '9223372036854775807', `
+  1b                -- Positive number, next 8 bytes
+    7fffffffffffffff -- 9223372036854775807
+0x1b7fffffffffffffff`],
   [0.00006103515625, "0.00006103515625_1", `
   f9                -- Float, next 2 bytes
     0400            -- 0.00006103515625
