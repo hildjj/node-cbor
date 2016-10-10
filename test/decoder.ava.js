@@ -3,36 +3,33 @@
 const cbor = require('../')
 const test = require('ava')
 const cases = require('./cases')
-const url = require('url')
 const utils = require('../lib/utils')
-const BigNum = require('bignumber.js')
-const util = require('util')
 
-function testAll(t, list) {
+function testAll (t, list) {
   t.plan(list.length)
   return Promise.all(list.map(c => {
     return cbor.decodeFirst(cases.toBuffer(c))
-    .then(d => {
-      if (isNaN(c[0])) {
-        t.truthy(isNaN(d))
-      } else {
-        t.deepEqual(d, c[0], cases.toString(c))
-      }
-    })
+      .then(d => {
+        if (isNaN(c[0])) {
+          t.truthy(isNaN(d))
+        } else {
+          t.deepEqual(d, c[0], cases.toString(c))
+        }
+      })
   }))
 }
 
-function failAll(t, list) {
+function failAll (t, list) {
   t.plan(list.length)
   list.map(c => t.throws(() => cbor.decode(cases.toBuffer(c))))
 }
 
-function failFirstAll(t, list) {
+function failFirstAll (t, list) {
   t.plan(list.length)
   list.map(c => t.throws(cbor.decodeFirst(cases.toBuffer(c))))
 }
 
-function failFirstAllCB(t, list) {
+function failFirstAllCB (t, list) {
   t.plan(list.length)
   list.map(c => cbor.decodeFirst(cases.toBuffer(c), (er, d) => {
     if (d == null) {
@@ -111,7 +108,7 @@ test.cb('parse_tag', t => {
 test.cb('error', t => {
   cbor.decodeFirst('d87f01c001', 'hex').catch(function (er) {
     t.truthy(er)
-    cbor.Decoder.decodeFirst('', {required: true}, (er,d) => {
+    cbor.Decoder.decodeFirst('', {required: true}, (er, d) => {
       t.truthy(er)
       t.falsy(d)
       t.end()

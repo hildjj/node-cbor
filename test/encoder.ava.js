@@ -6,7 +6,7 @@ const cases = require('./cases')
 const NoFilter = require('nofilter')
 const BigNum = require('bignumber.js')
 
-function testAll(t, list) {
+function testAll (t, list) {
   t.plan(list.length)
   return Promise.all(list.map(c => {
     t.is(cbor.encode(c[0]).toString('hex'), cases.toString(c), c[1])
@@ -34,7 +34,7 @@ test('addSemanticType', t => {
   // before the tag, this is an innocuous object:
   // {"value": "foo"}
   var tc = new cases.TempClass('foo')
-  delete(cases.TempClass.prototype.encodeCBOR)
+  delete (cases.TempClass.prototype.encodeCBOR)
   t.is(cbor.Encoder.encode(tc).toString('hex'), 'a16576616c756563666f6f')
   var gen = new cbor.Encoder({genTypes: [cases.TempClass, cases.TempClass.toCBOR]})
   gen.write(tc)
@@ -42,7 +42,7 @@ test('addSemanticType', t => {
 
   function hexPackBuffer (gen, obj, bufs) {
     gen.write('0x' + obj.toString('hex'))
-    // intentionally don't return
+  // intentionally don't return
   }
 
   // replace Buffer serializer with hex strings
@@ -76,11 +76,11 @@ test.cb('streamNone', t => {
 })
 
 test('pushFails', t => {
-  cases.EncodeFailer.tryAll(t, [1,2,3])
-  cases.EncodeFailer.tryAll(t, new Set([1,2,3]))
+  cases.EncodeFailer.tryAll(t, [1, 2, 3])
+  cases.EncodeFailer.tryAll(t, new Set([1, 2, 3]))
   cases.EncodeFailer.tryAll(t, new BigNum(0))
   cases.EncodeFailer.tryAll(t, new BigNum(1.1))
-  cases.EncodeFailer.tryAll(t, new Map([[1,2], ['a', null]]))
+  cases.EncodeFailer.tryAll(t, new Map([[1, 2], ['a', null]]))
   cases.EncodeFailer.tryAll(t, {a: 1, b: null})
   cases.EncodeFailer.tryAll(t, undefined)
 })

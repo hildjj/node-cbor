@@ -5,17 +5,17 @@ const cbor = require('../')
 const test = require('ava')
 const cases = require('./cases')
 
-function testAll(t, list) {
+function testAll (t, list) {
   t.plan(list.length)
   return Promise.all(list.map(c => {
     return cbor.diagnose(cases.toBuffer(c))
-    .then(d => {
-      return t.is(d, c[1] + "\n")
-    })
+      .then(d => {
+        return t.is(d, c[1] + '\n')
+      })
   }))
 }
 
-function failAll(t, list) {
+function failAll (t, list) {
   t.plan(list.length)
   list.map(c => t.throws(cbor.diagnose(cases.toBuffer(c))))
 }
@@ -62,14 +62,13 @@ test.cb('inputs', t => {
     t.ifError(er)
     t.truthy(d)
     cbor.diagnose('AQ==', {encoding: 'base64'})
-    .then((d) => {
-      t.truthy(d)
-      cbor.diagnose('AQ==', {encoding: 'base64'}, (er, d) => {
-        t.ifError(er)
+      .then((d) => {
         t.truthy(d)
-        t.end()
+        cbor.diagnose('AQ==', {encoding: 'base64'}, (er, d) => {
+          t.ifError(er)
+          t.truthy(d)
+          t.end()
+        })
       })
-    })
   })
 })
-

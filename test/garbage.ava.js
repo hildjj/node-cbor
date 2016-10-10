@@ -2,7 +2,6 @@
 
 const test = require('ava')
 const cbor = require('../lib/cbor')
-const async = require('async')
 const garbage = require('garbage')
 
 const REPEATS = parseInt(process.env['NODE_CBOR_GARBAGE'] || 10000)
@@ -12,7 +11,7 @@ test('garbage', t => {
   }
   t.plan(REPEATS)
   const inp = []
-  for (let i=0; i<REPEATS; i++) {
+  for (let i = 0; i < REPEATS; i++) {
     inp.push(garbage(100))
   }
   return Promise.all(inp.map(g => {

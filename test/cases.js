@@ -4,7 +4,7 @@ const BigNum = require('bignumber.js')
 const NoFilter = require('nofilter')
 const cbor = require('../')
 const constants = require('../lib/constants')
-const url  = require('url')
+const url = require('url')
 
 class TempClass {
   constructor (val) {
@@ -34,27 +34,27 @@ exports.good = [
   [23, '23', `
   17                -- 23
 0x17`],
-  [24, "24", `
+  [24, '24', `
   18                -- Positive number, next 1 byte
     18              -- 24
 0x1818`],
-  [25, "25", `
+  [25, '25', `
   18                -- Positive number, next 1 byte
     19              -- 25
 0x1819`],
-  [100, "100", `
+  [100, '100', `
   18                -- Positive number, next 1 byte
     64              -- 100
 0x1864`],
-  [1000, "1000", `
+  [1000, '1000', `
   19                -- Positive number, next 2 bytes
     03e8            -- 1000
 0x1903e8`],
-  [1000000, "1000000", `
+  [1000000, '1000000', `
   1a                -- Positive number, next 4 bytes
     000f4240        -- 1000000
 0x1a000f4240`],
-  [1000000000000, "1000000000000", `
+  [1000000000000, '1000000000000', `
   1b                -- Positive number, next 8 bytes
     000000e8d4a51000 -- 1000000000000
 0x1b000000e8d4a51000`],
@@ -84,46 +84,46 @@ exports.good = [
     49              -- Bytes, length: 9
       010000000000000000 -- 010000000000000000
 0xc349010000000000000000`],
-  [-1, "-1", `
+  [-1, '-1', `
   20                -- -1
 0x20`],
-  [-10, "-10", `
+  [-10, '-10', `
   29                -- -10
 0x29`],
-  [-100, "-100", `
+  [-100, '-100', `
   38                -- Negative number, next 1 byte
     63              -- -100
 0x3863`],
-  [-1000, "-1000", `
+  [-1000, '-1000', `
   39                -- Negative number, next 2 bytes
     03e7            -- -1000
 0x3903e7`],
-  [1.1, "1.1_3", `
+  [1.1, '1.1_3', `
   fb                -- Float, next 8 bytes
     3ff199999999999a -- 1.1
 0xfb3ff199999999999a`],
-  [1.5, "1.5_3", `
+  [1.5, '1.5_3', `
   fb                -- Float, next 8 bytes
     3ff8000000000000 -- 1.5
 0xfb3ff8000000000000`],
-  [3.4028234663852886e+38, "3.4028234663852886e+38_3", `
+  [3.4028234663852886e+38, '3.4028234663852886e+38_3', `
   fb                -- Float, next 8 bytes
     47efffffe0000000 -- 3.4028234663852886e+38
 0xfb47efffffe0000000`],
-  [1e+300, "1e+300_3", `
+  [1e+300, '1e+300_3', `
   fb                -- Float, next 8 bytes
     7e37e43c8800759c -- 1e+300
 0xfb7e37e43c8800759c`],
-  [5.960464477539063e-8, "5.960464477539063e-8_3", `
+  [5.960464477539063e-8, '5.960464477539063e-8_3', `
   fb                -- Float, next 8 bytes
     3e70000000000000 -- 5.960464477539063e-8
 0xfb3e70000000000000`],
 
-  [0.00006103515625, "0.00006103515625_3", `
+  [0.00006103515625, '0.00006103515625_3', `
   fb                -- Float, next 8 bytes
     3f10000000000000 -- 0.00006103515625
 0xfb3f10000000000000`],
-  [-4.1, "-4.1_3", `
+  [-4.1, '-4.1_3', `
   fb                -- Float, next 8 bytes
     c010666666666666 -- -4.1
 0xfbc010666666666666`],
@@ -199,7 +199,7 @@ exports.good = [
   64                -- String, length: 4
     49455446        -- "IETF"
 0x6449455446`],
-  ['"\\', "\"\\\"\\\\\"", `
+  ['"\\', '"\\"\\\\"', `
   62                -- String, length: 2
     225c            -- "\\\"\\\\"
 0x62225c`],
@@ -424,7 +424,7 @@ exports.good = [
     41              -- Bytes, length: 1
       00            -- 00
 0xc24100`],
-  //[new BigNum(-0), "3(h'')", '0xc34100'],
+  // [new BigNum(-0), "3(h'')", '0xc34100'],
   [new BigNum('18446744073709551615.1'), "4([-1, 2(h'09fffffffffffffff7')])", `
   c4                -- Tag #4
     82              -- Array, 2 items
@@ -443,39 +443,39 @@ exports.good = [
   18                -- Positive number, next 1 byte
     ff              -- 255
 0x18ff`],
-  [256, "256", `
+  [256, '256', `
   19                -- Positive number, next 2 bytes
     0100            -- 256
 0x190100`],
-  [65535, "65535", `
+  [65535, '65535', `
   19                -- Positive number, next 2 bytes
     ffff            -- 65535
 0x19ffff`],
-  [65536, "65536", `
+  [65536, '65536', `
   1a                -- Positive number, next 4 bytes
     00010000        -- 65536
 0x1a00010000`],
-  [4294967295, "4294967295", `
+  [4294967295, '4294967295', `
   1a                -- Positive number, next 4 bytes
     ffffffff        -- 4294967295
 0x1affffffff`],
-  [8589934591, "8589934591", `
+  [8589934591, '8589934591', `
   1b                -- Positive number, next 8 bytes
     00000001ffffffff -- 8589934591
 0x1b00000001ffffffff`],
-  [9007199254740991, "9007199254740991", `
+  [9007199254740991, '9007199254740991', `
   1b                -- Positive number, next 8 bytes
     001fffffffffffff -- 9007199254740991
 0x1b001fffffffffffff`],
-  [9007199254740992, "9007199254740992_3", `
+  [9007199254740992, '9007199254740992_3', `
   fb                -- Float, next 8 bytes
     4340000000000000 -- 9007199254740992
 0xfb4340000000000000`],
-  [-9223372036854776000, "-9223372036854776000_3", `
+  [-9223372036854776000, '-9223372036854776000_3', `
   fb                -- Float, next 8 bytes
     c3e0000000000000 -- -9223372036854776000
 0xfbc3e0000000000000`],
-  [-2147483648, "-2147483648", `
+  [-2147483648, '-2147483648', `
   3a                -- Negative number, next 4 bytes
     7fffffff        -- -2147483648
 0x3a7fffffff`],
@@ -618,7 +618,7 @@ exports.good = [
     ffff            -- Tag #65535
       63            -- String, length: 3
         666f6f      -- "foo"
-0xd9ffff63666f6f`],
+0xd9ffff63666f6f`]
 ]
 
 exports.encodeGood = [
@@ -635,15 +635,15 @@ exports.encodeGood = [
   [new BigNum(-Infinity), '-Infinity_1', `
   f9                -- Float, next 2 bytes
     fc00            -- -Infinity
-0xf9fc00`],
+0xf9fc00`]
 ]
 
 exports.decodeGood = [
-  [1.5, "1.5_1", `
+  [1.5, '1.5_1', `
   f9                -- Float, next 2 bytes
     3e00            -- 1.5
 0xf93e00`],
-  [65504, "65504_1", `
+  [65504, '65504_1', `
   f9                -- Float, next 2 bytes
     7bff            -- 65504
 0xf97bff`],
@@ -658,69 +658,69 @@ exports.decodeGood = [
       45            -- Bytes, length: 5
         6449455446  -- 6449455446
 0xd818456449455446`],
-  [0, "0_1", `
+  [0, '0_1', `
   f9                -- Float, next 2 bytes
     0000            -- 0
 0xf90000`],
-  [0, "-0_1", `
+  [0, '-0_1', `
   f9                -- Float, next 2 bytes
     8000            -- -0
 0xf98000`],
-  [1, "1_1", `
+  [1, '1_1', `
   f9                -- Float, next 2 bytes
     3c00            -- 1
 0xf93c00`],
-  [100000, "100000_2", `
+  [100000, '100000_2', `
   fa                -- Float, next 4 bytes
     47c35000        -- 100000
 0xfa47c35000`],
-  [5.960464477539063e-8, "5.960464477539063e-8_1", `
+  [5.960464477539063e-8, '5.960464477539063e-8_1', `
   f9                -- Float, next 2 bytes
     0001            -- 5.960464477539063e-8
 0xf90001`],
-  [new BigNum('9223372036854775807'),  '9223372036854775807', `
+  [new BigNum('9223372036854775807'), '9223372036854775807', `
   1b                -- Positive number, next 8 bytes
     7fffffffffffffff -- 9223372036854775807
 0x1b7fffffffffffffff`],
-  [new BigNum('-9223372036854775808'),  '-9223372036854775808', `
+  [new BigNum('-9223372036854775808'), '-9223372036854775808', `
   3b                -- Negative number, next 8 bytes
     7fffffffffffffff -- -9223372036854775808
 0x3b7fffffffffffffff`],
-  [0.00006103515625, "0.00006103515625_1", `
+  [0.00006103515625, '0.00006103515625_1', `
   f9                -- Float, next 2 bytes
     0400            -- 0.00006103515625
 0xf90400`],
-  [new BigNum(1.5), "5([-1, 3])", `
+  [new BigNum(1.5), '5([-1, 3])', `
   c5                -- Tag #5
     82              -- Array, 2 items
       20            -- [0], -1
       03            -- [1], 3
 0xc5822003`],
-  [-4, "-4_1", `
+  [-4, '-4_1', `
   f9                -- Float, next 2 bytes
     c400            -- -4
 0xf9c400`],
-  [Infinity, "Infinity_2", `
+  [Infinity, 'Infinity_2', `
   fa                -- Float, next 4 bytes
     7f800000        -- Infinity
 0xfa7f800000`],
-  [-Infinity, "-Infinity_2", `
+  [-Infinity, '-Infinity_2', `
   fa                -- Float, next 4 bytes
     ff800000        -- -Infinity
 0xfaff800000`],
-  [Infinity, "Infinity_3", `
+  [Infinity, 'Infinity_3', `
   fb                -- Float, next 8 bytes
     7ff0000000000000 -- Infinity
 0xfb7ff0000000000000`],
-  [-Infinity, "-Infinity_3", `
+  [-Infinity, '-Infinity_3', `
   fb                -- Float, next 8 bytes
     fff0000000000000 -- -Infinity
 0xfbfff0000000000000`],
-  [NaN, "NaN_2", `
+  [NaN, 'NaN_2', `
   fa                -- Float, next 4 bytes
     7fc00000        -- NaN
 0xfa7fc00000`],
-  [NaN, "NaN_3", `
+  [NaN, 'NaN_3', `
   fb                -- Float, next 8 bytes
     7ff8000000000000 -- NaN
 0xfb7ff8000000000000`],
@@ -728,7 +728,7 @@ exports.decodeGood = [
   3b                -- Negative number, next 8 bytes
     001fffffffffffff -- -9007199254740992
 0x3b001fffffffffffff`],
-  [new Date("2013-03-21T20:04:00Z"), '0("2013-03-21T20:04:00Z")', `
+  [new Date('2013-03-21T20:04:00Z'), '0("2013-03-21T20:04:00Z")', `
   c0                -- Tag #0
     74              -- String, length: 20
       323031332d30332d32315432303a30343a30305a -- "2013-03-21T20:04:00Z"
@@ -875,7 +875,7 @@ exports.decodeGood = [
         43          -- Bytes, length: 3
           eeff99    -- eeff99
         ff          -- BREAK
-0xd8405f44aabbccdd43eeff99ff`],
+0xd8405f44aabbccdd43eeff99ff`]
 ]
 
 exports.decodeBad = [
@@ -908,7 +908,7 @@ exports.decodeBad = [
   '0xbfFE01ff', // streamed map containing invalid
   '0xfc', // reserved AI
   '0xfd', // reserved AI
-  '0xfe', // reserved AI
+  '0xfe' // reserved AI
 ]
 
 const HEX = /0x([0-9a-f]+)$/i
@@ -937,21 +937,21 @@ class EncodeFailer extends cbor.Encoder {
     this.count = count
     this.start = count
   }
-  push(fresh, encoding) {
+  push (fresh, encoding) {
     if (this.count-- <= 0) {
       super.push(null)
       return false
     }
     return super.push(fresh, encoding)
   }
-  get used() {
+  get used () {
     return this.start - this.count
   }
-  static tryAll(t, f) {
+  static tryAll (t, f) {
     let enc = new EncodeFailer()
     t.truthy(enc._pushAny(f))
     let used = enc.used
-    for (let i=0; i<used; i++) {
+    for (let i = 0; i < used; i++) {
       enc = new EncodeFailer(i)
       t.falsy(enc._pushAny(f))
     }

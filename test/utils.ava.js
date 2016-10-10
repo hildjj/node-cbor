@@ -81,10 +81,6 @@ test('bufferToBignumber', t => {
   t.deepEqual(utils.bufferToBignumber(numbuf), new BigNum(0x12345678))
 })
 
-function mapp(iterable, f) {
-
-}
-
 test('DeHexStream', t => {
   [
     ['6161', 'aa'],
