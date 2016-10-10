@@ -55,6 +55,8 @@
   "devDependencies": {
     "ava": "*",
     "garbage": "*",
+    "ink-docstrap": "*",
+    "jsdoc": "*",
     "live-server": "*",
     "marked-man": "*",
     "npm-run-all": "*",
