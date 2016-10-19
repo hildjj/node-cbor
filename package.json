@@ -60,7 +60,7 @@
     "live-server": "*",
     "marked-man": "*",
     "npm-run-all": "*",
-    "nyc": "*",
+    "nyc": "8.3.2",
     "standard": "*",
     "watch": "*"
   },
