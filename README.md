@@ -20,7 +20,7 @@ npm install 'hildjj/node-cbor#node0' --save
 
 Documentation:
 -------------
-See the full API [documentation](http://hildjj.github.io/node-cbor/doc/).
+See the full API [documentation](http://hildjj.github.io/node-cbor/api/).
 
 From the command line:
 ```
