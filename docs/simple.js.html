@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>simple.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Commented.html">Commented</a><ul class='methods'><li data-type='method'><a href="Commented.html#.comment">comment</a></li></ul></li><li><a href="Decoder.html">Decoder</a><ul class='methods'><li data-type='method'><a href="Decoder.html#.decodeAll">decodeAll</a></li><li data-type='method'><a href="Decoder.html#.decodeAllSync">decodeAllSync</a></li><li data-type='method'><a href="Decoder.html#.decodeFirst">decodeFirst</a></li><li data-type='method'><a href="Decoder.html#.decodeFirstSync">decodeFirstSync</a></li><li data-type='method'><a href="Decoder.html#.nullcheck">nullcheck</a></li><li data-type='method'><a href="Decoder.html#close">close</a></li></ul></li><li><a href="Diagnose.html">Diagnose</a><ul class='methods'><li data-type='method'><a href="Diagnose.html#.diagnose">diagnose</a></li></ul></li><li><a href="Encoder.html">Encoder</a><ul class='methods'><li data-type='method'><a href="Encoder.html#.encode">encode</a></li><li data-type='method'><a href="Encoder.html#addSemanticType">addSemanticType</a></li><li data-type='method'><a href="Encoder.html#pushAny">pushAny</a></li></ul></li><li><a href="Simple.html">Simple</a><ul class='methods'><li data-type='method'><a href="Simple.html#.decode">decode</a></li><li data-type='method'><a href="Simple.html#.isSimple">isSimple</a></li><li data-type='method'><a href="Simple.html#encodeCBOR">encodeCBOR</a></li><li data-type='method'><a href="Simple.html#inspect">inspect</a></li><li data-type='method'><a href="Simple.html#toString">toString</a></li></ul></li><li><a href="Tagged.html">Tagged</a><ul class='methods'><li data-type='method'><a href="Tagged.html#convert">convert</a></li><li data-type='method'><a href="Tagged.html#encodeCBOR">encodeCBOR</a></li><li data-type='method'><a href="Tagged.html#toString">toString</a></li></ul></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">simple.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict'
+
+const constants = require('./constants')
+const MT = constants.MT, SIMPLE = constants.SIMPLE, SYMS = constants.SYMS
+
+/**
+ * A CBOR Simple Value that does not map onto a known constant.
+ */
+class Simple {
+  /**
+   * Creates an instance of Simple.
+   *
+   * @param {integer} value - the simple value's integer value
+   */
+  constructor (value) {
+    if (typeof value !== 'number') {
+      throw new Error('Invalid Simple type: ' + (typeof value))
+    }
+    if ((value &lt; 0) || (value > 255) || ((value|0) !== value)) {
+      throw new Error('value must be a small positive integer: ' + value)
+    }
+    this.value = value
+  }
+
+  /**
+   * Debug string for simple value
+   *
+   * @returns {string} simple(value)
+   */
+  toString () {
+    return 'simple(' + this.value + ')'
+  }
+
+  /**
+   * Debug string for simple value
+   *
+   * @returns {string} simple(value)
+   */
+  inspect (depth, opts) {
+    return 'simple(' + this.value + ')'
+  }
+
+  /**
+   * Push the simple value onto the CBOR stream
+   *
+   * @param {cbor.Encoder} gen The generator to push onto
+   */
+  encodeCBOR (gen) {
+    return gen._pushInt(this.value, MT.SIMPLE_FLOAT)
+  }
+
+  /**
+   * Is the given object a Simple?
+   *
+   * @param {any} obj - object to test
+   * @returns {bool} - is it Simple?
+   */
+  static isSimple (obj) {
+    return obj instanceof Simple
+  }
+
+  /**
+   * Decode from the CBOR additional information into a JavaScript value.
+   * If the CBOR item has no parent, return a "safe" symbol instead of
+   * `null` or `undefined`, so that the value can be passed through a
+   * stream in object mode.
+   *
+   * @param {Number} val - the CBOR additional info to convert
+   * @param {bool} has_parent - Does the CBOR item have a parent?
+   * @returns {(null|undefined|Boolean|Symbol)} - the decoded value
+   */
+  static decode (val, has_parent) {
+    if (has_parent == null) {
+      has_parent = true
+    }
+    switch (val) {
+      case SIMPLE.FALSE:
+        return false
+      case SIMPLE.TRUE:
+        return true
+      case SIMPLE.NULL:
+        if (has_parent) {
+          return null
+        } else {
+          return SYMS.NULL
+        }
+      case SIMPLE.UNDEFINED:
+        if (has_parent) {
+          return void 0
+        } else {
+          return SYMS.UNDEFINED
+        }
+      case -1:
+        if (!has_parent) {
+          throw new Error('Invalid BREAK')
+        }
+        return SYMS.BREAK
+      default:
+        return new Simple(val)
+    }
+  }
+}
+
+module.exports = Simple
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

@@ -1,4 +1,44 @@
-'use strict'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>encoder.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Commented.html">Commented</a><ul class='methods'><li data-type='method'><a href="Commented.html#.comment">comment</a></li></ul></li><li><a href="Decoder.html">Decoder</a><ul class='methods'><li data-type='method'><a href="Decoder.html#.decodeAll">decodeAll</a></li><li data-type='method'><a href="Decoder.html#.decodeAllSync">decodeAllSync</a></li><li data-type='method'><a href="Decoder.html#.decodeFirst">decodeFirst</a></li><li data-type='method'><a href="Decoder.html#.decodeFirstSync">decodeFirstSync</a></li><li data-type='method'><a href="Decoder.html#.nullcheck">nullcheck</a></li><li data-type='method'><a href="Decoder.html#close">close</a></li></ul></li><li><a href="Diagnose.html">Diagnose</a><ul class='methods'><li data-type='method'><a href="Diagnose.html#.diagnose">diagnose</a></li></ul></li><li><a href="Encoder.html">Encoder</a><ul class='methods'><li data-type='method'><a href="Encoder.html#.encode">encode</a></li><li data-type='method'><a href="Encoder.html#addSemanticType">addSemanticType</a></li><li data-type='method'><a href="Encoder.html#pushAny">pushAny</a></li></ul></li><li><a href="Simple.html">Simple</a><ul class='methods'><li data-type='method'><a href="Simple.html#.decode">decode</a></li><li data-type='method'><a href="Simple.html#.isSimple">isSimple</a></li><li data-type='method'><a href="Simple.html#encodeCBOR">encodeCBOR</a></li><li data-type='method'><a href="Simple.html#inspect">inspect</a></li><li data-type='method'><a href="Simple.html#toString">toString</a></li></ul></li><li><a href="Tagged.html">Tagged</a><ul class='methods'><li data-type='method'><a href="Tagged.html#convert">convert</a></li><li data-type='method'><a href="Tagged.html#encodeCBOR">encodeCBOR</a></li><li data-type='method'><a href="Tagged.html#toString">toString</a></li></ul></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">encoder.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict'
 
 const stream = require('stream')
 const url = require('url')
@@ -9,11 +49,11 @@ const Simple = require('./simple')
 
 const constants = require('./constants')
 const MT = constants.MT, NUMBYTES = constants.NUMBYTES, SHIFT32 = constants.SHIFT32, SYMS = constants.SYMS, TAG = constants.TAG
-const DOUBLE = (constants.MT.SIMPLE_FLOAT << 5) | constants.NUMBYTES.EIGHT
-const TRUE = (constants.MT.SIMPLE_FLOAT << 5) | constants.SIMPLE.TRUE
-const FALSE = (constants.MT.SIMPLE_FLOAT << 5) | constants.SIMPLE.FALSE
-const UNDEFINED = (constants.MT.SIMPLE_FLOAT << 5) | constants.SIMPLE.UNDEFINED
-const NULL = (constants.MT.SIMPLE_FLOAT << 5) | constants.SIMPLE.NULL
+const DOUBLE = (constants.MT.SIMPLE_FLOAT &lt;&lt; 5) | constants.NUMBYTES.EIGHT
+const TRUE = (constants.MT.SIMPLE_FLOAT &lt;&lt; 5) | constants.SIMPLE.TRUE
+const FALSE = (constants.MT.SIMPLE_FLOAT &lt;&lt; 5) | constants.SIMPLE.FALSE
+const UNDEFINED = (constants.MT.SIMPLE_FLOAT &lt;&lt; 5) | constants.SIMPLE.UNDEFINED
+const NULL = (constants.MT.SIMPLE_FLOAT &lt;&lt; 5) | constants.SIMPLE.NULL
 
 const MAXINT_BN = new bignumber('0x20000000000000')
 const BUF_NAN = new Buffer('f97e00', 'hex')
@@ -55,7 +95,7 @@ class Encoder extends stream.Transform {
     ]
 
     const addTypes = options.genTypes || []
-    for (let i = 0, len = addTypes.length; i < len; i += 2) {
+    for (let i = 0, len = addTypes.length; i &lt; len; i += 2) {
       this.addSemanticType(addTypes[i], addTypes[i + 1])
     }
   }
@@ -86,7 +126,7 @@ class Encoder extends stream.Transform {
    * @returns {encodeFunction}
    */
   addSemanticType (type, fun) {
-    for (let i = 0, len = this.semanticTypes.length; i < len; i += 2) {
+    for (let i = 0, len = this.semanticTypes.length; i &lt; len; i += 2) {
       const typ = this.semanticTypes[i]
       if (typ === type) {
         const old = this.semanticTypes[i + 1]
@@ -134,7 +174,7 @@ class Encoder extends stream.Transform {
   }
 
   _pushInfinity (obj) {
-    const half = (obj < 0) ? BUF_INF_NEG : BUF_INF_POS
+    const half = (obj &lt; 0) ? BUF_INF_NEG : BUF_INF_POS
     return this.push(half)
   }
 
@@ -144,19 +184,19 @@ class Encoder extends stream.Transform {
   }
 
   _pushInt (obj, mt, orig) {
-    const m = mt << 5
+    const m = mt &lt;&lt; 5
     switch (false) {
-      case !(obj < 24):
+      case !(obj &lt; 24):
         return this._pushUInt8(m | obj)
-      case !(obj <= 0xff):
-        return this._pushUInt8(m | NUMBYTES.ONE) && this._pushUInt8(obj)
-      case !(obj <= 0xffff):
-        return this._pushUInt8(m | NUMBYTES.TWO) && this._pushUInt16BE(obj)
-      case !(obj <= 0xffffffff):
-        return this._pushUInt8(m | NUMBYTES.FOUR) && this._pushUInt32BE(obj)
-      case !(obj <= Number.MAX_SAFE_INTEGER):
-        return this._pushUInt8(m | NUMBYTES.EIGHT) &&
-          this._pushUInt32BE(Math.floor(obj / SHIFT32)) &&
+      case !(obj &lt;= 0xff):
+        return this._pushUInt8(m | NUMBYTES.ONE) &amp;&amp; this._pushUInt8(obj)
+      case !(obj &lt;= 0xffff):
+        return this._pushUInt8(m | NUMBYTES.TWO) &amp;&amp; this._pushUInt16BE(obj)
+      case !(obj &lt;= 0xffffffff):
+        return this._pushUInt8(m | NUMBYTES.FOUR) &amp;&amp; this._pushUInt32BE(obj)
+      case !(obj &lt;= Number.MAX_SAFE_INTEGER):
+        return this._pushUInt8(m | NUMBYTES.EIGHT) &amp;&amp;
+          this._pushUInt32BE(Math.floor(obj / SHIFT32)) &amp;&amp;
           this._pushUInt32BE(obj % SHIFT32)
       default:
         if (mt === MT.NEG_INT) {
@@ -168,7 +208,7 @@ class Encoder extends stream.Transform {
   }
 
   _pushIntNum (obj) {
-    if (obj < 0) {
+    if (obj &lt; 0) {
       return this._pushInt(-obj - 1, MT.NEG_INT, obj)
     } else {
       return this._pushInt(obj, MT.POS_INT)
@@ -190,7 +230,7 @@ class Encoder extends stream.Transform {
 
   _pushString (obj) {
     const len = Buffer.byteLength(obj, 'utf8')
-    return this._pushInt(len, MT.UTF8_STRING) && this.push(obj, 'utf8')
+    return this._pushInt(len, MT.UTF8_STRING) &amp;&amp; this.push(obj, 'utf8')
   }
 
   _pushBoolean (obj) {
@@ -206,7 +246,7 @@ class Encoder extends stream.Transform {
     if (!gen._pushInt(len, MT.ARRAY)) {
       return false
     }
-    for (let j = 0; j < len; j++) {
+    for (let j = 0; j &lt; len; j++) {
       if (!gen.pushAny(obj[j])) {
         return false
       }
@@ -219,11 +259,11 @@ class Encoder extends stream.Transform {
   }
 
   _pushDate (gen, obj) {
-    return gen._pushTag(TAG.DATE_EPOCH) && gen.pushAny(obj / 1000)
+    return gen._pushTag(TAG.DATE_EPOCH) &amp;&amp; gen.pushAny(obj / 1000)
   }
 
   _pushBuffer (gen, obj) {
-    return gen._pushInt(obj.length, MT.BYTE_STRING) && gen.push(obj)
+    return gen._pushInt(obj.length, MT.BYTE_STRING) &amp;&amp; gen.push(obj)
   }
 
   _pushNoFilter (gen, obj) {
@@ -231,7 +271,7 @@ class Encoder extends stream.Transform {
   }
 
   _pushRegexp (gen, obj) {
-    return gen._pushTag(TAG.REGEXP) && gen.pushAny(obj.source)
+    return gen._pushTag(TAG.REGEXP) &amp;&amp; gen.pushAny(obj.source)
   }
 
   _pushSet (gen, obj) {
@@ -247,7 +287,7 @@ class Encoder extends stream.Transform {
   }
 
   _pushUrl (gen, obj) {
-    return gen._pushTag(TAG.URI) && gen.pushAny(obj.format())
+    return gen._pushTag(TAG.URI) &amp;&amp; gen.pushAny(obj.format())
   }
 
   _pushBigint (obj) {
@@ -261,7 +301,7 @@ class Encoder extends stream.Transform {
       str = '0' + str
     }
     const buf = new Buffer(str, 'hex')
-    return this._pushTag(tag) && this._pushBuffer(this, buf)
+    return this._pushTag(tag) &amp;&amp; this._pushBuffer(this, buf)
   }
 
   _pushBigNumber (gen, obj) {
@@ -274,7 +314,7 @@ class Encoder extends stream.Transform {
     if (obj.isInteger()) {
       return gen._pushBigint(obj)
     }
-    if (!(gen._pushTag(TAG.DECIMAL_FRAC) &&
+    if (!(gen._pushTag(TAG.DECIMAL_FRAC) &amp;&amp;
       gen._pushInt(2, MT.ARRAY))) {
       return false
     }
@@ -296,7 +336,7 @@ class Encoder extends stream.Transform {
       return false
     }
     for (let kv of obj) {
-      if (!(gen.pushAny(kv[0]) && gen.pushAny(kv[1]))) {
+      if (!(gen.pushAny(kv[0]) &amp;&amp; gen.pushAny(kv[1]))) {
         return false
       }
     }
@@ -307,7 +347,7 @@ class Encoder extends stream.Transform {
     if (!obj) {
       return this._pushUInt8(NULL)
     }
-    for (let i = 0, len1 = this.semanticTypes.length; i < len1; i += 2) {
+    for (let i = 0, len1 = this.semanticTypes.length; i &lt; len1; i += 2) {
       const typ = this.semanticTypes[i]
       if (obj instanceof typ) {
         return this.semanticTypes[i + 1].call(obj, this, obj)
@@ -321,9 +361,9 @@ class Encoder extends stream.Transform {
     if (!this._pushInt(keys.length, MT.MAP)) {
       return false
     }
-    for (let j = 0, len2 = keys.length; j < len2; j++) {
+    for (let j = 0, len2 = keys.length; j &lt; len2; j++) {
       const k = keys[j]
-      if (!(this.pushAny(k) && this.pushAny(obj[k]))) {
+      if (!(this.pushAny(k) &amp;&amp; this.pushAny(obj[k]))) {
         return false
       }
     }
@@ -395,3 +435,22 @@ class Encoder extends stream.Transform {
 }
 
 module.exports = Encoder
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

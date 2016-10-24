@@ -12,10 +12,10 @@ class TempClass {
     this.value = val || 'tempClass'
   }
   encodeCBOR (gen) {
-    return gen._pushTag(0xffff) && gen._pushAny(this.value)
+    return gen._pushTag(0xffff) && gen.pushAny(this.value)
   }
   static toCBOR (gen, obj) {
-    return gen._pushTag(0xfffe) && gen._pushAny(obj.value)
+    return gen._pushTag(0xfffe) && gen.pushAny(obj.value)
   }
 }
 exports.TempClass = TempClass
@@ -949,14 +949,14 @@ class EncodeFailer extends cbor.Encoder {
   }
   static tryAll (t, f) {
     let enc = new EncodeFailer()
-    t.truthy(enc._pushAny(f))
+    t.truthy(enc.pushAny(f))
     let used = enc.used
     for (let i = 0; i < used; i++) {
       enc = new EncodeFailer(i)
-      t.falsy(enc._pushAny(f))
+      t.falsy(enc.pushAny(f))
     }
     enc = new EncodeFailer(used)
-    t.truthy(enc._pushAny(f))
+    t.truthy(enc.pushAny(f))
   }
 }
 exports.EncodeFailer = EncodeFailer
