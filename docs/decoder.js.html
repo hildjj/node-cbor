@@ -1,4 +1,44 @@
-'use strict'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>decoder.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Commented.html">Commented</a><ul class='methods'><li data-type='method'><a href="Commented.html#.comment">comment</a></li></ul></li><li><a href="Decoder.html">Decoder</a><ul class='methods'><li data-type='method'><a href="Decoder.html#.decodeAll">decodeAll</a></li><li data-type='method'><a href="Decoder.html#.decodeAllSync">decodeAllSync</a></li><li data-type='method'><a href="Decoder.html#.decodeFirst">decodeFirst</a></li><li data-type='method'><a href="Decoder.html#.decodeFirstSync">decodeFirstSync</a></li><li data-type='method'><a href="Decoder.html#.nullcheck">nullcheck</a></li><li data-type='method'><a href="Decoder.html#close">close</a></li></ul></li><li><a href="Diagnose.html">Diagnose</a><ul class='methods'><li data-type='method'><a href="Diagnose.html#.diagnose">diagnose</a></li></ul></li><li><a href="Encoder.html">Encoder</a><ul class='methods'><li data-type='method'><a href="Encoder.html#.encode">encode</a></li><li data-type='method'><a href="Encoder.html#addSemanticType">addSemanticType</a></li><li data-type='method'><a href="Encoder.html#pushAny">pushAny</a></li></ul></li><li><a href="Simple.html">Simple</a><ul class='methods'><li data-type='method'><a href="Simple.html#.decode">decode</a></li><li data-type='method'><a href="Simple.html#.isSimple">isSimple</a></li><li data-type='method'><a href="Simple.html#encodeCBOR">encodeCBOR</a></li><li data-type='method'><a href="Simple.html#inspect">inspect</a></li><li data-type='method'><a href="Simple.html#toString">toString</a></li></ul></li><li><a href="Tagged.html">Tagged</a><ul class='methods'><li data-type='method'><a href="Tagged.html#convert">convert</a></li><li data-type='method'><a href="Tagged.html#encodeCBOR">encodeCBOR</a></li><li data-type='method'><a href="Tagged.html#toString">toString</a></li></ul></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">decoder.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict'
 
 const BinaryParseStream = require('../vendor/binary-parse-stream')
 const Tagged = require('./tagged')
@@ -345,7 +385,7 @@ class Decoder extends BinaryParseStream {
     let depth = 0
     let val = null
     while (true) {
-      if ((this.max_depth >= 0) && (depth > this.max_depth)) {
+      if ((this.max_depth >= 0) &amp;&amp; (depth > this.max_depth)) {
         throw new Error('Maximum depth ' + this.max_depth + ' exceeded')
       }
       const octet = (yield 1)[0]
@@ -353,7 +393,7 @@ class Decoder extends BinaryParseStream {
         throw new Error('Unexpected data: 0x' + (octet.toString(16)))
       }
       const mt = octet >> 5
-      const ai = octet & 0x1f
+      const ai = octet &amp; 0x1f
       const parent_major = (parent != null) ? parent[MAJOR] : undefined
       const parent_length = (parent != null) ? parent.length : undefined
       switch (ai) {
@@ -364,7 +404,7 @@ class Decoder extends BinaryParseStream {
         case NUMBYTES.TWO:
         case NUMBYTES.FOUR:
         case NUMBYTES.EIGHT:
-          const numbytes = 1 << (ai - 24)
+          const numbytes = 1 &lt;&lt; (ai - 24)
           this.emit('more-bytes', mt, numbytes, parent_major, parent_length)
           const buf = yield numbytes
           val = (mt === MT.SIMPLE_FLOAT) ? buf : utils.parseCBORint(ai, buf)
@@ -457,7 +497,7 @@ class Decoder extends BinaryParseStream {
             break
           case !(parent instanceof NoFilter):
             const pm = parent[MAJOR]
-            if ((pm != null) && (pm !== mt)) {
+            if ((pm != null) &amp;&amp; (pm !== mt)) {
               this.running = false
               throw new Error('Invalid major type in indefinite encoding')
             }
@@ -481,7 +521,7 @@ class Decoder extends BinaryParseStream {
               if ((parent.length % 2) !== 0) {
                 throw new Error('Invalid map length: ' + parent.length)
               }
-              for (let i = 0, len = parent.length; i < len; i += 2) {
+              for (let i = 0, len = parent.length; i &lt; len; i += 2) {
                 if (typeof parent[i] !== 'string') {
                   allstrings = false
                   break
@@ -489,12 +529,12 @@ class Decoder extends BinaryParseStream {
               }
               if (allstrings) {
                 val = {}
-                for (let i = 0, len = parent.length; i < len; i += 2) {
+                for (let i = 0, len = parent.length; i &lt; len; i += 2) {
                   val[parent[i]] = parent[i + 1]
                 }
               } else {
                 val = new Map
-                for (let i = 0, len = parent.length; i < len; i += 2) {
+                for (let i = 0, len = parent.length; i &lt; len; i += 2) {
                   val.set(parent[i], parent[i + 1])
                 }
               }
@@ -524,3 +564,22 @@ class Decoder extends BinaryParseStream {
 
 Decoder.NOT_FOUND = NOT_FOUND
 module.exports = Decoder
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

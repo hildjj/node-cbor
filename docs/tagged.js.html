@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>tagged.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Commented.html">Commented</a><ul class='methods'><li data-type='method'><a href="Commented.html#.comment">comment</a></li></ul></li><li><a href="Decoder.html">Decoder</a><ul class='methods'><li data-type='method'><a href="Decoder.html#.decodeAll">decodeAll</a></li><li data-type='method'><a href="Decoder.html#.decodeAllSync">decodeAllSync</a></li><li data-type='method'><a href="Decoder.html#.decodeFirst">decodeFirst</a></li><li data-type='method'><a href="Decoder.html#.decodeFirstSync">decodeFirstSync</a></li><li data-type='method'><a href="Decoder.html#.nullcheck">nullcheck</a></li><li data-type='method'><a href="Decoder.html#close">close</a></li></ul></li><li><a href="Diagnose.html">Diagnose</a><ul class='methods'><li data-type='method'><a href="Diagnose.html#.diagnose">diagnose</a></li></ul></li><li><a href="Encoder.html">Encoder</a><ul class='methods'><li data-type='method'><a href="Encoder.html#.encode">encode</a></li><li data-type='method'><a href="Encoder.html#addSemanticType">addSemanticType</a></li><li data-type='method'><a href="Encoder.html#pushAny">pushAny</a></li></ul></li><li><a href="Simple.html">Simple</a><ul class='methods'><li data-type='method'><a href="Simple.html#.decode">decode</a></li><li data-type='method'><a href="Simple.html#.isSimple">isSimple</a></li><li data-type='method'><a href="Simple.html#encodeCBOR">encodeCBOR</a></li><li data-type='method'><a href="Simple.html#inspect">inspect</a></li><li data-type='method'><a href="Simple.html#toString">toString</a></li></ul></li><li><a href="Tagged.html">Tagged</a><ul class='methods'><li data-type='method'><a href="Tagged.html#convert">convert</a></li><li data-type='method'><a href="Tagged.html#encodeCBOR">encodeCBOR</a></li><li data-type='method'><a href="Tagged.html#toString">toString</a></li></ul></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">tagged.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict'
+
+const bignumber = require('bignumber.js')
+const utils = require('./utils')
+const url = require('url')
+
+const MINUS_ONE = new bignumber(-1)
+const TEN = new bignumber(10)
+const TWO = new bignumber(2)
+
+
+/**
+ * A CBOR tagged item, where the tag does not have semantics specified at the
+ * moment, or those semantics threw an error during parsing. Typically this will
+ * be an extension point you're not yet expecting.
+ */
+class Tagged {
+
+  /**
+   * Creates an instance of Tagged.
+   *
+   * @param {Number} tag - the number of the tag
+   * @param {any} value - the value inside the tag
+   * @param {Error} err - the error that was thrown parsing the tag, or null
+   */
+  constructor (tag, value, err) {
+    this.tag = tag
+    this.value = value
+    this.err = err
+    if (typeof this.tag !== 'number') {
+      throw new Error('Invalid tag type (' + (typeof this.tag) + ')')
+    }
+    if ((this.tag &lt; 0) || ((this.tag | 0) !== this.tag)) {
+      throw new Error('Tag must be a positive integer: ' + this.tag)
+    }
+  }
+
+  /**
+   * Convert to a String
+   *
+   * @returns {String} string of the form '1(2)'
+   */
+  toString () {
+    return `${this.tag}(${JSON.stringify(this.value)})`
+  }
+
+  /**
+   * Push the simple value onto the CBOR stream
+   *
+   * @param {cbor.Encoder} gen The generator to push onto
+   */
+  encodeCBOR (gen) {
+    gen._pushTag(this.tag)
+    return gen.pushAny(this.value)
+  }
+
+  /**
+   * If we have a converter for this type, do the conversion.  Some converters
+   * are built-in.  Additional ones can be passed in.  If you want to remove
+   * a built-in converter, pass a converter in whose value is 'null' instead
+   * of a function.
+   *
+   * @param {Object} converters - keys in the object are a tag number, the value
+   *   is a function that takes the decoded CBOR and returns a JavaScript value
+   *   of the appropriate type.  Throw an exception in the function on errors.
+   * @returns {any} - the converted item
+   */
+  convert (converters) {
+    var er, f
+    f = converters != null ? converters[this.tag] : void 0
+    if (typeof f !== 'function') {
+      f = Tagged['_tag_' + this.tag]
+      if (typeof f !== 'function') {
+        return this
+      }
+    }
+    try {
+      return f.call(Tagged, this.value)
+    } catch (error) {
+      er = error
+      this.err = er
+      return this
+    }
+  }
+
+  static _tag_0 (v) {
+    return new Date(v)
+  }
+
+  static _tag_1 (v) {
+    return new Date(v * 1000)
+  }
+
+  static _tag_2 (v) {
+    return utils.bufferToBignumber(v)
+  }
+
+  static _tag_3 (v) {
+    return MINUS_ONE.minus(utils.bufferToBignumber(v))
+  }
+
+  static _tag_4 (v) {
+    return TEN.pow(v[0]).times(v[1])
+  }
+
+  static _tag_5 (v) {
+    return TWO.pow(v[0]).times(v[1])
+  }
+
+  static _tag_32 (v) {
+    return url.parse(v)
+  }
+
+  static _tag_35 (v) {
+    return new RegExp(v)
+  }
+}
+
+module.exports = Tagged
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

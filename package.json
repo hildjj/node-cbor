@@ -59,6 +59,7 @@
     "jsdoc": "*",
     "live-server": "*",
     "marked-man": "*",
+    "minami": "^1.1.1",
     "npm-run-all": "*",
     "nyc": "*",
     "standard": "*",
