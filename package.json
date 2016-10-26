@@ -60,7 +60,7 @@
   "devDependencies": {
     "ava": "*",
     "garbage": "*",
-    "optional-dev-dependency": "git://github.com/hildjj/optional-dev-dependency.git#package"
+    "optional-dev-dependency": ">=1.4"
   },
   "license": "MIT",
   "readmeFilename": "README.md",
