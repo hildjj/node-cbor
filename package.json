@@ -19,8 +19,7 @@
     "json2cbor": "./bin/json2cbor"
   },
   "browser": {
-    "fs": false,
-    "source-map-support": false
+    "fs": false
   },
   "scripts": {
     "clean": "rm -rf coverage .nyc_output/ docs/api man/*",

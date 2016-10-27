@@ -83,4 +83,39 @@ test('pushFails', t => {
   cases.EncodeFailer.tryAll(t, new Map([[1, 2], ['a', null]]))
   cases.EncodeFailer.tryAll(t, {a: 1, b: null})
   cases.EncodeFailer.tryAll(t, undefined)
+  cases.EncodeFailer.tryAll(t, cases.goodMap, true)
+  cases.EncodeFailer.tryAll(t, {a: 1, b: null}, true)
+})
+
+test('_pushAny', t => {
+  // Left this in for backward-compat.  This should be the only place it's
+  // called.
+  const enc = new cbor.Encoder()
+  const bs = new NoFilter()
+  enc.pipe(bs)
+  enc._pushAny(0)
+  t.deepEqual(bs.read(), new Buffer('00', 'hex'))
+})
+
+test('canonical', t => {
+  const enc = new cbor.Encoder({canonical: true})
+  const bs = new NoFilter()
+  enc.pipe(bs)
+  enc.write(cases.goodMap)
+  t.is(bs.read().toString('hex'),
+       'ad0063626172613063666f6f616101616201626161026262620263616161036362626203806b656d7074792061727261798101656172726179a069656d707479206f626aa1613102636f626af6646e756c6c')
+  enc.write({aa: 2, b:1})
+  t.is(bs.read().toString('hex'),
+       'a261620162616102')
+})
+
+test('canonical numbers', t => {
+  const enc = new cbor.Encoder({canonical: true})
+  const bs = new NoFilter()
+  enc.pipe(bs)
+
+  for (let numEnc of cases.canonNums) {
+    enc.write(numEnc[0])
+    t.is(bs.read().toString('hex'), numEnc[1])
+  }
 })
