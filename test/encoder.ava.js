@@ -36,7 +36,12 @@ test('addSemanticType', t => {
   var tc = new cases.TempClass('foo')
   delete (cases.TempClass.prototype.encodeCBOR)
   t.is(cbor.Encoder.encode(tc).toString('hex'), 'a16576616c756563666f6f')
-  var gen = new cbor.Encoder({genTypes: [cases.TempClass, cases.TempClass.toCBOR]})
+  var gen = new cbor.Encoder({
+    genTypes: [
+      cases.TempClass,
+      cases.TempClass.toCBOR
+    ]
+  })
   gen.write(tc)
   t.is(gen.read().toString('hex'), 'd9fffe63666f6f')
 

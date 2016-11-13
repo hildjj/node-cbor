@@ -604,10 +604,10 @@ exports.good = [
 0x820102`], // TODO: define a tag for Set
 
   // internal types
-  [new NoFilter(new Buffer([1, 2, 3, 4])), "h'01020304'", `
-  44                -- Bytes, length: 4
-    01020304        -- 01020304
-0x4401020304`],
+//   [new NoFilter(new Buffer([1, 2, 3, 4])), "h'01020304'", `
+//   44                -- Bytes, length: 4
+//     01020304        -- 01020304
+// 0x4401020304`],
   [new cbor.Tagged(256, 1), '256(1)', `
   d9                --  next 2 bytes
     0100            -- Tag #256
