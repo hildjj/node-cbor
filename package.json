@@ -23,6 +23,7 @@
     "source-map-support": false
   },
   "scripts": {
+    "lint-asm": "asmjs lib/*.asm.js",
     "clean": "rm -rf coverage .nyc_output/ docs/api man/*",
     "prelint": "optional-dev-dependency -t lint",
     "lint": "standard src/*.js bin/* test/*.js",
@@ -62,9 +63,12 @@
     ]
   },
   "devDependencies": {
+    "asm.js": "github:dherman/asm.js",
     "ava": "*",
     "garbage": "*",
-    "optional-dev-dependency": ">=1.4"
+    "mocha": "^3.1.2",
+    "optional-dev-dependency": ">=1.4",
+    "power-assert": "^1.4.2"
   },
   "license": "MIT",
   "readmeFilename": "README.md",

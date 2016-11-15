@@ -1,8 +1,9 @@
+/* eslint-env mocha */
 'use strict'
 
 const cases = require('./cases')
 const asm = require('../lib/decoder.asm')
-const assert = require('assert')
+const assert = require('power-assert')
 const bignumber = require('bignumber.js')
 const SHIFT16 = Math.pow(2, 16)
 const SHIFT32 = Math.pow(2, 32)
@@ -34,6 +35,9 @@ const foreign = {
       res.push((f * SHIFT32) + g)
     }
   },
+  pushFloat (val) {
+    res.push(val)
+  },
   log (val, val2) {
     console.log('--', val, val2)
   }
@@ -42,19 +46,33 @@ const foreign = {
 
 const parser = asm(global, foreign, buffer)
 
-for (var i = 0; i < cases.good.length; i++) {
-  res = []
-  var c = cases.good[i]
-  buffer8.set(cases.toBuffer(c))
+describe('asm.js decoder', function () {
+  describe('good', () => {
+    for (var i = 0; i < cases.good.length; i++) {
+      testGood(i, cases.good[i])
+    }
+  })
+})
 
-  console.log('input: ', buffer8.slice(0, 20))
-  console.log('details:', c[2])
-  const code = parser.parse(1)
-  console.log('output: ', res)
+function testGood (i, c) {
+  it(`[${i}] - ${c[1]}`, () => {
+    res = []
 
-  if (code > 0) {
-    throw new Error('Errored')
-  }
+    const input = cases.toBuffer(c)
+    buffer8.set(input)
 
-  assert.deepEqual(res[0], c[1])
+    const code = parser.parse(input.byteLength)
+
+    if (code > 0) {
+      console.log('input: ', buffer8.slice(0, 20))
+      console.log('output: ', res)
+      console.log('expected: ', c[0])
+      console.log('\n\n')
+      console.log('details: ', c[2])
+
+      throw new Error('Errored')
+    }
+
+    assert.deepEqual(res[0], c[1])
+  })
 }
