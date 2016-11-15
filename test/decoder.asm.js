@@ -238,6 +238,9 @@ const foreign = {
     const len = buildInt64(len1, len2, len3, len4)
     createObjectStartFixed(len)
   },
+  pushByteString (start, end) {
+    push(buffer.slice(start, end + 1))
+  },
   log (val, val2) {
     console.log('--', val, val2)
   }
