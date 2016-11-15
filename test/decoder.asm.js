@@ -16,80 +16,227 @@ const NEG_ONE = new bignumber(-1)
 const buffer = new ArrayBuffer(0x10000)
 const buffer8 = new Uint8Array(buffer)
 
+const PARENT_ARRAY = 0
+const PARENT_OBJECT = 1
+const PARENT_MAP = 2
+const PARENT_TAG = 3
+
+// List of parsed cbor objects
 let res = []
+
+// Reference to the latest parent
+function ref () {
+  return currentParent().ref
+}
+
+// List of currently open parents
+let parents = [{
+  type: PARENT_ARRAY,
+  len: -1,
+  ref: res
+}]
+
+
+function reset () {
+  res = []
+  parents = [{
+    type: PARENT_ARRAY,
+    len: -1,
+    ref: res
+  }]
+}
+
+// Current parsing depth
+function depth () {
+  return parents.length
+}
+
+function currentParent () {
+  return parents[depth() - 1]
+}
+
+function closeParent () {
+  parents.pop()
+}
+
+let tmpKey
+
+function dec () {
+  const p = currentParent()
+  if (p.length < 0) {
+    return
+  }
+
+  p.length --
+
+  if (p.length === 0) {
+    closeParent()
+  }
+}
+
+// convert an Object into a Map
+function buildMap (obj) {
+  const res = new Map()
+  const keys = Object.keys(obj)
+  const length = keys.length
+  for (let i = 0; i < length; i++) {
+    res.set(keys[i], obj[keys[i]])
+  }
+  return res
+}
+
+function push (val) {
+  const p = currentParent()
+  switch (p.type) {
+  case PARENT_ARRAY:
+    ref().push(val)
+    dec()
+    break
+  case PARENT_OBJECT:
+    if (tmpKey) {
+      ref()[tmpKey] = val
+      tmpKey = null
+      dec()
+    } else {
+      tmpKey = val
+      if (typeof tmpKey !== 'string') {
+        // too bad, convert to a Map
+        p.type = PARENT_MAP
+        p.ref = buildMap(p.ref)
+      }
+    }
+  case PARENT_MAP:
+    if (tmpKey) {
+      ref().set(tmpKey, val)
+      tmpKey = null
+      dec()
+    } else {
+      tmpKey = val
+    }
+    break
+  case PARENT_TAG:
+    // TODO:
+    break
+  }
+}
+
+// create a new parent
+function createParent (obj, type, len) {
+  push(obj)
+
+  parents[depth()] = {
+    type: type,
+    left: len,
+    ref: obj
+  }
+}
 
 function buildInt32 (f, g) {
   return f * SHIFT16 + g
 }
 
+function buildInt64 (f1, f2, g1, g2) {
+  const f = buildInt32(f1, f2)
+  const g = buildInt32(g1, g2)
+
+  if (f > MAX_SAFE_HIGH) {
+    return new bignumber(f).times(SHIFT32).plus(g)
+  } else {
+    return (f * SHIFT32) + g
+  }
+}
+
+function createArrayStartFixed (len) {
+  createParent(new Array(len), PARENT_ARRAY, len)
+}
+
+function createObjectStartFixed (len) {
+  createParent({}, PARENT_OBJECT, len)
+}
+
 const foreign = {
   pushInt (val) {
-    res.push(val)
+    push(val)
   },
   pushInt32 (f, g) {
-    res.push(buildInt32(f, g))
+    push(buildInt32(f, g))
   },
   pushInt64 (f1, f2, g1, g2) {
-    const f = buildInt32(f1, f2)
-    const g = buildInt32(g1, g2)
-    console.log('int64', f, g)
-    if (f > MAX_SAFE_HIGH) {
-      res.push(new bignumber(f).times(SHIFT32).plus(g))
-    } else {
-      res.push((f * SHIFT32) + g)
-    }
+    push(buildInt64(f1, f2, g1, g2))
   },
   pushFloat (val) {
-    res.push(val)
+    push(val)
   },
   pushFloatSingle (a, b, c, d) {
-    res.push(
+    push(
       ieee754.read([a, b, c, d], 0, false, 23, 4)
     )
   },
   pushFloatDouble (a, b, c, d, e, f, g, h) {
-    res.push(
+    push(
       ieee754.read([a, b, c, d, e, f, g, h], 0, false, 52, 8)
     )
   },
   pushInt32Neg (f, g) {
-    res.push(-1 - buildInt32(f, g))
+    push(-1 - buildInt32(f, g))
   },
   pushInt64Neg (f1, f2, g1, g2) {
     const f = buildInt32(f1, f2)
     const g = buildInt32(g1, g2)
-    console.log('int64', f, g)
+
     if (f > MAX_SAFE_HIGH) {
-      res.push(
+      push(
         NEG_ONE.sub(new bignumber(f).times(SHIFT32).plus(g))
       )
     } else {
-      res.push(-1 - ((f * SHIFT32) + g))
+      push(-1 - ((f * SHIFT32) + g))
     }
   },
   pushTrue () {
-    res.push(true)
+    push(true)
   },
   pushFalse () {
-    res.push(false)
+    push(false)
   },
   pushNull () {
-    res.push(null)
+    push(null)
   },
   pushUndefined () {
-    res.push(void 0)
+    push(void 0)
   },
   pushInfinity () {
-    res.push(Infinity)
+    push(Infinity)
   },
   pushInfinityNeg () {
-    res.push(-Infinity)
+    push(-Infinity)
   },
   pushNaN () {
-    res.push(NaN)
+    push(NaN)
   },
   pushNaNNeg () {
-    res.push(-NaN)
+    push(-NaN)
+  },
+  pushArrayStartFixed (len) {
+    createArrayStartFixed(len)
+  },
+  pushArrayStartFixed32 (len1, len2) {
+    const len = buildInt32(len1, len2)
+    createArrayStartFixed(len)
+  },
+  pushArrayStartFixed64 (len1, len2, len3, len4) {
+    const len = buildInt64(len1, len2, len3, len4)
+    createArrayStartFixed(len)
+  },
+  pushObjectStartFixed (len) {
+    createObjectStartFixed(len)
+  },
+  pushObjectStartFixed32 (len1, len2) {
+    const len = buildInt32(len1, len2)
+    createObjectStartFixed(len)
+  },
+  pushObjectStartFixed64 (len1, len2, len3, len4) {
+    const len = buildInt64(len1, len2, len3, len4)
+    createObjectStartFixed(len)
   },
   log (val, val2) {
     console.log('--', val, val2)
@@ -141,7 +288,7 @@ describe('asm.js decoder', function () {
 
 function testGood (i, input, expected, desc, info) {
   it(desc, () => {
-    res = []
+    reset()
 
     buffer8.set(input)
 
