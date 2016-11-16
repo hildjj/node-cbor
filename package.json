@@ -9,7 +9,17 @@
   },
   "homepage": "https://github.com/dignifiedquire/fast-cbor.git",
   "scripts": {
-    "lint-asm": "asmjs lib/*.asm.js"
+    "lint-asm": "asmjs lib/*.asm.js",
+    "test": "aegir-test",
+    "test:browser": "aegir-test --env browser",
+    "test:node": "aegir-test --env node",
+    "lint": "aegir-lint",
+    "release": "aegir-release",
+    "release-minor": "aegir-release --type minor",
+    "release-major": "aegir-release --type major",
+    "build": "aegir-build",
+    "coverage": "aegir-coverage",
+    "coverage-publish": "aegir-coverage publish"
   },
   "keywords": [
     "coap",
@@ -23,7 +33,9 @@
     "email": "dignifiedquire@gmail.com"
   },
   "devDependencies": {
-    "asm.js": "github:dherman/asm.js"
+    "aegir": "^9.1.2",
+    "asm.js": "github:dherman/asm.js",
+    "chai": "^3.5.0"
   },
   "license": "MIT",
   "readmeFilename": "README.md",
