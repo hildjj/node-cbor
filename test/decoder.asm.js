@@ -249,45 +249,45 @@ const foreign = {
 
 const parser = asm(global, foreign, buffer)
 
-describe('asm.js decoder', function () {
-  describe('vectors', () => {
-    for (var i = 0; i < vectors.length; i++) {
-      if (vectors[i].diagnostic) {
-        continue
-      }
-      testGood(
-        i,
-        new Buffer(vectors[i].hex, 'hex'),
-        vectors[i].decoded,
-        vectors[i].hex
-      )
-    }
-  })
+// describe('asm.js decoder', function () {
+//   describe('vectors', () => {
+//     for (var i = 0; i < vectors.length; i++) {
+//       if (vectors[i].diagnostic) {
+//         continue
+//       }
+//       testGood(
+//         i,
+//         new Buffer(vectors[i].hex, 'hex'),
+//         vectors[i].decoded,
+//         vectors[i].hex
+//       )
+//     }
+//   })
 
-  describe('good', () => {
-    for (var i = 0; i < cases.good.length; i++) {
-      testGood(
-        i,
-        cases.toBuffer(cases.good[i]),
-        cases.good[i][0],
-        cases.good[i][1],
-        cases.good[i][2]
-      )
-    }
-  })
+//   describe('good', () => {
+//     for (var i = 0; i < cases.good.length; i++) {
+//       testGood(
+//         i,
+//         cases.toBuffer(cases.good[i]),
+//         cases.good[i][0],
+//         cases.good[i][1],
+//         cases.good[i][2]
+//       )
+//     }
+//   })
 
-  describe('decodeGood', () => {
-    for (var i = 0; i < cases.decodeGood.length; i++) {
-      testGood(
-        i,
-        cases.toBuffer(cases.good[i]),
-        cases.good[i][0],
-        cases.good[i][1],
-        cases.good[i][2]
-      )
-    }
-  })
-})
+//   describe('decodeGood', () => {
+//     for (var i = 0; i < cases.decodeGood.length; i++) {
+//       testGood(
+//         i,
+//         cases.toBuffer(cases.good[i]),
+//         cases.good[i][0],
+//         cases.good[i][1],
+//         cases.good[i][2]
+//       )
+//     }
+//   })
+// })
 
 function testGood (i, input, expected, desc, info) {
   it(desc, () => {
@@ -297,7 +297,7 @@ function testGood (i, input, expected, desc, info) {
 
     const code = parser.parse(input.byteLength)
 
-   // if (code > 0) {
+    // if (code > 0) {
     //   console.log('input: ', buffer8.slice(0, 20))
     //   console.log('output: ', res)
     //   console.log('expected: ', c[0])
@@ -316,6 +316,14 @@ function testGood (i, input, expected, desc, info) {
 }
 
 if (typeof window !== 'undefined') {
-  window.mocha.checkLeaks()
-  window.mocha.run()
+  // window.mocha.checkLeaks()
+  // window.mocha.run()
+}
+
+module.exports = function decode (input) {
+  reset()
+  buffer8.set(input)
+  const code = parser.parse(input.byteLength)
+
+  return res[0]
 }

@@ -40,7 +40,7 @@ function failFirstAllCB (t, list) {
   }))
 }
 
-test('good', t => testAll(t, cases.good))
+test.only('good', t => testAll(t, cases.good))
 test('decode', t => testAll(t, cases.decodeGood))
 test('edges', t => failAll(t, cases.decodeBad))
 test('bad first', t => failFirstAll(t, cases.decodeBad))

@@ -2,73 +2,28 @@
   "name": "fast-cbor",
   "version": "1.0.0",
   "description": "Encode and parse data in the Concise Binary Object Representation (CBOR) data format (RFC7049).",
-  "main": "./lib/cbor.js",
+  "main": "./src/index.js",
   "repository": {
     "type": "git",
-    "url": "http://github.com/hildjj/node-cbor.git"
+    "url": "https://github.com/dignifiedquire/fast-cbor.git"
   },
-  "homepage": "http://hildjj.github.io/node-cbor/",
-  "directories": {
-    "lib": "lib",
-    "man": "man"
-  },
-  "bin": {
-    "cbor2comment": "./bin/cbor2comment",
-    "cbor2diag": "./bin/cbor2diag",
-    "cbor2json": "./bin/cbor2json",
-    "json2cbor": "./bin/json2cbor"
-  },
-  "browser": {
-    "fs": false,
-    "source-map-support": false
-  },
+  "homepage": "https://github.com/dignifiedquire/fast-cbor.git",
   "scripts": {
-    "lint-asm": "asmjs lib/*.asm.js",
-    "clean": "rm -rf coverage .nyc_output/ docs/api man/*",
-    "prelint": "optional-dev-dependency -t lint",
-    "lint": "standard src/*.js bin/* test/*.js",
-    "predoc": "optional-dev-dependency -t doc",
-    "doc": "jsdoc -c .jsdoc.conf",
-    "precoverage": "optional-dev-dependency -t coverage",
-    "coverage": "nyc npm test",
-    "coveragehtml": "nyc report -r html",
-    "precoveragehtml": "npm run coverage",
-    "test": "ava",
-    "preman": "optional-dev-dependency -t doc",
-    "man": "mkdir -p man; for f in man_src/*.md; do b=`basename $f`; marked-man $f -o man/${b%.md}.1; gzip -9f man/${b%.md}.1; done",
-    "watch": "watch 'npm run coveragehtml' lib/ test/",
-    "release": "npm version patch && git push --follow-tags && npm publish",
-    "live": "live-server --port=4002 --ignorePattern='(js|css|png)$' coverage",
-    "predev": "if [ ! -f coverage/index.html ]; then mkdir coverage; cp .waiting.html coverage/index.html; fi; optional-dev-dependency -t dev",
-    "dev": "npm-run-all -p --silent watch live",
-    "precoveralls": "optional-dev-dependency -t ci",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls"
+    "lint-asm": "asmjs lib/*.asm.js"
   },
   "keywords": [
     "coap",
     "cbor",
-    "json"
+    "json",
+    "asm",
+    "asm.js"
   ],
   "author": {
-    "name": "Joe Hildebrand",
-    "email": "joe-github@cursive.net"
-  },
-  "contributors": [
-    "Patrick Gansterer <paroga@paroga.com> (http://paroga.com/)",
-    "Artyom Yagilev <github@scorpi.org> (http://scorpi.org/)"
-  ],
-  "ava": {
-    "files": [
-      "test/*.ava.js"
-    ]
+    "name": "Friedel Ziegelmayer",
+    "email": "dignifiedquire@gmail.com"
   },
   "devDependencies": {
-    "asm.js": "github:dherman/asm.js",
-    "ava": "*",
-    "garbage": "*",
-    "mocha": "^3.1.2",
-    "optional-dev-dependency": ">=1.4",
-    "power-assert": "^1.4.2"
+    "asm.js": "github:dherman/asm.js"
   },
   "license": "MIT",
   "readmeFilename": "README.md",
@@ -76,52 +31,9 @@
     "bignumber.js": "~3.0.0",
     "commander": "^2.9",
     "ieee754": "^1.1.8",
-    "json-text-sequence": "^0.1",
-    "nofilter": "^0.0.3"
+    "json-text-sequence": "^0.1"
   },
   "engines": {
     "node": ">=4"
-  },
-  "optionalDevDependencies": {
-    "ava": [
-      "*",
-      "test"
-    ],
-    "standard": [
-      "*",
-      "lint"
-    ],
-    "jsdoc": [
-      "*",
-      "doc"
-    ],
-    "minami": [
-      "*",
-      "doc"
-    ],
-    "marked-man": [
-      "*",
-      "man"
-    ],
-    "nyc": [
-      "*",
-      "coverage"
-    ],
-    "live-server": [
-      "*",
-      "dev"
-    ],
-    "npm-run-all": [
-      "*",
-      "dev"
-    ],
-    "watch": [
-      "*",
-      "dev"
-    ],
-    "coveralls": [
-      "*",
-      "ci"
-    ]
   }
 }

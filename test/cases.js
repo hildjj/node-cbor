@@ -67,7 +67,7 @@ exports.good = [
   1b                -- Positive number, next 8 bytes
     001fffffffffffff -- 9007199254740991
 0x1b001fffffffffffff`],
-  [Number.MAX_VALUE, '1.7976931348623157e+308_3', `
+  [Number.MAX_VALUE, '1.7976931348623157e+308', `
   fb                -- Float, next 8 bytes
     7fefffffffffffff -- 1.7976931348623157e+308
 0xfb7fefffffffffffff`],
