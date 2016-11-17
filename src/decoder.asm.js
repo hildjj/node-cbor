@@ -30,7 +30,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   var pushObjectStartFixed64 = foreign.pushObjectStartFixed64
 
   var pushByteString = foreign.pushByteString
-
+  var pushUtf8String = foreign.pushUtf8String
 
   var pow = stdlib.Math.pow
 
@@ -276,19 +276,53 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function UTF8_STRING (octet) {
     octet = octet | 0
 
-    return 1
+    var start = 0
+    var end = 0
+
+    start = (offset + 1) | 0
+    end = (((offset + 1) | 0) + ((octet - 64) | 0)) | 0
+
+    pushUtf8String(start | 0, end | 0)
+
+    offset = (end + 1) | 0
+
+    return 0
   }
 
   function UTF8_STRING_8 (octet) {
     octet = octet | 0
 
-    return 1
+    var start = 0
+    var end = 0
+    var length = 0
+
+    length = heap[(offset + 1) | 0] | 0
+    start = (offset + 2) | 0
+    end = (((offset + 2) | 0) + (length | 0)) | 0
+
+    pushUtf8String(start | 0, end | 0)
+
+    offset = (end + 1) | 0
+
+    return 0
   }
 
   function UTF8_STRING_16 (octet) {
     octet = octet | 0
 
-    return 1
+    var start = 0
+    var end = 0
+    var length = 0
+
+    length = readUInt16((offset + 1) | 0) | 0
+    start = (offset + 3) | 0
+    end = (((offset + 3) | 0) + (length | 0)) | 0
+
+    pushUtf8String(start | 0, end | 0)
+
+    offset = (end + 1) | 0
+
+    return 0
   }
 
   function UTF8_STRING_32 (octet) {

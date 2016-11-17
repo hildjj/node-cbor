@@ -1,6 +1,4 @@
-src/decoder.js
 src/decoder.asm.js
 src/commented.js
 src/diagnose.js
-test/decoder.asm.js
 test/*.ava.js

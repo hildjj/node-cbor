@@ -54,3 +54,4 @@ exports.SYMS = {
 }
 
 exports.SHIFT32 = Math.pow(2, 32)
+exports.SHIFT16 = Math.pow(2, 16)

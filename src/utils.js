@@ -7,6 +7,7 @@ const Bignumber = require('bignumber.js')
 const constants = require('./constants')
 const NUMBYTES = constants.NUMBYTES
 const SHIFT32 = constants.SHIFT32
+const SHIFT16 = constants.SHIFT16
 const MAX_SAFE_HIGH = 0x1fffff
 
 exports.parseCBORint = function (ai, buf) {
@@ -166,5 +167,31 @@ exports.guessEncoding = function (input) {
       return undefined
     default:
       throw new Error('Unknown input type')
+  }
+}
+
+// convert an Object into a Map
+exports.buildMap = (obj) => {
+  const res = new Map()
+  const keys = Object.keys(obj)
+  const length = keys.length
+  for (let i = 0; i < length; i++) {
+    res.set(keys[i], obj[keys[i]])
+  }
+  return res
+}
+
+exports.buildInt32 = (f, g) => {
+  return f * SHIFT16 + g
+}
+
+exports.buildInt64 = (f1, f2, g1, g2) => {
+  const f = exports.buildInt32(f1, f2)
+  const g = exports.buildInt32(g1, g2)
+
+  if (f > MAX_SAFE_HIGH) {
+    return new Bignumber(f).times(SHIFT32).plus(g)
+  } else {
+    return (f * SHIFT32) + g
   }
 }

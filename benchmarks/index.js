@@ -10,7 +10,8 @@ const cborJs = require('cbor-js')
 
 const fastCbor = require('../')
 const vectors = require('../test/fixtures/vectors.json')
-const fastDecoder = require('../test/decoder.asm')
+
+const fastDecoder = new fastCbor.Decoder()
 
 const parsed = vectors
       .filter((v) => v.hex && v.decoded)
@@ -49,6 +50,8 @@ suite.add(`encode - JSON.stringify - ${vecLength}`, () => {
   }
 })
 
+// --
+
 suite.add(`decode - node-cbor - ${buffers.length}`, () => {
   for (let i = 0; i < vecLength; i++) {
     nodeCbor.decodeAllSync(buffers[i])
@@ -57,13 +60,13 @@ suite.add(`decode - node-cbor - ${buffers.length}`, () => {
 
 suite.add(`encode - cbor-js - ${buffers.length}`, () => {
   for (let i = 0; i < buffers.length; i++) {
-    res.push(cborJs.encode(buffers[i].buffer)[0])
+    res.push(cborJs.decode(buffers[i].buffer)[0])
   }
 })
 
 suite.add(`decode - fast-cbor - ${buffers.length}`, () => {
   for (let i = 0; i < buffers.length; i++) {
-    res.push(fastDecoder(buffers[i]))
+    res.push(fastDecoder.decodeFirst(buffers[i]))
   }
 })
 
