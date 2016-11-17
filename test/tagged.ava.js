@@ -1,7 +1,7 @@
 'use strict'
 
 const test = require('ava')
-const cbor = require('../lib/cbor')
+const cbor = require('../src/cbor')
 
 test('create', t => {
   const tag = new cbor.Tagged(1, 'one')

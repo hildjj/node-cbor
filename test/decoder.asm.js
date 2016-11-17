@@ -3,10 +3,10 @@
 
 const ieee754 = require('ieee754')
 
-const cases = require('./cases')
-const vectors = require('./vectors')
-const asm = require('../lib/decoder.asm')
-const assert = require('power-assert')
+const cases = require('./fixtures/cases')
+const vectors = require('./fixtures/vectors.json')
+const asm = require('../src/decoder.asm')
+const assert = require('assert')
 const bignumber = require('bignumber.js')
 const SHIFT16 = Math.pow(2, 16)
 const SHIFT32 = Math.pow(2, 32)

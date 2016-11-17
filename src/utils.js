@@ -2,10 +2,11 @@
 
 const fs = require('fs')
 const stream = require('stream')
-const bignumber = require('bignumber.js')
+const Bignumber = require('bignumber.js')
 
 const constants = require('./constants')
-const NUMBYTES = constants.NUMBYTES, SHIFT32 = constants.SHIFT32
+const NUMBYTES = constants.NUMBYTES
+const SHIFT32 = constants.SHIFT32
 const MAX_SAFE_HIGH = 0x1fffff
 
 exports.parseCBORint = function (ai, buf) {
@@ -21,7 +22,7 @@ exports.parseCBORint = function (ai, buf) {
       f = buf.readUInt32BE(0)
       g = buf.readUInt32BE(4)
       if (f > MAX_SAFE_HIGH) {
-        return new bignumber(f).times(SHIFT32).plus(g)
+        return new Bignumber(f).times(SHIFT32).plus(g)
       } else {
         return (f * SHIFT32) + g
       }
@@ -75,22 +76,6 @@ exports.bin = function (s) {
   return new Buffer(chunks)
 }
 
-exports.extend = function () {
-  var a, adds, j, k, len, old, v
-  old = arguments[0], adds = 2 <= arguments.length ? Array.prototype.slice.call(arguments, 1) : []
-  if (old == null) {
-    old = {}
-  }
-  for (j = 0, len = adds.length; j < len; j++) {
-    a = adds[j]
-    for (k in a) {
-      v = a[k]
-      old[k] = v
-    }
-  }
-  return old
-}
-
 exports.arrayEqual = function (a, b) {
   if ((a == null) && (b == null)) {
     return true
@@ -99,12 +84,17 @@ exports.arrayEqual = function (a, b) {
     return false
   }
   return (a.length === b.length) && a.every(function (elem, i) {
-      return elem === b[i]
-    })
+    return elem === b[i]
+  })
 }
 
 exports.bufferEqual = function (a, b) {
-  var byte, i, j, len, ret
+  var byte
+  var i
+  var j
+  var len
+  var ret
+
   if ((a == null) && (b == null)) {
     return true
   }
@@ -119,11 +109,11 @@ exports.bufferEqual = function (a, b) {
     byte = a[i]
     ret &= b[i] === byte
   }
-  return !!ret
+  return Boolean(ret)
 }
 
 exports.bufferToBignumber = function (buf) {
-  return new bignumber(buf.toString('hex'), 16)
+  return new Bignumber(buf.toString('hex'), 16)
 }
 
 exports.DeHexStream = class DeHexStream extends stream.Readable {
@@ -138,10 +128,6 @@ exports.DeHexStream = class DeHexStream extends stream.Readable {
 }
 
 exports.HexStream = class HexStream extends stream.Transform {
-  constructor (options) {
-    super(options)
-  }
-
   _transform (fresh, encoding, cb) {
     this.push(fresh.toString('hex'))
     return cb()

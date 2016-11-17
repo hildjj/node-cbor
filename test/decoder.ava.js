@@ -2,8 +2,8 @@
 
 const cbor = require('../')
 const test = require('ava')
-const cases = require('./cases')
-const utils = require('../lib/utils')
+const cases = require('./fixtures/cases')
+const utils = require('../src/utils')
 
 function testAll (t, list) {
   t.plan(list.length)

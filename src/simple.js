@@ -1,7 +1,9 @@
 'use strict'
 
 const constants = require('./constants')
-const MT = constants.MT, SIMPLE = constants.SIMPLE, SYMS = constants.SYMS
+const MT = constants.MT
+const SIMPLE = constants.SIMPLE
+const SYMS = constants.SYMS
 
 /**
  * A CBOR Simple Value that does not map onto a known constant.
@@ -16,7 +18,7 @@ class Simple {
     if (typeof value !== 'number') {
       throw new Error('Invalid Simple type: ' + (typeof value))
     }
-    if ((value < 0) || (value > 255) || ((value|0) !== value)) {
+    if ((value < 0) || (value > 255) || ((value | 0) !== value)) {
       throw new Error('value must be a small positive integer: ' + value)
     }
     this.value = value
@@ -66,12 +68,12 @@ class Simple {
    * stream in object mode.
    *
    * @param {Number} val - the CBOR additional info to convert
-   * @param {bool} has_parent - Does the CBOR item have a parent?
+   * @param {bool} hasParent - Does the CBOR item have a parent?
    * @returns {(null|undefined|Boolean|Symbol)} - the decoded value
    */
-  static decode (val, has_parent) {
-    if (has_parent == null) {
-      has_parent = true
+  static decode (val, hasParent) {
+    if (hasParent == null) {
+      hasParent = true
     }
     switch (val) {
       case SIMPLE.FALSE:
@@ -79,19 +81,19 @@ class Simple {
       case SIMPLE.TRUE:
         return true
       case SIMPLE.NULL:
-        if (has_parent) {
+        if (hasParent) {
           return null
         } else {
           return SYMS.NULL
         }
       case SIMPLE.UNDEFINED:
-        if (has_parent) {
+        if (hasParent) {
           return void 0
         } else {
           return SYMS.UNDEFINED
         }
       case -1:
-        if (!has_parent) {
+        if (!hasParent) {
           throw new Error('Invalid BREAK')
         }
         return SYMS.BREAK

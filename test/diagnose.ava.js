@@ -1,9 +1,8 @@
 // 'use strict'
 
-// const NoFilter = require('nofilter')
 // const cbor = require('../')
 // const test = require('ava')
-// const cases = require('./cases')
+// const cases = require('./fixtures/cases')
 
 // function testAll (t, list) {
 //   t.plan(list.length)

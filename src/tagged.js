@@ -1,13 +1,12 @@
 'use strict'
 
-const bignumber = require('bignumber.js')
+const Bignumber = require('bignumber.js')
 const utils = require('./utils')
 const url = require('url')
 
-const MINUS_ONE = new bignumber(-1)
-const TEN = new bignumber(10)
-const TWO = new bignumber(2)
-
+const MINUS_ONE = new Bignumber(-1)
+const TEN = new Bignumber(10)
+const TWO = new Bignumber(2)
 
 /**
  * A CBOR tagged item, where the tag does not have semantics specified at the
@@ -69,7 +68,7 @@ class Tagged {
     var er, f
     f = converters != null ? converters[this.tag] : void 0
     if (typeof f !== 'function') {
-      f = Tagged['_tag_' + this.tag]
+      f = Tagged['_tag' + this.tag]
       if (typeof f !== 'function') {
         return this
       }
@@ -83,35 +82,35 @@ class Tagged {
     }
   }
 
-  static _tag_0 (v) {
+  static _tag0 (v) {
     return new Date(v)
   }
 
-  static _tag_1 (v) {
+  static _tag1 (v) {
     return new Date(v * 1000)
   }
 
-  static _tag_2 (v) {
+  static _tag2 (v) {
     return utils.bufferToBignumber(v)
   }
 
-  static _tag_3 (v) {
+  static _tag3 (v) {
     return MINUS_ONE.minus(utils.bufferToBignumber(v))
   }
 
-  static _tag_4 (v) {
+  static _tag4 (v) {
     return TEN.pow(v[0]).times(v[1])
   }
 
-  static _tag_5 (v) {
+  static _tag5 (v) {
     return TWO.pow(v[0]).times(v[1])
   }
 
-  static _tag_32 (v) {
+  static _tag32 (v) {
     return url.parse(v)
   }
 
-  static _tag_35 (v) {
+  static _tag35 (v) {
     return new RegExp(v)
   }
 }

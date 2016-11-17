@@ -1,21 +1,21 @@
 'use strict'
 
-const stream = require('stream')
 const url = require('url')
-const bignumber = require('bignumber.js')
-const NoFilter = require('nofilter')
-const Tagged = require('./tagged')
-const Simple = require('./simple')
+const Bignumber = require('bignumber.js')
 
 const constants = require('./constants')
-const MT = constants.MT, NUMBYTES = constants.NUMBYTES, SHIFT32 = constants.SHIFT32, SYMS = constants.SYMS, TAG = constants.TAG
+const MT = constants.MT
+const NUMBYTES = constants.NUMBYTES
+const SHIFT32 = constants.SHIFT32
+const SYMS = constants.SYMS
+const TAG = constants.TAG
 const DOUBLE = (constants.MT.SIMPLE_FLOAT << 5) | constants.NUMBYTES.EIGHT
 const TRUE = (constants.MT.SIMPLE_FLOAT << 5) | constants.SIMPLE.TRUE
 const FALSE = (constants.MT.SIMPLE_FLOAT << 5) | constants.SIMPLE.FALSE
 const UNDEFINED = (constants.MT.SIMPLE_FLOAT << 5) | constants.SIMPLE.UNDEFINED
 const NULL = (constants.MT.SIMPLE_FLOAT << 5) | constants.SIMPLE.NULL
 
-const MAXINT_BN = new bignumber('0x20000000000000')
+const MAXINT_BN = new Bignumber('0x20000000000000')
 const BUF_NAN = new Buffer('f97e00', 'hex')
 const BUF_INF_NEG = new Buffer('f9fc00', 'hex')
 const BUF_INF_POS = new Buffer('f97c00', 'hex')
@@ -38,27 +38,24 @@ class Encoder {
 
     this.semanticTypes = [
       [url.Url, this._pushUrl],
-      [bignumber, this._pushBigNumber]
+      [Bignumber, this._pushBigNumber]
     ]
 
     const addTypes = options.genTypes || []
     const len = addTypes.length
-    for (let i = 0; i < len; i ++) {
+    for (let i = 0; i < len; i++) {
       this.addSemanticType(
         addTypes[i][0],
         addTypes[i][1]
       )
     }
 
-    this.result = []
-    this.resultMethod = []
-    this.resultLength = []
-    this.offset = 0
+    this._reset()
   }
 
   addSemanticType (type, fun) {
     const len = this.semanticTypes.length
-    for (let i = 0; i < len; i ++) {
+    for (let i = 0; i < len; i++) {
       const typ = this.semanticTypes[i][0]
       if (typ === type) {
         const old = this.semanticTypes[i][1]
@@ -154,7 +151,7 @@ class Encoder {
 
   _pushNumber (obj) {
     switch (false) {
-      case (obj === obj):
+      case (obj === obj): // eslint-disable-line
         return this._pushNaN(obj)
       case isFinite(obj):
         return this._pushInfinity(obj)
@@ -257,7 +254,7 @@ class Encoder {
     }
 
     const dec = obj.decimalPlaces()
-    const slide = obj.mul(new bignumber(10).pow(dec))
+    const slide = obj.mul(new Bignumber(10).pow(dec))
     if (!gen._pushIntNum(-dec)) {
       return false
     }
@@ -286,7 +283,7 @@ class Encoder {
     }
 
     var len = this.semanticTypes.length
-    for (var i = 0; i < len; i ++) {
+    for (var i = 0; i < len; i++) {
       if (obj instanceof this.semanticTypes[i][0]) {
         return this.semanticTypes[i][1].call(obj, this, obj)
       }
@@ -357,7 +354,7 @@ class Encoder {
             throw new Error('Unknown symbol: ' + obj.toString())
         }
       default:
-        throw new Error('Unknown type: ' + typeof obj + ', ' + (!!obj ? obj.toString() : ''))
+        throw new Error('Unknown type: ' + typeof obj + ', ' + (obj ? obj.toString() : ''))
     }
   }
 
@@ -365,7 +362,7 @@ class Encoder {
     // Determine the size of the buffer
     var size = 0
     var i
-    for (i = 0; i < offset; i ++) {
+    for (i = 0; i < offset; i++) {
       size += resultLength[i]
     }
 
@@ -383,15 +380,11 @@ class Encoder {
     var offset = this.offset
     var res = Buffer.allocUnsafe(this._calculateSize(offset, resultLength))
     var index = 0
-    var method
     var length
-    var enc
-    var val
     var i
-    var typ
 
     // Write the content into the result buffer
-    for (i = 0; i < offset; i ++) {
+    for (i = 0; i < offset; i++) {
       length = resultLength[i]
 
       switch (resultMethod[i]) {
@@ -413,12 +406,25 @@ class Encoder {
         case 5:
           res.write(result[i], index, length, 'utf8')
           break
+        default:
+          throw new Error('unkown method')
       }
 
       index += length
     }
 
-    return res
+    var tmp = res
+
+    this._reset()
+
+    return tmp
+  }
+
+  _reset () {
+    this.result = []
+    this.resultMethod = []
+    this.resultLength = []
+    this.offset = 0
   }
 
   static encode (o) {

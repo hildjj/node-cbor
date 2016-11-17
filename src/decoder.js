@@ -4,7 +4,6 @@ const Tagged = require('./tagged')
 const Simple = require('./simple')
 const utils = require('./utils')
 const bignumber = require('bignumber.js')
-const NoFilter = require('nofilter')
 const constants = require('./constants')
 const MT = constants.MT, NUMBYTES = constants.NUMBYTES, SIMPLE = constants.SIMPLE, SYMS = constants.SYMS
 

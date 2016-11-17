@@ -4,7 +4,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   // -- Imports
 
   var heap = new stdlib.Uint8Array(buffer)
-  var log = foreign.log
+  // var log = foreign.log
   var pushInt = foreign.pushInt
   var pushInt32 = foreign.pushInt32
   var pushInt32Neg = foreign.pushInt32Neg
@@ -168,7 +168,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
     var val = 0
 
     val = readUInt16((offset + 1) | 0) | 0
-    pushInt((-1 -(val | 0)) | 0)
+    pushInt((-1 - (val | 0)) | 0)
 
     offset = (offset + 3) | 0
 
@@ -461,7 +461,6 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
   function TAG_BIGNUM_NEG (octet) {
     octet = octet | 0
-
 
     return 1
   }

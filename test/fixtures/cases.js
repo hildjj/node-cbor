@@ -1,10 +1,10 @@
 'use strict'
 
 const BigNum = require('bignumber.js')
-const NoFilter = require('nofilter')
-// const cbor = require('../')
-const constants = require('../lib/constants')
 const url = require('url')
+
+const cbor = require('../../')
+const constants = require('../../src/constants')
 
 class TempClass {
   constructor (val) {
@@ -18,6 +18,7 @@ class TempClass {
     return gen._pushTag(0xfffe) && gen.pushAny(obj.value)
   }
 }
+
 exports.TempClass = TempClass
 
 // [Decoded, Diagnostic, Commented]
@@ -27,15 +28,13 @@ exports.good = [
 0x00`],
   [1, '1', `
   01                -- 1
-0x01`]
-  ,
+0x01`],
   [10, '10', `
   0a                -- 10
 0x0a`],
   [23, '23', `
   17                -- 23
-0x17`]
-  ,
+0x17`],
   [24, '24', `
   18                -- Positive number, next 1 byte
     18              -- 24
@@ -154,18 +153,17 @@ exports.good = [
   [undefined, 'undefined', `
   f7                -- undefined
 0xf7`],
-
-//   [new cbor.Simple(16), 'simple(16)', `
-//   f0                -- simple(16)
-// 0xf0`],
-//   [new cbor.Simple(24), 'simple(24)', `
-//   f8                -- Simple value, next 1 byte
-//     18              -- simple(24)
-// 0xf818`],
-//   [new cbor.Simple(255), 'simple(255)', `
-//   f8                -- Simple value, next 1 byte
-//     ff              -- simple(255)
-// 0xf8ff`],
+  [new cbor.Simple(16), 'simple(16)', `
+  f0                -- simple(16)
+0xf0`],
+  [new cbor.Simple(24), 'simple(24)', `
+  f8                -- Simple value, next 1 byte
+    18              -- simple(24)
+0xf818`],
+  [new cbor.Simple(255), 'simple(255)', `
+  f8                -- Simple value, next 1 byte
+    ff              -- simple(255)
+0xf8ff`],
   [new Date(1363896240000), '1(1363896240)', `
   c1                -- Tag #1
     1a              -- Positive number, next 4 bytes
@@ -201,6 +199,7 @@ exports.good = [
   64                -- String, length: 4
     49455446        -- "IETF"
 0x6449455446`],
+  // eslint-disable-next-line
   ['"\\', '"\\"\\\\"', `
   62                -- String, length: 2
     225c            -- "\\\"\\\\"
@@ -279,7 +278,7 @@ exports.good = [
       33            -- {Key:1}, "3"
     04              -- {Val:1}, 4
 0xa2613102613304`],
-  [{'a': 1, 'b': [2, 3]}, '{"a": 1, "b": [2, 3]}', `
+  [{a: 1, b: [2, 3]}, '{"a": 1, "b": [2, 3]}', `
   a2                -- Map, 2 pairs
     61              -- String, length: 1
       61            -- {Key:0}, "a"
@@ -290,7 +289,7 @@ exports.good = [
       02            -- [0], 2
       03            -- [1], 3
 0xa26161016162820203`],
-  [['a', {'b': 'c'}], '["a", {"b": "c"}]', `
+  [['a', {b: 'c'}], '["a", {"b": "c"}]', `
   82                -- Array, 2 items
     61              -- String, length: 1
       61            -- [0], "a"
@@ -300,7 +299,7 @@ exports.good = [
       61            -- String, length: 1
         63          -- {Val:0}, "c"
 0x826161a161626163`],
-  [{'a': 'A', 'b': 'B', 'c': 'C', 'd': 'D', 'e': 'E'}, '{"a": "A", "b": "B", "c": "C", "d": "D", "e": "E"}', `
+  [{a: 'A', b: 'B', c: 'C', d: 'D', e: 'E'}, '{"a": "A", "b": "B", "c": "C", "d": "D", "e": "E"}', `
   a5                -- Map, 5 pairs
     61              -- String, length: 1
       61            -- {Key:0}, "a"
@@ -372,7 +371,7 @@ exports.good = [
       18            -- Positive number, next 1 byte
         19          -- [24], 25
 0x98190102030405060708090a0b0c0d0e0f101112131415161718181819`],
-  [{'a': 1, 'b': [2, 3]}, '{"a": 1, "b": [2, 3]}', `
+  [{a: 1, b: [2, 3]}, '{"a": 1, "b": [2, 3]}', `
   a2                -- Map, 2 pairs
     61              -- String, length: 1
       61            -- {Key:0}, "a"
@@ -383,7 +382,7 @@ exports.good = [
       02            -- [0], 2
       03            -- [1], 3
 0xa26161016162820203`],
-  [['a', {'b': 'c'}], '["a", {"b": "c"}]', `
+  [['a', {b: 'c'}], '["a", {"b": "c"}]', `
   82                -- Array, 2 items
     61              -- String, length: 1
       61            -- [0], "a"
@@ -493,10 +492,10 @@ exports.good = [
   45                -- Bytes, length: 5
     0001020304      -- 0001020304
 0x450001020304`],
-//   [new cbor.Simple(0xff), 'simple(255)', `
-//   f8                -- Simple value, next 1 byte
-//     ff              -- simple(255)
-// 0xf8ff`],
+  [new cbor.Simple(0xff), 'simple(255)', `
+  f8                -- Simple value, next 1 byte
+    ff              -- simple(255)
+0xf8ff`],
   [/a/, '35("a")', `
   d8                --  next 1 byte
     23              -- Tag #35
@@ -604,23 +603,18 @@ exports.good = [
     01              -- [0], 1
     02              -- [1], 2
 0x820102`], // TODO: define a tag for Set
-
   // internal types
-//   [new NoFilter(new Buffer([1, 2, 3, 4])), "h'01020304'", `
-//   44                -- Bytes, length: 4
-//     01020304        -- 01020304
-// 0x4401020304`],
-//   [new cbor.Tagged(256, 1), '256(1)', `
-//   d9                --  next 2 bytes
-//     0100            -- Tag #256
-//       01            -- 1
-// 0xd9010001`],
-//   [new TempClass('foo'), '65535("foo")', `
-//   d9                --  next 2 bytes
-//     ffff            -- Tag #65535
-//       63            -- String, length: 3
-//         666f6f      -- "foo"
-// 0xd9ffff63666f6f`]
+  [new cbor.Tagged(256, 1), '256(1)', `
+  d9                --  next 2 bytes
+    0100            -- Tag #256
+      01            -- 1
+0xd9010001`],
+  [new TempClass('foo'), '65535("foo")', `
+  d9                --  next 2 bytes
+    ffff            -- Tag #65535
+      63            -- String, length: 3
+        666f6f      -- "foo"
+0xd9ffff63666f6f`]
 ]
 
 exports.encodeGood = [
@@ -649,17 +643,17 @@ exports.decodeGood = [
   f9                -- Float, next 2 bytes
     7bff            -- 65504
 0xf97bff`],
-//   [new cbor.Tagged(23, new Buffer('01020304', 'hex')), "23(h'01020304')", `
-//   d7                -- Tag #23
-//     44              -- Bytes, length: 4
-//       01020304      -- 01020304
-// 0xd74401020304`],
-//   [new cbor.Tagged(24, new Buffer('6449455446', 'hex')), "24(h'6449455446')", `
-//   d8                --  next 1 byte
-//     18              -- Tag #24
-//       45            -- Bytes, length: 5
-//         6449455446  -- 6449455446
-// 0xd818456449455446`],
+  [new cbor.Tagged(23, new Buffer('01020304', 'hex')), "23(h'01020304')", `
+  d7                -- Tag #23
+    44              -- Bytes, length: 4
+      01020304      -- 01020304
+0xd74401020304`],
+  [new cbor.Tagged(24, new Buffer('6449455446', 'hex')), "24(h'6449455446')", `
+  d8                --  next 1 byte
+    18              -- Tag #24
+      45            -- Bytes, length: 5
+        6449455446  -- 6449455446
+0xd818456449455446`],
   [0, '0_1', `
   f9                -- Float, next 2 bytes
     0000            -- 0
@@ -836,7 +830,7 @@ exports.decodeGood = [
       19            -- [24], 25
     ff              -- BREAK
 0x9f0102030405060708090a0b0c0d0e0f101112131415161718181819ff`],
-  [{'a': 1, 'b': [2, 3]}, '{_ "a": 1, "b": [_ 2, 3]}', `
+  [{a: 1, b: [2, 3]}, '{_ "a": 1, "b": [_ 2, 3]}', `
   bf                -- Map (streaming)
     61              -- String, length: 1
       61            -- {Key:0}, "a"
@@ -860,24 +854,24 @@ exports.decodeGood = [
         63          -- {Val:0}, "c"
       ff            -- BREAK
 0x826161bf61626163ff`],
-//   [new cbor.Tagged(64, new cbor.Tagged(64, [])), '64(64([_ ]))', `
-//   d8                --  next 1 byte
-//     40              -- Tag #64
-//       d8            --  next 1 byte
-//         40          -- Tag #64
-//           9f        -- Array (streaming)
-//             ff      -- BREAK
-// 0xd840d8409fff`],
-//   [new cbor.Tagged(64, new Buffer('aabbccddeeff99', 'hex')), "64((_ h'aabbccdd', h'eeff99'))", `
-//   d8                --  next 1 byte
-//     40              -- Tag #64
-//       5f            -- Bytes (streaming)
-//         44          -- Bytes, length: 4
-//           aabbccdd  -- aabbccdd
-//         43          -- Bytes, length: 3
-//           eeff99    -- eeff99
-//         ff          -- BREAK
-// 0xd8405f44aabbccdd43eeff99ff`]
+  [new cbor.Tagged(64, new cbor.Tagged(64, [])), '64(64([_ ]))', `
+  d8                --  next 1 byte
+    40              -- Tag #64
+      d8            --  next 1 byte
+        40          -- Tag #64
+          9f        -- Array (streaming)
+            ff      -- BREAK
+0xd840d8409fff`],
+  [new cbor.Tagged(64, new Buffer('aabbccddeeff99', 'hex')), "64((_ h'aabbccdd', h'eeff99'))", `
+  d8                --  next 1 byte
+    40              -- Tag #64
+      5f            -- Bytes (streaming)
+        44          -- Bytes, length: 4
+          aabbccdd  -- aabbccdd
+        43          -- Bytes, length: 3
+          eeff99    -- eeff99p
+        ff          -- BREAK
+0xd8405f44aabbccdd43eeff99ff`]
 ]
 
 exports.decodeBad = [
@@ -929,36 +923,3 @@ exports.toString = function (c) {
   const match = c.match(HEX)
   return match[1]
 }
-
-// class EncodeFailer extends cbor.Encoder {
-//   constructor (count) {
-//     super()
-//     if (count == null) {
-//       count = Number.MAX_SAFE_INTEGER
-//     }
-//     this.count = count
-//     this.start = count
-//   }
-//   push (fresh, encoding) {
-//     if (this.count-- <= 0) {
-//       super.push(null)
-//       return false
-//     }
-//     return super.push(fresh, encoding)
-//   }
-//   get used () {
-//     return this.start - this.count
-//   }
-//   static tryAll (t, f) {
-//     let enc = new EncodeFailer()
-//     t.truthy(enc.pushAny(f))
-//     let used = enc.used
-//     for (let i = 0; i < used; i++) {
-//       enc = new EncodeFailer(i)
-//       t.falsy(enc.pushAny(f))
-//     }
-//     enc = new EncodeFailer(used)
-//     t.truthy(enc.pushAny(f))
-//   }
-// }
-// exports.EncodeFailer = EncodeFailer

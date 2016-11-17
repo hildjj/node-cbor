@@ -7,7 +7,6 @@ const Simple = require('./simple')
 const utils = require('./utils')
 const constants = require('./constants')
 const bignumber = require('bignumber.js')
-const NoFilter = require('nofilter')
 
 const MT = constants.MT, SYMS = constants.SYMS
 

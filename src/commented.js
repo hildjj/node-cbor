@@ -7,7 +7,6 @@ const Simple = require('./simple')
 const Decoder = require('./decoder')
 const constants = require('./constants')
 const bignumber = require('bignumber.js')
-const NoFilter = require('nofilter')
 
 const MT = constants.MT,
       NUMBYTES = constants.NUMBYTES,

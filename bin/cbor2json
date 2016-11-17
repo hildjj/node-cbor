@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 'use strict'
 
-const cbor = require('../lib/cbor')
-const utils = require('../lib/utils')
+const cbor = require('../src/cbor')
+const utils = require('../src/utils')
 const pkg = require('../package.json')
 
 const opts = require('commander')
