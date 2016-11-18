@@ -6,7 +6,6 @@ if (typeof window !== 'undefined') {
 }
 
 const nodeCbor = require('cbor')
-const cborJs = require('cbor-js')
 
 const fastCbor = require('../')
 const vectors = require('../test/fixtures/vectors.json')
@@ -32,12 +31,6 @@ suite.add(`encode - node-cbor - ${vecLength}`, () => {
   }
 })
 
-suite.add(`encode - cbor-js - ${vecLength}`, () => {
-  for (let i = 0; i < vecLength; i++) {
-    res.push(cborJs.encode(vectors[i].decoded)[0])
-  }
-})
-
 suite.add(`encode - fast-cbor - ${vecLength}`, () => {
   for (let i = 0; i < vecLength; i++) {
     res.push(fastCbor.encode(vectors[i].decoded)[0])
@@ -55,12 +48,6 @@ suite.add(`encode - JSON.stringify - ${vecLength}`, () => {
 suite.add(`decode - node-cbor - ${buffers.length}`, () => {
   for (let i = 0; i < vecLength; i++) {
     nodeCbor.decodeAllSync(buffers[i])
-  }
-})
-
-suite.add(`encode - cbor-js - ${buffers.length}`, () => {
-  for (let i = 0; i < buffers.length; i++) {
-    res.push(cborJs.decode(buffers[i].buffer)[0])
   }
 })
 
