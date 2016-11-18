@@ -2,6 +2,7 @@
 'use strict'
 
 const expect = require('chai').expect
+const Bignumber = require('bignumber.js')
 
 const cases = require('./fixtures/cases')
 const vectors = require('./fixtures/vectors.json')
@@ -140,6 +141,8 @@ function testGood (input, expected, desc) {
 
     if (isNaN(expected)) {
       expect(isNaN(res)).to.be.true
+    } else if (res instanceof Bignumber) {
+      expect(res).be.eql(new Bignumber(String(expected)))
     } else {
       expect(res).to.be.eql(expected)
     }

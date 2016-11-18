@@ -322,6 +322,47 @@ exports.good = [
     61              -- String, length: 1
       45            -- {Val:4}, "E"
 0xa56161614161626142616361436164614461656145`],
+  [{1: {2: {3: { 4: {5: {6: {
+    7: {8: {9: {10: {11: {12: {
+      13: 'hello', 14: 'world'
+    } } } } } }
+  } } } } } } }, `{1: {2: {3: { 4: {5: {6: {
+    7: {8: {9: {10: {11: {12: {
+      13: 'hello', 14: 'world'
+    } } } } } }
+  } } } } } } }`, `
+a1                                      # map(1)
+   01                                   # unsigned(1)
+   a1                                   # map(1)
+      02                                # unsigned(2)
+      a1                                # map(1)
+         03                             # unsigned(3)
+         a1                             # map(1)
+            04                          # unsigned(4)
+            a1                          # map(1)
+               05                       # unsigned(5)
+               a1                       # map(1)
+                  06                    # unsigned(6)
+                  a1                    # map(1)
+                     07                 # unsigned(7)
+                     a1                 # map(1)
+                        08              # unsigned(8)
+                        a1              # map(1)
+                           09           # unsigned(9)
+                           a1           # map(1)
+                              0a        # unsigned(10)
+                              a1        # map(1)
+                                 0b     # unsigned(11)
+                                 a1     # map(1)
+                                    0c  # unsigned(12)
+                                    a2  # map(2)
+                                       0d # unsigned(13)
+                                       45 # bytes(5)
+                                          68656c6c6f # "hello"
+                                       0e # unsigned(14)
+                                       45 # bytes(5)
+                                          776f726c64 # "world"
+0xa101a102a103a104a105a106a107a108a109a10aa10ba10ca20d4568656c6c6f0e45776f726c64`],
   [new Buffer('0102030405', 'hex'), "h'0102030405'", `
   45                -- Bytes, length: 5
     0102030405      -- 0102030405

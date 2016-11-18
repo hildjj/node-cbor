@@ -32,6 +32,13 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   var pushByteString = foreign.pushByteString
   var pushUtf8String = foreign.pushUtf8String
 
+  var pushSimpleUnassigned = foreign.pushSimpleUnassigned
+
+  var pushTagStart = foreign.pushTagStart
+  var pushTagStart4 = foreign.pushTagStart4
+  var pushTagStart8 = foreign.pushTagStart8
+  var pushTagUnassigned = foreign.pushTagUnassigned
+
   var pow = stdlib.Math.pow
 
   // -- Constants
@@ -280,7 +287,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
     var end = 0
 
     start = (offset + 1) | 0
-    end = (((offset + 1) | 0) + ((octet - 64) | 0)) | 0
+    end = (((offset + 1) | 0) + ((octet - 96) | 0)) | 0
 
     pushUtf8String(start | 0, end | 0)
 
@@ -475,94 +482,174 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
     return 1
   }
 
+  function TAG_KNOWN (octet) {
+    octet = octet | 0
+
+    pushTagStart((octet - 192| 0) | 0)
+
+    offset = (offset + 1 | 0)
+
+    return 0
+  }
+
   function TAG_DATE_TEXT (octet) {
     octet = octet | 0
 
-    return 1
+    pushTagStart(octet | 0)
+
+    offset = (offset + 1 | 0)
+
+    return 0
   }
 
   function TAG_DATE_EPOCH (octet) {
     octet = octet | 0
 
-    return 1
+    pushTagStart(octet | 0)
+
+    offset = (offset + 1 | 0)
+
+    return 0
   }
 
   function TAG_BIGNUM_POS (octet) {
     octet = octet | 0
 
-    return 1
+    pushTagStart(octet | 0)
+
+    offset = (offset + 1 | 0)
+
+    return 0
   }
 
   function TAG_BIGNUM_NEG (octet) {
     octet = octet | 0
 
-    return 1
+    pushTagStart(octet | 0)
+
+    offset = (offset + 1 | 0)
+
+    return 0
   }
 
   function TAG_FRAC (octet) {
     octet = octet | 0
 
-    return 1
+    pushTagStart(octet | 0)
+
+    offset = (offset + 1 | 0)
+
+    return 0
   }
 
   function TAG_BIGNUM_FLOAT (octet) {
     octet = octet | 0
 
-    return 1
+    pushTagStart(octet | 0)
+
+    offset = (offset + 1 | 0)
+
+    return 0
   }
 
   function TAG_UNASSIGNED (octet) {
     octet = octet | 0
 
-    return 1
+    pushTagUnassigned(octet | 0)
+
+    offset = (offset + 1 | 0)
+
+    return 0
   }
 
   function TAG_BASE64_URL (octet) {
     octet = octet | 0
 
-    return 1
+    pushTagStart(octet | 0)
+
+    offset = (offset + 1 | 0)
+
+    return 0
   }
 
   function TAG_BASE64 (octet) {
     octet = octet | 0
 
-    return 1
+    pushTagStart(octet | 0)
+
+    offset = (offset + 1 | 0)
+
+    return 0
   }
 
   function TAG_BASE16 (octet) {
     octet = octet | 0
 
-    return 1
+    pushTagStart(octet | 0)
+
+    offset = (offset + 1 | 0)
+
+    return 0
   }
 
   function TAG_MORE_1 (octet) {
     octet = octet | 0
 
-    return 1
+    pushTagStart(heap[(octet + 1) | 0] | 0)
+
+    offset = (offset + 2 | 0)
+
+    return 0
   }
 
   function TAG_MORE_2 (octet) {
     octet = octet | 0
 
-    return 1
+    pushTagStart(
+      readUInt16((offset + 1) | 0) | 0
+    )
+
+    offset = (offset + 3 | 0)
+
+    return 0
   }
 
   function TAG_MORE_4 (octet) {
     octet = octet | 0
 
-    return 1
+    pushTagStart4(
+      readUInt16((offset + 1) | 0) | 0,
+      readUInt16((offset + 3) | 0) | 0
+    )
+
+    offset = (offset + 5 | 0)
+
+    return 0
   }
 
   function TAG_MORE_8 (octet) {
     octet = octet | 0
 
-    return 1
+    pushTagStart8(
+      readUInt16((offset + 1) | 0) | 0,
+      readUInt16((offset + 3) | 0) | 0,
+      readUInt16((offset + 5) | 0) | 0,
+      readUInt16((offset + 7) | 0) | 0
+    )
+
+    offset = (offset + 9 | 0)
+
+    return 0
   }
 
   function SIMPLE_UNASSIGNED (octet) {
     octet = octet | 0
 
-    return 1
+    pushSimpleUnassigned(octet | 0)
+
+    offset = (offset + 1) | 0
+
+    return 0
   }
 
   function SIMPLE_FALSE (octet) {
@@ -608,7 +695,11 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function SIMPLE_BYTE (octet) {
     octet = octet | 0
 
-    return 1
+    pushSimpleUnassigned(heap[(offset + 1) | 0] | 0)
+
+    offset = (offset + 2)  | 0
+
+    return 0
   }
 
   function SIMPLE_FLOAT_HALF (octet) {
@@ -936,17 +1027,17 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
     // map, pairs of data items follow, terminated by "break"
     MAP_BREAK, // 0xbf
     // Text-based date/time (data item follows; see Section 2.4.1)
-    TAG_DATE_TEXT, // 0xc0
+    TAG_KNOWN, // 0xc0
     // Epoch-based date/time (data item follows; see Section 2.4.1)
-    TAG_DATE_EPOCH, // 0xc1
+    TAG_KNOWN, // 0xc1
     // Positive bignum (data item "byte string" follows)
-    TAG_BIGNUM_POS, // 0xc2
+    TAG_KNOWN, // 0xc2
     // Negative bignum (data item "byte string" follows)
-    TAG_BIGNUM_NEG, // 0xc3
+    TAG_KNOWN, // 0xc3
     // Decimal Fraction (data item "array" follows; see Section 2.4.3)
-    TAG_FRAC, // 0xc4
+    TAG_KNOWN, // 0xc4
     // Bigfloat (data item "array" follows; see Section 2.4.3)
-    TAG_BIGNUM_FLOAT, // 0xc5
+    TAG_KNOWN, // 0xc5
     // (tagged item)
     TAG_UNASSIGNED, // 0xc6
     TAG_UNASSIGNED, // 0xc7
@@ -964,9 +1055,9 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
     TAG_UNASSIGNED, // 0xd3
     TAG_UNASSIGNED, // 0xd4
     // Expected Conversion (data item follows; see Section 2.4.4.2)
-    TAG_BASE64_URL, // 0xd5
-    TAG_BASE64, // 0xd6
-    TAG_BASE16, // 0xd7
+    TAG_UNASSIGNED, // 0xd5
+    TAG_UNASSIGNED, // 0xd6
+    TAG_UNASSIGNED, // 0xd7
     // (more tagged items, 1/2/4/8 bytes and then a data item follow)
     TAG_MORE_1, // 0xd8
     TAG_MORE_2, // 0xd9

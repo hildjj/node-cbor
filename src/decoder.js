@@ -6,9 +6,14 @@ const Bignumber = require('bignumber.js')
 const parser = require('./decoder.asm')
 const utils = require('./utils')
 const SHIFT32 = require('./constants').SHIFT32
+const Simple = require('./simple')
+const Tagged = require('./tagged')
+const url = require('url')
 
 const MAX_SAFE_HIGH = 0x1fffff
 const NEG_ONE = new Bignumber(-1)
+const TEN = new Bignumber(10)
+const TWO = new Bignumber(2)
 
 const PARENT_ARRAY = 0
 const PARENT_OBJECT = 1
@@ -26,6 +31,24 @@ class Decoder {
     this._heap8 = new Uint8Array(this._heap)
 
     this._reset()
+
+    // Known tags
+    this._knownTags = {
+      0: (val) => new Date(val),
+      1: (val) => new Date(val * 1000),
+      2: (val) => utils.arrayBufferToBignumber(val),
+      3: (val) => NEG_ONE.minus(utils.arrayBufferToBignumber(val)),
+      4: (v) => {
+        // const v = new Uint8Array(val)
+        return TEN.pow(v[0]).times(v[1])
+      },
+      5: (v) => {
+        // const v = new Uint8Array(val)
+        return TWO.pow(v[0]).times(v[1])
+      },
+      32: (val) => url.parse(val),
+      35: (val) => new RegExp(val)
+    }
 
     // Initialize asm based parser
     this.parser = parser(global, {
@@ -52,7 +75,12 @@ class Decoder {
       pushObjectStartFixed32: this.pushObjectStartFixed32.bind(this),
       pushObjectStartFixed64: this.pushObjectStartFixed64.bind(this),
       pushByteString: this.pushByteString.bind(this),
-      pushUtf8String: this.pushUtf8String.bind(this)
+      pushUtf8String: this.pushUtf8String.bind(this),
+      pushSimpleUnassigned: this.pushSimpleUnassigned.bind(this),
+      pushTagUnassigned: this.pushTagUnassigned.bind(this),
+      pushTagStart: this.pushTagStart.bind(this),
+      pushTagStart4: this.pushTagStart4.bind(this),
+      pushTagStart8: this.pushTagStart8.bind(this)
     }, this._heap)
   }
 
@@ -70,7 +98,27 @@ class Decoder {
 
   // Finish the current parent
   _closeParent () {
-    return this._parents.pop()
+    let p = this._parents.pop()
+
+    if (p.type === PARENT_TAG) {
+      this._push(
+        this._createTag(p.ref[0], p.ref[1])
+      )
+    }
+
+    if (this._currentParent.type === PARENT_TAG) {
+      this._dec()
+    }
+  }
+
+  _createTag (tagNumber, value) {
+    const typ = this._knownTags[tagNumber]
+
+    if (!typ) {
+      return new Tagged(tagNumber, value)
+    }
+
+    return typ(value)
   }
 
   // Reduce the expected length of the current parent by one
@@ -91,12 +139,16 @@ class Decoder {
   }
 
   // Push any value to the current parent
-  _push (val) {
+  _push (val, hasChildren) {
     const p = this._currentParent
 
     switch (p.type) {
       case PARENT_ARRAY:
-        this._ref.push(val)
+        if (p.length > -1) {
+          this._ref[this._ref.length - p.length] = val
+        } else {
+          this._ref.push(val)
+        }
         this._dec()
         break
       case PARENT_OBJECT:
@@ -123,7 +175,10 @@ class Decoder {
         }
         break
       case PARENT_TAG:
-        // TODO:
+        this._ref.push(val)
+        if (!hasChildren) {
+          this._dec()
+        }
         break
       default:
         throw new Error('Unkwon parent type')
@@ -132,10 +187,10 @@ class Decoder {
 
   // Create a new parent in the parents list
   _createParent (obj, type, len) {
-    this._push(obj)
+    this._push(obj, true)
     this._parents[this._depth] = {
       type: type,
-      left: len,
+      length: len,
       ref: obj
     }
   }
@@ -259,13 +314,47 @@ class Decoder {
   }
 
   pushByteString (start, end) {
-    this._push(this._heap.slice(start, end + 1))
+    if (start === end) {
+      this._push(new Buffer(0))
+      return
+    }
+
+    this._push(new Uint8Array(this._heap.slice(start, end)))
   }
 
   pushUtf8String (start, end) {
+    if (start === end) {
+      this._push('')
+      return
+    }
+
     this._push(
       (new Buffer(this._heap.slice(start, end + 1))).toString('utf8')
     )
+  }
+
+  pushSimpleUnassigned (val) {
+    this._push(new Simple(val))
+  }
+
+  pushTagStart (tag) {
+    this._parents[this._depth] = {
+      type: PARENT_TAG,
+      length: 1,
+      ref: [tag]
+    }
+  }
+
+  pushTagStart4 (f, g) {
+    this.pushTagStart(utils.buildInt32(f, g))
+  }
+
+  pushTagStart8 (f1, f2, g1, g2) {
+    this.pushTagStart(utils.buildInt64(f1, f2, g1, g2))
+  }
+
+  pushTagUnassigned (tagNumber) {
+    this._push(this._createTag(tagNumber))
   }
 
   _createObjectStartFixed (len) {

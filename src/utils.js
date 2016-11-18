@@ -117,6 +117,24 @@ exports.bufferToBignumber = function (buf) {
   return new Bignumber(buf.toString('hex'), 16)
 }
 
+function toHex (n) {
+  if (n < 16) {
+    return '0' + n.toString(16)
+  }
+
+  return n.toString(16)
+}
+
+exports.arrayBufferToBignumber = function (buf) {
+  const len = buf.byteLength
+  let res = ''
+  for (let i = 0; i < len; i++) {
+    res += toHex(buf[i])
+  }
+
+  return new Bignumber(res, 16)
+}
+
 exports.DeHexStream = class DeHexStream extends stream.Readable {
   constructor (hex) {
     super()
