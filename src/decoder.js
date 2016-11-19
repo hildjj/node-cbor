@@ -19,6 +19,8 @@ const PARENT_ARRAY = 0
 const PARENT_OBJECT = 1
 const PARENT_MAP = 2
 const PARENT_TAG = 3
+const PARENT_BYTE_STRING = 4
+const PARENT_UTF8_STRING = 5
 
 class Decoder {
   constructor (size) {
@@ -68,19 +70,24 @@ class Decoder {
       pushInfinityNeg: this.pushInfinityNeg.bind(this),
       pushNaN: this.pushNaN.bind(this),
       pushNaNNeg: this.pushNaNNeg.bind(this),
+      pushArrayStart: this.pushArrayStart.bind(this),
       pushArrayStartFixed: this.pushArrayStartFixed.bind(this),
       pushArrayStartFixed32: this.pushArrayStartFixed32.bind(this),
       pushArrayStartFixed64: this.pushArrayStartFixed64.bind(this),
+      pushObjectStart: this.pushObjectStart.bind(this),
       pushObjectStartFixed: this.pushObjectStartFixed.bind(this),
       pushObjectStartFixed32: this.pushObjectStartFixed32.bind(this),
       pushObjectStartFixed64: this.pushObjectStartFixed64.bind(this),
       pushByteString: this.pushByteString.bind(this),
+      pushByteStringStart: this.pushByteStringStart.bind(this),
       pushUtf8String: this.pushUtf8String.bind(this),
+      pushUtf8StringStart: this.pushUtf8StringStart.bind(this),
       pushSimpleUnassigned: this.pushSimpleUnassigned.bind(this),
       pushTagUnassigned: this.pushTagUnassigned.bind(this),
       pushTagStart: this.pushTagStart.bind(this),
       pushTagStart4: this.pushTagStart4.bind(this),
-      pushTagStart8: this.pushTagStart8.bind(this)
+      pushTagStart8: this.pushTagStart8.bind(this),
+      pushBreak: this.pushBreak.bind(this)
     }, this._heap)
   }
 
@@ -100,13 +107,23 @@ class Decoder {
   _closeParent () {
     let p = this._parents.pop()
 
-    if (p.type === PARENT_TAG) {
-      this._push(
-        this._createTag(p.ref[0], p.ref[1])
-      )
+    switch (p.type) {
+      case PARENT_TAG:
+        this._push(
+          this._createTag(p.ref[0], p.ref[1])
+        )
+        break
+      case PARENT_BYTE_STRING:
+        this._push(new Uint8Array(p.ref))
+        break
+      case PARENT_UTF8_STRING:
+        this._push(new Buffer(p.ref))
+        break
+      default:
+        break
     }
 
-    if (this._currentParent.type === PARENT_TAG) {
+    if (this._currentParent && this._currentParent.type === PARENT_TAG) {
       this._dec()
     }
   }
@@ -124,7 +141,6 @@ class Decoder {
   // Reduce the expected length of the current parent by one
   _dec () {
     const p = this._currentParent
-
     // The current parent does not know the epxected child length
     if (p.length < 0) {
       return
@@ -144,6 +160,8 @@ class Decoder {
 
     switch (p.type) {
       case PARENT_ARRAY:
+      case PARENT_BYTE_STRING:
+      case PARENT_UTF8_STRING:
         if (p.length > -1) {
           this._ref[this._ref.length - p.length] = val
         } else {
@@ -285,6 +303,10 @@ class Decoder {
     this._push(-NaN)
   }
 
+  pushArrayStart () {
+    this._createParent([], PARENT_ARRAY, -1)
+  }
+
   pushArrayStartFixed (len) {
     this._createArrayStartFixed(len)
   }
@@ -297,6 +319,10 @@ class Decoder {
   pushArrayStartFixed64 (len1, len2, len3, len4) {
     const len = utils.buildInt64(len1, len2, len3, len4)
     this._createArrayStartFixed(len)
+  }
+
+  pushObjectStart () {
+    this._createParent({}, PARENT_OBJECT, -1)
   }
 
   pushObjectStartFixed (len) {
@@ -313,6 +339,14 @@ class Decoder {
     this._createObjectStartFixed(len)
   }
 
+  pushByteStringStart () {
+    this._parents[this._depth] = {
+      type: PARENT_BYTE_STRING,
+      length: -1,
+      ref: []
+    }
+  }
+
   pushByteString (start, end) {
     if (start === end) {
       this._push(new Buffer(0))
@@ -320,6 +354,14 @@ class Decoder {
     }
 
     this._push(new Uint8Array(this._heap.slice(start, end)))
+  }
+
+  pushUtf8StringStart () {
+    this._parents[this._depth] = {
+      type: PARENT_UTF8_STRING,
+      length: -1,
+      ref: []
+    }
   }
 
   pushUtf8String (start, end) {
@@ -355,6 +397,14 @@ class Decoder {
 
   pushTagUnassigned (tagNumber) {
     this._push(this._createTag(tagNumber))
+  }
+
+  pushBreak () {
+    if (this._currentParent.length > -1) {
+      throw new Error('Unexpected break')
+    }
+
+    this._closeParent()
   }
 
   _createObjectStartFixed (len) {

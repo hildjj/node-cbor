@@ -26,112 +26,114 @@ describe('Decoder', function () {
 
   describe('good', () => testAll(cases.good))
   describe('decode', () => testAll(cases.decodeGood))
-  describe('edges', () => failAll(cases.decodeBad))
-  describe('bad first', () => failFirstAll(cases.decodeBad))
+  describe.skip('edges', () => failAll(cases.decodeBad))
+  describe.skip('bad first', () => failFirstAll(cases.decodeBad))
 
-  it('decodeAll', () => {
-    expect(cbor.Decoder.decodeAll('0202')).to.be.eql([2, 2])
-    expect(cbor.Decoder.decodeAll('AgI=', 'base64')).to.be.eql([2, 2])
-    expect(cbor.Decoder.decodeAll('0202', {}))([2, 2])
-    expect(cbor.Decoder.decodeAll('f6f6')).to.be.eql([null, null])
-    expect(cbor.Decoder.decodeAll('')).to.be.eql([])
-    expect(
-      () => cbor.Decoder.decodeAll('63666f')
-    ).to.throw()
-  })
-
-  it.skip('custom tags', () => {
-    function replaceTag (val) {
-      return {foo: val}
-    }
-    function newTag (val) {
-      throw new Error('Invalid tag')
-    }
-
-    const d = new cbor.Decoder({
-      tags: {0: replaceTag, 127: newTag}
+  describe('misc', () => {
+    it('decodeAll', () => {
+      expect(cbor.Decoder.decodeAll('0202')).to.be.eql([2, 2])
+      expect(cbor.Decoder.decodeAll('AgI=', 'base64')).to.be.eql([2, 2])
+      expect(cbor.Decoder.decodeAll('0202', {}))([2, 2])
+      expect(cbor.Decoder.decodeAll('f6f6')).to.be.eql([null, null])
+      expect(cbor.Decoder.decodeAll('')).to.be.eql([])
+      expect(
+        () => cbor.Decoder.decodeAll('63666f')
+      ).to.throw()
     })
 
-    const input = new Buffer('d87f01c001', 'hex')
+    it.skip('custom tags', () => {
+      function replaceTag (val) {
+        return {foo: val}
+      }
+      function newTag (val) {
+        throw new Error('Invalid tag')
+      }
 
-    // TODO: figure out how to test custom tags
-    expect(
-      d.decodeFirst(input)
-    ).to.be.eql({
-    })
-  })
-
-  it.skip('parse_tag', () => {
-    const vals = cbor.decodeFirst('d87f01', 'hex')
-    expect(vals).to.be.eql(new cbor.Tagged(127, 1))
-  })
-
-  it.skip('error', () => {
-    expect(
-      () => cbor.decodeFirst('d87f01c001', 'hex')
-    ).to.throw()
-
-    expect(
-      () => cbor.Decoder.decodeFirst('', {required: true})
-    ).to.throw()
-  })
-
-  it.skip('decodeFirst', () => {
-    expect(
-      cbor.decodeFirst('01')
-    ).to.be.eql(1)
-
-    expect(
-      cbor.decodeFirst('AQ==', {
-        encoding: 'base64'
+      const d = new cbor.Decoder({
+        tags: {0: replaceTag, 127: newTag}
       })
-    ).to.be.eql(1)
 
-    expect(
-      cbor.decodeFirst('')
-    ).to.be.eql(cbor.Decoder.NOT_FOUND)
+      const input = new Buffer('d87f01c001', 'hex')
 
-    expect(
-      () => cbor.decodeFirst('', {required: true})
-    ).to.throw()
+      // TODO: figure out how to test custom tags
+      expect(
+        d.decodeFirst(input)
+      ).to.be.eql({
+      })
+    })
 
-    expect(
-      cbor.decodeFirst(new Buffer(0))
-    ).to.be.eql(cbor.Decoder.NOT_FOUND)
+    it.skip('parse_tag', () => {
+      const vals = cbor.decodeFirst('d87f01', 'hex')
+      expect(vals).to.be.eql(new cbor.Tagged(127, 1))
+    })
 
-    expect(
-      () => cbor.decodeFirst(new Buffer(0), {required: true})
-    ).to.throw()
-  })
+    it('error', () => {
+      expect(
+        () => cbor.decodeFirst('d87f01c001', 'hex')
+      ).to.throw()
 
-  it.skip('decodeAll', () => {
-    expect(
-      cbor.decodeAll('01')
-    ).to.be.eql(
-      [1]
-    )
+      expect(
+        () => cbor.Decoder.decodeFirst('', {required: true})
+      ).to.throw()
+    })
 
-    expect(
-      cbor.decodeAll('AQ==', {encoding: 'base64'})
-    ).to.be.eql(
-      [1]
-    )
+    it('decodeFirst', () => {
+      expect(
+        cbor.decodeFirst('01')
+      ).to.be.eql(1)
 
-    expect(
-      cbor.decodeAll('AQ==', 'base64')
-    ).to.be.eql(
-      [1]
-    )
+      expect(
+        cbor.decodeFirst('AQ==', {
+          encoding: 'base64'
+        })
+      ).to.be.eql(1)
 
-    expect(
-      () => cbor.decodeAll('7f', {})
-    ).to.throw()
-  })
+      expect(
+        cbor.decodeFirst('')
+      ).to.be.eql(cbor.Decoder.NOT_FOUND)
 
-  it('depth', () => {
-    expect(
-      () => cbor.decodeFirst('818180', {max_depth: 1})
-    ).to.throw()
+      expect(
+        () => cbor.decodeFirst('', {required: true})
+      ).to.throw()
+
+      expect(
+        cbor.decodeFirst(new Buffer(0))
+      ).to.be.eql(cbor.Decoder.NOT_FOUND)
+
+      expect(
+        () => cbor.decodeFirst(new Buffer(0), {required: true})
+      ).to.throw()
+    })
+
+    it.skip('decodeAll', () => {
+      expect(
+        cbor.decodeAll('01')
+      ).to.be.eql(
+        [1]
+      )
+
+      expect(
+        cbor.decodeAll('AQ==', {encoding: 'base64'})
+      ).to.be.eql(
+        [1]
+      )
+
+      expect(
+        cbor.decodeAll('AQ==', 'base64')
+      ).to.be.eql(
+        [1]
+      )
+
+      expect(
+        () => cbor.decodeAll('7f', {})
+      ).to.throw()
+    })
+
+    it('depth', () => {
+      expect(
+        () => cbor.decodeFirst('818180', {max_depth: 1})
+      ).to.throw()
+    })
   })
 })
 
@@ -164,7 +166,7 @@ function testAll (list) {
 
 function failAll (list) {
   list.forEach((c) => {
-    it(`fails - ${c[1]}`, () => {
+    it(`fails - ${c}`, () => {
       expect(
         () => cbor.decode(cases.toBuffer(c))
       ).to.throw()
@@ -174,7 +176,7 @@ function failAll (list) {
 
 function failFirstAll (list) {
   list.forEach((c) => {
-    it(`fails - ${c[1]}`, () => {
+    it(`fails - ${c}`, () => {
       expect(
         () => cbor.decodeFirst(cases.toBuffer(c))
       ).to.throw()

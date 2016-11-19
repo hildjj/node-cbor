@@ -22,15 +22,19 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   var pushNaN = foreign.pushNaN
   var pushNaNNeg = foreign.pushNaNNeg
 
+  var pushArrayStart = foreign.pushArrayStart
   var pushArrayStartFixed = foreign.pushArrayStartFixed
   var pushArrayStartFixed32 = foreign.pushArrayStartFixed32
   var pushArrayStartFixed64 = foreign.pushArrayStartFixed64
+  var pushObjectStart = foreign.pushObjectStart
   var pushObjectStartFixed = foreign.pushObjectStartFixed
   var pushObjectStartFixed32 = foreign.pushObjectStartFixed32
   var pushObjectStartFixed64 = foreign.pushObjectStartFixed64
 
   var pushByteString = foreign.pushByteString
+  var pushByteStringStart = foreign.pushByteStringStart
   var pushUtf8String = foreign.pushUtf8String
+  var pushUtf8StringStart = foreign.pushUtf8StringStart
 
   var pushSimpleUnassigned = foreign.pushSimpleUnassigned
 
@@ -38,6 +42,8 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   var pushTagStart4 = foreign.pushTagStart4
   var pushTagStart8 = foreign.pushTagStart8
   var pushTagUnassigned = foreign.pushTagUnassigned
+
+  var pushBreak = foreign.pushBreak
 
   var pow = stdlib.Math.pow
 
@@ -221,7 +227,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
     pushByteString(start | 0, end | 0)
 
-    offset = (end + 1) | 0
+    offset = end | 0
 
     return 0
   }
@@ -239,7 +245,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
     pushByteString(start | 0, end | 0)
 
-    offset = (end + 1) | 0
+    offset = end | 0
 
     return 0
   }
@@ -257,7 +263,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
     pushByteString(start | 0, end | 0)
 
-    offset = (end + 1) | 0
+    offset = end | 0
 
     return 0
   }
@@ -277,7 +283,11 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function BYTE_STRING_BREAK (octet) {
     octet = octet | 0
 
-    return 1
+    pushByteStringStart()
+
+    offset = (offset + 1) | 0
+
+    return 0
   }
 
   function UTF8_STRING (octet) {
@@ -291,7 +301,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
     pushUtf8String(start | 0, end | 0)
 
-    offset = (end + 1) | 0
+    offset = end | 0
 
     return 0
   }
@@ -309,7 +319,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
     pushUtf8String(start | 0, end | 0)
 
-    offset = (end + 1) | 0
+    offset = end | 0
 
     return 0
   }
@@ -327,7 +337,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
     pushUtf8String(start | 0, end | 0)
 
-    offset = (end + 1) | 0
+    offset = end | 0
 
     return 0
   }
@@ -347,7 +357,11 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function UTF8_STRING_BREAK (octet) {
     octet = octet | 0
 
-    return 1
+    pushUtf8StringStart()
+
+    offset = (offset + 1) | 0
+
+    return 0
   }
 
   function ARRAY (octet) {
@@ -413,7 +427,11 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function ARRAY_BREAK (octet) {
     octet = octet | 0
 
-    return 1
+    pushArrayStart()
+
+    offset = (offset + 1) | 0
+
+    return 0
   }
 
   function MAP (octet) {
@@ -479,33 +497,17 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function MAP_BREAK (octet) {
     octet = octet | 0
 
-    return 1
+    pushObjectStart()
+
+    offset = (offset + 1) | 0
+
+    return 0
   }
 
   function TAG_KNOWN (octet) {
     octet = octet | 0
 
     pushTagStart((octet - 192| 0) | 0)
-
-    offset = (offset + 1 | 0)
-
-    return 0
-  }
-
-  function TAG_DATE_TEXT (octet) {
-    octet = octet | 0
-
-    pushTagStart(octet | 0)
-
-    offset = (offset + 1 | 0)
-
-    return 0
-  }
-
-  function TAG_DATE_EPOCH (octet) {
-    octet = octet | 0
-
-    pushTagStart(octet | 0)
 
     offset = (offset + 1 | 0)
 
@@ -595,7 +597,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function TAG_MORE_1 (octet) {
     octet = octet | 0
 
-    pushTagStart(heap[(octet + 1) | 0] | 0)
+    pushTagStart(heap[(offset + 1) | 0] | 0)
 
     offset = (offset + 2 | 0)
 
@@ -645,7 +647,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function SIMPLE_UNASSIGNED (octet) {
     octet = octet | 0
 
-    pushSimpleUnassigned(octet | 0)
+    pushSimpleUnassigned(((octet | 0) - 224) | 0)
 
     offset = (offset + 1) | 0
 
@@ -794,7 +796,11 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function BREAK (octet) {
     octet = octet | 0
 
-    return 1
+    pushBreak()
+
+    offset = (offset + 1) | 0
+
+    return 0
   }
 
   // -- Jump Table
