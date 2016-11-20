@@ -54,6 +54,7 @@ class Decoder {
 
     // Initialize asm based parser
     this.parser = parser(global, {
+      log: console.log.bind(console),
       pushInt: this.pushInt.bind(this),
       pushInt32: this.pushInt32.bind(this),
       pushInt32Neg: this.pushInt32Neg.bind(this),
@@ -107,6 +108,10 @@ class Decoder {
   _closeParent () {
     let p = this._parents.pop()
 
+    if (p.length > 0) {
+      throw new Error(`Missing ${p.length} elements`)
+    }
+
     switch (p.type) {
       case PARENT_TAG:
         this._push(
@@ -118,6 +123,12 @@ class Decoder {
         break
       case PARENT_UTF8_STRING:
         this._push(new Buffer(p.ref))
+        break
+      case PARENT_MAP:
+      case PARENT_OBJECT:
+        if (p.values % 2 > 0) {
+          throw new Error('Odd number of elements in the map')
+        }
         break
       default:
         break
@@ -142,6 +153,7 @@ class Decoder {
   _dec () {
     const p = this._currentParent
     // The current parent does not know the epxected child length
+
     if (p.length < 0) {
       return
     }
@@ -157,6 +169,7 @@ class Decoder {
   // Push any value to the current parent
   _push (val, hasChildren) {
     const p = this._currentParent
+    p.values ++
 
     switch (p.type) {
       case PARENT_ARRAY:
@@ -170,13 +183,14 @@ class Decoder {
         this._dec()
         break
       case PARENT_OBJECT:
-        if (this._tmpKey) {
-          this._ref[this._tmpKey] = val
-          this._tmpKey = null
+        if (p.tmpKey) {
+          this._ref[p.tmpKey] = val
+          p.tmpKey = null
           this._dec()
         } else {
-          this._tmpKey = val
-          if (typeof this._tmpKey !== 'string') {
+          p.tmpKey = val
+
+          if (typeof p.tmpKey !== 'string') {
             // too bad, convert to a Map
             p.type = PARENT_MAP
             p.ref = utils.buildMap(p.ref)
@@ -184,12 +198,12 @@ class Decoder {
         }
         break
       case PARENT_MAP:
-        if (this._tmpKey) {
-          this._ref.set(this._tmpKey, val)
-          this._tmpKey = null
+        if (p.tmpKey != null) {
+          this._ref.set(p.tmpKey, val)
+          p.tmpKey = null
           this._dec()
         } else {
-          this._tmpKey = val
+          p.tmpKey = val
         }
         break
       case PARENT_TAG:
@@ -199,7 +213,7 @@ class Decoder {
         }
         break
       default:
-        throw new Error('Unkwon parent type')
+        throw new Error('Unknown parent type')
     }
   }
 
@@ -209,18 +223,21 @@ class Decoder {
     this._parents[this._depth] = {
       type: type,
       length: len,
-      ref: obj
+      ref: obj,
+      values: 0,
+      tmpKey: null
     }
   }
 
   // Reset all state back to the beginning, also used for initiatlization
   _reset () {
     this._res = []
-    this._tmpKey = null
     this._parents = [{
       type: PARENT_ARRAY,
-      len: -1,
-      ref: this._res
+      length: -1,
+      ref: this._res,
+      values: 0,
+      tmpKey: null
     }]
   }
 
@@ -343,7 +360,9 @@ class Decoder {
     this._parents[this._depth] = {
       type: PARENT_BYTE_STRING,
       length: -1,
-      ref: []
+      ref: [],
+      values: 0,
+      tmpKey: null
     }
   }
 
@@ -360,7 +379,9 @@ class Decoder {
     this._parents[this._depth] = {
       type: PARENT_UTF8_STRING,
       length: -1,
-      ref: []
+      ref: [],
+      values: 0,
+      tmpKey: null
     }
   }
 
@@ -416,12 +437,29 @@ class Decoder {
   }
 
   _decode (input) {
+    if (input.byteLength === 0) {
+      throw new Error('Input too short')
+    }
+
     this._reset()
     this._heap8.set(input)
     const code = this.parser.parse(input.byteLength)
 
+    if (this._depth > 1) {
+      while (this._currentParent.length === 0) {
+        this._closeParent()
+      }
+      if (this._depth > 1) {
+        throw new Error('Undeterminated nesting')
+      }
+    }
+
     if (code > 0) {
       throw new Error('Failed to parse')
+    }
+
+    if (this._res.length === 0) {
+      throw new Error('No valid result')
     }
   }
 

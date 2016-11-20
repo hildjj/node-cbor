@@ -4,7 +4,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   // -- Imports
 
   var heap = new stdlib.Uint8Array(buffer)
-  // var log = foreign.log
+  var log = foreign.log
   var pushInt = foreign.pushInt
   var pushInt32 = foreign.pushInt32
   var pushInt32Neg = foreign.pushInt32Neg
@@ -83,6 +83,16 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
   // -- Helper Function
 
+  function checkOffset (n) {
+    n = n | 0
+
+    if ((((offset | 0) + (n | 0)) | 0) < (inputLength | 0)) {
+      return 0
+    }
+
+    return 1
+  }
+
   function readUInt16 (n) {
     n = n | 0
 
@@ -106,6 +116,10 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function UINT_P_8 (octet) {
     octet = octet | 0
 
+    if (checkOffset(1)) {
+      return 1
+    }
+
     pushInt(heap[(offset + 1) | 0] | 0)
 
     offset = (offset + 2) | 0
@@ -115,6 +129,10 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
   function UINT_P_16 (octet) {
     octet = octet | 0
+
+    if (checkOffset(2)) {
+      return 1
+    }
 
     pushInt(
       readUInt16((offset + 1) | 0) | 0
@@ -128,6 +146,10 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function UINT_P_32 (octet) {
     octet = octet | 0
 
+    if (checkOffset(4)) {
+      return 1
+    }
+
     pushInt32(
       readUInt16((offset + 1) | 0) | 0,
       readUInt16((offset + 3) | 0) | 0
@@ -140,6 +162,10 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
   function UINT_P_64 (octet) {
     octet = octet | 0
+
+    if (checkOffset(8)) {
+      return 1
+    }
 
     pushInt64(
       readUInt16((offset + 1) | 0) | 0,
@@ -166,6 +192,10 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function UINT_N_8 (octet) {
     octet = octet | 0
 
+    if (checkOffset(1)) {
+      return 1
+    }
+
     pushInt(
       (-1 - (heap[(offset + 1) | 0] | 0)) | 0
     )
@@ -180,6 +210,10 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
     var val = 0
 
+    if (checkOffset(2)) {
+      return 1
+    }
+
     val = readUInt16((offset + 1) | 0) | 0
     pushInt((-1 - (val | 0)) | 0)
 
@@ -190,6 +224,10 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
   function UINT_N_32 (octet) {
     octet = octet | 0
+
+    if (checkOffset(4)) {
+      return 1
+    }
 
     pushInt32Neg(
       readUInt16((offset + 1) | 0) | 0,
@@ -203,6 +241,10 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
   function UINT_N_64 (octet) {
     octet = octet | 0
+
+    if (checkOffset(8)) {
+      return 1
+    }
 
     pushInt64Neg(
       readUInt16((offset + 1) | 0) | 0,
@@ -221,9 +263,16 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
     var start = 0
     var end = 0
+    var step
+
+    step = (octet - 64) | 0
+
+    if (checkOffset(step | 0)) {
+      return 1
+    }
 
     start = (offset + 1) | 0
-    end = (((offset + 1) | 0) + ((octet - 64) | 0)) | 0
+    end = (((offset + 1) | 0) + (step | 0)) | 0
 
     pushByteString(start | 0, end | 0)
 
@@ -239,9 +288,17 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
     var end = 0
     var length = 0
 
+    if (checkOffset(1)) {
+      return 1
+    }
+
     length = heap[(offset + 1) | 0] | 0
     start = (offset + 2) | 0
     end = (((offset + 2) | 0) + (length | 0)) | 0
+
+    if (checkOffset((length  + 1) | 0)) {
+      return 1
+    }
 
     pushByteString(start | 0, end | 0)
 
@@ -257,9 +314,18 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
     var end = 0
     var length = 0
 
+    if (checkOffset(2)) {
+      return 1
+    }
+
     length = readUInt16((offset + 1) | 0) | 0
     start = (offset + 3) | 0
     end = (((offset + 3) | 0) + (length | 0)) | 0
+
+
+    if (checkOffset((length + 2) | 0)) {
+      return 1
+    }
 
     pushByteString(start | 0, end | 0)
 
@@ -295,9 +361,16 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
     var start = 0
     var end = 0
+    var step = 0
+
+    step = (octet - 96) | 0
+
+    if (checkOffset(step | 0)) {
+      return 1
+    }
 
     start = (offset + 1) | 0
-    end = (((offset + 1) | 0) + ((octet - 96) | 0)) | 0
+    end = (((offset + 1) | 0) + (step | 0)) | 0
 
     pushUtf8String(start | 0, end | 0)
 
@@ -313,9 +386,17 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
     var end = 0
     var length = 0
 
+    if (checkOffset(1)) {
+      return 1
+    }
+
     length = heap[(offset + 1) | 0] | 0
     start = (offset + 2) | 0
     end = (((offset + 2) | 0) + (length | 0)) | 0
+
+    if (checkOffset((length + 1) | 0)) {
+      return 1
+    }
 
     pushUtf8String(start | 0, end | 0)
 
@@ -331,9 +412,17 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
     var end = 0
     var length = 0
 
+    if (checkOffset(2)) {
+      return 1
+    }
+
     length = readUInt16((offset + 1) | 0) | 0
     start = (offset + 3) | 0
     end = (((offset + 3) | 0) + (length | 0)) | 0
+
+    if (checkOffset((length + 2) | 0)) {
+      return 1
+    }
 
     pushUtf8String(start | 0, end | 0)
 
@@ -377,6 +466,10 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function ARRAY_8 (octet) {
     octet = octet | 0
 
+    if (checkOffset(1)) {
+      return 1
+    }
+
     pushArrayStartFixed(heap[(offset + 1) | 0] | 0)
 
     offset = (offset + 2) | 0
@@ -386,6 +479,10 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
   function ARRAY_16 (octet) {
     octet = octet | 0
+
+    if (checkOffset(2)) {
+      return 1
+    }
 
     pushArrayStartFixed(
       readUInt16((offset + 1) | 0) | 0
@@ -399,6 +496,10 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function ARRAY_32 (octet) {
     octet = octet | 0
 
+    if (checkOffset(4)) {
+      return 1
+    }
+
     pushArrayStartFixed32(
       readUInt16((offset + 1) | 0) | 0,
       readUInt16((offset + 3) | 0) | 0
@@ -411,6 +512,10 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
   function ARRAY_64 (octet) {
     octet = octet | 0
+
+    if (checkOffset(8)) {
+      return 1
+    }
 
     pushArrayStartFixed64(
       readUInt16((offset + 1) | 0) | 0,
@@ -437,7 +542,15 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function MAP (octet) {
     octet = octet | 0
 
-    pushObjectStartFixed((octet - 128) | 0)
+    var step = 0
+
+    step = (octet - 160) | 0
+
+    if (checkOffset(step | 0)) {
+      return 1
+    }
+
+    pushObjectStartFixed(step | 0)
 
     offset = (offset + 1) | 0
 
@@ -446,6 +559,10 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
   function MAP_8 (octet) {
     octet = octet | 0
+
+    if (checkOffset(1)) {
+      return 1
+    }
 
     pushObjectStartFixed(heap[(offset + 1) | 0] | 0)
 
@@ -456,6 +573,10 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
   function MAP_16 (octet) {
     octet = octet | 0
+
+    if (checkOffset(2)) {
+      return 1
+    }
 
     pushObjectStartFixed(
       readUInt16((offset + 1) | 0) | 0
@@ -469,6 +590,10 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function MAP_32 (octet) {
     octet = octet | 0
 
+    if (checkOffset(4)) {
+      return 1
+    }
+
     pushObjectStartFixed32(
       readUInt16((offset + 1) | 0) | 0,
       readUInt16((offset + 3) | 0) | 0
@@ -481,6 +606,10 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
   function MAP_64 (octet) {
     octet = octet | 0
+
+    if (checkOffset(8)) {
+      return 1
+    }
 
     pushObjectStartFixed64(
       readUInt16((offset + 1) | 0) | 0,
@@ -597,6 +726,10 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function TAG_MORE_1 (octet) {
     octet = octet | 0
 
+    if (checkOffset(1)) {
+      return 1
+    }
+
     pushTagStart(heap[(offset + 1) | 0] | 0)
 
     offset = (offset + 2 | 0)
@@ -606,6 +739,10 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
   function TAG_MORE_2 (octet) {
     octet = octet | 0
+
+    if (checkOffset(2)) {
+      return 1
+    }
 
     pushTagStart(
       readUInt16((offset + 1) | 0) | 0
@@ -619,6 +756,10 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function TAG_MORE_4 (octet) {
     octet = octet | 0
 
+    if (checkOffset(4)) {
+      return 1
+    }
+
     pushTagStart4(
       readUInt16((offset + 1) | 0) | 0,
       readUInt16((offset + 3) | 0) | 0
@@ -631,6 +772,10 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
   function TAG_MORE_8 (octet) {
     octet = octet | 0
+
+    if (checkOffset(8)) {
+      return 1
+    }
 
     pushTagStart8(
       readUInt16((offset + 1) | 0) | 0,
@@ -697,6 +842,10 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function SIMPLE_BYTE (octet) {
     octet = octet | 0
 
+    if (checkOffset(1)) {
+      return 1
+    }
+
     pushSimpleUnassigned(heap[(offset + 1) | 0] | 0)
 
     offset = (offset + 2)  | 0
@@ -712,6 +861,10 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
     var sign = 1.0
     var exp = 0.0
     var mant = 0.0
+
+    if (checkOffset(2)) {
+      return 1
+    }
 
     f = heap[(offset + 1) | 0] | 0
     g = heap[(offset + 2) | 0] | 0
@@ -756,6 +909,10 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function SIMPLE_FLOAT_SINGLE (octet) {
     octet = octet | 0
 
+    if (checkOffset(4)) {
+      return 1
+    }
+
     pushFloatSingle(
       heap[(offset + 1) | 0] | 0,
       heap[(offset + 2) | 0] | 0,
@@ -770,6 +927,10 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
   function SIMPLE_FLOAT_DOUBLE (octet) {
     octet = octet | 0
+
+    if (checkOffset(8)) {
+      return 1
+    }
 
     pushFloatDouble(
       heap[(offset + 1) | 0] | 0,
