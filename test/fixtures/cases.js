@@ -948,6 +948,41 @@ exports.decodeBad = [
   '0xfe' // reserved AI
 ]
 
+exports.goodMap = new Map([
+  ['0', 'foo'],
+  [0, 'bar'],
+  [{}, 'empty obj'],
+  [[], 'empty array'],
+  [null, 'null'],
+  [[1], 'array'],
+  [{1: 2}, 'obj'],
+  ['a', 1],
+  ['aaa', 3],
+  ['aa', 2],
+  ['bb', 2],
+  ['b', 1],
+  ['bbb', 3]
+])
+
+exports.canonNums = [
+  [-1.25, 'f9bd00'],
+  [1.5, 'f93e00'],
+  [10.1, 'fb4024333333333333'],
+  [5.960464477539063e-8, 'f90001'],
+  [3.4028234663852886e38, 'fa7f7fffff'],
+  [0.00006103515625, 'f90400'],
+  [0.2498779296875, 'f933ff'],
+  [2.9802322387695312e-8, 'fa33000000'],
+  [4.1727979294137185e-8, 'fa33333866'],
+  [0.000007636845111846924, 'fa37002000'],
+
+  [Infinity, 'f97c00'],
+  [-Infinity, 'f9fc00'],
+  [NaN, 'f97e00'],
+  [0, '00'],
+  [-0, '00']
+]
+
 const HEX = /0x([0-9a-f]+)$/i
 exports.toBuffer = function (c) {
   if (Array.isArray(c)) {

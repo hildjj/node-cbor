@@ -115,4 +115,32 @@ describe('encoder', () => {
     // cases.EncodeFailer.tryAll({a: 1, b: null})
     // cases.EncodeFailer.tryAll(undefined)
   })
+
+  describe('canonical', () => {
+    it('keys', () => {
+      expect(
+        cbor.Encoder.encode(cases.goodMap).toString('hex')
+      ).to.be.eql(
+        'ad0063626172613063666f6f616101616201626161026262620263616161036362626203806b656d7074792061727261798101656172726179a069656d707479206f626aa1613102636f626af6646e756c6c'
+      )
+
+      expect(
+        cbor.Encoder.encode({aa: 2, b: 1}).toString('hex')
+      ).to.be.eql(
+        'a261620162616102'
+      )
+    })
+
+    describe('numbers', () => {
+      for (let numEnc of cases.canonNums) {
+        it(`${numEnc[0]} -> ${numEnc[1]}`, () => {
+          expect(
+            cbor.Encoder.encode(numEnc[1]).toString('hex')
+          ).to.be.eql(
+            numEnc[1]
+          )
+        })
+      }
+    })
+  })
 })
