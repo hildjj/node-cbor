@@ -3,12 +3,15 @@
 const url = require('url')
 const Bignumber = require('bignumber.js')
 
+const utils = require('./utils')
 const constants = require('./constants')
 const MT = constants.MT
 const NUMBYTES = constants.NUMBYTES
 const SHIFT32 = constants.SHIFT32
 const SYMS = constants.SYMS
 const TAG = constants.TAG
+const HALF = (constants.MT.SIMPLE_FLOAT << 5) | constants.NUMBYTES.TWO
+const FLOAT = (constants.MT.SIMPLE_FLOAT << 5) | constants.NUMBYTES.FOUR
 const DOUBLE = (constants.MT.SIMPLE_FLOAT << 5) | constants.NUMBYTES.EIGHT
 const TRUE = (constants.MT.SIMPLE_FLOAT << 5) | constants.SIMPLE.TRUE
 const FALSE = (constants.MT.SIMPLE_FLOAT << 5) | constants.SIMPLE.FALSE
@@ -113,8 +116,19 @@ class Encoder {
   }
 
   _pushFloat (obj) {
-    this._pushUInt8(DOUBLE)
-    return this._pushDoubleBE(obj)
+    const b2 = new Buffer(2)
+    if (utils.writeHalf(b2, obj)) {
+      if (utils.parseHalf(b2) === obj) {
+        return this._pushUInt8(HALF) && this.push(b2)
+      }
+    }
+    const b4 = new Buffer(4)
+    b4.writeFloatBE(obj)
+    if (b4.readFloatBE() === obj) {
+      return this._pushUInt8(FLOAT) && this.push(b4)
+    }
+
+    return this._pushUInt8(DOUBLE) && this._pushDoubleBE(obj)
   }
 
   _pushInt (obj, mt, orig) {

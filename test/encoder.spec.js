@@ -6,7 +6,7 @@ const expect = require('chai').expect
 
 const cbor = require('../')
 const cases = require('./fixtures/cases')
-const vectors = require('./fixtures/vectors.json')
+const vectors = require('./fixtures/vectors.js')
 
 function testAll (list) {
   list.forEach((c) => {
@@ -21,14 +21,8 @@ function testAll (list) {
 }
 
 describe('encoder', () => {
-  describe('good', () => {
-    testAll(cases.good)
-  })
-
-  describe('encode', () => {
-    testAll(cases.encodeGood)
-  })
-
+  describe('good', () => testAll(cases.good))
+  describe('encode', () => testAll(cases.encodeGood))
   describe('vectors', () => {
     // Test vectors from https://github.com/cbor/test-vectors
     vectors.forEach((v) => {
@@ -135,7 +129,7 @@ describe('encoder', () => {
       for (let numEnc of cases.canonNums) {
         it(`${numEnc[0]} -> ${numEnc[1]}`, () => {
           expect(
-            cbor.Encoder.encode(numEnc[1]).toString('hex')
+            cbor.Encoder.encode(numEnc[0]).toString('hex')
           ).to.be.eql(
             numEnc[1]
           )

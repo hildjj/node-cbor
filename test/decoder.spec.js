@@ -5,7 +5,7 @@ const expect = require('chai').expect
 const Bignumber = require('bignumber.js')
 
 const cases = require('./fixtures/cases')
-const vectors = require('./fixtures/vectors.json')
+const vectors = require('./fixtures/vectors.js')
 const cbor = require('../')
 
 const decoder = new cbor.Decoder()
