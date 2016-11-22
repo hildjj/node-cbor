@@ -81,38 +81,6 @@ class Tagged {
       return this
     }
   }
-
-  static _tag0 (v) {
-    return new Date(v)
-  }
-
-  static _tag1 (v) {
-    return new Date(v * 1000)
-  }
-
-  static _tag2 (v) {
-    return utils.bufferToBignumber(v)
-  }
-
-  static _tag3 (v) {
-    return MINUS_ONE.minus(utils.bufferToBignumber(v))
-  }
-
-  static _tag4 (v) {
-    return TEN.pow(v[0]).times(v[1])
-  }
-
-  static _tag5 (v) {
-    return TWO.pow(v[0]).times(v[1])
-  }
-
-  static _tag32 (v) {
-    return url.parse(v)
-  }
-
-  static _tag35 (v) {
-    return new RegExp(v)
-  }
 }
 
 module.exports = Tagged
