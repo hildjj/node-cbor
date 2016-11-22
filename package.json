@@ -39,7 +39,7 @@
   "devDependencies": {
     "aegir": "^9.1.2",
     "asm.js": "github:dherman/asm.js",
-    "cbor": "^2.0.2",
+    "cbor": "^3.0.0",
     "chai": "^3.5.0",
     "garbage": "0.0.0"
   },
