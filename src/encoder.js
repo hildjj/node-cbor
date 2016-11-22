@@ -124,7 +124,7 @@ class Encoder {
     }
     const b4 = new Buffer(4)
     b4.writeFloatBE(obj)
-    if (b4.readFloatBE() === obj) {
+    if (b4.readFloatBE(0) === obj) {
       return this._pushUInt8(FLOAT) && this.push(b4)
     }
 
@@ -133,26 +133,33 @@ class Encoder {
 
   _pushInt (obj, mt, orig) {
     const m = mt << 5
-    switch (false) {
-      case !(obj < 24):
-        return this._pushUInt8(m | obj)
-      case !(obj <= 0xff):
-        return this._pushUInt8(m | NUMBYTES.ONE) && this._pushUInt8(obj)
-      case !(obj <= 0xffff):
-        return this._pushUInt8(m | NUMBYTES.TWO) && this._pushUInt16BE(obj)
-      case !(obj <= 0xffffffff):
-        return this._pushUInt8(m | NUMBYTES.FOUR) && this._pushUInt32BE(obj)
-      case !(obj <= Number.MAX_SAFE_INTEGER):
-        return this._pushUInt8(m | NUMBYTES.EIGHT) &&
-          this._pushUInt32BE(Math.floor(obj / SHIFT32)) &&
-          this._pushUInt32BE(obj % SHIFT32)
-      default:
-        if (mt === MT.NEG_INT) {
-          return this._pushFloat(orig)
-        } else {
-          return this._pushFloat(obj)
-        }
+    if (obj < 24) {
+      return this._pushUInt8(m | obj)
     }
+
+    if (obj <= 0xff) {
+      return this._pushUInt8(m | NUMBYTES.ONE) && this._pushUInt8(obj)
+    }
+
+    if (obj <= 0xffff) {
+      return this._pushUInt8(m | NUMBYTES.TWO) && this._pushUInt16BE(obj)
+    }
+
+    if (obj <= 0xffffffff) {
+      return this._pushUInt8(m | NUMBYTES.FOUR) && this._pushUInt32BE(obj)
+    }
+
+    if (obj <= Number.MAX_SAFE_INTEGER) {
+      return this._pushUInt8(m | NUMBYTES.EIGHT) &&
+        this._pushUInt32BE(Math.floor(obj / SHIFT32)) &&
+        this._pushUInt32BE(obj % SHIFT32)
+    }
+
+    if (mt === MT.NEG_INT) {
+      return this._pushFloat(orig)
+    }
+
+    return this._pushFloat(obj)
   }
 
   _pushIntNum (obj) {
@@ -329,15 +336,7 @@ class Encoder {
     map = map.map(function (a) {
       a[0] = Encoder.encode(a[0])
       return a
-    }).sort(function (a, b) {
-      var lenA = a[0].byteLength
-      var lenB = b[0].byteLength
-
-      if (lenA > lenB) return 1
-      if (lenB > lenA) return -1
-
-      return a[0].compare(b[0])
-    })
+    }).sort(utils.keySorter)
 
     for (var j = 0; j < len; j++) {
       if (!this.push(map[j][0])) {
@@ -401,17 +400,6 @@ class Encoder {
     }
   }
 
-  _calculateSize (offset, resultLength) {
-    // Determine the size of the buffer
-    var size = 0
-    var i
-    for (i = 0; i < offset; i++) {
-      size += resultLength[i]
-    }
-
-    return size
-  }
-
   finalize () {
     if (this.offset === 0) {
       return null
@@ -421,10 +409,17 @@ class Encoder {
     var resultLength = this.resultLength
     var resultMethod = this.resultMethod
     var offset = this.offset
-    var res = Buffer.allocUnsafe(this._calculateSize(offset, resultLength))
+
+    // Determine the size of the buffer
+    var size = 0
+    var i = 0
+    for (i = 0; i < offset; i++) {
+      size += resultLength[i]
+    }
+
+    var res = Buffer.allocUnsafe(size)
     var index = 0
-    var length
-    var i
+    var length = 0
 
     // Write the content into the result buffer
     for (i = 0; i < offset; i++) {

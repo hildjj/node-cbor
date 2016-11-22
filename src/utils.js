@@ -230,7 +230,7 @@ exports.writeHalf = function writeHalf (buf, half) {
 
   const u32 = new Buffer(4)
   u32.writeFloatBE(half)
-  const u = u32.readUInt32BE()
+  const u = u32.readUInt32BE(0)
 
   // if ((u32.u & 0x1FFF) == 0) { /* worth trying half */
 
@@ -243,7 +243,7 @@ exports.writeHalf = function writeHalf (buf, half) {
   //   int exp = (u32.u >> 23) & 0xff;
   //   int mant = u32.u & 0x7fffff;
 
-  let s16 = (u >> 16) & 0x8000 // top bit is sign
+  var s16 = (u >> 16) & 0x8000 // top bit is sign
   const exp = (u >> 23) & 0xff // then 5 bits of exponent
   const mant = u & 0x7fffff
 
@@ -283,4 +283,19 @@ exports.writeHalf = function writeHalf (buf, half) {
   //   be16 = hton16p((const uint8_t*)&u16);
   buf.writeUInt16BE(s16)
   return true
+}
+
+exports.keySorter = function (a, b) {
+  var lenA = a[0].byteLength
+  var lenB = b[0].byteLength
+
+  if (lenA > lenB) {
+    return 1
+  }
+
+  if (lenB > lenA) {
+    return -1
+  }
+
+  return a[0].compare(b[0])
 }
