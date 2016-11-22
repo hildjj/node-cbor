@@ -116,7 +116,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function UINT_P_8 (octet) {
     octet = octet | 0
 
-    if (checkOffset(1)) {
+    if (checkOffset(1) | 0) {
       return 1
     }
 
@@ -130,7 +130,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function UINT_P_16 (octet) {
     octet = octet | 0
 
-    if (checkOffset(2)) {
+    if (checkOffset(2) | 0) {
       return 1
     }
 
@@ -146,7 +146,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function UINT_P_32 (octet) {
     octet = octet | 0
 
-    if (checkOffset(4)) {
+    if (checkOffset(4) | 0) {
       return 1
     }
 
@@ -163,7 +163,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function UINT_P_64 (octet) {
     octet = octet | 0
 
-    if (checkOffset(8)) {
+    if (checkOffset(8) | 0) {
       return 1
     }
 
@@ -192,7 +192,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function UINT_N_8 (octet) {
     octet = octet | 0
 
-    if (checkOffset(1)) {
+    if (checkOffset(1) | 0) {
       return 1
     }
 
@@ -210,7 +210,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
     var val = 0
 
-    if (checkOffset(2)) {
+    if (checkOffset(2) | 0) {
       return 1
     }
 
@@ -225,7 +225,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function UINT_N_32 (octet) {
     octet = octet | 0
 
-    if (checkOffset(4)) {
+    if (checkOffset(4) | 0) {
       return 1
     }
 
@@ -242,7 +242,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function UINT_N_64 (octet) {
     octet = octet | 0
 
-    if (checkOffset(8)) {
+    if (checkOffset(8) | 0) {
       return 1
     }
 
@@ -263,11 +263,11 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
     var start = 0
     var end = 0
-    var step
+    var step = 0
 
     step = (octet - 64) | 0
 
-    if (checkOffset(step | 0)) {
+    if (checkOffset(step | 0) | 0) {
       return 1
     }
 
@@ -288,7 +288,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
     var end = 0
     var length = 0
 
-    if (checkOffset(1)) {
+    if (checkOffset(1) | 0) {
       return 1
     }
 
@@ -296,7 +296,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
     start = (offset + 2) | 0
     end = (((offset + 2) | 0) + (length | 0)) | 0
 
-    if (checkOffset((length  + 1) | 0)) {
+    if (checkOffset((length + 1) | 0) | 0) {
       return 1
     }
 
@@ -314,7 +314,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
     var end = 0
     var length = 0
 
-    if (checkOffset(2)) {
+    if (checkOffset(2) | 0) {
       return 1
     }
 
@@ -323,7 +323,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
     end = (((offset + 3) | 0) + (length | 0)) | 0
 
 
-    if (checkOffset((length + 2) | 0)) {
+    if (checkOffset((length + 2) | 0) | 0) {
       return 1
     }
 
@@ -365,7 +365,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
     step = (octet - 96) | 0
 
-    if (checkOffset(step | 0)) {
+    if (checkOffset(step | 0) | 0) {
       return 1
     }
 
@@ -386,7 +386,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
     var end = 0
     var length = 0
 
-    if (checkOffset(1)) {
+    if (checkOffset(1) | 0) {
       return 1
     }
 
@@ -394,7 +394,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
     start = (offset + 2) | 0
     end = (((offset + 2) | 0) + (length | 0)) | 0
 
-    if (checkOffset((length + 1) | 0)) {
+    if (checkOffset((length + 1) | 0) | 0) {
       return 1
     }
 
@@ -412,7 +412,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
     var end = 0
     var length = 0
 
-    if (checkOffset(2)) {
+    if (checkOffset(2) | 0) {
       return 1
     }
 
@@ -420,7 +420,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
     start = (offset + 3) | 0
     end = (((offset + 3) | 0) + (length | 0)) | 0
 
-    if (checkOffset((length + 2) | 0)) {
+    if (checkOffset((length + 2) | 0) | 0) {
       return 1
     }
 
@@ -466,7 +466,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function ARRAY_8 (octet) {
     octet = octet | 0
 
-    if (checkOffset(1)) {
+    if (checkOffset(1) | 0) {
       return 1
     }
 
@@ -480,7 +480,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function ARRAY_16 (octet) {
     octet = octet | 0
 
-    if (checkOffset(2)) {
+    if (checkOffset(2) | 0) {
       return 1
     }
 
@@ -496,7 +496,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function ARRAY_32 (octet) {
     octet = octet | 0
 
-    if (checkOffset(4)) {
+    if (checkOffset(4) | 0) {
       return 1
     }
 
@@ -513,7 +513,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function ARRAY_64 (octet) {
     octet = octet | 0
 
-    if (checkOffset(8)) {
+    if (checkOffset(8) | 0) {
       return 1
     }
 
@@ -546,7 +546,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
     step = (octet - 160) | 0
 
-    if (checkOffset(step | 0)) {
+    if (checkOffset(step | 0) | 0) {
       return 1
     }
 
@@ -560,7 +560,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function MAP_8 (octet) {
     octet = octet | 0
 
-    if (checkOffset(1)) {
+    if (checkOffset(1) | 0) {
       return 1
     }
 
@@ -574,7 +574,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function MAP_16 (octet) {
     octet = octet | 0
 
-    if (checkOffset(2)) {
+    if (checkOffset(2) | 0) {
       return 1
     }
 
@@ -590,7 +590,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function MAP_32 (octet) {
     octet = octet | 0
 
-    if (checkOffset(4)) {
+    if (checkOffset(4) | 0) {
       return 1
     }
 
@@ -607,7 +607,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function MAP_64 (octet) {
     octet = octet | 0
 
-    if (checkOffset(8)) {
+    if (checkOffset(8) | 0) {
       return 1
     }
 
@@ -726,7 +726,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function TAG_MORE_1 (octet) {
     octet = octet | 0
 
-    if (checkOffset(1)) {
+    if (checkOffset(1) | 0) {
       return 1
     }
 
@@ -740,7 +740,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function TAG_MORE_2 (octet) {
     octet = octet | 0
 
-    if (checkOffset(2)) {
+    if (checkOffset(2) | 0) {
       return 1
     }
 
@@ -756,7 +756,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function TAG_MORE_4 (octet) {
     octet = octet | 0
 
-    if (checkOffset(4)) {
+    if (checkOffset(4) | 0) {
       return 1
     }
 
@@ -773,7 +773,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function TAG_MORE_8 (octet) {
     octet = octet | 0
 
-    if (checkOffset(8)) {
+    if (checkOffset(8) | 0) {
       return 1
     }
 
@@ -842,7 +842,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function SIMPLE_BYTE (octet) {
     octet = octet | 0
 
-    if (checkOffset(1)) {
+    if (checkOffset(1) | 0) {
       return 1
     }
 
@@ -862,7 +862,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
     var exp = 0.0
     var mant = 0.0
 
-    if (checkOffset(2)) {
+    if (checkOffset(2) | 0) {
       return 1
     }
 
@@ -909,7 +909,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function SIMPLE_FLOAT_SINGLE (octet) {
     octet = octet | 0
 
-    if (checkOffset(4)) {
+    if (checkOffset(4) | 0) {
       return 1
     }
 
@@ -928,7 +928,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function SIMPLE_FLOAT_DOUBLE (octet) {
     octet = octet | 0
 
-    if (checkOffset(8)) {
+    if (checkOffset(8) | 0) {
       return 1
     }
 
