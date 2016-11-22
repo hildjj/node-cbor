@@ -1,7 +1,8 @@
 'use strict'
 
-const BigNum = require('bignumber.js')
+const Bignum = require('bignumber.js')
 const url = require('url')
+const expect = require('chai').expect
 
 const cbor = require('../../')
 const constants = require('../../src/constants')
@@ -70,17 +71,17 @@ exports.good = [
   fb                -- Float, next 8 bytes
     7fefffffffffffff -- 1.7976931348623157e+308
 0xfb7fefffffffffffff`],
-  [new BigNum('-1c0000000000000001', 16), "3(h'1c0000000000000000')", `
+  [new Bignum('-1c0000000000000001', 16), "3(h'1c0000000000000000')", `
   c3                -- Tag #3
     49              -- Bytes, length: 9
       1c0000000000000000 -- 1c0000000000000000
 0xc3491c0000000000000000`],
-  [new BigNum('18446744073709551616'), "2(h'010000000000000000')", `
+  [new Bignum('18446744073709551616'), "2(h'010000000000000000')", `
   c2                -- Tag #2
     49              -- Bytes, length: 9
       010000000000000000 -- 010000000000000000
 0xc249010000000000000000`],
-  [new BigNum('-18446744073709551617'), "3(h'010000000000000000')", `
+  [new Bignum('-18446744073709551617'), "3(h'010000000000000000')", `
   c3                -- Tag #3
     49              -- Bytes, length: 9
       010000000000000000 -- 010000000000000000
@@ -435,39 +436,39 @@ a1                                      # map(1)
 0x826161a161626163`],
 
   // decimal
-  [new BigNum(10.1), '4([-1, 101])', `
+  [new Bignum(10.1), '4([-1, 101])', `
   c4                -- Tag #4
     82              -- Array, 2 items
       20            -- [0], -1
       18            -- Positive number, next 1 byte
         65          -- [1], 101
 0xc482201865`],
-  [new BigNum(100.1), '4([-1, 1001])', `
+  [new Bignum(100.1), '4([-1, 1001])', `
   c4                -- Tag #4
     82              -- Array, 2 items
       20            -- [0], -1
       19            -- Positive number, next 2 bytes
         03e9        -- [1], 1001
 0xc482201903e9`],
-  [new BigNum(0.1), '4([-1, 1])', `
+  [new Bignum(0.1), '4([-1, 1])', `
   c4                -- Tag #4
     82              -- Array, 2 items
       20            -- [0], -1
       01            -- [1], 1
 0xc4822001`],
-  [new BigNum(-0.1), '4([-1, -1])', `
+  [new Bignum(-0.1), '4([-1, -1])', `
   c4                -- Tag #4
     82              -- Array, 2 items
       20            -- [0], -1
       20            -- [1], -1
 0xc4822020`],
-  [new BigNum(0), "2(h'00')", `
+  [new Bignum(0), "2(h'00')", `
   c2                -- Tag #2
     41              -- Bytes, length: 1
       00            -- 00
 0xc24100`],
   // [new BigNum(-0), "3(h'')", '0xc34100'],
-  [new BigNum('18446744073709551615.1'), "4([-1, 2(h'09fffffffffffffff7')])", `
+  [new Bignum('18446744073709551615.1'), "4([-1, 2(h'09fffffffffffffff7')])", `
   c4                -- Tag #4
     82              -- Array, 2 items
       20            -- [0], -1
@@ -475,7 +476,7 @@ a1                                      # map(1)
         49          -- Bytes, length: 9
           09fffffffffffffff7 -- 09fffffffffffffff7
 0xc48220c24909fffffffffffffff7`],
-  [new BigNum(NaN), 'NaN_1', `
+  [new Bignum(NaN), 'NaN_1', `
   f9                -- Float, next 2 bytes
     7e00            -- NaN
 0xf97e00`],
@@ -665,11 +666,11 @@ exports.encodeGood = [
   [constants.SYMS.UNDEFINED, 'undefined', `
   f7                -- undefined
 0xf7`],
-  [new BigNum(Infinity), 'Infinity_1', `
+  [new Bignum(Infinity), 'Infinity_1', `
   f9                -- Float, next 2 bytes
     7c00            -- Infinity
 0xf97c00`],
-  [new BigNum(-Infinity), '-Infinity_1', `
+  [new Bignum(-Infinity), '-Infinity_1', `
   f9                -- Float, next 2 bytes
     fc00            -- -Infinity
 0xf9fc00`]
@@ -715,11 +716,11 @@ exports.decodeGood = [
   f9                -- Float, next 2 bytes
     0001            -- 5.960464477539063e-8
 0xf90001`],
-  [new BigNum('9223372036854775807'), '9223372036854775807', `
+  [new Bignum('9223372036854775807'), '9223372036854775807', `
   1b                -- Positive number, next 8 bytes
     7fffffffffffffff -- 9223372036854775807
 0x1b7fffffffffffffff`],
-  [new BigNum('-9223372036854775808'), '-9223372036854775808', `
+  [new Bignum('-9223372036854775808'), '-9223372036854775808', `
   3b                -- Negative number, next 8 bytes
     7fffffffffffffff -- -9223372036854775808
 0x3b7fffffffffffffff`],
@@ -727,7 +728,7 @@ exports.decodeGood = [
   f9                -- Float, next 2 bytes
     0400            -- 0.00006103515625
 0xf90400`],
-  [new BigNum(1.5), '5([-1, 3])', `
+  [new Bignum(1.5), '5([-1, 3])', `
   c5                -- Tag #5
     82              -- Array, 2 items
       20            -- [0], -1
@@ -761,7 +762,7 @@ exports.decodeGood = [
   fb                -- Float, next 8 bytes
     7ff8000000000000 -- NaN
 0xfb7ff8000000000000`],
-  [new BigNum('-9007199254740992'), '-9007199254740992', `
+  [new Bignum('-9007199254740992'), '-9007199254740992', `
   3b                -- Negative number, next 8 bytes
     001fffffffffffff -- -9007199254740992
 0x3b001fffffffffffff`],
@@ -999,3 +1000,44 @@ exports.toString = function (c) {
   const match = c.match(HEX)
   return match[1]
 }
+
+class EncodeFailer extends cbor.Encoder {
+  constructor (count) {
+    super()
+    if (count == null) {
+      count = Number.MAX_SAFE_INTEGER
+    }
+    this.count = count
+    this.start = count
+  }
+
+  push (fresh) {
+    if (this.count-- <= 0) {
+      super.push(null)
+      return false
+    }
+
+    return super.push(fresh)
+  }
+
+  get used () {
+    return this.start - this.count
+  }
+
+  static tryAll (t, f, canonical) {
+    let enc = new EncodeFailer()
+    enc.canonical = canonical
+    expect(enc.pushAny(f)).to.be.eql(true)
+    let used = enc.used
+    for (let i = 0; i < used; i++) {
+      enc = new EncodeFailer(i)
+      enc.canonical = canonical
+      expect(enc.pushAny(f)).to.be.eql(false)
+    }
+    enc = new EncodeFailer(used)
+    enc.canonical = canonical
+    expect(enc.pushAny(f)).to.be.eql(true)
+  }
+}
+
+exports.EncodeFailer = EncodeFailer

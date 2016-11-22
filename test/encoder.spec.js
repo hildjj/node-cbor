@@ -3,6 +3,7 @@
 'use strict'
 
 const expect = require('chai').expect
+const Bignum = require('bignumber.js')
 
 const cbor = require('../')
 const cases = require('./fixtures/cases')
@@ -57,8 +58,7 @@ describe('encoder', () => {
       ).to.throw()
     })
 
-    // TODO: reenable the ability to overwrite builtin encoders
-    it.skip('addSemanticType', () => {
+    it('addSemanticType', () => {
       // before the tag, this is an innocuous object:
       // {"value": "foo"}
       let tc = new cases.TempClass('foo')
@@ -87,9 +87,19 @@ describe('encoder', () => {
         // intentionally don't return
       }
 
+      class HexBuffer {
+        constructor (val, enc) {
+          this.val = new Buffer(val, enc)
+        }
+
+        toString (enc) {
+          return this.val.toString(enc)
+        }
+      }
+
       // replace Buffer serializer with hex strings
-      gen.addSemanticType(Buffer, hexPackBuffer)
-      gen.pushAny(new Buffer('010203', 'hex'))
+      gen.addSemanticType(HexBuffer, hexPackBuffer)
+      gen.pushAny(new HexBuffer('010203', 'hex'))
 
       expect(
         gen.finalize().toString('hex')
@@ -99,15 +109,14 @@ describe('encoder', () => {
     })
   })
 
-  // TODO: figure out a way to test failures
-  it.skip('pushFails', () => {
-    // cases.EncodeFailer.tryAll([1, 2, 3])
-    // cases.EncodeFailer.tryAll(new Set([1, 2, 3]))
-    // cases.EncodeFailer.tryAll(new BigNum(0))
-    // cases.EncodeFailer.tryAll(new BigNum(1.1))
-    // cases.EncodeFailer.tryAll(new Map([[1, 2], ['a', null]]))
-    // cases.EncodeFailer.tryAll({a: 1, b: null})
-    // cases.EncodeFailer.tryAll(undefined)
+  it('pushFails', () => {
+    cases.EncodeFailer.tryAll([1, 2, 3])
+    cases.EncodeFailer.tryAll(new Set([1, 2, 3]))
+    cases.EncodeFailer.tryAll(new Bignum(0))
+    cases.EncodeFailer.tryAll(new Bignum(1.1))
+    cases.EncodeFailer.tryAll(new Map([[1, 2], ['a', null]]))
+    cases.EncodeFailer.tryAll({a: 1, b: null})
+    cases.EncodeFailer.tryAll(undefined)
   })
 
   describe('canonical', () => {
