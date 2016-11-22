@@ -23,8 +23,6 @@ const BUF_NAN = new Buffer('f97e00', 'hex')
 const BUF_INF_NEG = new Buffer('f9fc00', 'hex')
 const BUF_INF_POS = new Buffer('f97c00', 'hex')
 
-const NO_ASSERT = true
-
 function toType (obj) {
   // [object Type]
   // --------8---1
@@ -413,7 +411,8 @@ class Encoder {
     // Determine the size of the buffer
     var size = 0
     var i = 0
-    for (i = 0; i < offset; i++) {
+
+    for (; i < offset; i++) {
       size += resultLength[i]
     }
 
@@ -430,16 +429,16 @@ class Encoder {
           result[i].copy(res, index)
           break
         case 1:
-          res.writeUInt8(result[i], index, NO_ASSERT)
+          res.writeUInt8(result[i], index, true)
           break
         case 2:
-          res.writeUInt16BE(result[i], index, NO_ASSERT)
+          res.writeUInt16BE(result[i], index, true)
           break
         case 3:
-          res.writeUInt32BE(result[i], index, NO_ASSERT)
+          res.writeUInt32BE(result[i], index, true)
           break
         case 4:
-          res.writeDoubleBE(result[i], index, NO_ASSERT)
+          res.writeDoubleBE(result[i], index, true)
           break
         case 5:
           res.write(result[i], index, length, 'utf8')

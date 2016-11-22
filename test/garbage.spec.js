@@ -10,8 +10,7 @@ const CBOR_GARBAGE = process.env.NODE_CBOR_GARBAGE
 const NO_GARBAGE = process.env.NO_GARBAGE
 const REPEATS = parseInt(CBOR_GARBAGE || 10000)
 
-// TODO: make it pass
-describe.skip('random data', () => {
+describe('random data', () => {
   if (NO_GARBAGE) {
     it.skip('garbage', () => {})
     return

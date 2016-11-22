@@ -4,7 +4,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   // -- Imports
 
   var heap = new stdlib.Uint8Array(buffer)
-  var log = foreign.log
+  // var log = foreign.log
   var pushInt = foreign.pushInt
   var pushInt32 = foreign.pushInt32
   var pushInt32Neg = foreign.pushInt32Neg
@@ -876,7 +876,6 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
     exp = +(((f | 0) & 0x7C) >> 2)
     mant = +((((f | 0) & 0x03) << 8) | g)
 
-    // log(exp)
     if (+exp == 0.0) {
       pushFloat(+(
         (+sign) * 5.9604644775390625e-8 * (+mant)

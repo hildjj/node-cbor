@@ -857,7 +857,7 @@ exports.decodeGood = [
     0c              -- [11], 12
     0d              -- [12], 13
     0e              -- [13], 14
-    0f              -- [14], 15
+    0f  n            -- [14], 15
     10              -- [15], 16
     11              -- [16], 17
     12              -- [17], 18
@@ -913,7 +913,138 @@ exports.decodeGood = [
         43          -- Bytes, length: 3
           eeff99    -- eeff99p
         ff          -- BREAK
-0xd8405f44aabbccdd43eeff99ff`]
+0xd8405f44aabbccdd43eeff99ff`],
+  [{'!5{': ['-Lhe2xMsDYB!_', [1.9054760350149715, {'{_aC(z~> ': -1.267609797117641}, [{'9\n': [undefined]}]]]}, 'garbage_1', `
+a1                                  # map(1)
+   63                               # text(3)
+      21357b                        # "!5{"
+   82                               # array(2)
+      6d                            # text(13)
+         2d4c686532784d73445942215f # "-Lhe2xMsDYB!_"
+      83                            # array(3)
+         fb 3ffe7cd4705b3784        # primitive(4611260320333903748)
+         a1                         # map(1)
+            69                      # text(9)
+               7b5f6143287a7e3e20   # "{_aC(z~> "
+            fb bff4482135eb59f6     # primitive(13831759663037372918)
+         81                         # array(1)
+            a1                      # map(1)
+               62                   # text(2)
+                  390a              # "9\n"
+               81                   # array(1)
+                  f7                # primitive(23)
+0xa16321357b826d2d4c686532784d73445942215f83fb3ffe7cd4705b3784a1697b5f6143287a7e3e20fbbff4482135eb59f681a162390a81f7`],
+  [[
+    true, {
+      '#0': {
+        "hxj(DOQZ-+%7>'": 'oA|',
+        '': true,
+        '4(CX:': [
+          -0.992622389595498, [{
+            Sedx: -0.49904045994866497,
+            'f|mMuJDG2K2>b:Ob-WC': true,
+            t: {
+              '}[': false,
+              O_b: true,
+              'P;?V': true,
+              '.mP2U!1r=': [null]
+            }
+          }]
+        ]
+      }
+    }], 'garbage_2', `
+82                                      # array(2)
+   f5                                   # primitive(21)
+   a1                                   # map(1)
+      62                                # text(2)
+         2330                           # "#0"
+      a3                                # map(3)
+         6e                             # text(14)
+            68786a28444f515a2d2b25373e27 # "hxj(DOQZ-+%7>'"
+         63                             # text(3)
+            6f417c                      # "oA|"
+         60                             # text(0)
+                                        # ""
+         f5                             # primitive(21)
+         65                             # text(5)
+            342843583a                  # "4(CX:"
+         82                             # array(2)
+            fb bfefc3900792e190         # primitive(13830488004047856016)
+            81                          # array(1)
+               a3                       # map(3)
+                  64                    # text(4)
+                     53656478           # "Sedx"
+                  fb bfdff04765b70f62   # primitive(13826033570490552162)
+                  73                    # text(19)
+                     667c6d4d754a4447324b323e623a4f622d5743 # "f|mMuJDG2K2>b:Ob-WC"
+                  f5                    # primitive(21)
+                  61                    # text(1)
+                     74                 # "t"
+                  a4                    # map(4)
+                     62                 # text(2)
+                        7d5b            # "}["
+                     f4                 # primitive(20)
+                     63                 # text(3)
+                        4f5f62          # "O_b"
+                     f5                 # primitive(21)
+                     64                 # text(4)
+                        503b3f56        # "P;?V"
+                     f5                 # primitive(21)
+                     69                 # text(9)
+                        2e6d5032552131723d # ".mP2U!1r="
+                     81                 # array(1)
+                        f6              # primitive(22)
+0x82f5a1622330a36e68786a28444f515a2d2b25373e27636f417c60f565342843583a82fbbfefc3900792e19081a36453656478fbbfdff04765b70f6273667c6d4d754a4447324b323e623a4f622d5743f56174a4627d5bf4634f5f62f564503b3f56f5692e6d5032552131723d81f6`
+  ],
+  [[{
+    pX: {},
+    'f$+V ': {
+      '&{r': true,
+      '4o': {
+        0: 'hN\\bMw',
+        '4[p4vnF1iB2}': {
+          '%': -0.6218326742673507,
+          'Y\n&': false,
+          '_vR^X': true,
+          '9>HENoMZcU&ko^(}R': -1.1453826384796209
+        }
+      }
+    }
+  }], 'garbage_3', `
+81                                      # array(1)
+   a2                                   # map(2)
+      62                                # text(2)
+         7058                           # "pX"
+      a0                                # map(0)
+      65                                # text(5)
+         66242b5620                     # "f$+V "
+      a2                                # map(2)
+         63                             # text(3)
+            267b72                      # "&{r"
+         f5                             # primitive(21)
+         62                             # text(2)
+            346f                        # "4o"
+         a2                             # map(2)
+            61                          # text(1)
+               30                       # "0"
+            66                          # text(6)
+               684e5c624d77             # "hN\\bMw"
+            6c                          # text(12)
+               345b7034766e46316942327d # "4[p4vnF1iB2}"
+            a4                          # map(4)
+               61                       # text(1)
+                  25                    # "%"
+               fb bfe3e60da2f1ffef      # primitive(13827148227200286703)
+               63                       # text(3)
+                  590a26                # "Y\n&"
+               f4                       # primitive(20)
+               65                       # text(5)
+                  5f76525e58            # "_vR^X"
+               f5                       # primitive(21)
+               71                       # text(17)
+                  393e48454e6f4d5a6355266b6f5e287d52 # "9>HENoMZcU&ko^(}R"
+               fb bff2537cbedad190      # primitive(13831209200851276176)
+0x81a2627058a06566242b5620a263267b72f562346fa2613066684e5c624d776c345b7034766e46316942327da46125fbbfe3e60da2f1ffef63590a26f4655f76525e58f571393e48454e6f4d5a6355266b6f5e287d52fbbff2537cbedad190`]
 ]
 
 exports.decodeBad = [
@@ -989,7 +1120,7 @@ exports.toBuffer = function (c) {
   if (Array.isArray(c)) {
     c = c[2]
   }
-  const match = c.match(HEX)
+  let match = c.match(HEX)
   return new Buffer(match[1], 'hex')
 }
 

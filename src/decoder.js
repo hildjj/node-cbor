@@ -106,7 +106,7 @@ class Decoder {
 
   // Finish the current parent
   _closeParent () {
-    let p = this._parents.pop()
+    var p = this._parents.pop()
 
     if (p.length > 0) {
       throw new Error(`Missing ${p.length} elements`)
@@ -183,7 +183,7 @@ class Decoder {
         this._dec()
         break
       case PARENT_OBJECT:
-        if (p.tmpKey) {
+        if (p.tmpKey != null) {
           this._ref[p.tmpKey] = val
           p.tmpKey = null
           this._dec()
@@ -392,7 +392,7 @@ class Decoder {
     }
 
     this._push(
-      (new Buffer(this._heap.slice(start, end + 1))).toString('utf8')
+      (new Buffer(this._heap.slice(start, end))).toString('utf8')
     )
   }
 
@@ -429,10 +429,20 @@ class Decoder {
   }
 
   _createObjectStartFixed (len) {
+    if (len === 0) {
+      this._push({})
+      return
+    }
+
     this._createParent({}, PARENT_OBJECT, len)
   }
 
   _createArrayStartFixed (len) {
+    if (len === 0) {
+      this._push([])
+      return
+    }
+
     this._createParent(new Array(len), PARENT_ARRAY, len)
   }
 
