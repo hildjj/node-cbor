@@ -283,12 +283,11 @@ class Encoder {
     if (!gen._pushInt(obj.size, MT.MAP)) {
       return false
     }
-    for (let kv of obj) {
-      if (!(gen.pushAny(kv[0]) && gen.pushAny(kv[1]))) {
-        return false
-      }
-    }
-    return true
+
+    return this._pushRawMap(
+      obj.size,
+      Array.from(obj)
+    )
   }
 
   _pushObject (obj) {
@@ -314,12 +313,42 @@ class Encoder {
       return false
     }
 
-    for (var j = 0; j < keyLength; j++) {
-      var k = keys[j]
-      if (!(this._pushString(k) && this.pushAny(obj[k]))) {
+    return this._pushRawMap(
+      keyLength,
+      keys.map((k) => [k, obj[k]])
+    )
+  }
+
+  _pushRawMap (len, map) {
+    // Sort keys for canoncialization
+    // 1. encode key
+    // 2. shorter key comes before longer key
+    // 3. same length keys are sorted with lower
+    //    byte value before higher
+
+    map = map.map(function (a) {
+      a[0] = Encoder.encode(a[0])
+      return a
+    }).sort(function (a, b) {
+      var lenA = a[0].byteLength
+      var lenB = b[0].byteLength
+
+      if (lenA > lenB) return 1
+      if (lenB > lenA) return -1
+
+      return a[0].compare(b[0])
+    })
+
+    for (var j = 0; j < len; j++) {
+      if (!this.push(map[j][0])) {
+        return false
+      }
+
+      if (!this.pushAny(map[j][1])) {
         return false
       }
     }
+
     return true
   }
 
