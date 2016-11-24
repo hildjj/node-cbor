@@ -80,7 +80,7 @@ exports.writeHalf = function writeHalf (buf, half) {
   // u32.f = float_val;
 
   const u32 = new Buffer(4)
-  u32.writeFloatBE(half)
+  u32.writeFloatBE(half, 0)
   const u = u32.readUInt32BE(0)
 
   // if ((u32.u & 0x1FFF) == 0) { /* worth trying half */
@@ -132,7 +132,7 @@ exports.writeHalf = function writeHalf (buf, half) {
   //   ensure_writable(3);
   //   u16 = s16;
   //   be16 = hton16p((const uint8_t*)&u16);
-  buf.writeUInt16BE(s16)
+  buf.writeUInt16BE(s16, 0)
   return true
 }
 

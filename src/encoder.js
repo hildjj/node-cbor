@@ -115,13 +115,15 @@ class Encoder {
 
   _pushFloat (obj) {
     const b2 = new Buffer(2)
+
     if (utils.writeHalf(b2, obj)) {
       if (utils.parseHalf(b2) === obj) {
         return this._pushUInt8(HALF) && this.push(b2)
       }
     }
+
     const b4 = new Buffer(4)
-    b4.writeFloatBE(obj)
+    b4.writeFloatBE(obj, 0)
     if (b4.readFloatBE(0) === obj) {
       return this._pushUInt8(FLOAT) && this.push(b4)
     }
