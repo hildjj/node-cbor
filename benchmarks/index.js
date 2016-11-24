@@ -8,7 +8,7 @@ if (typeof window !== 'undefined') {
 const nodeCbor = require('cbor')
 
 const fastCbor = require('../')
-const vectors = require('../test/fixtures/vectors.json')
+const vectors = require('../test/fixtures/vectors.js')
 
 const fastDecoder = new fastCbor.Decoder()
 
@@ -67,6 +67,9 @@ suite
   .on('cycle', (event) => {
     res = []
     console.log(String(event.target))
+  })
+  .on('error', (err) => {
+    throw err
   })
   .run({
     async: true
