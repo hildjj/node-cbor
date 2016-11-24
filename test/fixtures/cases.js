@@ -333,37 +333,51 @@ exports.good = [
     } } } } } }
   } } } } } } }`, `
 a1                                      # map(1)
-   01                                   # unsigned(1)
+   61                                   # text(1)
+      31                                # "1"
    a1                                   # map(1)
-      02                                # unsigned(2)
+      61                                # text(1)
+         32                             # "2"
       a1                                # map(1)
-         03                             # unsigned(3)
+         61                             # text(1)
+            33                          # "3"
          a1                             # map(1)
-            04                          # unsigned(4)
+            61                          # text(1)
+               34                       # "4"
             a1                          # map(1)
-               05                       # unsigned(5)
+               61                       # text(1)
+                  35                    # "5"
                a1                       # map(1)
-                  06                    # unsigned(6)
+                  61                    # text(1)
+                     36                 # "6"
                   a1                    # map(1)
-                     07                 # unsigned(7)
+                     61                 # text(1)
+                        37              # "7"
                      a1                 # map(1)
-                        08              # unsigned(8)
+                        61              # text(1)
+                           38           # "8"
                         a1              # map(1)
-                           09           # unsigned(9)
+                           61           # text(1)
+                              39        # "9"
                            a1           # map(1)
-                              0a        # unsigned(10)
+                              62        # text(2)
+                                 3130   # "10"
                               a1        # map(1)
-                                 0b     # unsigned(11)
+                                 62     # text(2)
+                                    3131 # "11"
                                  a1     # map(1)
-                                    0c  # unsigned(12)
+                                    62  # text(2)
+                                       3132 # "12"
                                     a2  # map(2)
-                                       0d # unsigned(13)
-                                       45 # bytes(5)
+                                       62 # text(2)
+                                          3133 # "13"
+                                       65 # text(5)
                                           68656c6c6f # "hello"
-                                       0e # unsigned(14)
-                                       45 # bytes(5)
+                                       62 # text(2)
+                                          3134 # "14"
+                                       65 # text(5)
                                           776f726c64 # "world"
-0xa101a102a103a104a105a106a107a108a109a10aa10ba10ca20d4568656c6c6f0e45776f726c64`],
+0xa16131a16132a16133a16134a16135a16136a16137a16138a16139a1623130a1623131a1623132a26231336568656c6c6f62313465776f726c64`],
   [new Buffer('0102030405', 'hex'), "h'0102030405'", `
   45                -- Bytes, length: 5
     0102030405      -- 0102030405
@@ -700,7 +714,7 @@ exports.decodeGood = [
   f9                -- Float, next 2 bytes
     0000            -- 0
 0xf90000`],
-  [0, '-0_1', `
+  [-0, '-0_1', `
   f9                -- Float, next 2 bytes
     8000            -- -0
 0xf98000`],

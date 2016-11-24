@@ -861,7 +861,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
     var sign = 1.0
     var exp = 0.0
     var mant = 0.0
-
+    var r = 0.0
     if (checkOffset(2) | 0) {
       return 1
     }
@@ -878,7 +878,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
     if (+exp == 0.0) {
       pushFloat(+(
-        (+sign) * 5.9604644775390625e-8 * (+mant)
+        (+sign) * +5.9604644775390625e-8 * (+mant)
       ))
     } else if (+exp == 31.0) {
       if (+sign == 1.0) {

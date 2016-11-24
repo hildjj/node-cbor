@@ -23,19 +23,21 @@ const PARENT_BYTE_STRING = 4
 const PARENT_UTF8_STRING = 5
 
 class Decoder {
-  constructor (size) {
-    if (!size || size < 0x10000) {
-      size = 0x10000
+  constructor (opts) {
+    opts = opts || {}
+
+    if (!opts.size || opts.size < 0x10000) {
+      opts.size = 0x10000
     }
 
     // Heap use to share the input with the parser
-    this._heap = new ArrayBuffer(size)
+    this._heap = new ArrayBuffer(opts.size)
     this._heap8 = new Uint8Array(this._heap)
 
     this._reset()
 
     // Known tags
-    this._knownTags = {
+    this._knownTags = Object.assign({
       0: (val) => new Date(val),
       1: (val) => new Date(val * 1000),
       2: (val) => utils.arrayBufferToBignumber(val),
@@ -50,7 +52,7 @@ class Decoder {
       },
       32: (val) => url.parse(val),
       35: (val) => new RegExp(val)
-    }
+    }, opts.tags)
 
     // Initialize asm based parser
     this.parser = parser(global, {

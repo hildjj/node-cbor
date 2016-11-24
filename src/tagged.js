@@ -1,13 +1,5 @@
 'use strict'
 
-const Bignumber = require('bignumber.js')
-const utils = require('./utils')
-const url = require('url')
-
-const MINUS_ONE = new Bignumber(-1)
-const TEN = new Bignumber(10)
-const TWO = new Bignumber(2)
-
 /**
  * A CBOR tagged item, where the tag does not have semantics specified at the
  * moment, or those semantics threw an error during parsing. Typically this will

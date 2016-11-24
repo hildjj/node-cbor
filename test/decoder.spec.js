@@ -30,13 +30,13 @@ describe('Decoder', function () {
   describe('bad first', () => failFirstAll(cases.decodeBad))
 
   describe('misc', () => {
-    // TODO: Implment custom tags
-    it.skip('custom tags', () => {
+    it('custom tags', () => {
       function replaceTag (val) {
         return {foo: val}
       }
+
       function newTag (val) {
-        throw new Error('Invalid tag')
+        return 'cool'
       }
 
       const d = new cbor.Decoder({
@@ -45,14 +45,14 @@ describe('Decoder', function () {
 
       const input = new Buffer('d87f01c001', 'hex')
 
-      // TODO: figure out how to test custom tags
       expect(
-        d.decodeFirst(input)
-      ).to.be.eql({
-      })
+        d.decodeAll(input)
+      ).to.be.eql([
+        'cool', {foo: 1}
+      ])
     })
 
-    it('parse_tag', () => {
+    it('parse tag', () => {
       const vals = cbor.decodeFirst('d87f01', 'hex')
       expect(vals).to.be.eql(new cbor.Tagged(127, 1))
     })
