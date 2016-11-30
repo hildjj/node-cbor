@@ -203,7 +203,7 @@ exports.good = [
   // eslint-disable-next-line
   ['"\\', '"\\"\\\\"', `
   62                -- String, length: 2
-    225c            -- "\\\"\\\\"
+    225c            -- "\\"\\\\"
 0x62225c`],
   ['\u00fc', '"\u00fc"', `
   62                -- String, length: 2
