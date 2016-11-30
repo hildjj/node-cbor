@@ -37,6 +37,9 @@ class Encoder {
   constructor (options) {
     options = options || {}
 
+    this.streaming = typeof options.stream === 'function'
+    this.onData = options.stream
+
     this.semanticTypes = [
       [url.Url, this._pushUrl],
       [Bignumber, this._pushBigNumber]
@@ -77,6 +80,11 @@ class Encoder {
     this.resultMethod[this.offset] = 0
     this.resultLength[this.offset] = val.length
     this.offset ++
+
+    if (this.streaming) {
+      this.onData(this.finalize())
+    }
+
     return true
   }
 
@@ -85,6 +93,11 @@ class Encoder {
     this.resultMethod[this.offset] = method
     this.resultLength[this.offset] = len
     this.offset ++
+
+    if (this.streaming) {
+      this.onData(this.finalize())
+    }
+
     return true
   }
 
@@ -349,6 +362,13 @@ class Encoder {
     }
 
     return true
+  }
+
+  /**
+   * Alias for `.pushAny`
+   */
+  write (obj) {
+    this.pushAny(obj)
   }
 
   /**

@@ -109,6 +109,32 @@ describe('encoder', () => {
     })
   })
 
+  it('streaming mode', () => {
+    const chunks = []
+    const enc = new cbor.Encoder({
+      stream (chunk) {
+        chunks.push(chunk)
+      }
+    })
+
+    enc.write('hello')
+    enc.write('world')
+    enc.write({a: 1})
+    enc.write(123456)
+
+    expect(chunks).to.be.eql([
+      new Buffer('65', 'hex'),
+      new Buffer('68656c6c6f', 'hex'),
+      new Buffer('65', 'hex'),
+      new Buffer('776f726c64', 'hex'),
+      new Buffer('a1', 'hex'),
+      new Buffer('6161', 'hex'),
+      new Buffer('01', 'hex'),
+      new Buffer('1a', 'hex'),
+      new Buffer('0001e240', 'hex')
+    ])
+  })
+
   it('pushFails', () => {
     cases.EncodeFailer.tryAll([1, 2, 3])
     cases.EncodeFailer.tryAll(new Set([1, 2, 3]))

@@ -37,6 +37,15 @@ suite.add(`encode - fast-cbor - ${vecLength}`, () => {
   }
 })
 
+suite.add(`encode - stream - fast-cbor - ${vecLength}`, () => {
+  const enc = new fastCbor.Encoder({stream (chunk) {
+    res.push(chunk)
+  }})
+  for (let i = 0; i < vecLength; i++) {
+    enc.write(vectors[i].decoded)
+  }
+})
+
 suite.add(`encode - JSON.stringify - ${vecLength}`, () => {
   for (let i = 0; i < vecLength; i++) {
     res.push(JSON.stringify(vectors[i].decoded))
