@@ -686,7 +686,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function TAG_UNASSIGNED (octet) {
     octet = octet | 0
 
-    pushTagUnassigned(octet | 0)
+    pushTagStart((octet - 192| 0) | 0)
 
     offset = (offset + 1 | 0)
 

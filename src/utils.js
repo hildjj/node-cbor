@@ -150,3 +150,8 @@ exports.keySorter = function (a, b) {
 
   return a[0].compare(b[0])
 }
+
+// Adapted from http://www.2ality.com/2012/03/signedzero.html
+exports.isNegativeZero = (x) => {
+  return x === 0 && (1 / x < 0)
+}

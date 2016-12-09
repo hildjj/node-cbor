@@ -1,5 +1,7 @@
 'use strict'
 
+const Bignumber = require('bignumber.js')
+
 exports.MT = {
   POS_INT: 0,
   NEG_INT: 1,
@@ -55,3 +57,17 @@ exports.SYMS = {
 
 exports.SHIFT32 = Math.pow(2, 32)
 exports.SHIFT16 = Math.pow(2, 16)
+
+exports.MAX_SAFE_HIGH = 0x1fffff
+exports.NEG_ONE = new Bignumber(-1)
+exports.TEN = new Bignumber(10)
+exports.TWO = new Bignumber(2)
+
+exports.PARENT = {
+  ARRAY: 0,
+  OBJECT: 1,
+  MAP: 2,
+  TAG: 3,
+  BYTE_STRING: 4,
+  UTF8_STRING: 5
+}

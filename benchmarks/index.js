@@ -1,5 +1,7 @@
 'use strict'
 
+console.log('PID: %s', process.pid)
+
 const Benchmark = require('benchmark')
 if (typeof window !== 'undefined') {
   window.Benchmark = Benchmark

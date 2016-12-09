@@ -1,234 +1,179 @@
 'use strict'
 
-const stream = require('stream')
-const util = require('util')
 const Decoder = require('./decoder')
-const Simple = require('./simple')
 const utils = require('./utils')
-const constants = require('./constants')
-const bignumber = require('bignumber.js')
-
-const MT = constants.MT, SYMS = constants.SYMS
 
 /**
  * Output the diagnostic format from a stream of CBOR bytes.
  *
- * @extends {stream.Transform}
  */
-class Diagnose extends stream.Transform {
-
-  /**
-   * Creates an instance of Diagnose.
-   *
-   * @param {Object} [options={}] - options for creation
-   * @param {string} [options.separator='\n'] - output between detected objects
-   * @param {bool} [options.stream_errors=false] - put error info into the
-   *   output stream
-   * @param {number} [options.max_depth=-1] - -1 for "until you run out of
-   *   memory".  Set this to a finite positive number for un-trusted inputs.  Most
-   *   standard inputs won't nest more than 100 or so levels; I've tested into the
-   *   millions before running out of memory.
-   */
-  constructor (options) {
-    options = options || {}
-    const separator = (options.separator != null) ? options.separator : '\n'
-    delete options.separator
-    const stream_errors = (options.stream_errors != null) ? options.stream_errors : false
-    delete options.stream_errors
-    options.readableObjectMode = false
-    options.writableObjectMode = false
-    super(options)
-
-    this.float_bytes = -1
-    this.separator = separator
-    this.stream_errors = stream_errors
-    this.parser = new Decoder(options)
-    this.parser.on('more-bytes', this._on_more.bind(this))
-    this.parser.on('value', this._on_value.bind(this))
-    this.parser.on('start', this._on_start.bind(this))
-    this.parser.on('stop', this._on_stop.bind(this))
-    this.parser.on('data', this._on_data.bind(this))
-    this.parser.on('error', this._on_error.bind(this))
+class Diagnose extends Decoder {
+  createTag (tagNumber, value) {
+    return `${tagNumber}(${value})`
   }
 
-  _transform (fresh, encoding, cb) {
-    return this.parser.write(fresh, encoding, cb)
+  createInt (val) {
+    return super.createInt(val).toString()
   }
 
-  _flush (cb) {
-    return this.parser._flush((er) => {
-      if (this.stream_errors) {
-        this._on_error(er)
-        return cb()
-      } else {
-        return cb(er)
-      }
-    })
+  createInt32 (f, g) {
+    return super.createInt32(f, g).toString()
   }
 
-  /**
-   * Convenience function to return a string in diagnostic format.
-   *
-   * @param {(Buffer|string)} input - the CBOR bytes to format
-   * @param {string} [encoding='hex'] - the encoding of input, ignored if input is Buffer
-   * @param {commentCallback} cb - callback
-   * @returns {Promise} if callback not specified
-   */
-  static diagnose (input, encoding, cb) {
-    if (input == null) {
-      throw new Error('input required')
+  createInt64 (f1, f2, g1, g2) {
+    return super.createInt64(f1, f2, g1, g2).toString()
+  }
+
+  createInt32Neg (f, g) {
+    return super.createInt32Neg(f, g).toString()
+  }
+
+  createInt64Neg (f1, f2, g1, g2) {
+    return super.createInt64Neg(f1, f2, g1, g2).toString()
+  }
+
+  createTrue () {
+    return 'true'
+  }
+
+  createFalse () {
+    return 'false'
+  }
+
+  createFloat (val) {
+    const fl = super.createFloat(val)
+    if (utils.isNegativeZero(val)) {
+      return '-0_1'
     }
-    let opts = {}
-    let encod = 'hex'
-    switch (typeof encoding) {
-      case 'function':
-        cb = encoding
-        encod = utils.guessEncoding(input)
-        break
-      case 'object':
-        opts = utils.extend({}, encoding)
-        encod = (opts.encoding != null) ? opts.encoding : utils.guessEncoding(input)
-        delete opts.encoding
-        break
-      default:
-        encod = (encoding != null) ? encoding : 'hex'
-    }
-    const bs = new NoFilter
-    const d = new Diagnose(opts)
-    let p = null
-    if (typeof cb === 'function') {
-      d.on('end', function () {
-        return cb(null, bs.toString('utf8'))
-      })
-      d.on('error', cb)
-    } else {
-      p = new Promise(function (resolve, reject) {
-        d.on('end', function () {
-          return resolve(bs.toString('utf8'))
-        })
-        return d.on('error', reject)
-      })
-    }
-    d.pipe(bs)
-    d.end(input, encod)
-    return p
+
+    return `${fl}_1`
   }
 
-  _on_error (er) {
-    if (this.stream_errors) {
-      return this.push(er.toString())
-    } else {
-      return this.emit('error', er)
+  createFloatSingle (a, b, c, d) {
+    const fl = super.createFloatSingle(a, b, c, d)
+    return `${fl}_2`
+  }
+
+  createFloatDouble (a, b, c, d, e, f, g, h) {
+    const fl = super.createFloatDouble(a, b, c, d, e, f, g, h)
+    return `${fl}_3`
+  }
+
+  createByteString (raw, len) {
+    const val = raw.join(', ')
+
+    if (len === -1) {
+      return `(_ ${val})`
     }
+    return `h'${val}`
   }
 
-  _on_more (mt, len, parent_mt, pos) {
-    if (mt === MT.SIMPLE_FLOAT) {
-      return this.float_bytes = (function () {
-        switch (len) {
-          case 2:
-            return 1
-          case 4:
-            return 2
-          case 8:
-            return 3
-        }
-      })()
+  createByteStringFromHeap (start, end) {
+    const val = (new Buffer(
+      super.createByteStringFromHeap(start, end)
+    )).toString('hex')
+
+    return `h'${val}'`
+  }
+
+  createInfinity () {
+    return 'Infinity_1'
+  }
+
+  createInfinityNeg () {
+    return '-Infinity_1'
+  }
+
+  createNaN () {
+    return 'NaN_1'
+  }
+
+  createNaNNeg () {
+    return '-NaN_1'
+  }
+
+  createNull () {
+    return 'null'
+  }
+
+  createUndefined () {
+    return 'undefined'
+  }
+
+  createSimpleUnassigned (val) {
+    return `simple(${val})`
+  }
+
+  createArray (arr, len) {
+    const val = super.createArray(arr, len)
+
+    if (len === -1) {
+      // indefinite
+      return `[_ ${val.join(', ')}]`
     }
+
+    return `[${val.join(', ')}]`
   }
 
-  _fore (parent_mt, pos) {
-    switch (parent_mt) {
-      case MT.BYTE_STRING:
-      case MT.UTF8_STRING:
-      case MT.ARRAY:
-        if (pos > 0) {
-          return this.push(', ')
-        }
-        break
-      case MT.MAP:
-        if (pos > 0) {
-          if (pos % 2) {
-            return this.push(': ')
-          } else {
-            return this.push(', ')
-          }
-        }
+  createMap (map, len) {
+    const val = super.createMap(map)
+    const list = Array.from(val.keys())
+          .reduce(collectObject(val), '')
+
+    if (len === -1) {
+      return `{_ ${list}}`
     }
+
+    return `{${list}}`
   }
 
-  _on_value (val, parent_mt, pos) {
-    if (val === SYMS.BREAK) {
-      return
+  createObject (obj, len) {
+    const val = super.createObject(obj)
+    const map = Object.keys(val)
+          .reduce(collectObject(val), '')
+
+    if (len === -1) {
+      return `{_ ${map}}`
     }
-    this._fore(parent_mt, pos)
-    return this.push((function () {
-      switch (false) {
-        case val !== SYMS.NULL:
-          return 'null'
-        case val !== SYMS.UNDEFINED:
-          return 'undefined'
-        case typeof val !== 'string':
-          return JSON.stringify(val)
-        case !(this.float_bytes > 0):
-          const fb = this.float_bytes
-          this.float_bytes = -1
-          return (util.inspect(val)) + '_' + fb
-        case !Buffer.isBuffer(val):
-          return "h'" + (val.toString('hex')) + "'"
-        case !(val instanceof bignumber):
-          return val.toString()
-        default:
-          return util.inspect(val)
-      }
-    }).call(this))
+
+    return `{${map}}`
   }
 
-  _on_start (mt, tag, parent_mt, pos) {
-    this._fore(parent_mt, pos)
-    this.push((function () {
-      switch (mt) {
-        case MT.TAG:
-          return tag + '('
-        case MT.ARRAY:
-          return '['
-        case MT.MAP:
-          return '{'
-        case MT.BYTE_STRING:
-        case MT.UTF8_STRING:
-          return '('
-        default:
-          // istanbul ignore next
-          throw new Error('Unknown diagnostic type: ' + mt)
-      }
-    })())
-    if (tag === SYMS.STREAM) {
-      return this.push('_ ')
+  createUtf8String (raw, len) {
+    const val = raw.join(', ')
+
+    if (len === -1) {
+      return `(_ ${val})`
     }
+
+    return `"${val}"`
   }
 
-  _on_stop (mt) {
-    return this.push((function () {
-      switch (mt) {
-        case MT.TAG:
-          return ')'
-        case MT.ARRAY:
-          return ']'
-        case MT.MAP:
-          return '}'
-        case MT.BYTE_STRING:
-        case MT.UTF8_STRING:
-          return ')'
-        default:
-          // istanbul ignore next
-          throw new Error('Unknown diagnostic type: ' + mt)
-      }
-    })())
+  createUtf8StringFromHeap (start, end) {
+    const val = (new Buffer(
+      super.createUtf8StringFromHeap(start, end)
+    )).toString('utf8')
+
+    return `"${val}"`
   }
 
-  _on_data () {
-    return this.push(this.separator)
+  static diagnose (input, enc) {
+    if (typeof input === 'string') {
+      input = new Buffer(input, enc || 'hex')
+    }
+
+    const dec = new Diagnose()
+    return dec.decodeFirst(input)
   }
 }
 
 module.exports = Diagnose
+
+function collectObject (val) {
+  return (acc, key) => {
+    if (acc) {
+      return `${acc}, ${key}: ${val[key]}`
+    }
+    return `${key}: ${val[key]}`
+  }
+}

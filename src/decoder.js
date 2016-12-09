@@ -5,22 +5,10 @@ const Bignumber = require('bignumber.js')
 
 const parser = require('./decoder.asm')
 const utils = require('./utils')
-const SHIFT32 = require('./constants').SHIFT32
+const c = require('./constants')
 const Simple = require('./simple')
 const Tagged = require('./tagged')
 const url = require('url')
-
-const MAX_SAFE_HIGH = 0x1fffff
-const NEG_ONE = new Bignumber(-1)
-const TEN = new Bignumber(10)
-const TWO = new Bignumber(2)
-
-const PARENT_ARRAY = 0
-const PARENT_OBJECT = 1
-const PARENT_MAP = 2
-const PARENT_TAG = 3
-const PARENT_BYTE_STRING = 4
-const PARENT_UTF8_STRING = 5
 
 class Decoder {
   constructor (opts) {
@@ -41,14 +29,14 @@ class Decoder {
       0: (val) => new Date(val),
       1: (val) => new Date(val * 1000),
       2: (val) => utils.arrayBufferToBignumber(val),
-      3: (val) => NEG_ONE.minus(utils.arrayBufferToBignumber(val)),
+      3: (val) => c.NEG_ONE.minus(utils.arrayBufferToBignumber(val)),
       4: (v) => {
         // const v = new Uint8Array(val)
-        return TEN.pow(v[0]).times(v[1])
+        return c.TEN.pow(v[0]).times(v[1])
       },
       5: (v) => {
         // const v = new Uint8Array(val)
-        return TWO.pow(v[0]).times(v[1])
+        return c.TWO.pow(v[0]).times(v[1])
       },
       32: (val) => url.parse(val),
       35: (val) => new RegExp(val)
@@ -115,40 +103,39 @@ class Decoder {
     }
 
     switch (p.type) {
-      case PARENT_TAG:
+      case c.PARENT.TAG:
         this._push(
-          this._createTag(p.ref[0], p.ref[1])
+          this.createTag(p.ref[0], p.ref[1])
         )
         break
-      case PARENT_BYTE_STRING:
-        this._push(new Uint8Array(p.ref))
+      case c.PARENT.BYTE_STRING:
+        this._push(this.createByteString(p.ref, p.length))
         break
-      case PARENT_UTF8_STRING:
-        this._push(new Buffer(p.ref))
+      case c.PARENT.UTF8_STRING:
+        this._push(this.createUtf8String(p.ref, p.length))
         break
-      case PARENT_MAP:
-      case PARENT_OBJECT:
+      case c.PARENT.MAP:
         if (p.values % 2 > 0) {
           throw new Error('Odd number of elements in the map')
         }
+        this._push(this.createMap(p.ref, p.length))
+        break
+      case c.PARENT.OBJECT:
+        if (p.values % 2 > 0) {
+          throw new Error('Odd number of elements in the map')
+        }
+        this._push(this.createObject(p.ref, p.length))
+        break
+      case c.PARENT.ARRAY:
+        this._push(this.createArray(p.ref, p.length))
         break
       default:
         break
     }
 
-    if (this._currentParent && this._currentParent.type === PARENT_TAG) {
+    if (this._currentParent && this._currentParent.type === c.PARENT.TAG) {
       this._dec()
     }
-  }
-
-  _createTag (tagNumber, value) {
-    const typ = this._knownTags[tagNumber]
-
-    if (!typ) {
-      return new Tagged(tagNumber, value)
-    }
-
-    return typ(value)
   }
 
   // Reduce the expected length of the current parent by one
@@ -174,9 +161,9 @@ class Decoder {
     p.values ++
 
     switch (p.type) {
-      case PARENT_ARRAY:
-      case PARENT_BYTE_STRING:
-      case PARENT_UTF8_STRING:
+      case c.PARENT.ARRAY:
+      case c.PARENT.BYTE_STRING:
+      case c.PARENT.UTF8_STRING:
         if (p.length > -1) {
           this._ref[this._ref.length - p.length] = val
         } else {
@@ -184,7 +171,7 @@ class Decoder {
         }
         this._dec()
         break
-      case PARENT_OBJECT:
+      case c.PARENT.OBJECT:
         if (p.tmpKey != null) {
           this._ref[p.tmpKey] = val
           p.tmpKey = null
@@ -194,12 +181,12 @@ class Decoder {
 
           if (typeof p.tmpKey !== 'string') {
             // too bad, convert to a Map
-            p.type = PARENT_MAP
+            p.type = c.PARENT.MAP
             p.ref = utils.buildMap(p.ref)
           }
         }
         break
-      case PARENT_MAP:
+      case c.PARENT.MAP:
         if (p.tmpKey != null) {
           this._ref.set(p.tmpKey, val)
           p.tmpKey = null
@@ -208,7 +195,7 @@ class Decoder {
           p.tmpKey = val
         }
         break
-      case PARENT_TAG:
+      case c.PARENT.TAG:
         this._ref.push(val)
         if (!hasChildren) {
           this._dec()
@@ -221,7 +208,6 @@ class Decoder {
 
   // Create a new parent in the parents list
   _createParent (obj, type, len) {
-    this._push(obj, true)
     this._parents[this._depth] = {
       type: type,
       length: len,
@@ -235,7 +221,7 @@ class Decoder {
   _reset () {
     this._res = []
     this._parents = [{
-      type: PARENT_ARRAY,
+      type: c.PARENT.ARRAY,
       length: -1,
       ref: this._res,
       values: 0,
@@ -244,86 +230,197 @@ class Decoder {
   }
 
   // -- Interface to customize deoding behaviour
+  createTag (tagNumber, value) {
+    const typ = this._knownTags[tagNumber]
 
-  pushInt (val) {
-    this._push(val)
+    if (!typ) {
+      return new Tagged(tagNumber, value)
+    }
+
+    return typ(value)
   }
 
-  pushInt32 (f, g) {
-    this._push(utils.buildInt32(f, g))
+  createMap (obj, len) {
+    return obj
   }
 
-  pushInt64 (f1, f2, g1, g2) {
-    this._push(utils.buildInt64(f1, f2, g1, g2))
+  createObject (obj, len) {
+    return obj
   }
 
-  pushFloat (val) {
-    this._push(val)
+  createArray (arr, len) {
+    return arr
   }
 
-  pushFloatSingle (a, b, c, d) {
-    this._push(
-      ieee754.read([a, b, c, d], 0, false, 23, 4)
-    )
+  createByteString (raw, len) {
+    return new Uint8Array(raw)
   }
 
-  pushFloatDouble (a, b, c, d, e, f, g, h) {
-    this._push(
-      ieee754.read([a, b, c, d, e, f, g, h], 0, false, 52, 8)
-    )
+  createByteStringFromHeap (start, end) {
+    if (start === end) {
+      return new Buffer(0)
+    }
+
+    return new Uint8Array(this._heap.slice(start, end))
   }
 
-  pushInt32Neg (f, g) {
-    this._push(-1 - utils.buildInt32(f, g))
+  createInt (val) {
+    return val
   }
 
-  pushInt64Neg (f1, f2, g1, g2) {
+  createInt32 (f, g) {
+    return utils.buildInt32(f, g)
+  }
+
+  createInt64 (f1, f2, g1, g2) {
+    return utils.buildInt64(f1, f2, g1, g2)
+  }
+
+  createFloat (val) {
+    return val
+  }
+
+  createFloatSingle (a, b, c, d) {
+    return ieee754.read([a, b, c, d], 0, false, 23, 4)
+  }
+
+  createFloatDouble (a, b, c, d, e, f, g, h) {
+    return ieee754.read([a, b, c, d, e, f, g, h], 0, false, 52, 8)
+  }
+
+  createInt32Neg (f, g) {
+    return -1 - utils.buildInt32(f, g)
+  }
+
+  createInt64Neg (f1, f2, g1, g2) {
     const f = utils.buildInt32(f1, f2)
     const g = utils.buildInt32(g1, g2)
 
-    if (f > MAX_SAFE_HIGH) {
-      this._push(
-        NEG_ONE.sub(new Bignumber(f).times(SHIFT32).plus(g))
-      )
-    } else {
-      this._push(-1 - ((f * SHIFT32) + g))
+    if (f > c.MAX_SAFE_HIGH) {
+      return c.NEG_ONE.sub(new Bignumber(f).times(c.SHIFT32).plus(g))
     }
+
+    return -1 - ((f * c.SHIFT32) + g)
+  }
+
+  createTrue () {
+    return true
+  }
+
+  createFalse () {
+    return false
+  }
+
+  createNull () {
+    return null
+  }
+
+  createUndefined () {
+    return void 0
+  }
+
+  createInfinity () {
+    return Infinity
+  }
+
+  createInfinityNeg () {
+    return -Infinity
+  }
+
+  createNaN () {
+    return NaN
+  }
+
+  createNaNNeg () {
+    return -NaN
+  }
+
+  createUtf8String (raw, len) {
+    return new Buffer(raw)
+  }
+
+  createUtf8StringFromHeap (start, end) {
+    if (start === end) {
+      return ''
+    }
+
+    return (
+      new Buffer(this._heap.slice(start, end))
+    ).toString('utf8')
+  }
+
+  createSimpleUnassigned (val) {
+    return new Simple(val)
+  }
+
+  // -- Interface for decoder.asm.js
+
+  pushInt (val) {
+    this._push(this.createInt(val))
+  }
+
+  pushInt32 (f, g) {
+    this._push(this.createInt32(f, g))
+  }
+
+  pushInt64 (f1, f2, g1, g2) {
+    this._push(this.createInt64(f1, f2, g1, g2))
+  }
+
+  pushFloat (val) {
+    this._push(this.createFloat(val))
+  }
+
+  pushFloatSingle (a, b, c, d) {
+    this._push(this.createFloatSingle(a, b, c, d))
+  }
+
+  pushFloatDouble (a, b, c, d, e, f, g, h) {
+    this._push(this.createFloatDouble(a, b, c, d, e, f, g, h))
+  }
+
+  pushInt32Neg (f, g) {
+    this._push(this.createInt32Neg(f, g))
+  }
+
+  pushInt64Neg (f1, f2, g1, g2) {
+    this._push(this.createInt64Neg(f1, f2, g1, g2))
   }
 
   pushTrue () {
-    this._push(true)
+    this._push(this.createTrue())
   }
 
   pushFalse () {
-    this._push(false)
+    this._push(this.createFalse())
   }
 
   pushNull () {
-    this._push(null)
+    this._push(this.createNull())
   }
 
   pushUndefined () {
-    this._push(void 0)
+    this._push(this.createUndefined())
   }
 
   pushInfinity () {
-    this._push(Infinity)
+    this._push(this.createInfinity())
   }
 
   pushInfinityNeg () {
-    this._push(-Infinity)
+    this._push(this.createInfinityNeg())
   }
 
   pushNaN () {
-    this._push(NaN)
+    this._push(this.createNaN())
   }
 
   pushNaNNeg () {
-    this._push(-NaN)
+    this._push(this.createNaNNeg())
   }
 
   pushArrayStart () {
-    this._createParent([], PARENT_ARRAY, -1)
+    this._createParent([], c.PARENT.ARRAY, -1)
   }
 
   pushArrayStartFixed (len) {
@@ -341,7 +438,7 @@ class Decoder {
   }
 
   pushObjectStart () {
-    this._createParent({}, PARENT_OBJECT, -1)
+    this._createObjectStartFixed(-1)
   }
 
   pushObjectStartFixed (len) {
@@ -360,7 +457,7 @@ class Decoder {
 
   pushByteStringStart () {
     this._parents[this._depth] = {
-      type: PARENT_BYTE_STRING,
+      type: c.PARENT.BYTE_STRING,
       length: -1,
       ref: [],
       values: 0,
@@ -369,17 +466,12 @@ class Decoder {
   }
 
   pushByteString (start, end) {
-    if (start === end) {
-      this._push(new Buffer(0))
-      return
-    }
-
-    this._push(new Uint8Array(this._heap.slice(start, end)))
+    this._push(this.createByteStringFromHeap(start, end))
   }
 
   pushUtf8StringStart () {
     this._parents[this._depth] = {
-      type: PARENT_UTF8_STRING,
+      type: c.PARENT.UTF8_STRING,
       length: -1,
       ref: [],
       values: 0,
@@ -388,23 +480,16 @@ class Decoder {
   }
 
   pushUtf8String (start, end) {
-    if (start === end) {
-      this._push('')
-      return
-    }
-
-    this._push(
-      (new Buffer(this._heap.slice(start, end))).toString('utf8')
-    )
+    this._push(this.createUtf8StringFromHeap(start, end))
   }
 
   pushSimpleUnassigned (val) {
-    this._push(new Simple(val))
+    this._push(this.createSimpleUnassigned(val))
   }
 
   pushTagStart (tag) {
     this._parents[this._depth] = {
-      type: PARENT_TAG,
+      type: c.PARENT.TAG,
       length: 1,
       ref: [tag]
     }
@@ -419,7 +504,7 @@ class Decoder {
   }
 
   pushTagUnassigned (tagNumber) {
-    this._push(this._createTag(tagNumber))
+    this._push(this.createTag(tagNumber))
   }
 
   pushBreak () {
@@ -432,20 +517,20 @@ class Decoder {
 
   _createObjectStartFixed (len) {
     if (len === 0) {
-      this._push({})
+      this._push(this.createObject({}))
       return
     }
 
-    this._createParent({}, PARENT_OBJECT, len)
+    this._createParent({}, c.PARENT.OBJECT, len)
   }
 
   _createArrayStartFixed (len) {
     if (len === 0) {
-      this._push([])
+      this._push(this.createArray([]))
       return
     }
 
-    this._createParent(new Array(len), PARENT_ARRAY, len)
+    this._createParent(new Array(len), c.PARENT.ARRAY, len)
   }
 
   _decode (input) {
@@ -488,26 +573,26 @@ class Decoder {
 
     return this._res
   }
-}
 
-Decoder.decode = function decode (input, enc) {
-  if (typeof input === 'string') {
-    input = new Buffer(input, enc || 'hex')
+  static decode (input, enc) {
+    if (typeof input === 'string') {
+      input = new Buffer(input, enc || 'hex')
+    }
+
+    const dec = new Decoder()
+    return dec.decodeFirst(input)
   }
 
-  const dec = new Decoder()
-  return dec.decodeFirst(input)
+  static decodeAll (input, enc) {
+    if (typeof input === 'string') {
+      input = new Buffer(input, enc || 'hex')
+    }
+
+    const dec = new Decoder()
+    return dec.decodeAll(input)
+  }
 }
 
 Decoder.decodeFirst = Decoder.decode
-
-Decoder.decodeAll = function decode (input, enc) {
-  if (typeof input === 'string') {
-    input = new Buffer(input, enc || 'hex')
-  }
-
-  const dec = new Decoder()
-  return dec.decodeAll(input)
-}
 
 module.exports = Decoder

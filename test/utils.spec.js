@@ -63,4 +63,14 @@ describe('utils', () => {
       ['/$)§)', 89]
     ])
   })
+
+  it('isNegativeZero', () => {
+    expect(utils.isNegativeZero(-0)).to.be.eql(true)
+    expect(utils.isNegativeZero(0)).to.be.eql(false)
+    expect(utils.isNegativeZero(-12)).to.be.eql(false)
+    expect(utils.isNegativeZero(12)).to.be.eql(false)
+    expect(utils.isNegativeZero(-12.3)).to.be.eql(false)
+    expect(utils.isNegativeZero(12.5)).to.be.eql(false)
+    expect(utils.isNegativeZero(-Infinity)).to.be.eql(false)
+  })
 })
