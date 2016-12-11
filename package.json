@@ -54,5 +54,14 @@
   },
   "engines": {
     "node": ">=4"
-  }
+  },
+  "contributors": [
+    "Benjamin Cabé <kartben@gmail.com>",
+    "Friedel Ziegelmayer <dignifiedquire@gmail.com>",
+    "Joe Hildebrand <joe-github@cursive.net>",
+    "Joe Hildebrand <joe+github@cursive.net>",
+    "Patrick Gansterer <paroga@paroga.com>",
+    "Scorpi <cobblebone@gmail.com>",
+    "greenkeeperio-bot <support@greenkeeper.io>"
+  ]
 }
