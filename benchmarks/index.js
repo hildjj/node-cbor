@@ -33,13 +33,13 @@ suite.add(`encode - node-cbor - ${vecLength}`, () => {
   }
 })
 
-suite.add(`encode - fast-cbor - ${vecLength}`, () => {
+suite.add(`encode - borc - ${vecLength}`, () => {
   for (let i = 0; i < vecLength; i++) {
     res.push(fastCbor.encode(vectors[i].decoded)[0])
   }
 })
 
-suite.add(`encode - stream - fast-cbor - ${vecLength}`, () => {
+suite.add(`encode - stream - borc - ${vecLength}`, () => {
   const enc = new fastCbor.Encoder({stream (chunk) {
     res.push(chunk)
   }})
@@ -62,7 +62,7 @@ suite.add(`decode - node-cbor - ${buffers.length}`, () => {
   }
 })
 
-suite.add(`decode - fast-cbor - ${buffers.length}`, () => {
+suite.add(`decode - borc - ${buffers.length}`, () => {
   for (let i = 0; i < buffers.length; i++) {
     res.push(fastDecoder.decodeFirst(buffers[i]))
   }

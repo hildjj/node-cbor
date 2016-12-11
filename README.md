@@ -1,12 +1,12 @@
-# fast-cbor
+# borc
 
 [![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io)
 [![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
 [![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
-[![Coverage Status](https://coveralls.io/repos/github/dignifiedquire/fast-cbor/badge.svg?branch=master)](https://coveralls.io/github/dignifiedquire/fast-cbor?branch=master)
-[![Dependency Status](https://david-dm.org/dignifiedquire/fast-cbor.svg?style=flat-square)](https://david-dm.org/dignifiedquire/fast-cbor)
-[![Travis CI](https://travis-ci.org/dignifiedquire/fast-cbor.svg?branch=master)](https://travis-ci.org/dignifiedquire/fast-cbor)
-[![Circle CI](https://circleci.com/gh/dignifiedquire/fast-cbor.svg?style=svg)](https://circleci.com/gh/dignifiedquire/fast-cbor)
+[![Coverage Status](https://coveralls.io/repos/github/dignifiedquire/borc/badge.svg?branch=master)](https://coveralls.io/github/dignifiedquire/fast-cbor?branch=master)
+[![Dependency Status](https://david-dm.org/dignifiedquire/borc.svg?style=flat-square)](https://david-dm.org/dignifiedquire/fast-cbor)
+[![Travis CI](https://travis-ci.org/dignifiedquire/borc.svg?branch=master)](https://travis-ci.org/dignifiedquire/fast-cbor)
+[![Circle CI](https://circleci.com/gh/dignifiedquire/borc.svg?style=svg)](https://circleci.com/gh/dignifiedquire/fast-cbor)
 
 
 > Encode and parse data in the Concise Binary Object Representation (CBOR) data format ([RFC7049](http://tools.ietf.org/html/rfc7049)) **as fast as possible**.
@@ -21,7 +21,7 @@ This library is a fork of the awesome [node-cbor]([![standard-readme compliant](
 ## Installation
 
 ```bash
-$ npm install --save fast-cbor
+$ npm install --save borc
 ```
 
 ## Benchmarks

@@ -1,13 +1,13 @@
 {
-  "name": "fast-cbor",
+  "name": "borc",
   "version": "1.0.0",
   "description": "Encode and parse data in the Concise Binary Object Representation (CBOR) data format (RFC7049).",
   "main": "./src/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dignifiedquire/fast-cbor.git"
+    "url": "https://github.com/dignifiedquire/borc.git"
   },
-  "homepage": "https://github.com/dignifiedquire/fast-cbor.git",
+  "homepage": "https://github.com/dignifiedquire/borc.git",
   "browser": {
     "fs": false
   },
