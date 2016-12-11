@@ -31,7 +31,7 @@ TODO
 ## Example
 
 ```javascript
-const cbor = require('cbor')
+const cbor = require(borc)
 const assert = require('assert')
 
 const encoded = cbor.encode(true) // returns <Buffer f5>
@@ -44,6 +44,13 @@ var m = new Map();
 m.set(1, 2);
 encoded = cbor.encode(m); // <Buffer a1 01 02>
 ```
+
+## API
+
+- `.encode(any): Buffer`
+- `.decodeFirst(string|Buffer): any`
+- `.decodeAll(string|Buffer): Array<any>`
+- `.diagnose(string|Buffer): string`
 
 The sync encoding and decoding are exported as a
 [leveldb encoding](https://github.com/Level/levelup#custom_encodings), as
@@ -79,16 +86,6 @@ Decoding supports the above types, including the following CBOR tag numbers:
 | 35  | RegExp         |
 
 
-## Extending
+## License
 
-### Encoders
-
-TODO
-
-### Decoders
-
-TODO
-
-## Developers
-
-TODO
+MIT
