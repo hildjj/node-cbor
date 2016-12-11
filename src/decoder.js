@@ -10,7 +10,14 @@ const Simple = require('./simple')
 const Tagged = require('./tagged')
 const url = require('url')
 
+/**
+ * Transform binary cbor data into JavaScript objects.
+ */
 class Decoder {
+  /**
+   * @param {Object} [opts={}]
+   * @param {number} [opts.size=65536] - Size of the allocated heap.
+   */
   constructor (opts) {
     opts = opts || {}
 
@@ -574,6 +581,13 @@ class Decoder {
     return this._res
   }
 
+  /**
+   * Decode the first cbor object.
+   *
+   * @param {Buffer|string} input
+   * @param {string} [enc='hex'] - Encoding used if a string is passed.
+   * @returns {*}
+   */
   static decode (input, enc) {
     if (typeof input === 'string') {
       input = new Buffer(input, enc || 'hex')
@@ -583,6 +597,13 @@ class Decoder {
     return dec.decodeFirst(input)
   }
 
+  /**
+   * Decode all cbor objects.
+   *
+   * @param {Buffer|string} input
+   * @param {string} [enc='hex'] - Encoding used if a string is passed.
+   * @returns {Array<*>}
+   */
   static decodeAll (input, enc) {
     if (typeof input === 'string') {
       input = new Buffer(input, enc || 'hex')

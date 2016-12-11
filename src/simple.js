@@ -38,7 +38,7 @@ class Simple {
    *
    * @returns {string} simple(value)
    */
-  inspect (depth, opts) {
+  inspect () {
     return 'simple(' + this.value + ')'
   }
 
@@ -46,6 +46,7 @@ class Simple {
    * Push the simple value onto the CBOR stream
    *
    * @param {cbor.Encoder} gen The generator to push onto
+   * @returns {number}
    */
   encodeCBOR (gen) {
     return gen._pushInt(this.value, MT.SIMPLE_FLOAT)

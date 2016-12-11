@@ -34,6 +34,10 @@ function toType (obj) {
  *
  */
 class Encoder {
+  /**
+   * @param {Object} [options={}]
+   * @param {function(Buffer)} options.stream
+   */
   constructor (options) {
     options = options || {}
 
@@ -366,6 +370,9 @@ class Encoder {
 
   /**
    * Alias for `.pushAny`
+   *
+   * @param {*} obj
+   * @returns {undefind}
    */
   write (obj) {
     this.pushAny(obj)
@@ -486,6 +493,11 @@ class Encoder {
     this.offset = 0
   }
 
+  /**
+   * Encode the given value
+   * @param {*} o
+   * @returns {Buffer}
+   */
   static encode (o) {
     const enc = new Encoder()
     enc.pushAny(o)

@@ -31,26 +31,23 @@ TODO
 ## Example
 
 ```javascript
-const cbor = require(borc)
+const cbor = require('borc')
 const assert = require('assert')
 
 const encoded = cbor.encode(true) // returns <Buffer f5>
 const decoded = cbor.decodeFirst(encoded)
 // decoded is the unpacked object
-assert.ok(obj === true);
+assert.ok(obj === true)
 
-// Use integers as keys?
-var m = new Map();
-m.set(1, 2);
-encoded = cbor.encode(m); // <Buffer a1 01 02>
+// Use integers as keys
+var m = new Map()
+m.set(1, 2)
+encoded = cbor.encode(m) // <Buffer a1 01 02>
 ```
 
 ## API
 
-- `.encode(any): Buffer`
-- `.decodeFirst(string|Buffer): any`
-- `.decodeAll(string|Buffer): Array<any>`
-- `.diagnose(string|Buffer): string`
+See https://dignifiedquire.github.io/borc for details
 
 The sync encoding and decoding are exported as a
 [leveldb encoding](https://github.com/Level/levelup#custom_encodings), as

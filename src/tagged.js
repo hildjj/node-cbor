@@ -39,6 +39,7 @@ class Tagged {
    * Push the simple value onto the CBOR stream
    *
    * @param {cbor.Encoder} gen The generator to push onto
+   * @returns {number}
    */
   encodeCBOR (gen) {
     gen._pushTag(this.tag)
