@@ -9,13 +9,12 @@
 [![Circle CI](https://circleci.com/gh/dignifiedquire/borc.svg?style=svg)](https://circleci.com/gh/dignifiedquire/borc)
 
 
-> Encode and parse data in the Concise Binary Object Representation (CBOR) data format ([RFC7049](http://tools.ietf.org/html/rfc7049)) **as fast as possible**.
+> Assimilate all your JavaScript objects into the Concise Binary Object Representation (CBOR) data format ([RFC7049](http://tools.ietf.org/html/rfc7049)) **as fast as possible**.
 
 
 ## About
 
-This library is a fork of the awesome [node-cbor]([![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
-). It borrows a lot of the interface, but drops all streaming and async processing in favor of a minimal syn api and being as fast as possible.
+This library is a fork of the awesome [node-cbor](https://github.com/hildjj/node-cbor). It borrows a lot of the interface, but drops all streaming and async processing in favor of a minimal syn api and being as fast as possible.
 
 
 ## Installation
