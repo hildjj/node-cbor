@@ -1,3 +1,13 @@
+<a name="2.0.1"></a>
+## [2.0.1](https://github.com/dignifiedquire/borc/compare/v2.0.0...v2.0.1) (2016-12-14)
+
+
+### Bug Fixes
+
+* **decoder:** handle large input sizes ([b44cdfe](https://github.com/dignifiedquire/borc/commit/b44cdfe)), closes [#10](https://github.com/dignifiedquire/borc/issues/10)
+
+
+
 <a name="2.0.0"></a>
 # [2.0.0](https://github.com/dignifiedquire/borc/compare/v2.0.2...v2.0.0) (2016-12-11)
 
