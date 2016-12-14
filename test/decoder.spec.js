@@ -101,6 +101,31 @@ describe('Decoder', function () {
       ).to.throw()
     })
 
+    it('decodeFirst large input', () => {
+      const largeInput = []
+      for (let i = 0; i < 0x10000; i++) {
+        largeInput.push('hi')
+      }
+
+      expect(
+        cbor.decodeFirst(cbor.encode(largeInput))
+      ).to.be.eql(
+        largeInput
+      )
+    })
+
+    it('decodeAll large input', () => {
+      const largeInput = []
+      for (let i = 0; i < 0x10000; i++) {
+        largeInput.push('hi')
+      }
+
+      expect(
+        cbor.decodeAll(cbor.encode(largeInput))
+      ).to.be.eql(
+        [largeInput]
+      )
+    })
     // TODO: implement depth limit
     it.skip('depth', () => {
       expect(

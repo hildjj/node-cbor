@@ -155,3 +155,19 @@ exports.keySorter = function (a, b) {
 exports.isNegativeZero = (x) => {
   return x === 0 && (1 / x < 0)
 }
+
+exports.nextPowerOf2 = (n) => {
+  let count = 0
+  // First n in the below condition is for
+  // the case where n is 0
+  if (n && !(n & (n - 1))) {
+    return n
+  }
+
+  while (n !== 0) {
+    n >>= 1
+    count += 1
+  }
+
+  return 1 << count
+}

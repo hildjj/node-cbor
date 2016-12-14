@@ -23,6 +23,9 @@ class Decoder {
 
     if (!opts.size || opts.size < 0x10000) {
       opts.size = 0x10000
+    } else {
+      // Ensure the size is a power of 2
+      opts.size = utils.nextPowerOf2(opts.size)
     }
 
     // Heap use to share the input with the parser
@@ -593,7 +596,7 @@ class Decoder {
       input = new Buffer(input, enc || 'hex')
     }
 
-    const dec = new Decoder()
+    const dec = new Decoder({size: input.length})
     return dec.decodeFirst(input)
   }
 
@@ -609,7 +612,7 @@ class Decoder {
       input = new Buffer(input, enc || 'hex')
     }
 
-    const dec = new Decoder()
+    const dec = new Decoder({size: input.length})
     return dec.decodeAll(input)
   }
 }

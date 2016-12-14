@@ -73,4 +73,15 @@ describe('utils', () => {
     expect(utils.isNegativeZero(12.5)).to.be.eql(false)
     expect(utils.isNegativeZero(-Infinity)).to.be.eql(false)
   })
+
+  it('nextPowerOf2', () => {
+    [
+      [1, 1],
+      [5, 8],
+      [127, 128],
+      [129, 256]
+    ].forEach((test) => {
+      expect(utils.nextPowerOf2(test[0])).to.be.eql(test[1])
+    })
+  })
 })
