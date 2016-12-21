@@ -16,6 +16,14 @@ function testAll (t, list) {
 test('good', t => testAll(t, cases.good))
 test('encode', t => testAll(t, cases.encodeGood))
 
+test('encodeOverflow', t => {
+  var data = {
+    a: Buffer.alloc(327680, 'a77a', 'hex'),
+    b: 1
+  }
+  t.throws(() => cbor.encode(data), Error, 'overflow')
+})
+
 test('undefined', t => {
   t.is(cbor.Encoder.encode(), null)
   t.is(cbor.encode(undefined, 2).toString('hex'), 'f702')
