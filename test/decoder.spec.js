@@ -139,8 +139,8 @@ function testGood (input, expected, desc) {
   it(desc, () => {
     const res = decoder.decodeFirst(input)
 
-    if (isNaN(expected)) {
-      expect(isNaN(res)).to.be.true
+    if (Number.isNaN(expected)) {
+      expect(Number.isNaN(res)).to.be.true
     } else if (res instanceof Bignumber) {
       expect(res).be.eql(new Bignumber(String(expected)))
     } else {
@@ -153,8 +153,10 @@ function testAll (list) {
   list.forEach((c) => {
     it(c[1], () => {
       const res = cbor.decodeFirst(cases.toBuffer(c))
-      if (isNaN(c[0])) {
-        expect(isNaN(res)).to.be.true
+      if (Number.isNaN(c[0]) ||
+          // Bignum.js needs num.isNaN()
+          (c[0] && c[0].isNaN && c[0].isNaN())) {
+        expect(Number.isNaN(res)).to.be.true
       } else {
         expect(res).to.be.eql(c[0])
       }

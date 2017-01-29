@@ -263,7 +263,7 @@ class Decoder {
   }
 
   createByteString (raw, len) {
-    return new Uint8Array(raw)
+    return Buffer.concat(raw)
   }
 
   createByteStringFromHeap (start, end) {
@@ -271,7 +271,7 @@ class Decoder {
       return new Buffer(0)
     }
 
-    return new Uint8Array(this._heap.slice(start, end))
+    return new Buffer(this._heap.slice(start, end))
   }
 
   createInt (val) {
@@ -346,7 +346,7 @@ class Decoder {
   }
 
   createUtf8String (raw, len) {
-    return new Buffer(raw)
+    return raw.join('')
   }
 
   createUtf8StringFromHeap (start, end) {

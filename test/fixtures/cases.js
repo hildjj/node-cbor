@@ -477,7 +477,7 @@ a1                                      # map(1)
     41              -- Bytes, length: 1
       00            -- 00
 0xc24100`],
-  // [new BigNum(-0), "3(h'')", '0xc34100'],
+  // [new Bignum(-0), "3(h'')", '0xc34100'],
   [new Bignum('18446744073709551615.1'), "4([-1, 2(h'09fffffffffffffff7')])", `
   c4                -- Tag #4
     82              -- Array, 2 items
@@ -650,23 +650,15 @@ a1                                      # map(1)
       62            -- String, length: 2
         3234        -- {Val:24}, "24"
 0xb8190061300161310261320361330461340561350661360761370861380961390a6231300b6231310c6231320d6231330e6231340f62313510623136116231371262313813623139146232301562323116623232176232331818623234`],
-  [new Set([1, 2]), '[1, 2]', `
-  82                -- Array, 2 items
-    01              -- [0], 1
-    02              -- [1], 2
-0x820102`], // TODO: define a tag for Set
-  // internal types
   [new cbor.Tagged(256, 1), '256(1)', `
   d9                --  next 2 bytes
     0100            -- Tag #256
       01            -- 1
 0xd9010001`],
-  [new TempClass('foo'), '65535("foo")', `
-  d9                --  next 2 bytes
-    ffff            -- Tag #65535
-      63            -- String, length: 3
-        666f6f      -- "foo"
-0xd9ffff63666f6f`]
+  [new Buffer([73, 32, 97, 109, 32, 49]), "h'4920616d2031'", `
+  46                -- bytes(6)
+    4920616d2031    -- "I am 1"
+0x464920616d2031`]
 ]
 
 exports.encodeGood = [
@@ -683,7 +675,18 @@ exports.encodeGood = [
   [new Bignum(-Infinity), '-Infinity_1', `
   f9                -- Float, next 2 bytes
     fc00            -- -Infinity
-0xf9fc00`]
+0xf9fc00`],
+  [new TempClass('foo'), '65535("foo")', `
+  d9                --  next 2 bytes
+    ffff            -- Tag #65535
+      63            -- String, length: 3
+        666f6f      -- "foo"
+0xd9ffff63666f6f`],
+  [new Set([1, 2]), '[1, 2]', `
+  82                -- Array, 2 items
+    01              -- [0], 1
+    02              -- [1], 2
+0x820102`] // TODO: move back to good cases, once decode into set is figured out
 ]
 
 exports.decodeGood = [
@@ -1132,7 +1135,7 @@ exports.toBuffer = function (c) {
   if (Array.isArray(c)) {
     c = c[2]
   }
-  let match = c.match(HEX)
+  const match = c.match(HEX)
   return new Buffer(match[1], 'hex')
 }
 
