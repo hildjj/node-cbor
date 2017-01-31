@@ -99,10 +99,12 @@ class MyType {
   // obj - the object being encoded
   //
   // should return true on success and false otherwise
-  toCBOR (gen, obj) {
-    return gen.pushAny('mytype:' + this.val.toString())
+  encodeCBOR (gen) {
+    return gen.pushAny('mytype:' + this.val)
   }
 }
+
+cbor.encode([new MyType('hello')])
 ```
 
 ### Encode Custom Tags
