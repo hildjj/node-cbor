@@ -82,6 +82,45 @@ Decoding supports the above types, including the following CBOR tag numbers:
 | 35  | RegExp         |
 
 
+## Customizations
+
+Borc supports custom tags as well as custom input types.
+
+### Encode Custom Types
+
+```js
+class MyType {
+  constructor (val) {
+    this.val = val
+  }
+
+  // Gets called when encoding this object
+  // gen - instance of the encoder
+  // obj - the object being encoded
+  //
+  // should return true on success and false otherwise
+  toCBOR (gen, obj) {
+    return gen.pushAny('mytype:' + this.val.toString())
+  }
+}
+```
+
+### Encode Custom Tags
+
+```js
+cbor.encode([new cbor.Tagged(42, 'hello')])
+```
+
+### Decode Custom Tags
+
+```js
+const decoder = new cbor.Decoder({
+  tags: {
+    42: (val) => val + ' world'
+  }
+})
+```
+
 ## License
 
 MIT
