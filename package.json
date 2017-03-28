@@ -63,7 +63,7 @@
   "devDependencies": {
     "ava": "*",
     "garbage": "*",
-    "optional-dev-dependency": ">=1.4"
+    "optional-dev-dependency": ">=2.0.1"
   },
   "license": "MIT",
   "readmeFilename": "README.md",
