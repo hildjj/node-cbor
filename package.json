@@ -61,7 +61,7 @@
     ]
   },
   "devDependencies": {
-    "ava": "*",
+    "ava": "0.19.0",
     "garbage": "*",
     "optional-dev-dependency": ">=1.4"
   },
