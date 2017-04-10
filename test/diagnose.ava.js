@@ -17,7 +17,7 @@ function testAll (t, list) {
 
 function failAll (t, list) {
   t.plan(list.length)
-  list.map(c => t.throws(cbor.diagnose(cases.toBuffer(c))))
+  return Promise.all(list.map(c => t.throws(cbor.diagnose(cases.toBuffer(c)))))
 }
 
 test('diagnose', t => testAll(t, cases.good))

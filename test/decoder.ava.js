@@ -26,7 +26,7 @@ function failAll (t, list) {
 
 function failFirstAll (t, list) {
   t.plan(list.length)
-  list.map(c => t.throws(cbor.decodeFirst(cases.toBuffer(c))))
+  return Promise.all(list.map(c => t.throws(cbor.decodeFirst(cases.toBuffer(c)))))
 }
 
 function failFirstAllCB (t, list) {
@@ -186,5 +186,5 @@ test('decodeAll', t => {
 })
 
 test('depth', t => {
-  t.throws(cbor.decodeFirst('818180', {max_depth: 1}))
+  return t.throws(cbor.decodeFirst('818180', {max_depth: 1}))
 })

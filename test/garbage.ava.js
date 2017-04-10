@@ -7,6 +7,7 @@ const garbage = require('garbage')
 const REPEATS = parseInt(process.env['NODE_CBOR_GARBAGE'] || 10000)
 test('garbage', t => {
   if (process.env.NO_GARBAGE) {
+    t.pass()
     return
   }
   t.plan(REPEATS)

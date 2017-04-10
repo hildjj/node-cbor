@@ -124,9 +124,14 @@ test.cb('streamFilesDash', t => {
   })
 })
 
-test('streamFilesInputs', t => {
+test.cb('streamFilesInputs', t => {
   // TODO: get error to fire
-  utils.streamFiles([new utils.DeHexStream('48656c6c6f2c20576f726c64210a')], () => new utils.HexStream())
+  utils.streamFiles([new utils.DeHexStream('48656c6c6f2c20576f726c64210a')], (er) => {
+    t.ifError(er)
+    const hs = new utils.HexStream()
+    t.end()
+    return hs
+  });
 })
 
 test.cb('guessEncoding', t => {

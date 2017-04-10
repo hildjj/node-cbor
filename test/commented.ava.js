@@ -14,7 +14,7 @@ function testAll (t, list) {
 
 function failAll (t, list) {
   t.plan(list.length)
-  list.map(c => t.throws(cbor.comment(cases.toBuffer(c))))
+  return Promise.all(list.map(c => t.throws(cbor.comment(cases.toBuffer(c)))))
 }
 
 test('good', t => testAll(t, cases.good))
@@ -32,13 +32,14 @@ test('input_errors', t => {
   cbor.comment('')
 })
 
-test('max_depth', t => {
-  return cbor.comment('01', 2, function (er, str) {
+test.cb('max_depth', t => {
+  cbor.comment('01', 2, function (er, str) {
     t.ifError(er)
     t.deepEqual('\n' + str, `
   01 -- 1
 0x01
 `)
+  t.end()
   })
 })
 
