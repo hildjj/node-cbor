@@ -68,7 +68,7 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {
-    "bignumber.js": "~4.0.0",
+    "bignumber.js": "^4.0.2",
     "commander": "^2.9",
     "json-text-sequence": "^0.1",
     "nofilter": "^0.0.3"
