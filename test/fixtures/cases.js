@@ -686,7 +686,19 @@ exports.encodeGood = [
   82                -- Array, 2 items
     01              -- [0], 1
     02              -- [1], 2
-0x820102`] // TODO: move back to good cases, once decode into set is figured out
+0x820102`], // TODO: move back to good cases, once decode into set is figured out
+  [new Uint8Array(new Buffer(0)), "h''", `
+  40                -- Bytes, length: 0
+0x40`],
+  [new Uint8Array(new Buffer('01020304', 'hex')), "h'01020304'", `
+  44                -- Bytes, length: 4
+    01020304        -- 01020304
+0x4401020304`],
+  [new Uint8Array(new Buffer('000102030405060708090a0b0c0d0e0f101112131415161718', 'hex')), "h'000102030405060708090a0b0c0d0e0f101112131415161718'", `
+  58                -- Bytes, length next 1 byte
+    19              -- Bytes, length: 25
+      000102030405060708090a0b0c0d0e0f101112131415161718 -- 000102030405060708090a0b0c0d0e0f101112131415161718
+0x5819000102030405060708090a0b0c0d0e0f101112131415161718`]
 ]
 
 exports.decodeGood = [
