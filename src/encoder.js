@@ -399,7 +399,7 @@ class Encoder {
       case 'Array':
         return this._pushArray(this, obj)
       case 'Uint8Array':
-        return this._pushBuffer(this, obj)
+        return this._pushBuffer(this, Buffer.isBuffer(obj) ? obj : new Buffer(obj))
       case 'Null':
         return this._pushUInt8(NULL)
       case 'Undefined':
