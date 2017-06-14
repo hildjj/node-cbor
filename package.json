@@ -42,7 +42,8 @@
     "asm.js": "github:dherman/asm.js",
     "cbor": "^3.0.0",
     "chai": "^3.5.0",
-    "garbage": "0.0.0"
+    "garbage": "0.0.0",
+    "benchmark": "^2.1.0"
   },
   "license": "MIT",
   "readmeFilename": "README.md",
