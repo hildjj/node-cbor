@@ -115,7 +115,7 @@ Decoding supports the above types, including the following CBOR tag numbers:
 
 There are several ways to add a new encoder:
 
-### `ecodeCBOR` method
+### `encodeCBOR` method
 
 This is the easiest approach, if you can modify the class being encoded.  Add an
 `encodeCBOR` method to your class, which takes a single parameter of the encoder
