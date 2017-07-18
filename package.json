@@ -61,15 +61,16 @@
     ]
   },
   "devDependencies": {
-    "ava": "*",
-    "garbage": "*",
+    "ava": "^0.21",
+    "concordance": "^3.0",
+    "garbage": "0.0.0",
     "optional-dev-dependency": ">=1.4"
   },
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {
-    "bignumber.js": "^4.0.2",
-    "commander": "^2.9",
+    "bignumber.js": "^4.0",
+    "commander": "^2.11",
     "json-text-sequence": "^0.1",
     "nofilter": "^0.0.3"
   },

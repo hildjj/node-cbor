@@ -662,7 +662,7 @@ exports.decodeGood = [
   f9                -- Float, next 2 bytes
     0000            -- 0
 0xf90000`],
-  [0, '-0_1', `
+  [-0, '-0_1', `
   f9                -- Float, next 2 bytes
     8000            -- -0
 0xf98000`],

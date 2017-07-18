@@ -9,6 +9,7 @@ const opts = require('commander')
   .version(pkg.version)
   .usage('[options] <file ...>')
   .option('-x, --hex', 'Hex string output')
+  .option('-c, --canonical', 'Canonical output')
   .parse(process.argv)
 
 const argv = opts.args
@@ -19,7 +20,7 @@ if (argv.length === 0) {
 utils.streamFiles(argv, function () {
   const Parser = require('json-text-sequence').parser
   const p = new Parser()
-  const d = new cbor.Encoder()
+  const d = new cbor.Encoder({canonical: opts.canonical})
   p.pipe(d)
   p.on('truncated', function (b) {
     try {
