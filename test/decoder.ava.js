@@ -65,6 +65,18 @@ test('decodeAllSync', t => {
   t.throws(() => cbor.Decoder.decodeAllSync('63666f'), Error)
 })
 
+test('decode indefinite byte string', t => {
+  var indefinite = Buffer.from([
+    0x5F, // indefinite byte string
+    0x43, // byte string length=3
+    1, 2, 3,
+    0xFF  // BREAK
+  ])
+  var expected = Buffer.from([1, 2, 3])
+  var decoded = cbor.Decoder.decodeFirstSync(indefinite)
+  t.deepEqual(decoded, expected)
+});
+
 test.cb('add_tag', t => {
   function replaceTag (val) {
     return {foo: val}
