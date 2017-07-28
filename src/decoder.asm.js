@@ -490,7 +490,7 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
 
     offset = (offset + 3) | 0
 
-    return 1
+    return 0
   }
 
   function ARRAY_32 (octet) {

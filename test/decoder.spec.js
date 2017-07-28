@@ -126,6 +126,17 @@ describe('Decoder', function () {
         [largeInput]
       )
     })
+
+    it('decode large arrays', () => {
+      const input = new Array(256).fill(1)
+
+      expect(
+        cbor.decode(cbor.encode(input))
+      ).to.be.eql(
+        input
+      )
+    })
+
     // TODO: implement depth limit
     it.skip('depth', () => {
       expect(
