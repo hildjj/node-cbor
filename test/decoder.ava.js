@@ -10,7 +10,7 @@ function testAll (t, list) {
   return Promise.all(list.map(c => {
     return cbor.decodeFirst(cases.toBuffer(c))
       .then(d => {
-        if (isNaN(c[0])) {
+        if ((typeof(c[0]) === 'number') && isNaN(c[0])) {
           t.truthy(isNaN(d))
         } else {
           t.deepEqual(d, c[0], cases.toString(c))

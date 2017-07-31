@@ -433,7 +433,7 @@ exports.good = [
         49          -- Bytes, length: 9
           09fffffffffffffff7 -- 09fffffffffffffff7
 0xc48220c24909fffffffffffffff7`],
-  [new BigNum(NaN), 'NaN_1', `
+  [NaN, 'NaN_1', `
   f9                -- Float, next 2 bytes
     7e00            -- NaN
 0xf97e00`],
@@ -506,7 +506,7 @@ exports.good = [
     01              -- {Key:0}, 1
     02              -- {Val:0}, 2
 0xa10102`],
-  [new Map([[new Map([['b', 1]]), new Map([['b', 1]])]]), '{{"b": 1}: {"b": 1}}', `
+  [new Map([[{b:1}, {b:1}]]), '{{"b": 1}: {"b": 1}}', `
   a1                -- Map, 1 pair
     a1              -- {Key:0}, Map, 1 pair
       61            -- String, length: 1
@@ -597,28 +597,11 @@ exports.good = [
       62            -- String, length: 2
         3234        -- {Val:24}, "24"
 0xb8190061300161310261320361330461340561350661360761370861380961390a6231300b6231310c6231320d6231330e6231340f62313510623136116231371262313813623139146232301562323116623232176232331818623234`],
-  [new Set([1, 2]), '[1, 2]', `
-  82                -- Array, 2 items
-    01              -- [0], 1
-    02              -- [1], 2
-0x820102`], // TODO: define a tag for Set
-
-  // internal types
-  [new NoFilter(new Buffer([1, 2, 3, 4])), "h'01020304'", `
-  44                -- Bytes, length: 4
-    01020304        -- 01020304
-0x4401020304`],
   [new cbor.Tagged(256, 1), '256(1)', `
   d9                --  next 2 bytes
     0100            -- Tag #256
       01            -- 1
-0xd9010001`],
-  [new TempClass('foo'), '65535("foo")', `
-  d9                --  next 2 bytes
-    ffff            -- Tag #65535
-      63            -- String, length: 3
-        666f6f      -- "foo"
-0xd9ffff63666f6f`]
+0xd9010001`]
 ]
 
 exports.encodeGood = [
@@ -635,7 +618,24 @@ exports.encodeGood = [
   [new BigNum(-Infinity), '-Infinity_1', `
   f9                -- Float, next 2 bytes
     fc00            -- -Infinity
-0xf9fc00`]
+0xf9fc00`],
+  [new Set([1, 2]), '[1, 2]', `
+  82                -- Array, 2 items
+    01              -- [0], 1
+    02              -- [1], 2
+0x820102`], // TODO: define a tag for Set
+
+  // internal types
+  [new NoFilter(new Buffer([1, 2, 3, 4])), "h'01020304'", `
+  44                -- Bytes, length: 4
+    01020304        -- 01020304
+0x4401020304`],
+  [new TempClass('foo'), '65535("foo")', `
+  d9                --  next 2 bytes
+    ffff            -- Tag #65535
+      63            -- String, length: 3
+        666f6f      -- "foo"
+0xd9ffff63666f6f`],
 ]
 
 exports.decodeGood = [
