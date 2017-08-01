@@ -50,7 +50,11 @@ const Simple = require('./simple')
 const utils = require('./utils')
 
 const constants = require('./constants')
-const MT = constants.MT, NUMBYTES = constants.NUMBYTES, SHIFT32 = constants.SHIFT32, SYMS = constants.SYMS, TAG = constants.TAG
+const MT = constants.MT
+const NUMBYTES = constants.NUMBYTES
+const SHIFT32 = constants.SHIFT32
+const SYMS = constants.SYMS
+const TAG = constants.TAG
 const HALF = (constants.MT.SIMPLE_FLOAT &lt;&lt; 5) | constants.NUMBYTES.TWO
 const FLOAT = (constants.MT.SIMPLE_FLOAT &lt;&lt; 5) | constants.NUMBYTES.FOUR
 const DOUBLE = (constants.MT.SIMPLE_FLOAT &lt;&lt; 5) | constants.NUMBYTES.EIGHT
@@ -63,6 +67,7 @@ const MAXINT_BN = new bignumber('0x20000000000000')
 const BUF_NAN = new Buffer('f97e00', 'hex')
 const BUF_INF_NEG = new Buffer('f9fc00', 'hex')
 const BUF_INF_POS = new Buffer('f97c00', 'hex')
+const LOOP_DETECT = Symbol('CBOR_LOOP_DETECT')
 
 /**
  * Transform JavaScript values into CBOR bytes.  The `Writable` side of
@@ -81,14 +86,28 @@ class Encoder extends stream.Transform {
    *   for Array, Date, Buffer, Map, RegExp, Set, Url, or bignumber.
    * @param {boolean} [options.canonical=false] - should the output be
    *   canonicalized
+   * @param {boolean|Symbol} [options.detectLoops=false] - should object loops
+   *   be detected?  This will currently modify the encoded object graph
+   *   by adding a Symbol property to each object.  If this bothers you,
+   *   call `removeLoopDetectors` on the encoded object when done.  Do not
+   *   encode the same object twice on the same encoder, without calling
+   *   `removeLoopDetectors` in between.
    */
-  constructor (options) {
+  constructor(options) {
     options = options || {}
     options.readableObjectMode = false
     options.writableObjectMode = true
     super(options)
 
     this.canonical = options.canonical
+    // new Symbol for each instance.  Note: means we can't re-use the same
+    // encoder and encoded object
+    if (typeof(options.detectLoops) === 'symbol') {
+      this.detectLoops = options.detectLoops
+    } else {
+      this.detectLoops = !!options.detectLoops ? Symbol('CBOR_DETECT') : null
+    }
+
     this.semanticTypes = [
       Array, this._pushArray,
       Date, this._pushDate,
@@ -107,13 +126,13 @@ class Encoder extends stream.Transform {
     }
   }
 
-  _transform (fresh, encoding, cb) {
+  _transform(fresh, encoding, cb) {
     const ret = this.pushAny(fresh)
     // Old transformers might not return bool.  undefined !== false
     return cb((ret === false) ? new Error('Push Error') : undefined)
   }
 
-  _flush (cb) {
+  _flush(cb) {
     return cb()
   }
 
@@ -132,7 +151,7 @@ class Encoder extends stream.Transform {
    * @param {any} fun
    * @returns {encodeFunction}
    */
-  addSemanticType (type, fun) {
+  addSemanticType(type, fun) {
     for (let i = 0, len = this.semanticTypes.length; i &lt; len; i += 2) {
       const typ = this.semanticTypes[i]
       if (typ === type) {
@@ -145,40 +164,40 @@ class Encoder extends stream.Transform {
     return null
   }
 
-  _pushUInt8 (val) {
+  _pushUInt8(val) {
     const b = new Buffer(1)
     b.writeUInt8(val)
     return this.push(b)
   }
 
-  _pushUInt16BE (val) {
+  _pushUInt16BE(val) {
     const b = new Buffer(2)
     b.writeUInt16BE(val)
     return this.push(b)
   }
 
-  _pushUInt32BE (val) {
+  _pushUInt32BE(val) {
     const b = new Buffer(4)
     b.writeUInt32BE(val)
     return this.push(b)
   }
 
-  _pushDoubleBE (val) {
+  _pushDoubleBE(val) {
     const b = new Buffer(8)
     b.writeDoubleBE(val)
     return this.push(b)
   }
 
-  _pushNaN () {
+  _pushNaN() {
     return this.push(BUF_NAN)
   }
 
-  _pushInfinity (obj) {
+  _pushInfinity(obj) {
     const half = (obj &lt; 0) ? BUF_INF_NEG : BUF_INF_POS
     return this.push(half)
   }
 
-  _pushFloat (obj) {
+  _pushFloat(obj) {
     if (this.canonical) {
       // TODO: is this enough slower to hide behind canonical?
       // It's certainly enough of a hack (see utils.parseHalf)
@@ -208,7 +227,7 @@ class Encoder extends stream.Transform {
     return this._pushUInt8(DOUBLE) &amp;&amp; this._pushDoubleBE(obj)
   }
 
-  _pushInt (obj, mt, orig) {
+  _pushInt(obj, mt, orig) {
     const m = mt &lt;&lt; 5
     switch (false) {
       case !(obj &lt; 24):
@@ -232,7 +251,7 @@ class Encoder extends stream.Transform {
     }
   }
 
-  _pushIntNum (obj) {
+  _pushIntNum(obj) {
     if (obj &lt; 0) {
       return this._pushInt(-obj - 1, MT.NEG_INT, obj)
     } else {
@@ -240,7 +259,7 @@ class Encoder extends stream.Transform {
     }
   }
 
-  _pushNumber (obj) {
+  _pushNumber(obj) {
     switch (false) {
       case !isNaN(obj):
         return this._pushNaN(obj)
@@ -253,24 +272,24 @@ class Encoder extends stream.Transform {
     }
   }
 
-  _pushString (obj) {
+  _pushString(obj) {
     const len = Buffer.byteLength(obj, 'utf8')
     return this._pushInt(len, MT.UTF8_STRING) &amp;&amp; this.push(obj, 'utf8')
   }
 
-  _pushBoolean (obj) {
+  _pushBoolean(obj) {
     return this._pushUInt8(obj ? TRUE : FALSE)
   }
 
-  _pushUndefined (obj) {
+  _pushUndefined(obj) {
     return this._pushUInt8(UNDEFINED)
   }
 
-  _pushNull (obj) {
+  _pushNull(obj) {
     return this._pushUInt8(NULL)
   }
 
-  _pushArray (gen, obj) {
+  _pushArray(gen, obj) {
     const len = obj.length
     if (!gen._pushInt(len, MT.ARRAY)) {
       return false
@@ -283,31 +302,31 @@ class Encoder extends stream.Transform {
     return true
   }
 
-  _pushTag (tag) {
+  _pushTag(tag) {
     return this._pushInt(tag, MT.TAG)
   }
 
-  _pushDate (gen, obj) {
+  _pushDate(gen, obj) {
     return gen._pushTag(TAG.DATE_EPOCH) &amp;&amp; gen.pushAny(obj / 1000)
   }
 
-  _pushBuffer (gen, obj) {
+  _pushBuffer(gen, obj) {
     return gen._pushInt(obj.length, MT.BYTE_STRING) &amp;&amp; gen.push(obj)
   }
 
-  _pushNoFilter (gen, obj) {
+  _pushNoFilter(gen, obj) {
     return gen._pushBuffer(gen, obj.slice())
   }
 
-  _pushRegexp (gen, obj) {
+  _pushRegexp(gen, obj) {
     return gen._pushTag(TAG.REGEXP) &amp;&amp; gen.pushAny(obj.source)
   }
 
-  _pushSet (gen, obj) {
+  _pushSet(gen, obj) {
     if (!gen._pushInt(obj.size, MT.ARRAY)) {
       return false
     }
-    for (let x of obj) {
+    for (const x of obj) {
       if (!gen.pushAny(x)) {
         return false
       }
@@ -315,11 +334,11 @@ class Encoder extends stream.Transform {
     return true
   }
 
-  _pushUrl (gen, obj) {
+  _pushUrl(gen, obj) {
     return gen._pushTag(TAG.URI) &amp;&amp; gen.pushAny(obj.format())
   }
 
-  _pushBigint (obj) {
+  _pushBigint(obj) {
     let tag = TAG.POS_BIGINT
     if (obj.isNegative()) {
       obj = obj.negated().minus(1)
@@ -333,7 +352,7 @@ class Encoder extends stream.Transform {
     return this._pushTag(tag) &amp;&amp; this._pushBuffer(this, buf)
   }
 
-  _pushBigNumber (gen, obj) {
+  _pushBigNumber(gen, obj) {
     if (obj.isNaN()) {
       return gen._pushNaN()
     }
@@ -360,7 +379,7 @@ class Encoder extends stream.Transform {
     }
   }
 
-  _pushMap (gen, obj) {
+  _pushMap(gen, obj) {
     if (!gen._pushInt(obj.size, MT.MAP)) {
       return false
     }
@@ -374,7 +393,7 @@ class Encoder extends stream.Transform {
       for (const e of obj.entries()) {
         entries.push(e)
       }
-      entries.sort((a,b) => {
+      entries.sort((a, b) => {
         // a, b are both entries of [key, value]
         const a_cbor = Encoder.encode(a[0])
         const b_cbor = Encoder.encode(b[0])
@@ -395,9 +414,38 @@ class Encoder extends stream.Transform {
     return true
   }
 
-  _pushObject (obj) {
+  removeLoopDetectors(obj) {
+    if (!this.detectLoops || (typeof(obj) !== 'object') || !obj) {
+      return false
+    }
+    const dl = obj[LOOP_DETECT]
+    if (!dl || (dl !== this.detectLoops)) {
+      // ironically, use loop marking to detect loops on removal as well
+      return false
+    }
+    delete obj[LOOP_DETECT]
+    if (Array.isArray(obj)) {
+      for (const i of obj) {
+        this.removeLoopDetectors(i)
+      }
+    } else {
+      for (const k in obj) {
+        this.removeLoopDetectors(obj[k])
+      }
+    }
+    return true
+  }
+
+  _pushObject(obj) {
     if (!obj) {
       return this._pushNull(obj)
+    }
+    if (this.detectLoops) {
+      if (obj[LOOP_DETECT] === this.detectLoops) {
+        throw new Error('Loop detected while CBOR encoding')
+      } else {
+        obj[LOOP_DETECT] = this.detectLoops
+      }
     }
     for (let i = 0, len1 = this.semanticTypes.length; i &lt; len1; i += 2) {
       const typ = this.semanticTypes[i]
@@ -453,7 +501,7 @@ class Encoder extends stream.Transform {
    * @param {any} obj
    * @returns {boolean} true on success
    */
-  pushAny (obj) {
+  pushAny(obj) {
     switch (typeof obj) {
       case 'number':
         return this._pushNumber(obj)
@@ -476,20 +524,22 @@ class Encoder extends stream.Transform {
             throw new Error('Unknown symbol: ' + obj.toString())
         }
       default:
-        throw new Error('Unknown type: ' + typeof obj + ', ' + (!!obj ? obj.toString() : ''))
+        throw new Error(
+          'Unknown type: ' + typeof obj + ', ' +
+          (!!obj ? obj.toString() : ''))
     }
   }
 
   /* backwards-compat wrapper */
-  _pushAny (obj) {
+  _pushAny(obj) {
     // TODO: write deprecation warning
     return this.pushAny(obj)
   }
 
-  _encodeAll (objs) {
+  _encodeAll(objs) {
     const bs = new NoFilter()
     this.pipe(bs)
-    for (let o of objs) {
+    for (const o of objs) {
       if (typeof o === 'undefined') {
         this._pushUndefined()
       } else if (o === null) {
@@ -509,7 +559,7 @@ class Encoder extends stream.Transform {
    * @param {...any} objs - the objects to encode
    * @returns {Buffer} - the encoded objects
    */
-  static encode () {
+  static encode() {
     const objs = Array.prototype.slice.apply(arguments)
     return new Encoder()._encodeAll(objs)
   }
@@ -521,7 +571,7 @@ class Encoder extends stream.Transform {
    * @param {...any} objs - the objects to encode
    * @returns {Buffer} - the encoded objects
    */
-  static encodeCanonical () {
+  static encodeCanonical() {
     const objs = Array.prototype.slice.apply(arguments)
     return new Encoder({canonical: true})._encodeAll(objs)
   }

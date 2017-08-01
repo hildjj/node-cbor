@@ -121,3 +121,40 @@ test('canonical numbers', t => {
 test('encodeCanonical', t => {
   t.deepEqual(cbor.encodeCanonical(-1.25), new Buffer('f9bd00', 'hex'))
 })
+
+test('detect loops', t => {
+  const enc = new cbor.Encoder({detectLoops: true})
+  const bs = new NoFilter()
+  enc.pipe(bs)
+
+  const a = {c: false}
+  const b = [a]
+  enc.write(b)
+  t.is(bs.read().toString('hex'), '81a16163f4')
+  t.is(Object.getOwnPropertySymbols(a).length, 1)
+  t.is(Object.getOwnPropertySymbols(b).length, 1)
+  enc.removeLoopDetectors(b)
+  t.is(Object.getOwnPropertySymbols(a).length, 0)
+  t.is(Object.getOwnPropertySymbols(b).length, 0)
+  enc.removeLoopDetectors(b)
+  t.is(Object.getOwnPropertySymbols(a).length, 0)
+  t.is(Object.getOwnPropertySymbols(b).length, 0)
+  a.a = a
+  t.throws(() => enc.write(b))
+})
+
+test('detect loops, own symbol', t => {
+  const s = Symbol('MINE')
+  const enc = new cbor.Encoder({detectLoops: s})
+  const bs = new NoFilter()
+  enc.pipe(bs)
+
+  const a = {c: new Date()}
+  enc.write(a)
+  const a_syms = Object.getOwnPropertySymbols(a)
+  const date_syms = Object.getOwnPropertySymbols(a.c)
+  t.is(a_syms.length, 1)
+  t.is(date_syms.length, 1)
+  t.is(a[a_syms[0]], s)
+  t.is(a.c[date_syms[0]], s)
+})
