@@ -117,3 +117,7 @@ test('canonical numbers', t => {
     t.is(bs.read().toString('hex'), numEnc[1])
   }
 })
+
+test('encodeCanonical', t => {
+  t.deepEqual(cbor.encodeCanonical(-1.25), new Buffer('f9bd00', 'hex'))
+})

@@ -623,6 +623,11 @@ exports.encodeGood = [
   f9                -- Float, next 2 bytes
     fc00            -- -Infinity
 0xf9fc00`],
+  [new BigNum(NaN), '-NaN', `
+  f9                -- Float, next 2 bytes
+    7e00            -- NaN
+0xf97e00`],
+
   [new Set([1, 2]), '[1, 2]', `
   82                -- Array, 2 items
     01              -- [0], 1
