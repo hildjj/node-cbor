@@ -20,7 +20,7 @@ if (argv.length === 0) {
   argv.push('-')
 }
 
-utils.streamFiles(argv, function () {
+utils.streamFiles(argv, () => {
   const d = new cbor.Diagnose()
   d.pipe(process.stdout)
   return d

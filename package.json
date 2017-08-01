@@ -23,23 +23,18 @@
   },
   "scripts": {
     "clean": "rm -rf coverage .nyc_output/ docs/api man/*",
-    "prelint": "optional-dev-dependency -t lint",
-    "lint": "standard src/*.js bin/* test/*.js",
-    "predoc": "optional-dev-dependency -t doc",
+    "lint": "eslint src/*.js bin/* test/*.js",
     "doc": "jsdoc -c .jsdoc.conf",
-    "precoverage": "optional-dev-dependency -t coverage",
     "coverage": "nyc npm test",
     "coveragehtml": "nyc report -r html",
     "precoveragehtml": "npm run coverage",
     "test": "ava",
-    "preman": "optional-dev-dependency -t doc",
     "man": "mkdir -p man; for f in man_src/*.md; do b=`basename $f`; marked-man $f -o man/${b%.md}.1; gzip -9f man/${b%.md}.1; done",
     "watch": "watch 'npm run coveragehtml' lib/ test/",
     "release": "npm version patch && git push --follow-tags && npm publish",
     "live": "live-server --port=4002 --ignorePattern='(js|css|png)$' coverage",
-    "predev": "if [ ! -f coverage/index.html ]; then mkdir coverage; cp .waiting.html coverage/index.html; fi; optional-dev-dependency -t dev",
+    "predev": "if [ ! -f coverage/index.html ]; then mkdir coverage; cp .waiting.html coverage/index.html; fi",
     "dev": "npm-run-all -p --silent watch live",
-    "precoveralls": "optional-dev-dependency -t ci",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "keywords": [
@@ -63,8 +58,15 @@
   "devDependencies": {
     "ava": "^0.21",
     "concordance": "^3.0",
+    "eslint": "^4.3.0",
     "garbage": "0.0.0",
-    "optional-dev-dependency": ">=1.4"
+    "jsdoc": "*",
+    "live-server": "*",
+    "marked-man": "*",
+    "minami": "*",
+    "npm-run-all": "*",
+    "nyc": "*",
+    "watch": "*"
   },
   "license": "MIT",
   "readmeFilename": "README.md",
@@ -76,47 +78,5 @@
   },
   "engines": {
     "node": ">=4"
-  },
-  "optionalDevDependencies": {
-    "ava": [
-      "*",
-      "test"
-    ],
-    "standard": [
-      "*",
-      "lint"
-    ],
-    "jsdoc": [
-      "*",
-      "doc"
-    ],
-    "minami": [
-      "*",
-      "doc"
-    ],
-    "marked-man": [
-      "*",
-      "man"
-    ],
-    "nyc": [
-      "*",
-      "coverage"
-    ],
-    "live-server": [
-      "*",
-      "dev"
-    ],
-    "npm-run-all": [
-      "*",
-      "dev"
-    ],
-    "watch": [
-      "*",
-      "dev"
-    ],
-    "coveralls": [
-      "*",
-      "ci"
-    ]
   }
 }

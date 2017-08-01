@@ -17,12 +17,12 @@ if (argv.length === 0) {
   argv.push('-')
 }
 
-utils.streamFiles(argv, function () {
+utils.streamFiles(argv, () => {
   const Parser = require('json-text-sequence').parser
   const p = new Parser()
   const d = new cbor.Encoder({canonical: opts.canonical})
   p.pipe(d)
-  p.on('truncated', function (b) {
+  p.on('truncated', (b) => {
     try {
       d.write(JSON.parse(b))
     } catch (e) {
@@ -34,7 +34,7 @@ utils.streamFiles(argv, function () {
   if (opts.hex) {
     o = new utils.HexStream()
     d.pipe(o)
-    o.on('end', function () { process.stdout.write('\n') })
+    o.on('end', () => process.stdout.write('\n'))
   }
   o.pipe(process.stdout)
   return p

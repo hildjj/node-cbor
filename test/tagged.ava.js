@@ -14,15 +14,15 @@ test('create', t => {
 })
 
 test('edges', t => {
-  t.throws(function () {
+  t.throws(() => {
     new cbor.Tagged(-11, 'one') // eslint-disable-line
   })
 
-  t.throws(function () {
+  t.throws(() => {
     new cbor.Tagged(1.1, 'one') // eslint-disable-line
   })
 
-  t.throws(function () {
+  t.throws(() => {
     new cbor.Tagged('zero', 'one') // eslint-disable-line
   })
 })

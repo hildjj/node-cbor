@@ -28,12 +28,13 @@ test('parseCBORint', t => {
 
 test('parseCBORfloat', t => {
   t.deepEqual(utils.parseCBORfloat(bin('0 00000 0000000000')), 0)
-  t.deepEqual(utils.parseCBORfloat(bin('0 00000000 00000000000000000000000')), 0)
-  t.deepEqual(utils.parseCBORfloat(bin('0 00000000000 0000000000000000000000000000000000000000000000000000')), 0)
-  t.throws(function () {
+  t.deepEqual(utils.parseCBORfloat(bin('0 00000000 00000000000000000000000')),
+    0)
+  t.deepEqual(utils.parseCBORfloat(bin('0 00000000000 0000000000000000000000000000000000000000000000000000')), 0) // eslint-disable-line max-len
+  t.throws(() => {
     utils.parseCBORfloat(hex('ff'))
   })
-  t.throws(function () {
+  t.throws(() => {
     utils.parseCBORfloat(hex('ff'))
   })
 })
@@ -54,7 +55,11 @@ test('extend', t => {
   t.deepEqual(utils.extend({}, {foo: 1}), {foo: 1})
   t.deepEqual(utils.extend({foo: 2}, {foo: 1}), {foo: 1})
   t.deepEqual(utils.extend({foo: 2, bar: 2}, {foo: 1}), {foo: 1, bar: 2})
-  t.deepEqual(utils.extend({foo: 2, bar: 2}, {foo: 1}, {bar: 3}), {foo: 1, bar: 3})
+  t.deepEqual(utils.extend(
+    {foo: 2, bar: 2},
+    {foo: 1},
+    {bar: 3}),
+  {foo: 1, bar: 3})
 })
 
 test('arrayEqual', t => {
@@ -71,13 +76,17 @@ test('bufferEqual', t => {
   t.deepEqual(utils.bufferEqual(new Buffer(0)), false)
   t.deepEqual(utils.bufferEqual(new Buffer(0), new Buffer(0)), true)
   t.deepEqual(utils.bufferEqual(new Buffer([1]), new Buffer(0)), false)
-  t.deepEqual(utils.bufferEqual(new Buffer([1, 2, 3]), new Buffer([1, 2, 3])), true)
-  t.deepEqual(utils.bufferEqual(new Buffer([1, 2, 3]), new Buffer([1, 2, 4])), false)
+  t.deepEqual(utils.bufferEqual(
+    new Buffer([1, 2, 3]),
+    new Buffer([1, 2, 3])), true)
+  t.deepEqual(utils.bufferEqual(
+    new Buffer([1, 2, 3]),
+    new Buffer([1, 2, 4])), false)
 })
 
 test('bufferToBignumber', t => {
-  var num = new BigNum(0x12345678).toString(16)
-  var numbuf = new Buffer(num, 'hex')
+  const num = new BigNum(0x12345678).toString(16)
+  const numbuf = new Buffer(num, 'hex')
   t.deepEqual(utils.bufferToBignumber(numbuf), new BigNum(0x12345678))
 })
 
@@ -92,10 +101,10 @@ test('DeHexStream', t => {
 })
 
 test.cb('HexStream', t => {
-  var h = new utils.HexStream()
-  var bs = new NoFilter()
+  const h = new utils.HexStream()
+  const bs = new NoFilter()
   h.pipe(bs)
-  h.on('end', function () {
+  h.on('end', () => {
     t.deepEqual(bs.toString('utf8'), '61')
     t.end()
   })
@@ -103,10 +112,10 @@ test.cb('HexStream', t => {
 })
 
 test.cb('streamFilesNone', t => {
-  utils.streamFiles([], function () {}, function () {
-    utils.streamFiles(['/tmp/hopefully-does-not-exist'], function () {
+  utils.streamFiles([], () => {}, () => {
+    utils.streamFiles(['/tmp/hopefully-does-not-exist'], () => {
       return new utils.HexStream()
-    }, function (er) {
+    }, (er) => {
       t.truthy(er)
       t.end()
     })
@@ -114,8 +123,8 @@ test.cb('streamFilesNone', t => {
 })
 
 test.cb('streamFilesDash', t => {
-  var u = new utils.HexStream()
-  var bs = new NoFilter()
+  const u = new utils.HexStream()
+  const bs = new NoFilter()
   u.pipe(bs)
   utils.streamFiles([new utils.DeHexStream('6161')], () => u, (er) => {
     t.ifError(er)
@@ -126,12 +135,14 @@ test.cb('streamFilesDash', t => {
 
 test.cb('streamFilesInputs', t => {
   // TODO: get error to fire
-  utils.streamFiles([new utils.DeHexStream('48656c6c6f2c20576f726c64210a')], (er) => {
+  utils.streamFiles([
+    new utils.DeHexStream('48656c6c6f2c20576f726c64210a')
+  ], (er) => {
     t.ifError(er)
     const hs = new utils.HexStream()
     t.end()
     return hs
-  });
+  })
 })
 
 test.cb('guessEncoding', t => {

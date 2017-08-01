@@ -6,7 +6,7 @@ const cases = require('./cases')
 const NoFilter = require('nofilter')
 const BigNum = require('bignumber.js')
 
-function testAll (t, list) {
+function testAll(t, list) {
   t.plan(list.length)
   return Promise.all(list.map(c => {
     t.is(cbor.encode(c[0]).toString('hex'), cases.toString(c), c[1])
@@ -22,25 +22,23 @@ test('undefined', t => {
 })
 
 test('badFunc', t => {
-  t.throws(function () {
-    cbor.encode(function () { return 'hi' })
-  })
-  t.throws(function () {
-    cbor.encode(Symbol('foo'))
-  })
+  t.throws(() => cbor.encode(() => 'hi'))
+  t.throws(() => cbor.encode(Symbol('foo')))
 })
 
 test('addSemanticType', t => {
   // before the tag, this is an innocuous object:
   // {"value": "foo"}
-  var tc = new cases.TempClass('foo')
+  const tc = new cases.TempClass('foo')
   delete (cases.TempClass.prototype.encodeCBOR)
   t.is(cbor.Encoder.encode(tc).toString('hex'), 'a16576616c756563666f6f')
-  var gen = new cbor.Encoder({genTypes: [cases.TempClass, cases.TempClass.toCBOR]})
+  const gen = new cbor.Encoder({
+    genTypes: [cases.TempClass, cases.TempClass.toCBOR]
+  })
   gen.write(tc)
   t.is(gen.read().toString('hex'), 'd9fffe63666f6f')
 
-  function hexPackBuffer (gen, obj, bufs) {
+  function hexPackBuffer(gen, obj, bufs) {
     gen.write('0x' + obj.toString('hex'))
   // intentionally don't return
   }
@@ -53,9 +51,9 @@ test('addSemanticType', t => {
 })
 
 test.cb('stream', t => {
-  var bs = new NoFilter()
-  var gen = new cbor.Encoder()
-  gen.on('end', function () {
+  const bs = new NoFilter()
+  const gen = new cbor.Encoder()
+  gen.on('end', () => {
     t.deepEqual(bs.read(), new Buffer([1, 2]))
     t.end()
   })
@@ -65,9 +63,9 @@ test.cb('stream', t => {
 })
 
 test.cb('streamNone', t => {
-  var bs = new NoFilter()
-  var gen = new cbor.Encoder()
-  gen.on('end', function () {
+  const bs = new NoFilter()
+  const gen = new cbor.Encoder()
+  gen.on('end', () => {
     t.deepEqual(bs.read(), null)
     t.end()
   })
@@ -103,10 +101,10 @@ test('canonical', t => {
   enc.pipe(bs)
   enc.write(cases.goodMap)
   t.is(bs.read().toString('hex'),
-       'ad0063626172613063666f6f616101616201626161026262620263616161036362626203806b656d7074792061727261798101656172726179a069656d707479206f626aa1613102636f626af6646e756c6c')
+    'ad0063626172613063666f6f616101616201626161026262620263616161036362626203806b656d7074792061727261798101656172726179a069656d707479206f626aa1613102636f626af6646e756c6c') // eslint-disable-line max-len
   enc.write({aa: 2, b:1})
   t.is(bs.read().toString('hex'),
-       'a261620162616102')
+    'a261620162616102')
 })
 
 test('canonical numbers', t => {
@@ -114,7 +112,7 @@ test('canonical numbers', t => {
   const bs = new NoFilter()
   enc.pipe(bs)
 
-  for (let numEnc of cases.canonNums) {
+  for (const numEnc of cases.canonNums) {
     enc.write(numEnc[0])
     t.is(bs.read().toString('hex'), numEnc[1])
   }

@@ -6,6 +6,7 @@ node_js:
 - "7"
 install:
 - npm install
+- npm install coveralls
 script:
 - npm run coverage
 after_success:

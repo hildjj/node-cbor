@@ -22,7 +22,8 @@ const all = [
   ['Indefinite length array/map', [], '9fff'],
   ['Indefinite length string', 'streaming', '7f657374726561646d696e67ff'],
   ['Canonical CBOR', {b: 1, a: 2}, 'a2616102616201', true], // note: re-ordering
-  ['Tag 0', new Date(1500000000000), 'c07818323031372d30372d31345430323a34303a30302e3030305a'], // 2017-07-14T02:40:00.000Z
+  ['Tag 0', new Date(1500000000000), // 2017-07-14T02:40:00.000Z
+    'c07818323031372d30372d31345430323a34303a30302e3030305a'],
   ['Tag 1', new Date(1500000000000), 'c11a59682f00'],
   ['Tag 2', new BigNum('18446744073709551616'), 'c249010000000000000000'],
   ['Tag 3', new BigNum('-18446744073709551617'), 'c349010000000000000000'],
@@ -34,12 +35,13 @@ const all = [
   ['Tag 23', 0, ''],
   // this one is only useful in certain circumstances
   ['Tag 24', 0, ''],
-  ['Tag 32', url.parse('https://mozilla.com/'), 'd8207468747470733a2f2f6d6f7a696c6c612e636f6d2f'],
+  ['Tag 32', url.parse('https://mozilla.com/'),
+    'd8207468747470733a2f2f6d6f7a696c6c612e636f6d2f'],
   ['Tag 33', 0, ''],
   ['Tag 34', 0, ''],
   ['Tag 35', /foo/, 'd82363666f6f'],
   ['Tag 36', 0, ''],
-  ['Tag 55799', 0, ''],
+  ['Tag 55799', 0, '']
 ]
 
 let addedPad = false
@@ -54,7 +56,6 @@ function deepEqual(actual, expected) {
   if (!ret.pass) {
     const a = ret.actual || concordance.describe(actual)
     const e = ret.expected || concordance.describe(expected)
-    //console.error('Test failed:', concordance.diffDescriptors(a, e, {maxDepth: 3}))
     return false
   }
   return true
@@ -62,14 +63,19 @@ function deepEqual(actual, expected) {
 
 function markdownOut(title, decode, encode) {
   const DE = (decode ? 'D' : ' ') + (encode ? 'E' : ' ')
-  console.log(`| ${title.padEnd(28)}|          | ${DE}        |           |       |`);
+  console.log(
+    `| ${title.padEnd(28)}|          | ${DE}        |           |       |`)
 }
 
 function test(title, native, encoded, canonical) {
   if (encoded.length > 0) {
-    const e = !!canonical ? cbor.Encoder.encodeCanonical(native) : cbor.encode(native)
+    const e = !!canonical ?
+      cbor.Encoder.encodeCanonical(native) : cbor.encode(native)
     const d = cbor.decodeFirstSync(encoded)
-    markdownOut(title, deepEqual(native, d), deepEqual(e, new Buffer(encoded, 'hex')))
+    markdownOut(
+      title,
+      deepEqual(native, d),
+      deepEqual(e, new Buffer(encoded, 'hex')))
   } else {
     markdownOut(title)
   }

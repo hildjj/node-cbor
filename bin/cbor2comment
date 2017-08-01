@@ -22,7 +22,7 @@ if (argv.length === 0) {
   argv.push('-')
 }
 
-utils.streamFiles(argv, function () {
+utils.streamFiles(argv, () => {
   const c = new cbor.Commented({
     max_depth: numTabs
   })

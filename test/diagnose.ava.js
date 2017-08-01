@@ -5,7 +5,7 @@ const cbor = require('../')
 const test = require('ava')
 const cases = require('./cases')
 
-function testAll (t, list) {
+function testAll(t, list) {
   t.plan(list.length)
   return Promise.all(list.map(c => {
     return cbor.diagnose(cases.toBuffer(c))
@@ -15,7 +15,7 @@ function testAll (t, list) {
   }))
 }
 
-function failAll (t, list) {
+function failAll(t, list) {
   t.plan(list.length)
   return Promise.all(list.map(c => t.throws(cbor.diagnose(cases.toBuffer(c)))))
 }
@@ -30,7 +30,7 @@ test.cb('construct', t => {
   d.stream_errors = true
   const bs = new NoFilter()
   d.pipe(bs)
-  d.on('end', function () {
+  d.on('end', () => {
     t.is(bs.toString('utf8'), 'Error: unexpected end of input')
     t.end()
   })
@@ -43,13 +43,11 @@ test.cb('stream', t => {
   })
   const bs = new NoFilter()
 
-  dt.on('end', function () {
+  dt.on('end', () => {
     t.is(bs.toString('utf8'), '1-')
     t.end()
   })
-  dt.on('error', function (er) {
-    t.ifError(er)
-  })
+  dt.on('error', (er) => t.ifError(er))
   dt.pipe(bs)
   dt.end(new Buffer('01', 'hex'))
 })

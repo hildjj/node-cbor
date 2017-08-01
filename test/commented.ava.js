@@ -1,10 +1,12 @@
+'use strict'
+
 const cbor = require('../')
 const test = require('ava')
 const cases = require('./cases')
 const utils = require('../lib/utils')
 const NoFilter = require('nofilter')
 
-function testAll (t, list) {
+function testAll(t, list) {
   t.plan(list.length)
   return Promise.all(list.map(c => {
     return cbor.comment(cases.toBuffer(c))
@@ -12,7 +14,7 @@ function testAll (t, list) {
   }))
 }
 
-function failAll (t, list) {
+function failAll(t, list) {
   t.plan(list.length)
   return Promise.all(list.map(c => t.throws(cbor.comment(cases.toBuffer(c)))))
 }
@@ -33,13 +35,13 @@ test('input_errors', t => {
 })
 
 test.cb('max_depth', t => {
-  cbor.comment('01', 2, function (er, str) {
+  cbor.comment('01', 2, (er, str) => {
     t.ifError(er)
     t.deepEqual('\n' + str, `
   01 -- 1
 0x01
 `)
-  t.end()
+    t.end()
   })
 })
 
@@ -48,7 +50,7 @@ test.cb('stream', t => {
   const parser = new cbor.Commented()
   parser.pipe(bs)
 
-  parser.on('end', function () {
+  parser.on('end', () => {
     t.deepEqual('\n' + bs.toString('utf8'), `
   61                -- String, length: 1
     61              -- "a"
@@ -56,9 +58,7 @@ test.cb('stream', t => {
 `)
     t.end()
   })
-  parser.on('error', function (er) {
-    t.fail(er)
-  })
+  parser.on('error', (er) => t.fail(er))
 
   const h = new utils.DeHexStream('6161')
   h.pipe(parser)
@@ -72,7 +72,7 @@ test.cb('function', t => {
 
 test('inputs', t => {
   return cbor.comment('mB4AAQIDBAUGBwgJAAECAwQFBgcICQABAgMEBQYHCAk=', 'base64')
-    .then(function (c) {
+    .then((c) => {
       t.deepEqual('\n' + c, `
   98                -- Array, length next 1 byte
     1e              -- Array, 30 items
@@ -108,9 +108,11 @@ test('inputs', t => {
       09            -- [29], 9
 0x981e000102030405060708090001020304050607080900010203040506070809
 `)
-      return cbor.comment('x\u001e012345678901234567890123456789', {encoding: 'utf8'})
+      return cbor.comment('x\u001e012345678901234567890123456789',
+        {encoding: 'utf8'})
     })
-    .then(function (c) {
+    .then((c) => {
+      /* eslint-disable max-len */
       t.deepEqual('\n' + c, `
   78                -- String, length next 1 byte
     1e              -- String, length: 30
@@ -119,7 +121,7 @@ test('inputs', t => {
 `)
       return cbor.comment('381d', {max_depth: 12})
     })
-    .then(function (c) {
+    .then((c) => {
       t.deepEqual('\n' + c, `
   38                    -- Negative number, next 1 byte
     1d                  -- -30
