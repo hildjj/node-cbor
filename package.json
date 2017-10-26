@@ -12,7 +12,6 @@
     "fs": false
   },
   "scripts": {
-    "lint-asm": "asmjs lib/*.asm.js",
     "test": "aegir-test",
     "test:browser": "aegir-test --env browser",
     "test:node": "aegir-test --env node",
@@ -24,7 +23,8 @@
     "build": "aegir-build",
     "coverage": "aegir-coverage",
     "coverage-publish": "aegir-coverage publish",
-    "bench": "node benchmarks/index"
+    "bench": "node benchmarks/index.js",
+    "bench-browser": "budo benchmarks/index.js"
   },
   "keywords": [
     "coap",
@@ -39,11 +39,11 @@
   },
   "devDependencies": {
     "aegir": "^9.1.2",
-    "asm.js": "github:dherman/asm.js",
+    "benchmark": "^2.1.0",
+    "budo": "^10.0.4",
     "cbor": "^3.0.0",
     "chai": "^3.5.0",
-    "garbage": "0.0.0",
-    "benchmark": "^2.1.0"
+    "garbage": "0.0.0"
   },
   "license": "MIT",
   "readmeFilename": "README.md",

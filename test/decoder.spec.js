@@ -144,6 +144,30 @@ describe('Decoder', function () {
       ).to.throw()
     })
   })
+
+  describe('large', () => {
+    const sizes = [
+      1024,
+      1024 * 63,
+      1024 * 64,
+      1024 * 128
+    ]
+
+    sizes.forEach((size) => it(`decodes buffer of size ${size} bytes`, () => {
+      const input = Buffer.alloc(size)
+      input.fill('A')
+
+      expect(
+        cbor.decode(cbor.encode(input))
+      ).to.be.eql(
+        input
+      )
+
+      const strRes = cbor.decode(cbor.encode(input.toString('utf8')))
+      expect(strRes.length).to.be.eql(size)
+      expect(strRes[0]).to.be.eql('A')
+    }))
+  })
 })
 
 function testGood (input, expected, desc) {

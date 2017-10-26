@@ -101,6 +101,14 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
     ) | 0
   }
 
+  function readUInt32 (n) {
+    n = n | 0
+
+    return (
+      (heap[n | 0] << 24) | (heap[(n + 1) | 0] << 16) | (heap[(n + 2) | 0] << 8) | heap[(n + 3) | 0]
+    ) | 0
+  }
+
   // -- Initial Byte Handlers
 
   function INT_P (octet) {
@@ -266,7 +274,6 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
     var step = 0
 
     step = (octet - 64) | 0
-
     if (checkOffset(step | 0) | 0) {
       return 1
     }
@@ -337,10 +344,32 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function BYTE_STRING_32 (octet) {
     octet = octet | 0
 
-    return 1
+    var start = 0
+    var end = 0
+    var length = 0
+
+    if (checkOffset(4) | 0) {
+      return 1
+    }
+
+    length = readUInt32((offset + 1) | 0) | 0
+    start = (offset + 5) | 0
+    end = (((offset + 5) | 0) + (length | 0)) | 0
+
+
+    if (checkOffset((length + 4) | 0) | 0) {
+      return 1
+    }
+
+    pushByteString(start | 0, end | 0)
+
+    offset = end | 0
+
+    return 0
   }
 
   function BYTE_STRING_64 (octet) {
+    // NOT IMPLEMENTED
     octet = octet | 0
 
     return 1
@@ -434,10 +463,31 @@ module.exports = function decodeAsm (stdlib, foreign, buffer) {
   function UTF8_STRING_32 (octet) {
     octet = octet | 0
 
-    return 1
+    var start = 0
+    var end = 0
+    var length = 0
+
+    if (checkOffset(4) | 0) {
+      return 1
+    }
+
+    length = readUInt32((offset + 1) | 0) | 0
+    start = (offset + 5) | 0
+    end = (((offset + 5) | 0) + (length | 0)) | 0
+
+    if (checkOffset((length + 4) | 0) | 0) {
+      return 1
+    }
+
+    pushUtf8String(start | 0, end | 0)
+
+    offset = end | 0
+
+    return 0
   }
 
   function UTF8_STRING_64 (octet) {
+    // NOT IMPLEMENTED
     octet = octet | 0
 
     return 1
