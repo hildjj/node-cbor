@@ -28,15 +28,15 @@
 </nav>
 
 <div id="main">
-    
+
     <h1 class="page-title">decoder.js</h1>
-    
-
-    
 
 
 
-    
+
+
+
+
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>'use strict'
@@ -55,7 +55,7 @@ const SIMPLE = constants.SIMPLE
 const SYMS = constants.SYMS
 
 const NEG_ONE = new bignumber(-1)
-const NEG_MAX = NEG_ONE.sub(
+const NEG_MAX = NEG_ONE.minus(
   new bignumber(Number.MAX_SAFE_INTEGER.toString(16), 16))
 const COUNT = Symbol('count')
 const PENDING_KEY = Symbol('pending_key')
@@ -431,7 +431,7 @@ class Decoder extends BinaryParseStream {
           if (val === Number.MAX_SAFE_INTEGER) {
             val = NEG_MAX
           } else if (val instanceof bignumber) {
-            val = NEG_ONE.sub(val)
+            val = NEG_ONE.minus(val)
           } else {
             val = -1 - val
           }
