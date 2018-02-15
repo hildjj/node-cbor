@@ -372,7 +372,7 @@ class Encoder extends stream.Transform {
     if (!gen._pushIntNum(-dec)) {
       return false
     }
-    if (slide.abs().lessThan(MAXINT_BN)) {
+    if (slide.abs().isLessThan(MAXINT_BN)) {
       return gen._pushIntNum(slide.toNumber())
     } else {
       return gen._pushBigint(slide)
