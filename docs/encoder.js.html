@@ -28,15 +28,15 @@
 </nav>
 
 <div id="main">
-    
+
     <h1 class="page-title">encoder.js</h1>
-    
-
-    
 
 
 
-    
+
+
+
+
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>'use strict'
@@ -368,11 +368,11 @@ class Encoder extends stream.Transform {
     }
 
     const dec = obj.decimalPlaces()
-    const slide = obj.mul(new bignumber(10).pow(dec))
+    const slide = obj.times(new bignumber(10).pow(dec))
     if (!gen._pushIntNum(-dec)) {
       return false
     }
-    if (slide.abs().lessThan(MAXINT_BN)) {
+    if (slide.abs().isLessThan(MAXINT_BN)) {
       return gen._pushIntNum(slide.toNumber())
     } else {
       return gen._pushBigint(slide)

@@ -56,23 +56,23 @@
     ]
   },
   "devDependencies": {
-    "ava": "^0.21",
+    "ava": "^0.25",
     "concordance": "^3.0",
-    "eslint": "^4.3.0",
-    "garbage": "0.0.0",
-    "jsdoc": "*",
+    "eslint": "^4.17",
+    "garbage": "0.0",
+    "jsdoc": "^3.5",
     "live-server": "*",
     "marked-man": "*",
     "minami": "*",
-    "npm-run-all": "*",
-    "nyc": "*",
+    "npm-run-all": "^4.1",
+    "nyc": "^11.5",
     "watch": "*"
   },
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {
-    "bignumber.js": "^4.0",
-    "commander": "^2.11",
+    "bignumber.js": "^6.0",
+    "commander": "^2.14.1",
     "json-text-sequence": "^0.1",
     "nofilter": "^0.0.3"
   },
