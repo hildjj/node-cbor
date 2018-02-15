@@ -68,10 +68,10 @@ test('encode', t => {
   ])
   const buf = cbor.encode(m)
   t.is(buf.toString('hex'),
-    'a6f4f501636f6e650062686920636e6567820001656172726179a2616101616202636d6170')
+    'a6f4f501636f6e650062686920636e6567820001656172726179a2616101616202636d6170') // eslint-disable-line max-len
   const bufCanon = cbor.encodeCanonical(m)
   t.is(bufCanon.toString('hex'),
-    'a60062686901636f6e6520636e6567820001656172726179a2616101616202636d6170f4f5')
+    'a60062686901636f6e6520636e6567820001656172726179a2616101616202636d6170f4f5') // eslint-disable-line max-len
 })
 
 test('encodefail', t => {
