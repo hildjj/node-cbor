@@ -48,7 +48,8 @@
   },
   "contributors": [
     "Patrick Gansterer <paroga@paroga.com> (http://paroga.com/)",
-    "Artyom Yagilev <github@scorpi.org> (http://scorpi.org/)"
+    "Artyom Yagilev <github@scorpi.org> (http://scorpi.org/)",
+    "Denis Lapaev <den@lapaev.me> (http://lapaev.me/)"
   ],
   "ava": {
     "files": [
