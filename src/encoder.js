@@ -372,10 +372,10 @@ class Encoder {
    * Alias for `.pushAny`
    *
    * @param {*} obj
-   * @returns {undefind}
+   * @returns {boolean} true on success
    */
   write (obj) {
-    this.pushAny(obj)
+    return this.pushAny(obj)
   }
 
   /**
@@ -500,7 +500,10 @@ class Encoder {
    */
   static encode (o) {
     const enc = new Encoder()
-    enc.pushAny(o)
+    const ret = enc.pushAny(o)
+    if (!ret) {
+      throw new Error('Failed to encode input')
+    }
 
     return enc.finalize()
   }

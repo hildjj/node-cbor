@@ -172,4 +172,49 @@ describe('encoder', () => {
       }
     })
   })
+
+  describe('nested classes', () => {
+    class Serializable {
+      serialize () {
+        const encoder = new cbor.Encoder()
+        const ret = this.encodeCBOR(encoder)
+        if (!ret) {
+          throw new Error('unable to serialize input')
+        }
+        return encoder.finalize()
+      }
+
+      static deserialize (serialized) {
+        return cbor.decodeAll(serialized)
+      }
+    }
+
+    class TestA extends Serializable {
+      encodeCBOR (gen) {
+        return gen.write(44)
+      }
+    }
+
+    class TestB extends Serializable {
+      encodeCBOR (gen) {
+        return gen.write([
+          new TestA(),
+          true
+        ])
+      }
+    }
+
+    it('flat', () => {
+      const a1 = new TestA()
+
+      expect(a1.serialize()).to.be.eql(Buffer.from([24, 44]))
+      expect(TestA.deserialize(a1.serialize())).to.be.eql([44])
+    })
+
+    it('nested', () => {
+      const b1 = new TestB()
+      const encoded = b1.serialize()
+      expect(TestB.deserialize(encoded)).to.be.eql([[44, true]])
+    })
+  })
 })
