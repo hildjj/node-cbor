@@ -6,7 +6,6 @@
  * be an extension point you're not yet expecting.
  */
 class Tagged {
-
   /**
    * Creates an instance of Tagged.
    *

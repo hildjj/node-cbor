@@ -157,7 +157,7 @@ class Decoder {
       return
     }
 
-    p.length --
+    p.length--
 
     // All children were seen, we can close the current parent
     if (p.length === 0) {
@@ -168,7 +168,7 @@ class Decoder {
   // Push any value to the current parent
   _push (val, hasChildren) {
     const p = this._currentParent
-    p.values ++
+    p.values++
 
     switch (p.type) {
       case c.PARENT.ARRAY:
@@ -268,10 +268,10 @@ class Decoder {
 
   createByteStringFromHeap (start, end) {
     if (start === end) {
-      return new Buffer(0)
+      return Buffer.alloc(0)
     }
 
-    return new Buffer(this._heap.slice(start, end))
+    return Buffer.from(this._heap.slice(start, end))
   }
 
   createInt (val) {
@@ -307,7 +307,7 @@ class Decoder {
     const g = utils.buildInt32(g1, g2)
 
     if (f > c.MAX_SAFE_HIGH) {
-      return c.NEG_ONE.sub(new Bignumber(f).times(c.SHIFT32).plus(g))
+      return c.NEG_ONE.minus(new Bignumber(f).times(c.SHIFT32).plus(g))
     }
 
     return -1 - ((f * c.SHIFT32) + g)
@@ -355,7 +355,7 @@ class Decoder {
     }
 
     return (
-      new Buffer(this._heap.slice(start, end))
+      Buffer.from(this._heap.slice(start, end))
     ).toString('utf8')
   }
 
@@ -593,7 +593,7 @@ class Decoder {
    */
   static decode (input, enc) {
     if (typeof input === 'string') {
-      input = new Buffer(input, enc || 'hex')
+      input = Buffer.from(input, enc || 'hex')
     }
 
     const dec = new Decoder({size: input.length})
@@ -609,7 +609,7 @@ class Decoder {
    */
   static decodeAll (input, enc) {
     if (typeof input === 'string') {
-      input = new Buffer(input, enc || 'hex')
+      input = Buffer.from(input, enc || 'hex')
     }
 
     const dec = new Decoder({size: input.length})

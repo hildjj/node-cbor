@@ -15,12 +15,12 @@ const vectors = require('../test/fixtures/vectors.js')
 const fastDecoder = new fastCbor.Decoder()
 
 const parsed = vectors
-      .filter((v) => v.hex && v.decoded)
-      .map((v) => JSON.stringify(v.decoded))
+  .filter((v) => v.hex && v.decoded)
+  .map((v) => JSON.stringify(v.decoded))
 
 const buffers = vectors
-      .filter((v) => v.hex && v.decoded)
-      .map((v) => new Buffer(v.hex, 'hex'))
+  .filter((v) => v.hex && v.decoded)
+  .map((v) => Buffer.from(v.hex, 'hex'))
 
 const suite = new Benchmark.Suite('cbor')
 

@@ -19,9 +19,9 @@ const UNDEFINED = (constants.MT.SIMPLE_FLOAT << 5) | constants.SIMPLE.UNDEFINED
 const NULL = (constants.MT.SIMPLE_FLOAT << 5) | constants.SIMPLE.NULL
 
 const MAXINT_BN = new Bignumber('0x20000000000000')
-const BUF_NAN = new Buffer('f97e00', 'hex')
-const BUF_INF_NEG = new Buffer('f9fc00', 'hex')
-const BUF_INF_POS = new Buffer('f97c00', 'hex')
+const BUF_NAN = Buffer.from('f97e00', 'hex')
+const BUF_INF_NEG = Buffer.from('f9fc00', 'hex')
+const BUF_INF_POS = Buffer.from('f97c00', 'hex')
 
 function toType (obj) {
   // [object Type]
@@ -83,7 +83,7 @@ class Encoder {
     this.result[this.offset] = val
     this.resultMethod[this.offset] = 0
     this.resultLength[this.offset] = val.length
-    this.offset ++
+    this.offset++
 
     if (this.streaming) {
       this.onData(this.finalize())
@@ -96,7 +96,7 @@ class Encoder {
     this.result[this.offset] = val
     this.resultMethod[this.offset] = method
     this.resultLength[this.offset] = len
-    this.offset ++
+    this.offset++
 
     if (this.streaming) {
       this.onData(this.finalize())
@@ -131,7 +131,7 @@ class Encoder {
   }
 
   _pushFloat (obj) {
-    const b2 = new Buffer(2)
+    const b2 = Buffer.allocUnsafe(2)
 
     if (utils.writeHalf(b2, obj)) {
       if (utils.parseHalf(b2) === obj) {
@@ -139,7 +139,7 @@ class Encoder {
       }
     }
 
-    const b4 = new Buffer(4)
+    const b4 = Buffer.allocUnsafe(4)
     b4.writeFloatBE(obj, 0)
     if (b4.readFloatBE(0) === obj) {
       return this._pushUInt8(FLOAT) && this.push(b4)
@@ -272,7 +272,7 @@ class Encoder {
     if (str.length % 2) {
       str = '0' + str
     }
-    const buf = new Buffer(str, 'hex')
+    const buf = Buffer.from(str, 'hex')
     return this._pushTag(tag) && this._pushBuffer(this, buf)
   }
 
@@ -292,11 +292,11 @@ class Encoder {
     }
 
     const dec = obj.decimalPlaces()
-    const slide = obj.mul(new Bignumber(10).pow(dec))
+    const slide = obj.multipliedBy(new Bignumber(10).pow(dec))
     if (!gen._pushIntNum(-dec)) {
       return false
     }
-    if (slide.abs().lessThan(MAXINT_BN)) {
+    if (slide.abs().isLessThan(MAXINT_BN)) {
       return gen._pushIntNum(slide.toNumber())
     } else {
       return gen._pushBigint(slide)
@@ -399,7 +399,7 @@ class Encoder {
       case 'Array':
         return this._pushArray(this, obj)
       case 'Uint8Array':
-        return this._pushBuffer(this, Buffer.isBuffer(obj) ? obj : new Buffer(obj))
+        return this._pushBuffer(this, Buffer.isBuffer(obj) ? obj : Buffer.from(obj))
       case 'Null':
         return this._pushUInt8(NULL)
       case 'Undefined':
