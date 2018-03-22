@@ -231,7 +231,7 @@ class Encoder {
   }
 
   _pushDate (gen, obj) {
-    return gen._pushTag(TAG.DATE_EPOCH) && gen.pushAny(obj / 1000)
+    return gen._pushTag(TAG.DATE_EPOCH) && gen.pushAny(Math.round(obj / 1000))
   }
 
   _pushBuffer (gen, obj) {
