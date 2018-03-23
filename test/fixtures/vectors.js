@@ -638,5 +638,20 @@ module.exports = [
       Fun: true,
       Amt: -2
     }
+  },
+  {
+    cbor: 'wRpatNH6',
+    hex: 'c11a5ab4d1fa',
+    roundtrip: true,
+    decoded: new Date(1521799674000),
+  },
+  // test that encoder saves dates as seconds since 1970-01-01 00:00:00
+  // don't test with decoder as fractions of seconds are also allowed in date tags
+  {
+    cbor: 'wRpatNH6',
+    hex: 'c11a5ab4d1fa',
+    roundtrip: true,
+    diagnostic: true,
+    decoded: new Date(1521799674001)
   }
 ]

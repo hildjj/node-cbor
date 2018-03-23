@@ -231,6 +231,10 @@ class Encoder {
   }
 
   _pushDate (gen, obj) {
+    // Round date, to get seconds since 1970-01-01 00:00:00 as defined in
+    // Sec. 2.4.1 and get a possibly more compact encoding. Note that it is
+    // still allowed to encode fractions of seconds which can be achieved by
+    // changing overwriting the encode function for Date objects.
     return gen._pushTag(TAG.DATE_EPOCH) && gen.pushAny(Math.round(obj / 1000))
   }
 
