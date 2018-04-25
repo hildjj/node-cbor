@@ -206,6 +206,18 @@ test('stringref-decode-2', t => {
   )
 })
 
-test('stringref-decode-invalid', t => {
-    return t.throws( cbor.decodeFirst('d81901'))
+test('stringref-decode-no-namespace', t => {
+  return t.throws( cbor.decodeFirst('d81901'))
+})
+
+test('stringref-decode-no-stored', t => {
+  return t.throws( cbor.decodeFirst('d9010081d81900'))
+})
+
+test('stringref-decode-index-too-large', t => {
+  return t.throws( cbor.decodeFirst('d901006361616182d81901'))
+})
+
+test('stringref-decode-index-negative', t => {
+  return t.throws( cbor.decodeFirst('d901006361616182d81921'))
 })
