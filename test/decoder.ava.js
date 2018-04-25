@@ -206,3 +206,6 @@ test('stringref-decode-2', t => {
   )
 })
 
+test('stringref-decode-invalid', t => {
+    return t.throws( cbor.decodeFirst('d81901'))
+})
