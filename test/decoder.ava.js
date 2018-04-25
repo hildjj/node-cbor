@@ -184,3 +184,25 @@ test('decodeAll', t => {
 test('depth', t => {
   return t.throws(cbor.decodeFirst('818180', {max_depth: 1}))
 })
+
+test('stringref-decode-1', t => {
+    t.deepEqual(
+      cbor.Decoder.decodeFirstSync('d90100836472616e6b65636f756e74d81900'), 
+      ["rank", "count", "rank"]
+    )
+})
+
+test('stringref-decode-2', t => {
+  // Note: this test has errors in the current version of http://cbor.schmorp.de/stringref, 
+  // I've fixed them here and reported the spec error to the maintainer
+  t.deepEqual(
+    cbor.Decoder.decodeFirstSync('d9010098206131633232326333333361346335353563363636633737376338383863393939636161616362626263636363636464646365656563666666636767676368686863696969636a6a6a636b6b6b636c6c6c636d6d6d636e6e6e636f6f6f6370707063717171637272726473737373d81901d8191763727272d8191818'), 
+    [  
+      "1", "222", "333",   "4", "555", "666", "777", "888", "999",
+      "aaa", "bbb", "ccc", "ddd", "eee", "fff", "ggg", "hhh", "iii",
+      "jjj", "kkk", "lll", "mmm", "nnn", "ooo", "ppp", "qqq", "rrr",
+      "ssss", "333", "qqq", "rrr", "ssss"
+    ]
+  )
+})
+
