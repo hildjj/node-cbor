@@ -29,6 +29,7 @@ module.exports = {
     "indent": ["error", 2, {"SwitchCase": 1}],
     "keyword-spacing": "error",
     "max-len": ["error", 80],
+    "no-buffer-constructor": "error",
     "no-const-assign": "error",
     "no-const-assign": "error",
     "no-dupe-class-members": "error",

@@ -73,20 +73,20 @@ test('arrayEqual', t => {
 
 test('bufferEqual', t => {
   t.deepEqual(utils.bufferEqual(), true)
-  t.deepEqual(utils.bufferEqual(new Buffer(0)), false)
-  t.deepEqual(utils.bufferEqual(new Buffer(0), new Buffer(0)), true)
-  t.deepEqual(utils.bufferEqual(new Buffer([1]), new Buffer(0)), false)
+  t.deepEqual(utils.bufferEqual(Buffer.alloc(0)), false)
+  t.deepEqual(utils.bufferEqual(Buffer.alloc(0), Buffer.alloc(0)), true)
+  t.deepEqual(utils.bufferEqual(Buffer.from([1]), Buffer.alloc(0)), false)
   t.deepEqual(utils.bufferEqual(
-    new Buffer([1, 2, 3]),
-    new Buffer([1, 2, 3])), true)
+    Buffer.from([1, 2, 3]),
+    Buffer.from([1, 2, 3])), true)
   t.deepEqual(utils.bufferEqual(
-    new Buffer([1, 2, 3]),
-    new Buffer([1, 2, 4])), false)
+    Buffer.from([1, 2, 3]),
+    Buffer.from([1, 2, 4])), false)
 })
 
 test('bufferToBignumber', t => {
   const num = new BigNum(0x12345678).toString(16)
-  const numbuf = new Buffer(num, 'hex')
+  const numbuf = Buffer.from(num, 'hex')
   t.deepEqual(utils.bufferToBignumber(numbuf), new BigNum(0x12345678))
 })
 
@@ -108,7 +108,7 @@ test.cb('HexStream', t => {
     t.deepEqual(bs.toString('utf8'), '61')
     t.end()
   })
-  h.end(new Buffer([0x61]))
+  h.end(Buffer.from([0x61]))
 })
 
 test.cb('streamFilesNone', t => {

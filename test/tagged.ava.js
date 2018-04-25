@@ -10,7 +10,7 @@ test('create', t => {
   t.deepEqual(tag.value, 'one')
   t.deepEqual(tag.toString(), '1("one")')
 
-  t.deepEqual(cbor.encode(tag), new Buffer('c1636f6e65', 'hex'))
+  t.deepEqual(cbor.encode(tag), Buffer.from('c1636f6e65', 'hex'))
 })
 
 test('edges', t => {

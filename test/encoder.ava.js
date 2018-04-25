@@ -45,7 +45,7 @@ test('addSemanticType', t => {
 
   // replace Buffer serializer with hex strings
   gen.addSemanticType(Buffer, hexPackBuffer)
-  gen.write(new Buffer('010203', 'hex'))
+  gen.write(Buffer.from('010203', 'hex'))
 
   t.is(gen.read().toString('hex'), '683078303130323033')
 })
@@ -54,7 +54,7 @@ test.cb('stream', t => {
   const bs = new NoFilter()
   const gen = new cbor.Encoder()
   gen.on('end', () => {
-    t.deepEqual(bs.read(), new Buffer([1, 2]))
+    t.deepEqual(bs.read(), Buffer.from([1, 2]))
     t.end()
   })
   gen.pipe(bs)
@@ -92,7 +92,7 @@ test('_pushAny', t => {
   const bs = new NoFilter()
   enc.pipe(bs)
   enc._pushAny(0)
-  t.deepEqual(bs.read(), new Buffer('00', 'hex'))
+  t.deepEqual(bs.read(), Buffer.from('00', 'hex'))
 })
 
 test('canonical', t => {
@@ -119,7 +119,7 @@ test('canonical numbers', t => {
 })
 
 test('encodeCanonical', t => {
-  t.deepEqual(cbor.encodeCanonical(-1.25), new Buffer('f9bd00', 'hex'))
+  t.deepEqual(cbor.encodeCanonical(-1.25), Buffer.from('f9bd00', 'hex'))
 })
 
 test('detect loops', t => {

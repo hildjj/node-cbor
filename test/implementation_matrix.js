@@ -10,7 +10,7 @@ const BigNum = require('bignumber.js')
 const all = [
   ['Major type 0 (uint)', 1, '01'],
   ['Major type 1 (nint)', -1, '20'],
-  ['Major type 2 (bstr)', new Buffer('0001', 'hex'), '420001'],
+  ['Major type 2 (bstr)', Buffer.from('0001', 'hex'), '420001'],
   ['Major type 3 (tstr)', 'foo', '63666f6f'],
   ['Major type 4 (array)', [0], '8100'],
   ['Major type 5 (map)', {a: 1}, 'a1616101'],
@@ -75,7 +75,7 @@ function test(title, native, encoded, canonical) {
     markdownOut(
       title,
       deepEqual(native, d),
-      deepEqual(e, new Buffer(encoded, 'hex')))
+      deepEqual(e, Buffer.from(encoded, 'hex')))
   } else {
     markdownOut(title)
   }

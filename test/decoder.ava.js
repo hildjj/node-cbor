@@ -94,7 +94,7 @@ test.cb('add_tag', t => {
         break
     }
   })
-  const b = new Buffer('d87f01c001', 'hex')
+  const b = Buffer.from('d87f01c001', 'hex')
   d.end(b)
 })
 
@@ -146,10 +146,10 @@ test('decodeFirst', t => {
     })
     .catch((er) => {
       t.truthy(er)
-      cbor.decodeFirst(new Buffer(0), (er, v) => {
+      cbor.decodeFirst(Buffer.alloc(0), (er, v) => {
         t.ifError(er)
         t.is(cbor.Decoder.NOT_FOUND, v)
-        return cbor.decodeFirst(new Buffer(0), {required: true}, (er, v) => {
+        return cbor.decodeFirst(Buffer.alloc(0), {required: true}, (er, v) => {
           t.truthy(er)
         })
       })

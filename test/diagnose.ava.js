@@ -34,7 +34,7 @@ test.cb('construct', t => {
     t.is(bs.toString('utf8'), 'Error: unexpected end of input')
     t.end()
   })
-  d.end(new Buffer([0x18]))
+  d.end(Buffer.from([0x18]))
 })
 
 test.cb('stream', t => {
@@ -49,7 +49,7 @@ test.cb('stream', t => {
   })
   dt.on('error', (er) => t.ifError(er))
   dt.pipe(bs)
-  dt.end(new Buffer('01', 'hex'))
+  dt.end(Buffer.from('01', 'hex'))
 })
 
 test.cb('inputs', t => {

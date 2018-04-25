@@ -60,21 +60,21 @@
   "devDependencies": {
     "ava": "^0.25",
     "concordance": "^3.0",
-    "eslint": "^4.17",
+    "eslint": "^4.19.1",
     "garbage": "0.0",
     "jsdoc": "^3.5",
     "live-server": "*",
     "marked-man": "*",
     "minami": "*",
     "npm-run-all": "^4.1",
-    "nyc": "^11.5",
+    "nyc": "^11.7.1",
     "watch": "*"
   },
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {
     "bignumber.js": "^6.0",
-    "commander": "^2.14.1",
+    "commander": "^2.15.1",
     "json-text-sequence": "^0.1",
     "nofilter": "^0.0.3"
   },
