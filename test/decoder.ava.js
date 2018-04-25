@@ -206,6 +206,29 @@ test('stringref-decode-2', t => {
   )
 })
 
-test('stringref-decode-invalid', t => {
+test('stringref-decode-3', t => {
+  t.deepEqual(
+    cbor.Decoder.decodeFirstSync('d901008563616161d81900d90100836362626263616161d81901d901008263636363d81900d81900'), 
+    ["aaa","aaa",["bbb","aaa","aaa"],["ccc","ccc"],"aaa"]
+  )
+})
+
+test('stringref-decode-no-namespace', t => {
     return t.throws( cbor.decodeFirst('d81901'))
+})
+
+test('stringref-decode-no-stored', t => {
+  return t.throws( cbor.decodeFirst('d9010081d81900'))
+})
+
+test('stringref-decode-index-too-large', t => {
+  return t.throws( cbor.decodeFirst('d901006361616182d81901'))
+})
+
+test('stringref-decode-index-negative', t => {
+  return t.throws( cbor.decodeFirst('d901006361616182d81921'))
+})
+
+test('stringref-decode-index-text', t => {
+  return t.throws( () => { cbor.decodeFirst('d901006361616182d8193626262')})
 })
