@@ -152,3 +152,16 @@ test.cb('guessEncoding', t => {
     t.end()
   }
 })
+
+test.cb('cborStringrefLength', t=> {
+  t.deepEqual(3, utils.minCborLength(0))
+  t.deepEqual(3, utils.minCborLength(23))
+  t.deepEqual(4, utils.minCborLength(24))
+  t.deepEqual(4, utils.minCborLength(255))
+  t.deepEqual(5, utils.minCborLength(256))
+  t.deepEqual(5, utils.minCborLength(65535))
+  t.deepEqual(7, utils.minCborLength(65536))
+  t.deepEqual(7, utils.minCborLength(4294967295))
+  t.deepEqual(11, utils.minCborLength(4294967296))
+  t.end()
+})
