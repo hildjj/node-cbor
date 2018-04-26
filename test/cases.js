@@ -178,7 +178,7 @@ exports.good = [
       77            -- String, length: 23
         687474703a2f2f7777772e6578616d706c652e636f6d2f -- "http://www.example.com/"
 0xd82077687474703a2f2f7777772e6578616d706c652e636f6d2f`],
-  [Buffer.alloc(0), 'h\'\'', `
+  [Buffer.allocUnsafe(0), 'h\'\'', `
   40                -- Bytes, length: 0
 0x40`],
   [Buffer.from('01020304', 'hex'), 'h\'01020304\'', `
@@ -488,7 +488,7 @@ exports.good = [
   c1                -- Tag #1
     00              -- 0
 0xc100`],
-  [Buffer.alloc(0), 'h\'\'', `
+  [Buffer.allocUnsafe(0), 'h\'\'', `
   40                -- Bytes, length: 0
 0x40`],
   [Buffer.from([0, 1, 2, 3, 4]), 'h\'0001020304\'', `
