@@ -1,0 +1,14 @@
+node_modules/
+coverage/
+.DS_Store
+TAGS
+.nyc_output/
+*.js.map
+jsconfig.json
+typings/
+typings.json
+.vscode/
+tools/
+docs/
+test/
+man_src/
