@@ -36,7 +36,7 @@ const assert = require('assert')
 const encoded = cbor.encode(true) // returns <Buffer f5>
 const decoded = cbor.decodeFirst(encoded)
 // decoded is the unpacked object
-assert.ok(obj === true)
+assert.ok(decoded === true)
 
 // Use integers as keys
 var m = new Map()
