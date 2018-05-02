@@ -1,7 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+chai.use(require('dirty-chai'))
+const expect = chai.expect
 
 const cbor = require('../')
 const cases = require('./fixtures/cases')
@@ -20,7 +22,7 @@ function failAll (list) {
   list.forEach(c => {
     expect(
       () => cbor.diagnose(cases.toBuffer(c))
-    ).to.throw
+    ).to.throw()
   })
 }
 

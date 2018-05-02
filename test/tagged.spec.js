@@ -13,7 +13,7 @@ describe('tagged', () => {
     expect(tag.value).to.be.eql('one')
     expect(tag.toString()).to.be.eql('1("one")')
 
-    expect(cbor.encode(tag)).to.be.eql(new Buffer('c1636f6e65', 'hex'))
+    expect(cbor.encode(tag)).to.be.eql(Buffer.from('c1636f6e65', 'hex'))
   })
 
   it('edges', () => {

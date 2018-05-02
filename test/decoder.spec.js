@@ -1,7 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+chai.use(require('dirty-chai'))
+const expect = chai.expect
 const Bignumber = require('bignumber.js')
 
 const cases = require('./fixtures/cases')
@@ -17,7 +19,7 @@ describe('Decoder', function () {
         continue
       }
       testGood(
-        new Buffer(vectors[i].hex, 'hex'),
+        Buffer.from(vectors[i].hex, 'hex'),
         vectors[i].decoded,
         vectors[i].hex
       )
@@ -43,7 +45,7 @@ describe('Decoder', function () {
         tags: {0: replaceTag, 127: newTag}
       })
 
-      const input = new Buffer('d87f01c001', 'hex')
+      const input = Buffer.from('d87f01c001', 'hex')
 
       expect(
         d.decodeAll(input)
@@ -71,7 +73,7 @@ describe('Decoder', function () {
       ).to.throw()
 
       expect(
-        () => cbor.decodeFirst(new Buffer(0))
+        () => cbor.decodeFirst(Buffer.from(0))
       ).to.throw()
     })
 
@@ -175,7 +177,7 @@ function testGood (input, expected, desc) {
     const res = decoder.decodeFirst(input)
 
     if (Number.isNaN(expected)) {
-      expect(Number.isNaN(res)).to.be.true
+      expect(Number.isNaN(res)).to.be.true()
     } else if (res instanceof Bignumber) {
       expect(res).be.eql(new Bignumber(String(expected)))
     } else {
@@ -191,7 +193,7 @@ function testAll (list) {
       if (Number.isNaN(c[0]) ||
           // Bignum.js needs num.isNaN()
           (c[0] && c[0].isNaN && c[0].isNaN())) {
-        expect(Number.isNaN(res)).to.be.true
+        expect(Number.isNaN(res)).to.be.true()
       } else {
         expect(res).to.be.eql(c[0])
       }

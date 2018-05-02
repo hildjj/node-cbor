@@ -19,7 +19,7 @@ function bin (s) {
     end += 8
   }
 
-  return new Buffer(chunks)
+  return Buffer.from(chunks)
 }
 
 describe('utils', () => {

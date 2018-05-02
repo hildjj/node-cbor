@@ -89,7 +89,7 @@ describe('encoder', () => {
 
       class HexBuffer {
         constructor (val, enc) {
-          this.val = new Buffer(val, enc)
+          this.val = Buffer.from(val, enc)
         }
 
         toString (enc) {
@@ -123,15 +123,15 @@ describe('encoder', () => {
     enc.write(123456)
 
     expect(chunks).to.be.eql([
-      new Buffer('65', 'hex'),
-      new Buffer('68656c6c6f', 'hex'),
-      new Buffer('65', 'hex'),
-      new Buffer('776f726c64', 'hex'),
-      new Buffer('a1', 'hex'),
-      new Buffer('6161', 'hex'),
-      new Buffer('01', 'hex'),
-      new Buffer('1a', 'hex'),
-      new Buffer('0001e240', 'hex')
+      Buffer.from('65', 'hex'),
+      Buffer.from('68656c6c6f', 'hex'),
+      Buffer.from('65', 'hex'),
+      Buffer.from('776f726c64', 'hex'),
+      Buffer.from('a1', 'hex'),
+      Buffer.from('6161', 'hex'),
+      Buffer.from('01', 'hex'),
+      Buffer.from('1a', 'hex'),
+      Buffer.from('0001e240', 'hex')
     ])
   })
 
@@ -170,6 +170,51 @@ describe('encoder', () => {
           )
         })
       }
+    })
+  })
+
+  describe('nested classes', () => {
+    class Serializable {
+      serialize () {
+        const encoder = new cbor.Encoder()
+        const ret = this.encodeCBOR(encoder)
+        if (!ret) {
+          throw new Error('unable to serialize input')
+        }
+        return encoder.finalize()
+      }
+
+      static deserialize (serialized) {
+        return cbor.decodeAll(serialized)
+      }
+    }
+
+    class TestA extends Serializable {
+      encodeCBOR (gen) {
+        return gen.write(44)
+      }
+    }
+
+    class TestB extends Serializable {
+      encodeCBOR (gen) {
+        return gen.write([
+          new TestA(),
+          true
+        ])
+      }
+    }
+
+    it('flat', () => {
+      const a1 = new TestA()
+
+      expect(a1.serialize()).to.be.eql(Buffer.from([24, 44]))
+      expect(TestA.deserialize(a1.serialize())).to.be.eql([44])
+    })
+
+    it('nested', () => {
+      const b1 = new TestB()
+      const encoded = b1.serialize()
+      expect(TestB.deserialize(encoded)).to.be.eql([[44, true]])
     })
   })
 })

@@ -69,7 +69,7 @@ class Diagnose extends Decoder {
   }
 
   createByteStringFromHeap (start, end) {
-    const val = (new Buffer(
+    const val = (Buffer.from(
       super.createByteStringFromHeap(start, end)
     )).toString('hex')
 
@@ -118,7 +118,7 @@ class Diagnose extends Decoder {
   createMap (map, len) {
     const val = super.createMap(map)
     const list = Array.from(val.keys())
-          .reduce(collectObject(val), '')
+      .reduce(collectObject(val), '')
 
     if (len === -1) {
       return `{_ ${list}}`
@@ -130,7 +130,7 @@ class Diagnose extends Decoder {
   createObject (obj, len) {
     const val = super.createObject(obj)
     const map = Object.keys(val)
-          .reduce(collectObject(val), '')
+      .reduce(collectObject(val), '')
 
     if (len === -1) {
       return `{_ ${map}}`
@@ -150,7 +150,7 @@ class Diagnose extends Decoder {
   }
 
   createUtf8StringFromHeap (start, end) {
-    const val = (new Buffer(
+    const val = (Buffer.from(
       super.createUtf8StringFromHeap(start, end)
     )).toString('utf8')
 
@@ -159,7 +159,7 @@ class Diagnose extends Decoder {
 
   static diagnose (input, enc) {
     if (typeof input === 'string') {
-      input = new Buffer(input, enc || 'hex')
+      input = Buffer.from(input, enc || 'hex')
     }
 
     const dec = new Diagnose()

@@ -79,7 +79,7 @@ exports.writeHalf = function writeHalf (buf, half) {
   // } u32;
   // u32.f = float_val;
 
-  const u32 = new Buffer(4)
+  const u32 = Buffer.allocUnsafe(4)
   u32.writeFloatBE(half, 0)
   const u = u32.readUInt32BE(0)
 
