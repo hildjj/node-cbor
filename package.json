@@ -59,11 +59,14 @@
   },
   "contributors": [
     "Benjamin Cabé <kartben@gmail.com>",
-    "Friedel Ziegelmayer <dignifiedquire@gmail.com>",
+    "Dan Finlay <542863+danfinlay@users.noreply.github.com>",
     "Joe Hildebrand <joe-github@cursive.net>",
     "Joe Hildebrand <joe+github@cursive.net>",
     "Patrick Gansterer <paroga@paroga.com>",
+    "Ryan Pendergast <ryan.pendergast@gmail.com>",
     "Scorpi <cobblebone@gmail.com>",
+    "Tobias Wich <tobias.wich@ecsec.de>",
+    "dignifiedquire <dignifiedquire@gmail.com>",
     "greenkeeperio-bot <support@greenkeeper.io>"
   ]
 }
