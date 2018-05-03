@@ -19,11 +19,12 @@ vectors.forEach( v => {
       if (v.hasOwnProperty('cbor'))
         t.deepEqual( Buffer.from(v.cbor,"base64"), buffer, "base64 and hex encoded bytes mismatched ")
 
+        t.deepEqual(decoded, redecoded, `round trip error: ${hex} -> ${encoded.toString('hex')}`);
 
         if (v.hasOwnProperty('diagnostic'))
         {
-           return cbor.diagnose(buffer)
-              .then(d => t.deepEqual( d.trim(), v.diagnostic.trim()))
+          return cbor.diagnose(buffer)
+              .then(d => t.deepEqual( d.trim().replace(/_\d+($|\))/,'$1'), v.diagnostic))
         }
 
         if (v.hasOwnProperty('decoded')) {
