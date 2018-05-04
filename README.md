@@ -182,6 +182,8 @@ const d = new Decoder({tags: { 64000: (val) => {
 Developers
 ----------
 
+The tests for this package use a set of test vectors from RFC 7049 appendix A by importing a machine readable version of them from https://github.com/cbor/test-vectors. For these tests to work, you will need to use the command `git submodule update --init` after cloning or pulling this code.   See https://gist.github.com/gitaarik/8735255#file-git_submodules-md for more information.
+
 Get a list of build steps with `npm run`.  I use `npm run dev`, which rebuilds,
 runs tests, and refreshes a browser window with coverage metrics every time I
 save a `.coffee` file.  If you don't want to run the fuzz tests every time, set
