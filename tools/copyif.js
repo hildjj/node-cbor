@@ -15,7 +15,7 @@ fs.stat(dst, (er, st) => {
     }
   } else {
     if (!st.isFile()) {
-      console.error(`Error on ${dst}: ${er.message}`)
+      console.error(`Error on ${dst}: not a file`)
       process.exit(1)
     }
     if (st.size > 0) {
