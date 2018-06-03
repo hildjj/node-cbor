@@ -8,7 +8,7 @@ const pkg = require('../package.json')
 const opts = require('commander')
   .version(pkg.version)
   .usage('[options] <file ...>')
-  .option('-x, --hex [STRING]', 'Hex string input')
+  .option('-x, --hex <STRING>', 'Hex string input')
   .parse(process.argv)
 
 const argv = opts.args

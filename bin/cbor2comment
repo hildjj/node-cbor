@@ -8,7 +8,7 @@ const pkg = require('../package.json')
 const opts = require('commander')
   .version(pkg.version)
   .usage('[options] <file ...>')
-  .option('-x, --hex [string]', 'Hex string input')
+  .option('-x, --hex <string>', 'Hex string input')
   .option('-t, --tabsize [spaces]', 'Indent amount')
   .parse(process.argv)
 
