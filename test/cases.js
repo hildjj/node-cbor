@@ -1006,5 +1006,5 @@ exports.canonNums = [
   [-Infinity, 'f9fc00'],
   [NaN, 'f97e00'],
   [0, '00'],
-  [-0, '00']
+  [-0, 'f98000']
 ]
