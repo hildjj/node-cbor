@@ -74,7 +74,11 @@ test('arrayEqual', t => {
 test('bufferEqual', t => {
   t.deepEqual(utils.bufferEqual(), true)
   t.deepEqual(utils.bufferEqual(Buffer.allocUnsafe(0)), false)
-  t.deepEqual(utils.bufferEqual(Buffer.allocUnsafe(0), Buffer.allocUnsafe(0)), true)
+  t.deepEqual(
+    utils.bufferEqual(
+      Buffer.allocUnsafe(0),
+      Buffer.allocUnsafe(0)),
+    true)
   t.deepEqual(utils.bufferEqual(Buffer.from([1]), Buffer.allocUnsafe(0)), false)
   t.deepEqual(utils.bufferEqual(
     Buffer.from([1, 2, 3]),

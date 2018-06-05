@@ -150,9 +150,12 @@ test('decodeFirst', t => {
       cbor.decodeFirst(Buffer.allocUnsafe(0), (er, v) => {
         t.ifError(er)
         t.is(cbor.Decoder.NOT_FOUND, v)
-        return cbor.decodeFirst(Buffer.allocUnsafe(0), {required: true}, (er, v) => {
-          t.truthy(er)
-        })
+        return cbor.decodeFirst(
+          Buffer.allocUnsafe(0),
+          {required: true},
+          (er, v) => {
+            t.truthy(er)
+          })
       })
     })
 })
