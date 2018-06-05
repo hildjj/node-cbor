@@ -158,3 +158,23 @@ test('detect loops, own symbol', t => {
   t.is(a[a_syms[0]], s)
   t.is(a.c[date_syms[0]], s)
 })
+
+test('date types', t => {
+  const d = new Date('2018-06-05T14:36:20Z')
+
+  t.is(
+    cbor.encodeOne(d, {dateType: 'blorfff'}).toString('hex'),
+    'c11a5b169fe4')
+
+  t.is(
+    cbor.encodeOne(d, {dateType: 'int'}).toString('hex'),
+    'c11a5b169fe4')
+
+  t.is(
+    cbor.encodeOne(d, {dateType: 'float'}).toString('hex'),
+    'c1fb41d6c5a7f9000000')
+
+  t.is(
+    cbor.encodeOne(d, {dateType: 'string'}).toString('hex'),
+    'c07818323031382d30362d30355431343a33363a32302e3030305a')
+})
