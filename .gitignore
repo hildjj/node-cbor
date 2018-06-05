@@ -8,3 +8,4 @@ jsconfig.json
 typings/
 typings.json
 .vscode/
+shrinkwrap.yaml
