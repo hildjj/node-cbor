@@ -60,7 +60,6 @@
   "devDependencies": {
     "ava": "^0.25",
     "concordance": "^3.0",
-    "eslint": "^4.19.1",
     "garbage": "0.0",
     "jsdoc": "^3.5",
     "live-server": "*",
@@ -74,7 +73,7 @@
   "readmeFilename": "README.md",
   "dependencies": {
     "bignumber.js": "^7.2.1",
-    "commander": "^2.15.1",
+    "commander": "^2.16.0",
     "json-text-sequence": "^0.1",
     "nofilter": "^0.0.3"
   },
