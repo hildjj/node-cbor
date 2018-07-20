@@ -1008,3 +1008,9 @@ exports.canonNums = [
   [0, '00'],
   [-0, 'f98000']
 ]
+
+exports.bigInts = function bigInts(list) {
+  return list
+    .filter(([n]) => BigNum.isBigNumber(n) && n.isInteger())
+    .map(([n, ...others]) => [BigInt(n.toString()), ...others])
+}

@@ -178,3 +178,10 @@ test('date types', t => {
     cbor.encodeOne(d, {dateType: 'string'}).toString('hex'),
     'c07818323031382d30362d30355431343a33363a32302e3030305a')
 })
+
+test('js BigInt', t => {
+  if (!cbor.hasBigInt) {
+    return
+  }
+  return testAll(t, cases.bigInts(cases.good))
+})
