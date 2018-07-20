@@ -5,10 +5,10 @@ const test = require('ava')
 const cases = require('./cases')
 const utils = require('../lib/utils')
 
-function testAll(t, list) {
+function testAll(t, list, opts) {
   t.plan(list.length)
   return Promise.all(list.map(c => {
-    return cbor.decodeFirst(cases.toBuffer(c))
+    return cbor.decodeFirst(cases.toBuffer(c), opts)
       .then(d => {
         if ((typeof(c[0]) === 'number') && isNaN(c[0])) {
           t.truthy(isNaN(d))
@@ -187,4 +187,11 @@ test('decodeAll', t => {
 
 test('depth', t => {
   return t.throws(cbor.decodeFirst('818180', {max_depth: 1}))
+})
+
+test('js BigInt', t => {
+  if (!cbor.hasBigInt) {
+    return
+  }
+  return testAll(t, cases.bigInts(cases.good), {bigint: true})
 })

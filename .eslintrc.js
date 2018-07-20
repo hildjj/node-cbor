@@ -17,6 +17,9 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 6,
   },
+  globals: {
+    BigInt: false
+  },
   "rules": {
     "arrow-spacing": "error",
     "brace-style": ["error", "1tbs"],
