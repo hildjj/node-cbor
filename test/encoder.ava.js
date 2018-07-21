@@ -181,7 +181,7 @@ test('date types', t => {
 
 test('js BigInt', t => {
   if (!cbor.hasBigInt) {
-    return
+    return t.pass('No BigInt')
   }
   return testAll(t, cases.bigInts(cases.good))
 })
