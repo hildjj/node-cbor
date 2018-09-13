@@ -2,7 +2,7 @@
 
 // Data to fill out:
 // https://github.com/cbor-wg/CBORbis/wiki/Implementation-matrix
-const cbor = require('..')
+const cbor = require('../src/cbor')
 const url = require('url')
 const concordance = require('concordance')
 const BigNum = require('bignumber.js')

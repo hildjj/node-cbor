@@ -1,9 +1,9 @@
 'use strict'
 
-const cbor = require('../')
+const cbor = require('../src/cbor')
 const test = require('ava')
 const cases = require('./cases')
-const utils = require('../lib/utils')
+const utils = require('../src/utils')
 const NoFilter = require('nofilter')
 
 function testAll(t, list) {

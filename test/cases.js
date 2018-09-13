@@ -2,8 +2,8 @@
 
 const BigNum = require('bignumber.js')
 const NoFilter = require('nofilter')
-const cbor = require('../')
-const constants = require('../lib/constants')
+const cbor = require('../src/cbor')
+const constants = require('../src/constants')
 const url = require('url')
 
 class TempClass {

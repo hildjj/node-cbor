@@ -3,7 +3,7 @@
 const test = require('ava')
 const BigNum = require('bignumber.js')
 const NoFilter = require('nofilter')
-const utils = require('../lib/utils')
+const utils = require('../src/utils')
 const hex = utils.hex
 const bin = utils.bin
 

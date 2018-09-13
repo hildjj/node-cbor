@@ -23,19 +23,21 @@
   },
   "scripts": {
     "clean": "rm -rf coverage .nyc_output/ docs/api man/*",
-    "lint": "eslint lib/*.js bin/* test/*.js",
+    "lint": "eslint src/*.js bin/* test/*.js",
     "doc": "jsdoc -c .jsdoc.conf",
     "coverage": "nyc npm test",
     "coveragehtml": "nyc report -r html",
     "precoveragehtml": "npm run coverage",
     "test": "ava",
     "man": "mkdir -p man; for f in man_src/*.md; do b=`basename $f`; marked-man $f -o man/${b%.md}.1; gzip -9f man/${b%.md}.1; done",
-    "watch": "watch 'npm run coveragehtml' lib/ test/",
+    "watch": "watch 'npm run coveragehtml' src/ test/",
     "release": "npm version patch && git push --follow-tags && npm publish",
     "live": "live-server --port=4002 --ignorePattern='(js|css|png)$' coverage",
     "predev": "node tools/copyif.js",
     "dev": "npm-run-all -p --silent watch live",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls"
+    "coveralls": "nyc report --reporter=text-lcov | coveralls",
+    "build": "rm -rf lib && babel src --out-dir lib --presets @babel/env",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "coap",
@@ -59,6 +61,9 @@
     ]
   },
   "devDependencies": {
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.1",
+    "@babel/preset-env": "^7.0.0",
     "ava": "^0.25",
     "concordance": "^3.0",
     "garbage": "0.0",
