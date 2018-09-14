@@ -1,6 +1,6 @@
 'use strict'
 
-const cbor = require('../src/cbor')
+const cbor = require('../')
 const test = require('ava')
 const cases = require('./cases')
 const NoFilter = require('nofilter')

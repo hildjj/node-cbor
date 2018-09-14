@@ -1,8 +1,8 @@
 'use strict'
 
 const test = require('ava')
-const cbor = require('../src/cbor')
-const constants = require('../src/constants')
+const cbor = require('../lib/cbor')
+const constants = require('../lib/constants')
 
 test('create', t => {
   const u = new cbor.Simple(0)

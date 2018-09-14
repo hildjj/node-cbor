@@ -9,3 +9,4 @@ typings/
 typings.json
 .vscode/
 shrinkwrap.yaml
+browser/

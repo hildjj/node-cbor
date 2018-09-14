@@ -1,9 +1,9 @@
 'use strict'
 
-const cbor = require('../src/cbor')
+const cbor = require('../')
 const test = require('ava')
 const cases = require('./cases')
-const utils = require('../src/utils')
+const utils = require('../lib/utils')
 
 function testAll(t, list, opts) {
   t.plan(list.length)

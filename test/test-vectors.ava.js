@@ -1,6 +1,6 @@
 'use strict'
 const BigNumber = require('bignumber.js')
-const cbor = require('../src/cbor')
+const cbor = require('../')
 const test = require('ava')
 const util = require('util')
 const fs = require('fs')

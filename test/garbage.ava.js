@@ -1,7 +1,7 @@
 'use strict'
 
 const test = require('ava')
-const cbor = require('../src/cbor')
+const cbor = require('../lib/cbor')
 const garbage = require('garbage')
 
 const REPEATS = parseInt(process.env['NODE_CBOR_GARBAGE'] || 10000)

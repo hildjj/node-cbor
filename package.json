@@ -19,24 +19,25 @@
     "json2cbor": "./bin/json2cbor"
   },
   "browser": {
-    "fs": false
+    "fs": false,
+    "./lib/cbor.js": "./browser/cbor.js"
   },
   "scripts": {
     "clean": "rm -rf coverage .nyc_output/ docs/api man/*",
-    "lint": "eslint src/*.js bin/* test/*.js",
+    "lint": "eslint lib/*.js bin/* test/*.js",
     "doc": "jsdoc -c .jsdoc.conf",
     "coverage": "nyc npm test",
     "coveragehtml": "nyc report -r html",
     "precoveragehtml": "npm run coverage",
     "test": "ava",
     "man": "mkdir -p man; for f in man_src/*.md; do b=`basename $f`; marked-man $f -o man/${b%.md}.1; gzip -9f man/${b%.md}.1; done",
-    "watch": "watch 'npm run coveragehtml' src/ test/",
+    "watch": "watch 'npm run coveragehtml' lib/ test/",
     "release": "npm version patch && git push --follow-tags && npm publish",
     "live": "live-server --port=4002 --ignorePattern='(js|css|png)$' coverage",
     "predev": "node tools/copyif.js",
     "dev": "npm-run-all -p --silent watch live",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
-    "build": "rm -rf lib && babel src --out-dir lib --presets @babel/env",
+    "build": "rm -rf browser && babel lib --out-dir browser --presets @babel/env",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
@@ -53,7 +54,8 @@
     "Artyom Yagilev <github@scorpi.org> (http://scorpi.org/)",
     "Denis Lapaev <den@lapaev.me> (http://lapaev.me/)",
     "Ruben Bridgewater <ruben@bridgewater.de>",
-    "Burt Harris <Burt_Harris_cbor@azxs.33mail.com>"
+    "Burt Harris <Burt_Harris_cbor@azxs.33mail.com>",
+    "Fitbit, Inc."
   ],
   "ava": {
     "files": [
