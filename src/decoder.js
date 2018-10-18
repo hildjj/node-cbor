@@ -31,6 +31,7 @@ class Decoder {
     // Heap use to share the input with the parser
     this._heap = new ArrayBuffer(opts.size)
     this._heap8 = new Uint8Array(this._heap)
+    this._buffer = Buffer.from(this._heap)
 
     this._reset()
 
@@ -354,9 +355,7 @@ class Decoder {
       return ''
     }
 
-    return (
-      Buffer.from(this._heap.slice(start, end))
-    ).toString('utf8')
+    return this._buffer.toString('utf8', start, end)
   }
 
   createSimpleUnassigned (val) {
