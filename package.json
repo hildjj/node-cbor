@@ -1,6 +1,6 @@
 {
   "name": "borc",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "Encode and parse data in the Concise Binary Object Representation (CBOR) data format (RFC7049).",
   "main": "./src/index.js",
   "repository": {

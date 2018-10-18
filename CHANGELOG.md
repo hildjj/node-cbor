@@ -1,3 +1,13 @@
+<a name="2.0.4"></a>
+## [2.0.4](https://github.com/dignifiedquire/borc/compare/v2.0.3...v2.0.4) (2018-10-18)
+
+
+### Performance Improvements
+
+* avoid object allocation when creating strings from the underlying buffer ([e609298](https://github.com/dignifiedquire/borc/commit/e609298))
+
+
+
 <a name="2.0.3"></a>
 ## [2.0.3](https://github.com/dignifiedquire/borc/compare/v2.0.2...v2.0.3) (2018-05-02)
 
