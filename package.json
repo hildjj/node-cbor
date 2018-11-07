@@ -75,6 +75,8 @@
   "dependencies": {
     "bignumber.js": "^7.2.1",
     "commander": "^2.16.0",
+    "ieee754": "^1.1.12",
+    "int64-buffer": "^0.99.1007",
     "json-text-sequence": "^0.1",
     "nofilter": "^0.0.3"
   },
