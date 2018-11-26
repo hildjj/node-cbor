@@ -78,6 +78,15 @@ function parentBufferStream(parent, typ) {
   return b
 }
 
+function _tag_2(v) {
+  return utils.bufferToBigInt(v)
+}
+
+const NEG_ONE_BI = utils.hasBigInt ? BigInt('-1') : -1
+function _tag_3(v) {
+  return NEG_ONE_BI - utils.bufferToBigInt(v)
+}
+
 /**
  * Decode a stream of CBOR bytes by transforming them into equivalent
  * JavaScript data.  Because of the limitations of Node object streams,
@@ -100,6 +109,9 @@ class Decoder extends BinaryParseStream {
    * @param {object=} options.tags - mapping from tag number to function(v),
    *   where v is the decoded value that comes after the tag, and where the
    *   function returns the correctly-created value for that tag.
+   * @param {boolean} [options.bigint=false] generate JavaScript BigInt's
+   *   instead of BigNumbers, when possible.  TODO: when BigInt's are
+   *   more prevalent, change this to default to the value of cbor.hasBigInt.
    */
   constructor(options) {
     options = options || {}
@@ -107,11 +119,18 @@ class Decoder extends BinaryParseStream {
     delete options.tags
     const max_depth = (options.max_depth != null) ? options.max_depth : -1
     delete options.max_depth
+    const bigI = utils.hasBigInt ? (!!options.bigint) : false
+    delete options.bigint
     super(options)
 
     this.running = true
     this.max_depth = max_depth
     this.tags = tags
+    if (bigI) {
+      if (this.tags == null) { this.tags = {} }
+      this.tags[2] = _tag_2
+      this.tags[3] = _tag_3
+    }
   }
 
   /**
