@@ -76,7 +76,7 @@
     "bignumber.js": "^8.0.1",
     "commander": "^2.19.0",
     "json-text-sequence": "^0.1",
-    "nofilter": "^1.0.0"
+    "nofilter": "^1.0.1"
   },
   "engines": {
     "node": ">=6.0.0"
