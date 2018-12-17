@@ -185,3 +185,39 @@ test('js BigInt', t => {
   }
   return testAll(t, cases.bigInts(cases.good))
 })
+
+test('arraybuffer types', t => {
+  t.is(
+    cbor.encodeOne(Buffer.alloc(3)).toString('hex'),
+    '43000000')
+  t.is(
+    cbor.encodeOne(new Uint8Array(3)).toString('hex'),
+    '43000000')
+  t.is(
+    cbor.encodeOne(new Uint8ClampedArray(3)).toString('hex'),
+    '43000000')
+  t.is(
+    cbor.encodeOne(new ArrayBuffer(3)).toString('hex'),
+    '43000000')
+  t.is(
+    cbor.encodeOne(new Uint16Array(3)).toString('hex'),
+    '83000000')
+  t.is(
+    cbor.encodeOne(new Uint32Array(3)).toString('hex'),
+    '83000000')
+  t.is(
+    cbor.encodeOne(new Int8Array(3)).toString('hex'),
+    '83000000')
+  t.is(
+    cbor.encodeOne(new Int16Array(3)).toString('hex'),
+    '83000000')
+  t.is(
+    cbor.encodeOne(new Int32Array(3)).toString('hex'),
+    '83000000')
+  t.is(
+    cbor.encodeOne(new Float32Array(3)).toString('hex'),
+    '83fb0000000000000000fb0000000000000000fb0000000000000000')
+  t.is(
+    cbor.encodeOne(new Float64Array(3)).toString('hex'),
+    '83fb0000000000000000fb0000000000000000fb0000000000000000')
+})
