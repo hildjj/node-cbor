@@ -16,7 +16,8 @@ function testAll(t, list) {
 
 function failAll(t, list) {
   t.plan(list.length)
-  return Promise.all(list.map(c => t.throws(cbor.comment(cases.toBuffer(c)))))
+  return Promise.all(list.map(c => t.throwsAsync(
+    cbor.comment(cases.toBuffer(c)))))
 }
 
 test('good', t => testAll(t, cases.good))
@@ -36,7 +37,7 @@ test('input_errors', t => {
 
 test.cb('max_depth', t => {
   cbor.comment('01', 2, (er, str) => {
-    t.ifError(er)
+    t.falsy(er)
     t.deepEqual('\n' + str, `
   01 -- 1
 0x01

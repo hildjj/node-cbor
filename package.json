@@ -59,7 +59,7 @@
     ]
   },
   "devDependencies": {
-    "ava": "^0.25",
+    "ava": "^1.0.1",
     "concordance": "^4.0",
     "garbage": "0.0",
     "jsdoc": "^3.5",

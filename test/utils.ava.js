@@ -131,7 +131,7 @@ test.cb('streamFilesDash', t => {
   const bs = new NoFilter()
   u.pipe(bs)
   utils.streamFiles([new utils.DeHexStream('6161')], () => u, (er) => {
-    t.ifError(er)
+    t.falsy(er)
     t.deepEqual(bs.toString('utf8'), '6161')
     t.end()
   })
@@ -142,7 +142,7 @@ test.cb('streamFilesInputs', t => {
   utils.streamFiles([
     new utils.DeHexStream('48656c6c6f2c20576f726c64210a')
   ], (er) => {
-    t.ifError(er)
+    t.falsy(er)
     const hs = new utils.HexStream()
     t.end()
     return hs

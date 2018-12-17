@@ -27,7 +27,7 @@ function failAll(t, list) {
 function failFirstAll(t, list) {
   t.plan(list.length)
   return Promise.all(
-    list.map(c => t.throws(cbor.decodeFirst(cases.toBuffer(c)))))
+    list.map(c => t.throwsAsync(cbor.decodeFirst(cases.toBuffer(c)))))
 }
 
 function failFirstAllCB(t, list) {
@@ -101,7 +101,7 @@ test.cb('add_tag', t => {
 
 test.cb('parse_tag', t => {
   cbor.decodeFirst('d87f01', 'hex', (er, vals) => {
-    t.ifError(er)
+    t.falsy(er)
     t.deepEqual(vals, new cbor.Tagged(127, 1))
     t.end()
   })
@@ -123,7 +123,7 @@ test.cb('stream', t => {
 
   dt.on('data', (v) => t.deepEqual(v, 1))
   dt.on('end', () => t.end())
-  dt.on('error', (er) => t.ifError(er))
+  dt.on('error', (er) => t.falsy(er))
 
   const d = new utils.DeHexStream('01')
   d.pipe(dt)
@@ -148,7 +148,7 @@ test('decodeFirst', t => {
     .catch((er) => {
       t.truthy(er)
       cbor.decodeFirst(Buffer.allocUnsafe(0), (er, v) => {
-        t.ifError(er)
+        t.falsy(er)
         t.is(cbor.Decoder.NOT_FOUND, v)
         return cbor.decodeFirst(
           Buffer.allocUnsafe(0),
@@ -168,15 +168,15 @@ test('decodeAll', t => {
     })
     .catch(() => {
       cbor.decodeAll('01', (er, v) => {
-        t.ifError(er)
+        t.falsy(er)
         t.deepEqual([1], v)
         cbor.decodeAll('AQ==', {encoding: 'base64'}, (er, v) => {
-          t.ifError(er)
+          t.falsy(er)
           t.deepEqual([1], v)
           return cbor.decodeAll('7f', {}, (er, v) => {
             t.truthy(er)
             return cbor.decodeAll('AQ==', 'base64', (er, v) => {
-              t.ifError(er)
+              t.falsy(er)
               t.deepEqual([1], v)
             })
           })
@@ -186,7 +186,7 @@ test('decodeAll', t => {
 })
 
 test('depth', t => {
-  return t.throws(cbor.decodeFirst('818180', {max_depth: 1}))
+  return t.throwsAsync(cbor.decodeFirst('818180', {max_depth: 1}))
 })
 
 test('js BigInt', t => {
