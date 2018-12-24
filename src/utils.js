@@ -118,10 +118,10 @@ exports.writeHalf = function writeHalf (buf, half) {
     }
     s16 += ((mant + 0x800000) >> (126 - exp))
 
-  //   } else if (exp == 255 && mant == 0) { /* Inf */
-  //     s16 += 0x7c00;
+    //   } else if (exp == 255 && mant == 0) { /* Inf */
+    //     s16 += 0x7c00;
 
-  // hildjj: Infinity already handled
+    // hildjj: Infinity already handled
 
   //   } else
   //     goto float32;           /* loss of range */

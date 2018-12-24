@@ -34,7 +34,7 @@ describe('Decoder', function () {
   describe('misc', () => {
     it('custom tags', () => {
       function replaceTag (val) {
-        return {foo: val}
+        return { foo: val }
       }
 
       function newTag (val) {
@@ -42,7 +42,7 @@ describe('Decoder', function () {
       }
 
       const d = new cbor.Decoder({
-        tags: {0: replaceTag, 127: newTag}
+        tags: { 0: replaceTag, 127: newTag }
       })
 
       const input = Buffer.from('d87f01c001', 'hex')
@@ -50,7 +50,7 @@ describe('Decoder', function () {
       expect(
         d.decodeAll(input)
       ).to.be.eql([
-        'cool', {foo: 1}
+        'cool', { foo: 1 }
       ])
     })
 
@@ -142,7 +142,7 @@ describe('Decoder', function () {
     // TODO: implement depth limit
     it.skip('depth', () => {
       expect(
-        () => cbor.decodeFirst('818180', {max_depth: 1})
+        () => cbor.decodeFirst('818180', { max_depth: 1 })
       ).to.throw()
     })
   })

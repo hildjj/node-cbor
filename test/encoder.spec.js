@@ -119,7 +119,7 @@ describe('encoder', () => {
 
     enc.write('hello')
     enc.write('world')
-    enc.write({a: 1})
+    enc.write({ a: 1 })
     enc.write(123456)
 
     expect(chunks).to.be.eql([
@@ -141,7 +141,7 @@ describe('encoder', () => {
     cases.EncodeFailer.tryAll(new Bignum(0))
     cases.EncodeFailer.tryAll(new Bignum(1.1))
     cases.EncodeFailer.tryAll(new Map([[1, 2], ['a', null]]))
-    cases.EncodeFailer.tryAll({a: 1, b: null})
+    cases.EncodeFailer.tryAll({ a: 1, b: null })
     cases.EncodeFailer.tryAll(undefined)
   })
 
@@ -154,7 +154,7 @@ describe('encoder', () => {
       )
 
       expect(
-        cbor.Encoder.encode({aa: 2, b: 1}).toString('hex')
+        cbor.Encoder.encode({ aa: 2, b: 1 }).toString('hex')
       ).to.be.eql(
         'a261620162616102'
       )

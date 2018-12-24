@@ -38,7 +38,7 @@
     "email": "dignifiedquire@gmail.com"
   },
   "devDependencies": {
-    "aegir": "^13.0.6",
+    "aegir": "^18.0.1",
     "benchmark": "^2.1.0",
     "budo": "^11.2.0",
     "cbor": "^4.0.0",
@@ -49,10 +49,11 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {
-    "bignumber.js": "^7.2.1",
+    "bignumber.js": "^8.0.1",
     "commander": "^2.15.0",
     "ieee754": "^1.1.8",
-    "json-text-sequence": "^0.1"
+    "iso-url": "~0.4.4",
+    "json-text-sequence": "~0.1.0"
   },
   "engines": {
     "node": ">=4"

@@ -1,7 +1,7 @@
 'use strict'
 
 const Bignum = require('bignumber.js')
-const url = require('url')
+const { URL } = require('iso-url')
 const expect = require('chai').expect
 
 const cbor = require('../../')
@@ -171,7 +171,7 @@ exports.good = [
       514b67b0      -- 1363896240
 0xc11a514b67b0`],
 
-  [url.parse('http://www.example.com'), '32("http://www.example.com/")', `
+  [new URL('http://www.example.com'), '32("http://www.example.com/")', `
   d8                --  next 1 byte
     20              -- Tag #32
       77            -- String, length: 23
@@ -270,7 +270,7 @@ exports.good = [
   [{}, '{}', `
   a0                -- {}
 0xa0`],
-  [{1: 2, 3: 4}, '{"1": 2, "3": 4}', `
+  [{ 1: 2, 3: 4 }, '{"1": 2, "3": 4}', `
   a2                -- Map, 2 pairs
     61              -- String, length: 1
       31            -- {Key:0}, "1"
@@ -279,7 +279,7 @@ exports.good = [
       33            -- {Key:1}, "3"
     04              -- {Val:1}, 4
 0xa2613102613304`],
-  [{a: 1, b: [2, 3]}, '{"a": 1, "b": [2, 3]}', `
+  [{ a: 1, b: [2, 3] }, '{"a": 1, "b": [2, 3]}', `
   a2                -- Map, 2 pairs
     61              -- String, length: 1
       61            -- {Key:0}, "a"
@@ -290,7 +290,7 @@ exports.good = [
       02            -- [0], 2
       03            -- [1], 3
 0xa26161016162820203`],
-  [['a', {b: 'c'}], '["a", {"b": "c"}]', `
+  [['a', { b: 'c' }], '["a", {"b": "c"}]', `
   82                -- Array, 2 items
     61              -- String, length: 1
       61            -- [0], "a"
@@ -300,7 +300,7 @@ exports.good = [
       61            -- String, length: 1
         63          -- {Val:0}, "c"
 0x826161a161626163`],
-  [{a: 'A', b: 'B', c: 'C', d: 'D', e: 'E'}, '{"a": "A", "b": "B", "c": "C", "d": "D", "e": "E"}', `
+  [{ a: 'A', b: 'B', c: 'C', d: 'D', e: 'E' }, '{"a": "A", "b": "B", "c": "C", "d": "D", "e": "E"}', `
   a5                -- Map, 5 pairs
     61              -- String, length: 1
       61            -- {Key:0}, "a"
@@ -323,8 +323,8 @@ exports.good = [
     61              -- String, length: 1
       45            -- {Val:4}, "E"
 0xa56161614161626142616361436164614461656145`],
-  [{1: {2: {3: { 4: {5: {6: {
-    7: {8: {9: {10: {11: {12: {
+  [{ 1: { 2: { 3: { 4: { 5: { 6: {
+    7: { 8: { 9: { 10: { 11: { 12: {
       13: 'hello', 14: 'world'
     } } } } } }
   } } } } } } }, `{"1": {"2": {"3": {"4": {"5": {"6": {"7": {"8": {"9": {"10": {"11": {"12": {"13": "hello", "14": "world"}}}}}}}}}}}}}`, `
@@ -423,7 +423,7 @@ a1                                      # map(1)
       18            -- Positive number, next 1 byte
         19          -- [24], 25
 0x98190102030405060708090a0b0c0d0e0f101112131415161718181819`],
-  [{a: 1, b: [2, 3]}, '{"a": 1, "b": [2, 3]}', `
+  [{ a: 1, b: [2, 3] }, '{"a": 1, "b": [2, 3]}', `
   a2                -- Map, 2 pairs
     61              -- String, length: 1
       61            -- {Key:0}, "a"
@@ -434,7 +434,7 @@ a1                                      # map(1)
       02            -- [0], 2
       03            -- [1], 3
 0xa26161016162820203`],
-  [['a', {b: 'c'}], '["a", {"b": "c"}]', `
+  [['a', { b: 'c' }], '["a", {"b": "c"}]', `
   82                -- Array, 2 items
     61              -- String, length: 1
       61            -- [0], "a"
@@ -559,7 +559,7 @@ a1                                      # map(1)
     01              -- {Key:0}, 1
     02              -- {Val:0}, 2
 0xa10102`],
-  [new Map([[{b: 1}, {b: 1}]]), '{{"b": 1}: {"b": 1}}', `
+  [new Map([[{ b: 1 }, { b: 1 }]]), '{{"b": 1}: {"b": 1}}', `
   a1                -- Map, 1 pair
     a1              -- {Key:0}, Map, 1 pair
       61            -- String, length: 1
@@ -897,7 +897,7 @@ exports.decodeGood = [
       19            -- [24], 25
     ff              -- BREAK
 0x9f0102030405060708090a0b0c0d0e0f101112131415161718181819ff`],
-  [{a: 1, b: [2, 3]}, '{_ "a": 1, "b": [_ 2, 3]}', `
+  [{ a: 1, b: [2, 3] }, '{_ "a": 1, "b": [_ 2, 3]}', `
   bf                -- Map (streaming)
     61              -- String, length: 1
       61            -- {Key:0}, "a"
@@ -910,7 +910,7 @@ exports.decodeGood = [
       ff            -- BREAK
     ff              -- BREAK
 0xbf61610161629f0203ffff`],
-  [['a', {b: 'c'}], '["a", {_ "b": "c"}]', `
+  [['a', { b: 'c' }], '["a", {_ "b": "c"}]', `
   82                -- Array, 2 items
     61              -- String, length: 1
       61            -- [0], "a"
@@ -939,7 +939,7 @@ exports.decodeGood = [
           eeff99    -- eeff99p
         ff          -- BREAK
 0xd8405f44aabbccdd43eeff99ff`],
-  [{'!5{': ['-Lhe2xMsDYB!_', [1.9054760350149715, {'{_aC(z~> ': -1.267609797117641}, [{'9\n': [undefined]}]]]}, '{"!5{": ["-Lhe2xMsDYB!_", [1.9054760350149715_3, {"{_aC(z~> ": -1.267609797117641_3}, [{"9\n": [undefined]}]]]}', `
+  [{ '!5{': ['-Lhe2xMsDYB!_', [1.9054760350149715, { '{_aC(z~> ': -1.267609797117641 }, [{ '9\n': [undefined] }]]] }, '{"!5{": ["-Lhe2xMsDYB!_", [1.9054760350149715_3, {"{_aC(z~> ": -1.267609797117641_3}, [{"9\n": [undefined]}]]]}', `
 a1                                  # map(1)
    63                               # text(3)
       21357b                        # "!5{"
@@ -1114,7 +1114,7 @@ exports.goodMap = new Map([
   [[], 'empty array'],
   [null, 'null'],
   [[1], 'array'],
-  [{1: 2}, 'obj'],
+  [{ 1: 2 }, 'obj'],
   ['a', 1],
   ['aaa', 3],
   ['aa', 2],

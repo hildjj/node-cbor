@@ -40,9 +40,9 @@ suite.add(`encode - borc - ${vecLength}`, () => {
 })
 
 suite.add(`encode - stream - borc - ${vecLength}`, () => {
-  const enc = new fastCbor.Encoder({stream (chunk) {
+  const enc = new fastCbor.Encoder({ stream (chunk) {
     res.push(chunk)
-  }})
+  } })
   for (let i = 0; i < vecLength; i++) {
     enc.write(vectors[i].decoded)
   }

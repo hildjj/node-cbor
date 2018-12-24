@@ -1,6 +1,6 @@
 'use strict'
 
-const url = require('url')
+const { URL } = require('iso-url')
 const Bignumber = require('bignumber.js')
 
 const utils = require('./utils')
@@ -45,7 +45,7 @@ class Encoder {
     this.onData = options.stream
 
     this.semanticTypes = [
-      [url.Url, this._pushUrl],
+      [URL, this._pushUrl],
       [Bignumber, this._pushBigNumber]
     ]
 
@@ -412,6 +412,10 @@ class Encoder {
         return this._pushMap(this, obj)
       case 'Set':
         return this._pushSet(this, obj)
+      case 'URL':
+        return this._pushUrl(this, obj)
+      case 'BigNumber':
+        return this._pushBigNumber(this, obj)
       case 'Date':
         return this._pushDate(this, obj)
       case 'RegExp':
