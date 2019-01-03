@@ -1,3 +1,13 @@
+<a name="2.1.0"></a>
+# [2.1.0](https://github.com/dignifiedquire/borc/compare/v2.0.4...v2.1.0) (2019-01-03)
+
+
+### Features
+
+* remove url dependency in the browser ([18a4974](https://github.com/dignifiedquire/borc/commit/18a4974))
+
+
+
 <a name="2.0.4"></a>
 ## [2.0.4](https://github.com/dignifiedquire/borc/compare/v2.0.3...v2.0.4) (2018-10-18)
 
