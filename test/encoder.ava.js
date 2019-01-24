@@ -220,4 +220,6 @@ test('arraybuffer types', t => {
   t.is(
     cbor.encodeOne(new Float64Array(3)).toString('hex'),
     '83fb0000000000000000fb0000000000000000fb0000000000000000')
+
+  cases.EncodeFailer.tryAll(t, new Float64Array(3))
 })

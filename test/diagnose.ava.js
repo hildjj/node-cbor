@@ -71,3 +71,18 @@ test.cb('inputs', t => {
       })
   })
 })
+
+test('async', async t => {
+  let d = await cbor.diagnose('01', {})
+  t.is(d, '1\n')
+  d = await cbor.diagnose('01', 'hex')
+  t.is(d, '1\n')
+})
+
+test('stream errors', async t => {
+  const d = await cbor.diagnose('01', {
+    encoding: 'hex',
+    stream_errors: true
+  })
+  t.is(d, '1\n')
+})

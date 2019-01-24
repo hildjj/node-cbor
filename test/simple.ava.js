@@ -23,3 +23,8 @@ test('decode', t => {
   t.is(typeof (cbor.Simple.decode(constants.SIMPLE.UNDEFINED)), 'undefined')
   t.throws(() => cbor.Simple.decode(-1, false))
 })
+
+test('inspect', t => {
+  const u = new cbor.Simple(0)
+  t.is(u.inspect(), 'simple(0)')
+})

@@ -3,9 +3,12 @@
 const test = require('ava')
 const BigNum = require('bignumber.js')
 const NoFilter = require('nofilter')
+const mockIo = require('mock-stdio')
 const utils = require('../lib/utils')
 const hex = utils.hex
 const bin = utils.bin
+
+const BAD_FILE = '/tmp/hopefully-does-not-exist'
 
 test('bin', t => {
   t.deepEqual(utils.bin('1'), hex('01'))
@@ -95,13 +98,21 @@ test('bufferToBignumber', t => {
 })
 
 test('DeHexStream', t => {
-  [
+  ;[
     ['6161', 'aa'],
     ['0x00', '\x00']
   ].map((hd) => {
     const d = new utils.DeHexStream(hd[0])
     t.deepEqual(d.read().toString(), hd[1])
   })
+  ;[
+    ['', null],
+    ['0x', null]
+  ].map((hd) => {
+    const d = new utils.DeHexStream(hd[0])
+    t.deepEqual(d.read(), hd[1])
+  })
+
 })
 
 test.cb('HexStream', t => {
@@ -117,7 +128,7 @@ test.cb('HexStream', t => {
 
 test.cb('streamFilesNone', t => {
   utils.streamFiles([], () => {}, () => {
-    utils.streamFiles(['/tmp/hopefully-does-not-exist'], () => {
+    utils.streamFiles([BAD_FILE], () => {
       return new utils.HexStream()
     }, (er) => {
       t.truthy(er)
@@ -138,14 +149,14 @@ test.cb('streamFilesDash', t => {
 })
 
 test.cb('streamFilesInputs', t => {
-  // TODO: get error to fire
+  const u = new utils.HexStream()
+  const bs = new NoFilter()
+  u.pipe(bs)
   utils.streamFiles([
     new utils.DeHexStream('48656c6c6f2c20576f726c64210a')
-  ], (er) => {
+  ], () => u, (er) => {
     t.falsy(er)
-    const hs = new utils.HexStream()
     t.end()
-    return hs
   })
 })
 
@@ -155,4 +166,15 @@ test.cb('guessEncoding', t => {
   } catch (er) {
     t.end()
   }
+})
+
+test('printError', t => {
+  mockIo.start()
+  utils.printError(null)
+  t.deepEqual(mockIo.end(), {stderr: '', stdout: ''})
+  mockIo.start()
+  utils.printError(new Error('Fake error'))
+  const res = mockIo.end()
+  t.is(res.stdout, '')
+  t.truthy(res.stderr.startsWith('Error: Fake error'))
 })
