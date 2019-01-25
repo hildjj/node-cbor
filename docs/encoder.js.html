@@ -97,6 +97,17 @@ class Encoder extends stream.Transform {
    * @param {("number"|"float"|"int"|"string")} [options.dateType="number"] -
    *   how should dates be encoded?  "number" means float or int, if no
    *   fractional seconds.
+   * @param {any} [options.encodeUndefined=undefined] - How should an 
+   *   "undefined" in the input be encoded.  By default, just encode a CBOR
+   *   undefined.  If this is a buffer, use those bytes without re-encoding
+   *   them.  If this is a function, the function will be called (which is
+   *   a good time to throw an exception, if that's what you want), and the 
+   *   return value will be used according to these rules.  Anything
+   *   else will be encoded as CBOR.
+   * @param {boolean} [options.disallowUndefinedKeys=false] - Should "undefined"
+   *   be disallowed as a key in a Map that is serialized?  If this is true,
+   *   encode(new Map([[undefined, 1]])) will throw an exception.  Note that
+   *   it is impossible to get a key of undefined in a normal JS object.
    */
   constructor(options) {
     options = options || {}
@@ -105,6 +116,8 @@ class Encoder extends stream.Transform {
     super(options)
 
     this.canonical = options.canonical
+    this.encodeUndefined = options.encodeUndefined
+    this.disallowUndefinedKeys = !!options.disallowUndefinedKeys
     this.dateType = (options.dateType != null) ?
       options.dateType.toLowerCase() : 'number'
 
@@ -125,7 +138,17 @@ class Encoder extends stream.Transform {
       RegExp, this._pushRegexp,
       Set, this._pushSet,
       url.Url, this._pushUrl,
-      bignumber, this._pushBigNumber
+      bignumber, this._pushBigNumber,
+      ArrayBuffer, this._pushUint8Array,
+      Uint8ClampedArray, this._pushUint8Array,
+      Uint8Array, this._pushUint8Array,
+      Uint16Array, this._pushArray,
+      Uint32Array, this._pushArray,
+      Int8Array, this._pushArray,
+      Int16Array, this._pushArray,
+      Int32Array, this._pushArray,
+      Float32Array, this._pushFloatArray,
+      Float64Array, this._pushFloatArray
     ]
 
     const addTypes = options.genTypes || []
@@ -294,7 +317,17 @@ class Encoder extends stream.Transform {
   }
 
   _pushUndefined(obj) {
-    return this._pushUInt8(UNDEFINED)
+    switch (typeof this.encodeUndefined) {
+      case 'undefined':
+        return this._pushUInt8(UNDEFINED)
+      case 'function':
+        return this.pushAny(this.encodeUndefined.call(this, obj))
+      case 'object':
+        if (Buffer.isBuffer(this.encodeUndefined)) {
+          return this.push(this.encodeUndefined)
+        }
+    }
+    return this.pushAny(this.encodeUndefined)
   }
 
   _pushNull(obj) {
@@ -437,16 +470,39 @@ class Encoder extends stream.Transform {
         const b_cbor = Encoder.encode(b[0])
         return a_cbor.compare(b_cbor)
       })
-      for (const kv of entries) {
-        if (!(gen.pushAny(kv[0]) &amp;&amp; gen.pushAny(kv[1]))) {
+      for (const [k, v] of entries) {
+        if (gen.disallowUndefinedKeys &amp;&amp; (typeof k === 'undefined')) {
+          throw new Error('Invalid Map key: undefined')
+        }
+        if (!(gen.pushAny(k) &amp;&amp; gen.pushAny(v))) {
           return false
         }
       }
     } else {
-      for (const kv of obj) {
-        if (!(gen.pushAny(kv[0]) &amp;&amp; gen.pushAny(kv[1]))) {
+      for (const [k, v] of obj) {
+        if (gen.disallowUndefinedKeys &amp;&amp; (typeof k === 'undefined')) {
+          throw new Error('Invalid Map key: undefined')
+        }
+        if (!(gen.pushAny(k) &amp;&amp; gen.pushAny(v))) {
           return false
         }
+      }
+    }
+    return true
+  }
+
+  _pushUint8Array(gen, obj) {
+    return gen._pushBuffer(gen, Buffer.from(obj))
+  }
+
+  _pushFloatArray(gen, obj) {
+    const len = obj.length
+    if (!gen._pushInt(len, MT.ARRAY)) {
+      return false
+    }
+    for (let j = 0; j &lt; len; j++) {
+      if (!gen._pushFloat(obj[j])) {
+        return false
       }
     }
     return true

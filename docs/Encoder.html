@@ -401,6 +401,97 @@ the stream is in object mode.</div>
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>encodeUndefined</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>any</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">
+                How should an 
+  "undefined" in the input be encoded.  By default, just encode a CBOR
+  undefined.  If this is a buffer, use those bytes without re-encoding
+  them.  If this is a function, the function will be called (which is
+  a good time to throw an exception, if that's what you want), and the 
+  return value will be used according to these rules.  Anything
+  else will be encoded as CBOR.
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>disallowUndefinedKeys</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">
+                Should "undefined"
+  be disallowed as a key in a Map that is serialized?  If this is true,
+  encode(new Map([[undefined, 1]])) will throw an exception.  Note that
+  it is impossible to get a key of undefined in a normal JS object.
+                
+            </td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -507,7 +598,7 @@ CBOR bytes.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line561">line 561</a>
+        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line617">line 617</a>
     </li></ul></dd>
     
 
@@ -680,7 +771,7 @@ a Buffer containing the CBOR bytes.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line573">line 573</a>
+        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line629">line 629</a>
     </li></ul></dd>
     
 
@@ -852,7 +943,7 @@ a Buffer containing the CBOR bytes.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line586">line 586</a>
+        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line642">line 642</a>
     </li></ul></dd>
     
 
@@ -1059,7 +1150,7 @@ useful for objects for which you can't add an encodeCBOR method
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line121">line 121</a>
+        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line144">line 144</a>
     </li></ul></dd>
     
 
@@ -1241,7 +1332,7 @@ useful for objects for which you can't add an encodeCBOR method
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line501">line 501</a>
+        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line557">line 557</a>
     </li></ul></dd>
     
 

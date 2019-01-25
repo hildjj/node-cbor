@@ -223,3 +223,25 @@ test('arraybuffer types', t => {
 
   cases.EncodeFailer.tryAll(t, new Float64Array(3))
 })
+
+test('encoding "undefined"', t => {
+  t.is(cbor.encodeOne(undefined).toString('hex'), 'f7')
+  t.is(cbor.encodeOne(undefined, {encodeUndefined: null}).toString('hex'), 'f6')
+  t.is(cbor.encodeOne(undefined, {
+    encodeUndefined: Buffer.from('ff', 'hex')
+  }).toString('hex'), 'ff')
+  t.throws(() => cbor.encodeOne(undefined, {encodeUndefined: () => {
+    throw new Error('ha') 
+  }}))
+  t.is(cbor.encodeOne(undefined, {
+    encodeUndefined: () => Buffer.from('ff', 'hex')
+  }).toString('hex'), '41ff')
+  const m = new Map([[undefined, 1]])
+  t.throws(() => cbor.encodeOne(m, { 
+    disallowUndefinedKeys: true 
+  }))
+  t.throws(() => cbor.encodeOne(m, { 
+    disallowUndefinedKeys: true,
+    canonical: true
+  }))
+})

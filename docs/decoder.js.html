@@ -127,7 +127,9 @@ class Decoder extends BinaryParseStream {
     this.max_depth = max_depth
     this.tags = tags
     if (bigI) {
-      if (this.tags == null) { this.tags = {} }
+      if (this.tags == null) {
+        this.tags = {}
+      }
       this.tags[2] = _tag_2
       this.tags[3] = _tag_3
     }
