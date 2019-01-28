@@ -12,3 +12,12 @@ tools/
 docs/
 test/
 man_src/
+Dockerfile
+.editorconfig
+.eslintrc.js
+.gitmodules
+.jsdoc.conf
+.travis.yml
+.waiting.html
+test-vectors/
+.dockerignore
