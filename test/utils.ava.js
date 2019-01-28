@@ -1,7 +1,7 @@
 'use strict'
 
 const test = require('ava')
-const BigNum = require('bignumber.js')
+const BigNum = require('bignumber.js').BigNumber
 const NoFilter = require('nofilter')
 const mockIo = require('mock-stdio')
 const utils = require('../lib/utils')

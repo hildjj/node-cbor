@@ -5,7 +5,7 @@
 const cbor = require('..')
 const url = require('url')
 const concordance = require('concordance')
-const BigNum = require('bignumber.js')
+const BigNum = require('bignumber.js').BigNumber
 
 const all = [
   ['Major type 0 (uint)', 1, '01'],

@@ -4,7 +4,7 @@ const cbor = require('../')
 const test = require('ava')
 const cases = require('./cases')
 const NoFilter = require('nofilter')
-const BigNum = require('bignumber.js')
+const BigNum = require('bignumber.js').BigNumber
 
 function testAll(t, list) {
   t.plan(list.length)

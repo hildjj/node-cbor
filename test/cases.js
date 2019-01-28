@@ -1,6 +1,6 @@
 'use strict'
 
-const BigNum = require('bignumber.js')
+const BigNum = require('bignumber.js').BigNumber
 const NoFilter = require('nofilter')
 const cbor = require('../')
 const constants = require('../lib/constants')
