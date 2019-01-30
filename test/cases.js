@@ -158,10 +158,10 @@ exports.good = [
   [new cbor.Simple(16), 'simple(16)', `
   f0                -- simple(16)
 0xf0`],
-  [new cbor.Simple(24), 'simple(24)', `
+  [new cbor.Simple(32), 'simple(32)', `
   f8                -- Simple value, next 1 byte
-    18              -- simple(24)
-0xf818`],
+    20              -- simple(32)
+0xf820`],
   [new cbor.Simple(255), 'simple(255)', `
   f8                -- Simple value, next 1 byte
     ff              -- simple(255)

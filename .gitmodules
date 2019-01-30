@@ -1,3 +1,4 @@
 [submodule "test-vectors"]
 	path = test-vectors
-	url = https://github.com/cbor/test-vectors
+	url = https://github.com/hildjj/test-vectors.git
+	branch = failures

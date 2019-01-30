@@ -5,43 +5,55 @@ const test = require('ava')
 const util = require('util')
 const fs = require('fs')
 const path = require('path')
+const readFile = util.promisify(fs.readFile)
 
 let vectors = null
+let failures = null
 
-test.before.cb(t => {
+test.before(async t => {
   // Read tests in.  Edit them to make the big integers come out correctly.
-  fs.readFile(
-    path.join(__dirname, '..', 'test-vectors', 'appendix_a.json'),
-    {encoding: 'utf8'},
-    (er, vecStr) => {
-      if (er) {
-        t.fail('use command `git submodule update --init` to load test-vectors')
-        return t.end()
-      }
+  let vecStr = null
+  try {
+    vecStr = await readFile(
+      path.join(__dirname, '..', 'test-vectors', 'appendix_a.json'),
+      {encoding: 'utf8'})
+  } catch (er) {
+    t.fail('use command `git submodule update --init` to load test-vectors')
+    return t.end()
+  }
 
-      // HACK: don't lose data when JSON parsing
-      vecStr = vecStr.replace(/"decoded":\s*(-?\d+(\.\d+)?(e[+-]\d+)?)\n/g,
-        `"decoded": {
+  // HACK: don't lose data when JSON parsing
+  vecStr = vecStr.replace(/"decoded":\s*(-?\d+(\.\d+)?(e[+-]\d+)?)\n/g,
+    `"decoded": {
       "___TYPE___": "number",
       "___VALUE___": "$1"
     }
 `)
-      vectors = JSON.parse(vecStr, (key, value) => {
-        if (!value) {
-          return value
-        }
-        switch (value['___TYPE___']) {
-          case 'number':
-            const v = value['___VALUE___']
-            const f = Number.parseFloat(v)
-            const bn = new BigNumber(v)
-            return bn.eq(f) ? f : bn
-          default:
-            return value
-        }
-      })
-      t.end()
-    })
+  vectors = JSON.parse(vecStr, (key, value) => {
+    if (!value) {
+      return value
+    }
+    switch (value['___TYPE___']) {
+      case 'number':
+        const v = value['___VALUE___']
+        const f = Number.parseFloat(v)
+        const bn = new BigNumber(v)
+        return bn.eq(f) ? f : bn
+      default:
+        return value
+    }
+  })
+
+  let failStr = null
+  try {
+    failStr = await readFile(
+      path.join(__dirname, '..', 'test-vectors', 'fail.json'),
+      {encoding: 'utf8'})
+  } catch (er) {
+    t.fail('use command `git submodule update --init` to load test-vectors')
+    return t.end()
+  }
+  failures = JSON.parse(failStr)
 })
 
 test('vectors', t => {
@@ -50,7 +62,13 @@ test('vectors', t => {
     t.truthy(v.hex)
     const buffer = Buffer.from(v.hex, 'hex')
 
-    const decoded = cbor.decode(buffer)
+    let decoded
+    try {
+      decoded = cbor.decode(buffer)
+    } catch (e) {
+      console.log('DECODE ERROR', buffer.toString('hex'))
+      throw e
+    }
     const encoded = cbor.encodeCanonical(decoded)
     const redecoded = cbor.decode(encoded)
 
@@ -94,5 +112,15 @@ test('vectors', t => {
         }
       }
     }
+  }
+})
+
+test('errors', t => {
+  t.plan(failures.length)
+  for (const f of failures) {
+    t.throws(() => {
+      cbor.decodeFirstSync(f.hex, 'hex')
+      console.log("SHOULD THROW", f.hex)
+    })
   }
 })
