@@ -5,7 +5,11 @@ const test = require('ava')
 const util = require('util')
 const fs = require('fs')
 const path = require('path')
-const readFile = util.promisify(fs.readFile)
+const readFile = util.promisify ? 
+  util.promisify(fs.readFile) : 
+  (...args) => new Promise((resolve, reject) => {
+    fs.readFile(...args, (er, res) => er ? reject(er) : resolve(res))
+  })
 
 let vectors = null
 let failures = null
@@ -120,7 +124,6 @@ test('errors', t => {
   for (const f of failures) {
     t.throws(() => {
       cbor.decodeFirstSync(f.hex, 'hex')
-      console.log("SHOULD THROW", f.hex)
     })
   }
 })

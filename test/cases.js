@@ -4,6 +4,7 @@ const BigNum = require('bignumber.js').BigNumber
 const NoFilter = require('nofilter')
 const cbor = require('../')
 const constants = require('../lib/constants')
+const utils = require('../lib/utils')
 const url = require('url')
 
 class TempClass {
@@ -202,6 +203,10 @@ exports.good = [
   64                -- String, length: 4
     49455446        -- "IETF"
 0x6449455446`],
+  ['\ufeffBOM', '"\ufeffBOM"', `
+  66                -- String, length: 6
+    efbbbf424f4d    -- "\ufeffBOM"
+0x66efbbbf424f4d`],
   ['"\\', '"\\"\\\\"', `
   62                -- String, length: 2
     225c            -- "\\\"\\\\"
@@ -919,6 +924,11 @@ exports.decodeBad = [
   '0xfd', // reserved AI
   '0xfe' // reserved AI
 ]
+if (utils.utf8.checksUTF8) {
+  exports.decodeBad.push(
+    '0x62c0ae' // invalid utf8
+  )
+}
 
 const HEX = /0x([0-9a-f]+)$/i
 exports.toBuffer = function toBuffer(c) {
