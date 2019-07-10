@@ -1,3 +1,13 @@
+<a name="2.1.1"></a>
+## [2.1.1](https://github.com/dignifiedquire/borc/compare/v2.1.0...v2.1.1) (2019-07-10)
+
+
+### Bug Fixes
+
+* import nested bignumber.js ([6190338](https://github.com/dignifiedquire/borc/commit/6190338)), closes [#41](https://github.com/dignifiedquire/borc/issues/41)
+
+
+
 <a name="2.1.0"></a>
 # [2.1.0](https://github.com/dignifiedquire/borc/compare/v2.0.4...v2.1.0) (2019-01-03)
 
