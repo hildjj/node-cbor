@@ -49,7 +49,7 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {
-    "bignumber.js": "^8.0.1",
+    "bignumber.js": "^9.0.0",
     "commander": "^2.15.0",
     "ieee754": "^1.1.8",
     "iso-url": "~0.4.4",
