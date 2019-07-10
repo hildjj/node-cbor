@@ -1,6 +1,6 @@
 'use strict'
 
-const Bignumber = require('bignumber.js')
+const Bignumber = require('bignumber.js').BigNumber
 
 exports.MT = {
   POS_INT: 0,

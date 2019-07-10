@@ -1,7 +1,7 @@
 'use strict'
 
 const ieee754 = require('ieee754')
-const Bignumber = require('bignumber.js')
+const Bignumber = require('bignumber.js').BigNumber
 
 const parser = require('./decoder.asm')
 const utils = require('./utils')

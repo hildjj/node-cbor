@@ -4,7 +4,7 @@
 const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
-const Bignumber = require('bignumber.js')
+const Bignumber = require('bignumber.js').BigNumber
 
 const cases = require('./fixtures/cases')
 const vectors = require('./fixtures/vectors.js')

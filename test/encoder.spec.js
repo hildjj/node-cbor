@@ -3,7 +3,7 @@
 'use strict'
 
 const expect = require('chai').expect
-const Bignum = require('bignumber.js')
+const Bignum = require('bignumber.js').BigNumber
 
 const cbor = require('../')
 const cases = require('./fixtures/cases')

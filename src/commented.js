@@ -6,7 +6,7 @@ const utils = require('./utils')
 const Simple = require('./simple')
 const Decoder = require('./decoder')
 const constants = require('./constants')
-const bignumber = require('bignumber.js')
+const bignumber = require('bignumber.js').BigNumber
 
 const MT = constants.MT,
       NUMBYTES = constants.NUMBYTES,

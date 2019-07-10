@@ -1,6 +1,6 @@
 'use strict'
 
-const Bignumber = require('bignumber.js')
+const Bignumber = require('bignumber.js').BigNumber
 
 const constants = require('./constants')
 const SHIFT32 = constants.SHIFT32

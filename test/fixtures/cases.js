@@ -1,6 +1,6 @@
 'use strict'
 
-const Bignum = require('bignumber.js')
+const Bignum = require('bignumber.js').BigNumber
 const { URL } = require('iso-url')
 const expect = require('chai').expect
 
