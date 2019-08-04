@@ -186,7 +186,7 @@ The tests for this package use a set of test vectors from RFC 7049 appendix A by
 
 Get a list of build steps with `npm run`.  I use `npm run dev`, which rebuilds,
 runs tests, and refreshes a browser window with coverage metrics every time I
-save a `.coffee` file.  If you don't want to run the fuzz tests every time, set
+save a `.js` file.  If you don't want to run the fuzz tests every time, set
 a `NO_GARBAGE` environment variable:
 
 ```

@@ -21,3 +21,4 @@ Dockerfile
 .waiting.html
 test-vectors/
 .dockerignore
+npm-debug.log

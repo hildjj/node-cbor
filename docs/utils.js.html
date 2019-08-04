@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>tagged.js - Documentation</title>
+    <title>utils.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">tagged.js</h1>
+    <h1 class="page-title">utils.js</h1>
     
 
     
@@ -41,120 +41,280 @@
         <article>
             <pre class="prettyprint source linenums"><code>'use strict'
 
+const fs = require('fs')
+const stream = require('stream')
+const util = require('util')
 const bignumber = require('bignumber.js').BigNumber
-const utils = require('./utils')
-const url = require('url')
 
-const MINUS_ONE = new bignumber(-1)
-const TEN = new bignumber(10)
-const TWO = new bignumber(2)
+const constants = require('./constants')
+const NUMBYTES = constants.NUMBYTES
+const SHIFT32 = constants.SHIFT32
+const MAX_SAFE_HIGH = 0x1fffff
+
+exports.hasBigInt = (typeof BigInt === 'function')
 
 /**
- * A CBOR tagged item, where the tag does not have semantics specified at the
- * moment, or those semantics threw an error during parsing. Typically this will
- * be an extension point you're not yet expecting.
+ * Convert a UTF8-encoded Buffer to a JS string.  If possible, throw an error
+ * on invalid UTF8.  Byte Order Marks are not looked at or stripped.
  */
-class Tagged {
+const TD = (typeof TextDecoder === 'function') ? TextDecoder : util.TextDecoder
+/* istanbul ignore else */
+if (TD) {
+  // node 11+, browsers : node 8.3+
+  const td = new TD('utf8', {fatal: true, ignoreBOM: true})
+  exports.utf8 = (buf) => td.decode(buf)
+  exports.utf8.checksUTF8 = true
+} else {
+  // TODO: polyfill a slow one or wait for node6 to die
+  exports.utf8 = (buf) => buf.toString('utf8') 
+  exports.utf8.checksUTF8 = false  
+}
 
-  /**
-   * Creates an instance of Tagged.
-   *
-   * @param {number} tag - the number of the tag
-   * @param {any} value - the value inside the tag
-   * @param {Error} [err] - the error that was thrown parsing the tag, or null
-   */
-  constructor(tag, value, err) {
-    this.tag = tag
-    this.value = value
-    this.err = err
-    if (typeof this.tag !== 'number') {
-      throw new Error('Invalid tag type (' + (typeof this.tag) + ')')
-    }
-    if ((this.tag &lt; 0) || ((this.tag | 0) !== this.tag)) {
-      throw new Error('Tag must be a positive integer: ' + this.tag)
-    }
-  }
-
-  /**
-   * Convert to a String
-   *
-   * @returns {string} string of the form '1(2)'
-   */
-  toString() {
-    return `${this.tag}(${JSON.stringify(this.value)})`
-  }
-
-  /**
-   * Push the simple value onto the CBOR stream
-   *
-   * @param {Object} gen The generator to push onto
-   */
-  encodeCBOR(gen) {
-    gen._pushTag(this.tag)
-    return gen.pushAny(this.value)
-  }
-
-  /**
-   * If we have a converter for this type, do the conversion.  Some converters
-   * are built-in.  Additional ones can be passed in.  If you want to remove
-   * a built-in converter, pass a converter in whose value is 'null' instead
-   * of a function.
-   *
-   * @param {Object} converters - keys in the object are a tag number, the value
-   *   is a function that takes the decoded CBOR and returns a JavaScript value
-   *   of the appropriate type.  Throw an exception in the function on errors.
-   * @returns {any} - the converted item
-   */
-  convert(converters) {
-    let f = converters != null ? converters[this.tag] : void 0
-    if (typeof f !== 'function') {
-      f = Tagged['_tag_' + this.tag]
-      if (typeof f !== 'function') {
-        return this
+exports.parseCBORint = function(ai, buf) {
+  switch (ai) {
+    case NUMBYTES.ONE:
+      return buf.readUInt8(0)
+    case NUMBYTES.TWO:
+      return buf.readUInt16BE(0)
+    case NUMBYTES.FOUR:
+      return buf.readUInt32BE(0)
+    case NUMBYTES.EIGHT:
+      const f = buf.readUInt32BE(0)
+      const g = buf.readUInt32BE(4)
+      if (f > MAX_SAFE_HIGH) {
+        return new bignumber(f).times(SHIFT32).plus(g)
+      } else {
+        return (f * SHIFT32) + g
       }
-    }
-    try {
-      return f.call(Tagged, this.value)
-    } catch (error) {
-      this.err = error
-      return this
-    }
-  }
-
-  static _tag_0(v) {
-    return new Date(v)
-  }
-
-  static _tag_1(v) {
-    return new Date(v * 1000)
-  }
-
-  static _tag_2(v) {
-    return utils.bufferToBignumber(v)
-  }
-
-  static _tag_3(v) {
-    return MINUS_ONE.minus(utils.bufferToBignumber(v))
-  }
-
-  static _tag_4(v) {
-    return TEN.pow(v[0]).times(v[1])
-  }
-
-  static _tag_5(v) {
-    return TWO.pow(v[0]).times(v[1])
-  }
-
-  static _tag_32(v) {
-    return url.parse(v)
-  }
-
-  static _tag_35(v) {
-    return new RegExp(v)
+    default:
+      throw new Error('Invalid additional info for int: ' + ai)
   }
 }
 
-module.exports = Tagged
+exports.writeHalf = function writeHalf(buf, half) {
+  // assume 0, -0, NaN, Infinity, and -Infinity have already been caught
+
+  // HACK: everyone settle in.  This isn't going to be pretty.
+  // Translate cn-cbor's C code (from Carsten Borman):
+
+  // uint32_t be32;
+  // uint16_t be16, u16;
+  // union {
+  //   float f;
+  //   uint32_t u;
+  // } u32;
+  // u32.f = float_val;
+
+  const u32 = Buffer.allocUnsafe(4)
+  u32.writeFloatBE(half, 0)
+  const u = u32.readUInt32BE(0)
+
+  // if ((u32.u &amp; 0x1FFF) == 0) { /* worth trying half */
+
+  // hildjj: If the lower 13 bits are 0,
+  // we won't lose anything in the conversion
+  if ((u &amp; 0x1FFF) !== 0) {
+    return false
+  }
+
+  //   int s16 = (u32.u >> 16) &amp; 0x8000;
+  //   int exp = (u32.u >> 23) &amp; 0xff;
+  //   int mant = u32.u &amp; 0x7fffff;
+
+  let s16 = (u >> 16) &amp; 0x8000 // top bit is sign
+  const exp = (u >> 23) &amp; 0xff // then 5 bits of exponent
+  const mant = u &amp; 0x7fffff
+
+  //   if (exp == 0 &amp;&amp; mant == 0)
+  //     ;              /* 0.0, -0.0 */
+
+  // hildjj: zeros already handled.  Assert if you don't believe me.
+
+  //   else if (exp >= 113 &amp;&amp; exp &lt;= 142) /* normalized */
+  //     s16 += ((exp - 112) &lt;&lt; 10) + (mant >> 13);
+
+  if ((exp >= 113) &amp;&amp; (exp &lt;= 142)) {
+    s16 += ((exp - 112) &lt;&lt; 10) + (mant >> 13)
+  } else if ((exp >= 103) &amp;&amp; (exp &lt; 113)) {
+    //   else if (exp >= 103 &amp;&amp; exp &lt; 113) { /* denorm, exp16 = 0 */
+    //     if (mant &amp; ((1 &lt;&lt; (126 - exp)) - 1))
+    //       goto float32;         /* loss of precision */
+    //     s16 += ((mant + 0x800000) >> (126 - exp));
+
+    if (mant &amp; ((1 &lt;&lt; (126 - exp)) - 1)) {
+      return false
+    }
+    s16 += ((mant + 0x800000) >> (126 - exp))
+  } else {
+  //   } else if (exp == 255 &amp;&amp; mant == 0) { /* Inf */
+  //     s16 += 0x7c00;
+
+    // hildjj: Infinity already handled
+
+    //   } else
+    //     goto float32;           /* loss of range */
+
+    return false
+  }
+
+  //   ensure_writable(3);
+  //   u16 = s16;
+  //   be16 = hton16p((const uint8_t*)&amp;u16);
+  buf.writeUInt16BE(s16)
+  return true
+}
+
+exports.parseHalf = function parseHalf(buf) {
+  const sign = buf[0] &amp; 0x80 ? -1 : 1
+  const exp = (buf[0] &amp; 0x7C) >> 2
+  const mant = ((buf[0] &amp; 0x03) &lt;&lt; 8) | buf[1]
+  if (!exp) {
+    return sign * 5.9604644775390625e-8 * mant
+  } else if (exp === 0x1f) {
+    return sign * (mant ? 0 / 0 : 2e308)
+  } else {
+    return sign * Math.pow(2, exp - 25) * (1024 + mant)
+  }
+}
+
+exports.parseCBORfloat = function parseCBORfloat(buf) {
+  switch (buf.length) {
+    case 2:
+      return exports.parseHalf(buf)
+    case 4:
+      return buf.readFloatBE(0)
+    case 8:
+      return buf.readDoubleBE(0)
+    default:
+      throw new Error('Invalid float size: ' + buf.length)
+  }
+}
+
+exports.hex = function hex(s) {
+  return Buffer.from(s.replace(/^0x/, ''), 'hex')
+}
+
+exports.bin = function bin(s) {
+  s = s.replace(/\s/g, '')
+  let start = 0
+  let end = (s.length % 8) || 8
+  const chunks = []
+  while (end &lt;= s.length) {
+    chunks.push(parseInt(s.slice(start, end), 2))
+    start = end
+    end += 8
+  }
+  return Buffer.from(chunks)
+}
+
+exports.extend = function extend() {
+  let old = arguments[0]
+  const adds = (2 &lt;= arguments.length) ?
+    Array.prototype.slice.call(arguments, 1) : []
+  const len = adds.length
+  if (old == null) {
+    old = {}
+  }
+  for (let j = 0; j &lt; len; j++) {
+    const a = adds[j]
+    for (const k in a) {
+      const v = a[k]
+      old[k] = v
+    }
+  }
+  return old
+}
+
+exports.arrayEqual = function arrayEqual(a, b) {
+  if ((a == null) &amp;&amp; (b == null)) {
+    return true
+  }
+  if ((a == null) || (b == null)) {
+    return false
+  }
+  return (a.length === b.length) &amp;&amp; a.every((elem, i) => elem === b[i])
+}
+
+exports.bufferEqual = function bufferEqual(a, b) {
+  if ((a == null) &amp;&amp; (b == null)) {
+    return true
+  }
+  if ((a == null) || (b == null)) {
+    return false
+  }
+  if (!(Buffer.isBuffer(a) &amp;&amp; Buffer.isBuffer(b) &amp;&amp; (a.length === b.length))) {
+    return false
+  }
+  const len = a.length
+  let ret = true
+  let i
+  let j
+  for (i = j = 0; j &lt; len; i = ++j) {
+    const byte = a[i]
+    ret = ret &amp;&amp; (b[i] === byte)
+  }
+  return !!ret
+}
+
+exports.bufferToBignumber = function bufferToBignumber(buf) {
+  return new bignumber(buf.toString('hex'), 16)
+}
+
+exports.bufferToBigInt = function bufferToBigInt(buf) {
+  return BigInt('0x' + buf.toString('hex'))
+}
+
+exports.DeHexStream = class DeHexStream extends stream.Readable {
+  constructor(hex) {
+    super()
+    hex = hex.replace(/^0x/, '')
+    if (hex) {
+      this.push(Buffer.from(hex, 'hex'))
+    }
+    this.push(null)
+  }
+}
+
+exports.HexStream = class HexStream extends stream.Transform {
+  constructor(options) {
+    super(options)
+  }
+
+  _transform(fresh, encoding, cb) {
+    this.push(fresh.toString('hex'))
+    return cb()
+  }
+}
+
+exports.printError = function printError(er) {
+  if (er != null) {
+    return console.error(er)
+  }
+}
+
+exports.streamFiles = function streamFiles(files, streamFunc, cb) {
+  const f = files.shift()
+  if (!f) {
+    return cb()
+  }
+  const sf = streamFunc()
+  sf.on('end', () => exports.streamFiles(files, streamFunc, cb))
+  sf.on('error', cb)
+  const s = (f === '-') ?
+    process.stdin : (f instanceof stream.Stream) ? f : fs.createReadStream(f)
+  s.on('error', cb)
+  return s.pipe(sf)
+}
+
+exports.guessEncoding = function guessEncoding(input) {
+  if (typeof input == 'string') {
+    return 'hex'
+  } else if (Buffer.isBuffer(input)) {
+    return undefined
+  }
+  throw new Error('Unknown input type')
+}
+
 </code></pre>
         </article>
     </section>

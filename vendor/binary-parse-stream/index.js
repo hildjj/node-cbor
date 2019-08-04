@@ -4,60 +4,81 @@
 // the ability to read -1, which was odd and un-needed.
 // License for binary-parse-stream: MIT
 
-'use strict';
-exports = module.exports = BinaryParseStream
-var Stream = require('stream')
-  , TransformStream = Stream.Transform
-  , inherits = require('util').inherits
-  , NoFilter = require('nofilter')
+// binary-parse-stream is now unmaintained, so I'm going to rewrite it as
+// more modern JS so I can get tsc to help check types.
 
-exports.One = -1
+'use strict'
+const Stream = require('stream')
+const NoFilter = require('nofilter')
+const TransformStream = Stream.Transform
 
-inherits(BinaryParseStream, TransformStream)
-function BinaryParseStream(options) {
-  TransformStream.call(this, options)
-  this._writableState.objectMode = false
-  this._readableState.objectMode = true
+/**
+ * BinaryParseStream is a TransformStream that consumes buffers and outputs
+ * objects on the other end.  It expects your subclass to implement a `_parse`
+ * method that is a generator.  When your generator yields a number, it'll be
+ * fed a buffer of that length from the input.  When your generator returns,
+ * the return value will be pushed to the output side.
+ *
+ * @class BinaryParseStream
+ * @extends {TransformStream}
+ */
+class BinaryParseStream extends TransformStream {
+  constructor(options) {
+    super(options)
+    // doesn't work to pass these in as opts, for some reason
+    this['_writableState'].objectMode = false
+    this['_readableState'].objectMode = true
 
-  this.bs = new NoFilter()
-  this.__restart()
-}
-
-BinaryParseStream.prototype._transform = function(fresh, encoding, cb) { var self = this
-  this.bs.write(fresh)
-
-  while (this.bs.length >= this.__needed) {
-    var ret
-      , chunk = this.__needed === null
-        ? undefined
-        : this.bs.read(this.__needed)
-
-    try { ret = this.__parser.next(chunk) }
-    catch (e) {
-      return cb(e) }
-
-    if (this.__needed)
-      this.__fresh = false
-
-    if (!ret.done)
-      this.__needed = ret.value | 0
-    else {
-      this.push(ret.value)
-      this.__restart()
-    }
+    this.bs = new NoFilter()
+    this.__restart()
   }
 
-  return cb()
+  _transform(fresh, encoding, cb) {
+    this.bs.write(fresh)
+
+    while (this.bs.length >= this.__needed) {
+      let ret
+      const chunk = (this.__needed === null) ?
+        undefined : this.bs.read(this.__needed)
+
+      try {
+        ret = this.__parser.next(chunk)
+      } catch (e) {
+        return cb(e)
+      }
+  
+      if (this.__needed) {
+        this.__fresh = false
+      }
+
+      if (!ret.done) {
+        this.__needed = ret.value || 0
+      } else {
+        this.push(ret.value)
+        this.__restart()
+      }
+    }
+  
+    return cb()
+  }
+
+  /**
+   * @abstract
+   */
+  /* istanbul ignore next */
+  *_parse() {
+    throw new Error('Must be implemented in subclass')
+  }
+
+  __restart() {
+    this.__needed = null
+    this.__parser = this._parse()
+    this.__fresh = true
+  }
+
+  _flush(cb) {
+    cb(this.__fresh ? null : new Error('unexpected end of input'))
+  }
 }
 
-BinaryParseStream.prototype.__restart = function() {
-  this.__needed = null
-  this.__parser = this._parse()
-  this.__fresh = true
-}
-
-BinaryParseStream.prototype._flush = function(cb) {
-  cb(this.__fresh
-    ? null
-    : new Error('unexpected end of input'))
-}
+module.exports = BinaryParseStream
