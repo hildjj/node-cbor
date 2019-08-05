@@ -253,3 +253,9 @@ test('URL', t => {
       'd8207468747470733a2f2f6578616d706c652e6e65742f')
   }
 })
+
+test('big', async t => {
+  const buf = Buffer.alloc(16385)
+  const bc = cbor.encodeOne([buf, buf], {highWaterMark:50000})
+  t.is(bc.length, 32777)
+})

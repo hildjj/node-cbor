@@ -82,6 +82,31 @@ The sync encoding and decoding are exported as a
 [leveldb encoding](https://github.com/Level/levelup#custom_encodings), as
 `cbor.leveldb`.
 
+## highWaterMark
+
+The synchronous routines for encoding and decoding will have problems with
+objects that are larger than 16kB, which the default buffer size for Node
+streams.  There are two ways to fix this:
+
+1) pass in a highWaterMark of the largest buffer size you think you will
+need:
+
+```javascript
+cbor.encodeOne(Buffer.alloc(40000), {highWaterMark: 65535})
+```
+
+2) use stream mode.  Catch the `data`, `finish`, and `error` events.  Make sure to call `end()` when you're done.
+
+```javascript
+const enc = new cbor.Encoder()
+const bufs = []
+enc.on('data', buf => bufs.push(buf))
+enc.on('error', console.error)
+enc.on('finish', () => console.log(Buffer.concat(bufs)))
+
+enc.end(['foo', 1, false])
+```
+
 ## Supported types
 
 The following types are supported for encoding:

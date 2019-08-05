@@ -79,7 +79,7 @@
     "bignumber.js": "^9.0.0",
     "commander": "^2.20.0",
     "json-text-sequence": "^0.1",
-    "nofilter": "^1.0.2"
+    "nofilter": "^1.0.3"
   },
   "engines": {
     "node": ">=8.0.0"
