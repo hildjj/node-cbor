@@ -86,10 +86,9 @@ The sync encoding and decoding are exported as a
 
 The synchronous routines for encoding and decoding will have problems with
 objects that are larger than 16kB, which the default buffer size for Node
-streams.  There are two ways to fix this:
+streams.  There are a few ways to fix this:
 
-1) pass in a highWaterMark of the largest buffer size you think you will
-need:
+1) pass in a `highWaterMark` option with the value of the largest buffer size you think you will need:
 
 ```javascript
 cbor.encodeOne(Buffer.alloc(40000), {highWaterMark: 65535})
@@ -99,13 +98,14 @@ cbor.encodeOne(Buffer.alloc(40000), {highWaterMark: 65535})
 
 ```javascript
 const enc = new cbor.Encoder()
-const bufs = []
-enc.on('data', buf => bufs.push(buf))
+enc.on('data', buf => /* send the data somewhere */)
 enc.on('error', console.error)
-enc.on('finish', () => console.log(Buffer.concat(bufs)))
+enc.on('finish', () => /* tell the consumer we are finished */)
 
 enc.end(['foo', 1, false])
 ```
+
+3) use `encodeAsync()`, which uses the approach from approach 2 to return a memory-inefficient promise.
 
 ## Supported types
 
