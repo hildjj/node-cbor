@@ -119,11 +119,12 @@ test('vectors', t => {
   }
 })
 
-test('errors', t => {
+test('errors', async t => {
   t.plan(failures.length)
   for (const f of failures) {
-    t.throws(() => {
-      cbor.decodeFirstSync(f.hex, 'hex')
+    await t.throwsAsync(async () => {
+      await cbor.decodeAll(f.hex, 'hex')
+      console.log('NO THROW', f)
     })
   }
 })
