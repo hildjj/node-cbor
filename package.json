@@ -60,7 +60,7 @@
     ]
   },
   "devDependencies": {
-    "@types/node": "^12.6.9",
+    "@types/node": "^12.7.0",
     "ava": "^2.2.0",
     "concordance": "^4.0",
     "garbage": "0.0",
