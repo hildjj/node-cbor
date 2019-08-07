@@ -11,12 +11,7 @@ $ npm install --save cbor
 ```
 
 **NOTE**
-This package now requires node.js 4.1 or higher.  If you want a version that
-works with older node.js versions, you can install like this:
-
-```bash
-npm install 'hildjj/node-cbor#node0' --save
-```
+This package now requires node.js 8.3 or higher.
 
 Documentation:
 -------------
