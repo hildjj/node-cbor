@@ -105,7 +105,7 @@ enc.on('finish', () => /* tell the consumer we are finished */)
 enc.end(['foo', 1, false])
 ```
 
-3) use `encodeAsync()`, which uses the approach from approach 2 to return a memory-inefficient promise.
+3) use `encodeAsync()`, which uses the approach from approach 2 to return a memory-inefficient promise for a Buffer.
 
 ## Supported types
 
