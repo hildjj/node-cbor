@@ -61,7 +61,7 @@
   },
   "devDependencies": {
     "@types/node": "^12.7.0",
-    "ava": "^2.2.0",
+    "ava": "^1.4.1",
     "concordance": "^4.0",
     "garbage": "0.0",
     "jsdoc": "^3.6.3",
@@ -82,6 +82,6 @@
     "nofilter": "^1.0.3"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=6.0.0"
   }
 }

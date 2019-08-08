@@ -11,7 +11,9 @@ $ npm install --save cbor
 ```
 
 **NOTE**
-This package now requires node.js 8.3 or higher.
+This package now requires node.js 8.3 or higher.  It will work on node.js 6, in
+a less-tested, less-featureful way.  Please start upgrading if it is possible
+for you.
 
 Documentation:
 -------------

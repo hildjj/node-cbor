@@ -256,8 +256,10 @@ test('URL', t => {
 
 test('big', async t => {
   const buf = Buffer.alloc(16385)
-  const bc = cbor.encodeOne([buf, buf], {highWaterMark:50000})
-  t.is(bc.length, 32777)
+  if (!process.version.startsWith('v6')) {
+    const bc = cbor.encodeOne([buf, buf], {highWaterMark:50000})
+    t.is(bc.length, 32777)  
+  }
   const bd = await cbor.encodeAsync([buf, buf])
-  t.is(bc.length, 32777)
+  t.is(bd.length, 32777)
 })
