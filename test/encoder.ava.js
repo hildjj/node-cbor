@@ -217,11 +217,12 @@ test('arraybuffer types', t => {
     '83000000')
   t.is(
     cbor.encodeOne(new Float32Array(3)).toString('hex'),
-    '83fb0000000000000000fb0000000000000000fb0000000000000000')
+    '83fa00000000fa00000000fa00000000')
   t.is(
     cbor.encodeOne(new Float64Array(3)).toString('hex'),
     '83fb0000000000000000fb0000000000000000fb0000000000000000')
 
+  cases.EncodeFailer.tryAll(t, new Float32Array(3))
   cases.EncodeFailer.tryAll(t, new Float64Array(3))
 })
 
@@ -258,7 +259,7 @@ test('big', async t => {
   const buf = Buffer.alloc(16385)
   if (!process.version.startsWith('v6')) {
     const bc = cbor.encodeOne([buf, buf], {highWaterMark:50000})
-    t.is(bc.length, 32777)  
+    t.is(bc.length, 32777)
   }
   const bd = await cbor.encodeAsync([buf, buf])
   t.is(bd.length, 32777)
