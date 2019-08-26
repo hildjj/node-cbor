@@ -60,7 +60,7 @@
     ]
   },
   "devDependencies": {
-    "@types/node": "^12.7.0",
+    "@types/node": "^12.7.2",
     "ava": "^1.4.1",
     "concordance": "^4.0",
     "garbage": "0.0",
@@ -77,7 +77,7 @@
   "readmeFilename": "README.md",
   "dependencies": {
     "bignumber.js": "^9.0.0",
-    "commander": "^2.20.0",
+    "commander": "^3.0.0",
     "json-text-sequence": "^0.1",
     "nofilter": "^1.0.3"
   },
