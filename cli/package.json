@@ -6,7 +6,7 @@
     "type": "git",
     "url": "http://github.com/hildjj/node-cbor.git"
   },
-  "homepage": "http://hildjj.github.io/node-cbor/",
+  "homepage": "https://github.com/hildjj/node-cbor/tree/master/cli",
   "directories": {
     "bin": "bin",
     "man": "man"
