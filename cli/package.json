@@ -42,7 +42,7 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {
-    "cbor": "^4.3.0",
+    "cbor": "^5.0.1",
     "commander": "^3.0.0",
     "json-text-sequence": "^0.1"
   },
