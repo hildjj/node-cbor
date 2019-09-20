@@ -3,7 +3,7 @@
 const cbor = require('../')
 const test = require('ava')
 const cases = require('./cases')
-const utils = require('../lib/utils')
+const streams = require('./streams')
 const NoFilter = require('nofilter')
 
 function testAll(t, list) {
@@ -61,7 +61,7 @@ test.cb('stream', t => {
   })
   parser.on('error', (er) => t.fail(er))
 
-  const h = new utils.DeHexStream('6161')
+  const h = new streams.DeHexStream('6161')
   h.pipe(parser)
 })
 

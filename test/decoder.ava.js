@@ -3,7 +3,7 @@
 const cbor = require('../')
 const test = require('ava')
 const cases = require('./cases')
-const utils = require('../lib/utils')
+const streams = require('./streams')
 
 function testAll(t, list, opts) {
   t.plan(list.length)
@@ -125,7 +125,7 @@ test.cb('stream', t => {
   dt.on('end', () => t.end())
   dt.on('error', (er) => t.falsy(er))
 
-  const d = new utils.DeHexStream('01')
+  const d = new streams.DeHexStream('01')
   d.pipe(dt)
 })
 

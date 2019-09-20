@@ -19,12 +19,7 @@ Documentation:
 -------------
 See the full API [documentation](http://hildjj.github.io/node-cbor/).
 
-From the command line:
-```
-$ bin/json2cbor package.json > package.cbor
-$ bin/cbor2json package.cbor
-$ bin/cbor2diag package.cbor
-```
+For a command-line interface, see [cbor-cli](https://github.com/hildjj/node-cbor/tree/master/cli).
 
 Example:
 ```javascript

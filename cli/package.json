@@ -1,0 +1,52 @@
+{
+  "name": "cbor-cli",
+  "version": "4.3.0",
+  "description": "Command line tools to encode and parse data in the Concise Binary Object Representation (CBOR) data format (RFC7049).",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/hildjj/node-cbor.git"
+  },
+  "homepage": "http://hildjj.github.io/node-cbor/",
+  "directories": {
+    "bin": "bin",
+    "man": "man"
+  },
+  "scripts": {
+    "clean": "rm -rf coverage .nyc_output/ man/*",
+    "lint": "eslint lib/*.js bin/* test/*.js",
+    "test": "ava",
+    "man": "mkdir -p man; for f in man_src/*.md; do b=`basename $f`; marked-man $f -o man/${b%.md}.1; gzip -9f man/${b%.md}.1; done",
+    "release": "npm version patch && git push --follow-tags && npm publish",
+    "typecheck": "tsc --allowJs --checkJs --noEmit --target ES6 --moduleResolution node lib/*.js"
+  },
+  "keywords": [
+    "coap",
+    "cbor",
+    "json",
+    "cli"
+  ],
+  "author": {
+    "name": "Joe Hildebrand",
+    "email": "joe-github@cursive.net"
+  },
+  "ava": {
+    "files": [
+      "test/*.ava.js"
+    ]
+  },
+  "devDependencies": {
+    "ava": "1.4.1",
+    "marked-man": "^0.7.0",
+    "mock-stdio": "^1.0.3"
+  },
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "dependencies": {
+    "cbor": "^4.3.0",
+    "commander": "^3.0.0",
+    "json-text-sequence": "^0.1"
+  },
+  "engines": {
+    "node": ">=6.0.0"
+  }
+}
