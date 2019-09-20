@@ -1,4 +1,4 @@
-cbor
+cbor-cli
 ====
 
 A command-line interface for encoding and parse data in the Concise Binary Object Representation (CBOR) data format ([RFC7049](http://tools.ietf.org/html/rfc7049)).
