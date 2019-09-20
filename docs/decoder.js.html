@@ -72,7 +72,8 @@ function parentArray(parent, typ, count) {
 }
 
 function parentBufferStream(parent, typ) {
-  const b = new NoFilter
+  const b = new NoFilter()
+  b[COUNT] = -1
   b[SYMS.PARENT] = parent
   b[MAJOR] = typ
   return b
@@ -522,7 +523,8 @@ class Decoder extends BinaryParseStream {
                 `Invalid two-byte encoding of simple value ${val}`
               )
             }
-            val = Simple.decode(val, parent != null)
+            const hasParent = (parent != null)
+            val = Simple.decode(val, hasParent, hasParent &amp;&amp; (parent[COUNT] &lt; 0))
           } else {
             val = utils.parseCBORfloat(val)
           }

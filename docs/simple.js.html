@@ -119,13 +119,12 @@ class Simple {
    * stream in object mode.
    *
    * @param {number} val - the CBOR additional info to convert
-   * @param {boolean} has_parent - Does the CBOR item have a parent?
+   * @param {boolean} [has_parent=true] - Does the CBOR item have a parent?
+   * @param {boolean} [parent_indefinite=false] - Is the parent element
+   *   indefinitely encoded?
    * @returns {(null|undefined|boolean|Symbol|Simple)} - the decoded value
    */
-  static decode(val, has_parent) {
-    if (has_parent == null) {
-      has_parent = true
-    }
+  static decode(val, has_parent=true, parent_indefinite=false) {
     switch (val) {
       case SIMPLE.FALSE:
         return false
@@ -144,7 +143,7 @@ class Simple {
           return SYMS.UNDEFINED
         }
       case -1:
-        if (!has_parent) {
+        if (!has_parent || !parent_indefinite) {
           throw new Error('Invalid BREAK')
         }
         return SYMS.BREAK

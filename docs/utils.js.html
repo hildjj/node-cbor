@@ -41,8 +41,6 @@
         <article>
             <pre class="prettyprint source linenums"><code>'use strict'
 
-const fs = require('fs')
-const stream = require('stream')
 const util = require('util')
 const bignumber = require('bignumber.js').BigNumber
 
@@ -58,10 +56,17 @@ exports.hasBigInt = (typeof BigInt === 'function')
  * on invalid UTF8.  Byte Order Marks are not looked at or stripped.
  */
 const TD = (typeof TextDecoder === 'function') ? TextDecoder : util.TextDecoder
-// node 11+, browsers : node 8.3+
-const td = new TD('utf8', {fatal: true, ignoreBOM: true})
-exports.utf8 = (buf) => td.decode(buf)
-exports.utf8.checksUTF8 = true
+/* istanbul ignore else */
+if (TD) {
+  // node 11+, browsers : node 8.3+
+  const td = new TD('utf8', {fatal: true, ignoreBOM: true})
+  exports.utf8 = (buf) => td.decode(buf)
+  exports.utf8.checksUTF8 = true
+} else {
+  // TODO: polyfill a slow one or wait for node6 to die
+  exports.utf8 = (buf) => buf.toString('utf8') 
+  exports.utf8.checksUTF8 = false  
+}
 
 exports.parseCBORint = function(ai, buf) {
   switch (ai) {
@@ -249,48 +254,6 @@ exports.bufferToBignumber = function bufferToBignumber(buf) {
 
 exports.bufferToBigInt = function bufferToBigInt(buf) {
   return BigInt('0x' + buf.toString('hex'))
-}
-
-exports.DeHexStream = class DeHexStream extends stream.Readable {
-  constructor(hex) {
-    super()
-    hex = hex.replace(/^0x/, '')
-    if (hex) {
-      this.push(Buffer.from(hex, 'hex'))
-    }
-    this.push(null)
-  }
-}
-
-exports.HexStream = class HexStream extends stream.Transform {
-  constructor(options) {
-    super(options)
-  }
-
-  _transform(fresh, encoding, cb) {
-    this.push(fresh.toString('hex'))
-    return cb()
-  }
-}
-
-exports.printError = function printError(er) {
-  if (er != null) {
-    return console.error(er)
-  }
-}
-
-exports.streamFiles = function streamFiles(files, streamFunc, cb) {
-  const f = files.shift()
-  if (!f) {
-    return cb()
-  }
-  const sf = streamFunc()
-  sf.on('end', () => exports.streamFiles(files, streamFunc, cb))
-  sf.on('error', cb)
-  const s = (f === '-') ?
-    process.stdin : (f instanceof stream.Stream) ? f : fs.createReadStream(f)
-  s.on('error', cb)
-  return s.pipe(sf)
 }
 
 exports.guessEncoding = function guessEncoding(input) {

@@ -213,7 +213,7 @@
 
     
 
-    <h4 class="name" id=".decode"><span class="type-signature">(static) </span>decode<span class="signature">(val, has_parent)</span><span class="type-signature"> &rarr; {null|undefined|boolean|Symbol|<a href="Simple.html">Simple</a>}</span></h4>
+    <h4 class="name" id=".decode"><span class="type-signature">(static) </span>decode<span class="signature">(val, has_parent<span class="signature-attributes">opt</span>, parent_indefinite<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {null|undefined|boolean|Symbol|<a href="Simple.html">Simple</a>}</span></h4>
 
     
 
@@ -259,7 +259,7 @@ stream in object mode.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simple.js.html">simple.js</a>, <a href="simple.js.html#line84">line 84</a>
+        <a href="simple.js.html">simple.js</a>, <a href="simple.js.html#line86">line 86</a>
     </li></ul></dd>
     
 
@@ -291,7 +291,11 @@ stream in object mode.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -316,7 +320,19 @@ stream in object mode.
             </td>
 
             
+                <td class="attributes">
+                
 
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last">
@@ -342,11 +358,70 @@ stream in object mode.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
             
 
             <td class="description last">
                 Does the CBOR item have a parent?
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>parent_indefinite</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">
+                Is the parent element
+  indefinitely encoded?
                 
             </td>
         </tr>

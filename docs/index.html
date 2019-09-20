@@ -54,17 +54,12 @@
 <pre class="prettyprint source lang-bash"><code>$ npm install --save cbor
 </code></pre>
 <p><strong>NOTE</strong>
-This package now requires node.js 4.1 or higher.  If you want a version that
-works with older node.js versions, you can install like this:</p>
-<pre class="prettyprint source lang-bash"><code>npm install 'hildjj/node-cbor#node0' --save
-</code></pre>
+This package now requires node.js 8.3 or higher.  It will work on node.js 6, in
+a less-tested, less-featureful way.  Please start upgrading if it is possible
+for you.</p>
 <h2>Documentation:</h2>
 <p>See the full API <a href="http://hildjj.github.io/node-cbor/">documentation</a>.</p>
-<p>From the command line:</p>
-<pre class="prettyprint source"><code>$ bin/json2cbor package.json > package.cbor
-$ bin/cbor2json package.cbor
-$ bin/cbor2diag package.cbor
-</code></pre>
+<p>For a command-line interface, see <a href="https://github.com/hildjj/node-cbor/tree/master/cli">cbor-cli</a>.</p>
 <p>Example:</p>
 <pre class="prettyprint source lang-javascript"><code>var cbor = require('cbor');
 var assert = require('assert');
@@ -129,7 +124,7 @@ enc.on('finish', () => /* tell the consumer we are finished */)
 enc.end(['foo', 1, false])
 </code></pre>
 <ol start="3">
-<li>use <code>encodeAsync()</code>, which uses the approach from approach 2 to return a memory-inefficient promise.</li>
+<li>use <code>encodeAsync()</code>, which uses the approach from approach 2 to return a memory-inefficient promise for a Buffer.</li>
 </ol>
 <h2>Supported types</h2>
 <p>The following types are supported for encoding:</p>
