@@ -89,7 +89,7 @@ class Simple {
         }
       case SIMPLE.UNDEFINED:
         if (hasParent) {
-          return void 0
+          return undefined
         } else {
           return SYMS.UNDEFINED
         }

@@ -1,5 +1,6 @@
 'use strict'
 
+const { Buffer } = require('buffer')
 const ieee754 = require('ieee754')
 const Bignumber = require('bignumber.js').BigNumber
 
@@ -55,6 +56,7 @@ class Decoder {
 
     // Initialize asm based parser
     this.parser = parser(global, {
+      // eslint-disable-next-line no-console
       log: console.log.bind(console),
       pushInt: this.pushInt.bind(this),
       pushInt32: this.pushInt32.bind(this),
@@ -327,7 +329,7 @@ class Decoder {
   }
 
   createUndefined () {
-    return void 0
+    return undefined
   }
 
   createInfinity () {

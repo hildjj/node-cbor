@@ -6,8 +6,8 @@ const garbage = require('garbage')
 
 const cbor = require('../src')
 
-const CBOR_GARBAGE = process.env.NODE_CBOR_GARBAGE
-const NO_GARBAGE = process.env.NO_GARBAGE
+const CBOR_GARBAGE = (global.process && global.process.env) ? global.process.env.NODE_CBOR_GARBAGE : undefined
+const NO_GARBAGE = (global.process && global.process.env) ? global.process.env.NO_GARBAGE : undefined
 const REPEATS = parseInt(CBOR_GARBAGE || 1000)
 
 describe('random data', () => {

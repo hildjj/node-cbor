@@ -58,7 +58,7 @@ class Tagged {
    */
   convert (converters) {
     var er, f
-    f = converters != null ? converters[this.tag] : void 0
+    f = converters != null ? converters[this.tag] : undefined
     if (typeof f !== 'function') {
       f = Tagged['_tag' + this.tag]
       if (typeof f !== 'function') {

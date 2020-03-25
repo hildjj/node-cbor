@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 'use strict'
-
+const { Buffer } = require('buffer')
 const expect = require('chai').expect
 
 const cbor = require('../')
