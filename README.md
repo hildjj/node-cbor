@@ -6,7 +6,6 @@
 [![Coverage Status](https://coveralls.io/repos/github/dignifiedquire/borc/badge.svg?branch=master)](https://coveralls.io/github/dignifiedquire/borc?branch=master)
 [![Dependency Status](https://david-dm.org/dignifiedquire/borc.svg?style=flat-square)](https://david-dm.org/dignifiedquire/borc)
 [![Travis CI](https://travis-ci.org/dignifiedquire/borc.svg?branch=master)](https://travis-ci.org/dignifiedquire/borc)
-[![Circle CI](https://circleci.com/gh/dignifiedquire/borc.svg?style=svg)](https://circleci.com/gh/dignifiedquire/borc)
 
 
 > Assimilate all your JavaScript objects into the Concise Binary Object Representation (CBOR) data format ([RFC7049](http://tools.ietf.org/html/rfc7049)) **as fast as possible**.
