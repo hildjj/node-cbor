@@ -1,3 +1,4 @@
+/* eslint-disable */
 'use strict'
 
 const { Buffer } = require('buffer')
@@ -6,9 +7,11 @@ const Decoder = require('./decoder')
 const constants = require('./constants')
 const bignumber = require('bignumber.js').BigNumber
 
-const MT = constants.MT,
-      NUMBYTES = constants.NUMBYTES,
-      SYMS = constants.SYMS
+const MT = constants.MT
+
+const NUMBYTES = constants.NUMBYTES
+
+const SYMS = constants.SYMS
 
 function plural (c) {
   if (c > 1) {
@@ -40,7 +43,7 @@ class Commented extends stream.Transform {
 
     this.depth = 1
     this.max_depth = max_depth
-    this.all = new NoFilter
+    this.all = new NoFilter()
     this.parser = new Decoder(options)
     this.parser.on('value', this._on_value.bind(this))
     this.parser.on('start', this._on_start.bind(this))
@@ -112,7 +115,7 @@ class Commented extends stream.Transform {
       default:
         throw new Error('Unknown option type')
     }
-    const bs = new NoFilter
+    const bs = new NoFilter()
     const d = new Commented({
       max_depth: max_depth
     })
@@ -292,7 +295,7 @@ class Commented extends stream.Transform {
       this.push('undefined\n')
     } else if (typeof val === 'string') {
       this.depth--
-      if (val.length > 0 ) {
+      if (val.length > 0) {
         this.push(JSON.stringify(val))
         this.push('\n')
       }

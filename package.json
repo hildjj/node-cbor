@@ -11,6 +11,10 @@
   "browser": {
     "fs": false
   },
+  "files": [
+    "src",
+    "dist"
+  ],
   "scripts": {
     "test": "aegir test --files test/**/*.spec.js",
     "test:browser": "aegir test --target browser",

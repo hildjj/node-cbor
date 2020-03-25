@@ -1,6 +1,0 @@
-node_modules
-*.log
-coverage
-
-test
-docs
