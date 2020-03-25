@@ -1,9 +1,7 @@
 'use strict'
 
-const stream = require('stream')
-const util = require('util')
-const utils = require('./utils')
-const Simple = require('./simple')
+const { Buffer } = require('buffer')
+const stream = require('readable-stream')
 const Decoder = require('./decoder')
 const constants = require('./constants')
 const bignumber = require('bignumber.js').BigNumber
@@ -308,7 +306,7 @@ class Commented extends stream.Transform {
       this.push(val.toString())
       this.push('\n')
     } else {
-      this.push(util.inspect(val))
+      this.push(JSON.stringify(val))
       this.push('\n')
     }
 

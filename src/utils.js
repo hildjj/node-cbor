@@ -1,5 +1,6 @@
 'use strict'
 
+const { Buffer } = require('buffer')
 const Bignumber = require('bignumber.js').BigNumber
 
 const constants = require('./constants')

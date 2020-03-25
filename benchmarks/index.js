@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 'use strict'
 
 console.log('PID: %s', process.pid)
@@ -24,7 +25,7 @@ const buffers = vectors
 
 const suite = new Benchmark.Suite('cbor')
 
-let vecLength = vectors.length
+const vecLength = vectors.length
 let res = []
 
 suite.add(`encode - node-cbor - ${vecLength}`, () => {
@@ -40,9 +41,11 @@ suite.add(`encode - borc - ${vecLength}`, () => {
 })
 
 suite.add(`encode - stream - borc - ${vecLength}`, () => {
-  const enc = new fastCbor.Encoder({ stream (chunk) {
-    res.push(chunk)
-  } })
+  const enc = new fastCbor.Encoder({
+    stream (chunk) {
+      res.push(chunk)
+    }
+  })
   for (let i = 0; i < vecLength; i++) {
     enc.write(vectors[i].decoded)
   }

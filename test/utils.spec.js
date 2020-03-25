@@ -1,18 +1,17 @@
 /* eslint-env mocha */
 'use strict'
-
+const { Buffer } = require('buffer')
 const expect = require('chai').expect
 const utils = require('../src/utils')
 
 function bin (s) {
-  let chunks
+  const chunks = []
   let end
   let start
 
   s = s.replace(/\s/g, '')
   start = 0
   end = (s.length % 8) || 8
-  chunks = []
   while (end <= s.length) {
     chunks.push(parseInt(s.slice(start, end), 2))
     start = end

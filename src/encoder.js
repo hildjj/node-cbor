@@ -1,5 +1,6 @@
 'use strict'
 
+const { Buffer } = require('buffer')
 const { URL } = require('iso-url')
 const Bignumber = require('bignumber.js').BigNumber
 
@@ -254,7 +255,7 @@ class Encoder {
     if (!gen._pushInt(obj.size, MT.ARRAY)) {
       return false
     }
-    for (let x of obj) {
+    for (const x of obj) {
       if (!gen.pushAny(x)) {
         return false
       }
@@ -425,7 +426,7 @@ class Encoder {
           case SYMS.NULL:
             return this._pushObject(null)
           case SYMS.UNDEFINED:
-            return this._pushUndefined(void 0)
+            return this._pushUndefined(undefined)
           // TODO: Add pluggable support for other symbols
           default:
             throw new Error('Unknown symbol: ' + obj.toString())

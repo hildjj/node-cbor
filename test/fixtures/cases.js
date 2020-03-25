@@ -1,5 +1,6 @@
 'use strict'
 
+const { Buffer } = require('buffer')
 const Bignum = require('bignumber.js').BigNumber
 const { URL } = require('iso-url')
 const expect = require('chai').expect
@@ -12,9 +13,11 @@ class TempClass {
     // render as the string tempClass with the tag 0xffff
     this.value = val || 'tempClass'
   }
+
   encodeCBOR (gen) {
     return gen._pushTag(0xffff) && gen.pushAny(this.value)
   }
+
   static toCBOR (gen, obj) {
     return gen._pushTag(0xfffe) && gen.pushAny(obj.value)
   }
@@ -323,11 +326,33 @@ exports.good = [
     61              -- String, length: 1
       45            -- {Val:4}, "E"
 0xa56161614161626142616361436164614461656145`],
-  [{ 1: { 2: { 3: { 4: { 5: { 6: {
-    7: { 8: { 9: { 10: { 11: { 12: {
-      13: 'hello', 14: 'world'
-    } } } } } }
-  } } } } } } }, `{"1": {"2": {"3": {"4": {"5": {"6": {"7": {"8": {"9": {"10": {"11": {"12": {"13": "hello", "14": "world"}}}}}}}}}}}}}`, `
+  [{
+    1: {
+      2: {
+        3: {
+          4: {
+            5: {
+              6: {
+                7: {
+                  8: {
+                    9: {
+                      10: {
+                        11: {
+                          12: {
+                            13: 'hello', 14: 'world'
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }, '{"1": {"2": {"3": {"4": {"5": {"6": {"7": {"8": {"9": {"10": {"11": {"12": {"13": "hello", "14": "world"}}}}}}}}}}}}}', `
 a1                                      # map(1)
    61                                   # text(1)
       31                                # "1"
@@ -977,7 +1002,7 @@ a1                                  # map(1)
           }]
         ]
       }
-    }], `[true, {"#0": {"hxj(DOQZ-+%7>'": "oA|", "": true, "4(CX:": [-0.992622389595498_3, [{"Sedx": -0.49904045994866497_3, "f|mMuJDG2K2>b:Ob-WC": true, "t": {"}[": false, "O_b": true, "P;?V": true, ".mP2U!1r=": [null]}}]]}}]`, `
+    }], '[true, {"#0": {"hxj(DOQZ-+%7>\'": "oA|", "": true, "4(CX:": [-0.992622389595498_3, [{"Sedx": -0.49904045994866497_3, "f|mMuJDG2K2>b:Ob-WC": true, "t": {"}[": false, "O_b": true, "P;?V": true, ".mP2U!1r=": [null]}}]]}}]', `
 82                                      # array(2)
    f5                                   # primitive(21)
    a1                                   # map(1)
@@ -1186,7 +1211,7 @@ class EncodeFailer extends cbor.Encoder {
     let enc = new EncodeFailer()
     enc.canonical = canonical
     expect(enc.pushAny(f)).to.be.eql(true)
-    let used = enc.used
+    const used = enc.used
     for (let i = 0; i < used; i++) {
       enc = new EncodeFailer(i)
       enc.canonical = canonical

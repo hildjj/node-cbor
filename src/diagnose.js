@@ -1,5 +1,6 @@
 'use strict'
 
+const { Buffer } = require('buffer')
 const Decoder = require('./decoder')
 const utils = require('./utils')
 

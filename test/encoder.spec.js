@@ -1,7 +1,7 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
 'use strict'
-
+const { Buffer } = require('buffer')
 const expect = require('chai').expect
 const Bignum = require('bignumber.js').BigNumber
 
@@ -61,7 +61,7 @@ describe('encoder', () => {
     it('addSemanticType', () => {
       // before the tag, this is an innocuous object:
       // {"value": "foo"}
-      let tc = new cases.TempClass('foo')
+      const tc = new cases.TempClass('foo')
       delete (cases.TempClass.prototype.encodeCBOR)
       expect(
         cbor.Encoder.encode(tc).toString('hex')
@@ -161,7 +161,7 @@ describe('encoder', () => {
     })
 
     describe('numbers', () => {
-      for (let numEnc of cases.canonNums) {
+      for (const numEnc of cases.canonNums) {
         it(`${numEnc[0]} -> ${numEnc[1]}`, () => {
           expect(
             cbor.Encoder.encode(numEnc[0]).toString('hex')
