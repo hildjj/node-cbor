@@ -32,12 +32,17 @@ function failFirstAll(t, list) {
 
 function failFirstAllCB(t, list) {
   t.plan(list.length)
-  list.map(c => cbor.decodeFirst(cases.toBuffer(c), (er, d) => {
-    if (d == null) {
-      t.truthy(er)
-    } else {
-      t.throws(() => cbor.Decoder.nullcheck(d))
-    }
+  return Promise.all(list.map(c => {
+    return new Promise((resolve, reject) => {
+      cbor.decodeFirst(cases.toBuffer(c), (er, d) => {
+        if (d == null) {
+          t.truthy(er, c)
+        } else {
+          t.throws(() => cbor.Decoder.nullcheck(d), null, c)
+        }
+        resolve()
+      })
+    })
   }))
 }
 
