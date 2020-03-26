@@ -16,7 +16,7 @@
   },
   "scripts": {
     "clean": "rm -rf coverage .nyc_output/ docs/api man/*",
-    "lint": "eslint lib/*.js bin/* test/*.js",
+    "lint": "eslint lib/*.js cli/lib/* cli/bin/* test/*.js",
     "doc": "jsdoc -c .jsdoc.conf",
     "coverage": "nyc npm test",
     "coveragehtml": "nyc report -r html",
