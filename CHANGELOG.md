@@ -1,3 +1,17 @@
+<a name="2.1.2"></a>
+## [2.1.2](https://github.com/dignifiedquire/borc/compare/v2.1.1...v2.1.2) (2020-03-26)
+
+
+### Bug Fixes
+
+* cleanup ([3968a98](https://github.com/dignifiedquire/borc/commit/3968a98))
+* feedback ([18e5342](https://github.com/dignifiedquire/borc/commit/18e5342))
+* fix dep check ([393cc70](https://github.com/dignifiedquire/borc/commit/393cc70))
+* remove badge ([27a789f](https://github.com/dignifiedquire/borc/commit/27a789f))
+* remove node globals ([ae2214e](https://github.com/dignifiedquire/borc/commit/ae2214e))
+
+
+
 <a name="2.1.1"></a>
 ## [2.1.1](https://github.com/dignifiedquire/borc/compare/v2.1.0...v2.1.1) (2019-07-10)
 
