@@ -1,6 +1,6 @@
 {
   "name": "borc",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Encode and parse data in the Concise Binary Object Representation (CBOR) data format (RFC7049).",
   "main": "./src/index.js",
   "repository": {
@@ -66,20 +66,14 @@
     "node": ">=4"
   },
   "contributors": [
-    "Alan Shaw <alan.shaw@protocol.ai>",
-    "Benjamin Cabé <kartben@gmail.com>",
-    "Dan Finlay <542863+danfinlay@users.noreply.github.com>",
-    "Hugo Dias <mail@hugodias.me>",
     "Joe Hildebrand <joe-github@cursive.net>",
-    "Joe Hildebrand <joe+github@cursive.net>",
-    "Kim Persson <kimpers@users.noreply.github.com>",
     "Patrick Gansterer <paroga@paroga.com>",
-    "Ryan Pendergast <ryan.pendergast@gmail.com>",
+    "Hugo Dias <hugomrdias@gmail.com>",
+    "Tobias Wich <tobias.wich@ecsec.de>",
     "Rüdiger Klaehn <rklaehn@gmail.com>",
     "Scorpi <cobblebone@gmail.com>",
-    "Tobias Wich <tobias.wich@ecsec.de>",
-    "dignifiedquire <dignifiedquire@users.noreply.github.com>",
-    "dignifiedquire <dignifiedquire@gmail.com>",
-    "greenkeeperio-bot <support@greenkeeper.io>"
+    "Alan Shaw <alan.shaw@protocol.ai>",
+    "Benjamin Cabé <kartben@gmail.com>",
+    "Ryan Pendergast <ryan.pendergast@gmail.com>"
   ]
 }
