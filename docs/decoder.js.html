@@ -54,9 +54,8 @@ const NUMBYTES = constants.NUMBYTES
 const SIMPLE = constants.SIMPLE
 const SYMS = constants.SYMS
 
-const NEG_ONE = new bignumber(-1)
-const NEG_MAX = NEG_ONE.minus(
-  new bignumber(Number.MAX_SAFE_INTEGER.toString(16), 16))
+const BI = utils.bigIntize(constants.BI)
+const BN = constants.BN
 const COUNT = Symbol('count')
 const PENDING_KEY = Symbol('pending_key')
 const MAJOR = Symbol('major type')
@@ -93,7 +92,7 @@ function _tag_2(v) {
  */
 function _tag_3(v) {
   // avoid syntax error on old runtimes
-  return BigInt('-1') - utils.bufferToBigInt(v)
+  return BI.MINUS_ONE - utils.bufferToBigInt(v)
 }
 
 /**
@@ -139,8 +138,12 @@ class Decoder extends BinaryParseStream {
       if (this.tags == null) {
         this.tags = {}
       }
-      this.tags[2] = _tag_2
-      this.tags[3] = _tag_3
+      if (this.tags[2] == null) {
+        this.tags[2] = _tag_2
+      }
+      if (this.tags[3] == null) {
+        this.tags[3] = _tag_3
+      }
     }
   }
 
@@ -465,9 +468,9 @@ class Decoder extends BinaryParseStream {
           break
         case MT.NEG_INT:
           if (val === Number.MAX_SAFE_INTEGER) {
-            val = NEG_MAX
+            val = BN.NEG_MAX
           } else if (val instanceof bignumber) {
-            val = NEG_ONE.minus(val)
+            val = BN.MINUS_ONE.minus(val)
           } else {
             val = -1 - val
           }
@@ -524,7 +527,10 @@ class Decoder extends BinaryParseStream {
               )
             }
             const hasParent = (parent != null)
-            val = Simple.decode(val, hasParent, hasParent &amp;&amp; (parent[COUNT] &lt; 0))
+            val = Simple.decode(
+              val,
+              hasParent,
+              hasParent &amp;&amp; (parent[COUNT] &lt; 0))
           } else {
             val = utils.parseCBORfloat(val)
           }

@@ -252,8 +252,23 @@ exports.bufferToBignumber = function bufferToBignumber(buf) {
   return new bignumber(buf.toString('hex'), 16)
 }
 
+exports.toBigInt = function toBigInt(num) {
+  if (!exports.hasBigInt) {
+    return Number(num) // lossy.  Better than nothing?
+  }
+  return BigInt(num)
+}
+
+exports.bigIntize = function bigIntize(obj) {
+  const ret = {}
+  for (const k in obj) { // stupid node 6
+    ret[k] = exports.toBigInt(obj[k])
+  }
+  return ret
+}
+
 exports.bufferToBigInt = function bufferToBigInt(buf) {
-  return BigInt('0x' + buf.toString('hex'))
+  return exports.toBigInt('0x' + buf.toString('hex'))
 }
 
 exports.guessEncoding = function guessEncoding(input) {

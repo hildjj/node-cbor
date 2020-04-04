@@ -45,6 +45,9 @@
         Encoder
         </h2>
         
+            <div class="class-description">Transform JavaScript values into CBOR bytes.  The `Writable` side of
+the stream is in object mode.</div>
+        
     
 </header>
 
@@ -54,6 +57,8 @@
         
 <div class="section-method">
 
+    
+    <h2>Constructor</h2>
     
 
     <h4 class="name" id="Encoder"><span class="type-signature"></span>new Encoder<span class="signature">(options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
@@ -99,7 +104,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line70">line 70</a>
+        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line74">line 74</a>
     </li></ul></dd>
     
 
@@ -434,7 +439,7 @@
   "undefined" in the input be encoded.  By default, just encode a CBOR
   undefined.  If this is a buffer, use those bytes without re-encoding
   them.  If this is a function, the function will be called (which is
-  a good time to throw an exception, if that's what you want), and the 
+  a good time to throw an exception, if that's what you want), and the
   return value will be used according to these rules.  Anything
   else will be encoded as CBOR.
                 
@@ -487,6 +492,50 @@
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>collapseBigIntegers</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">
+                Should integers
+  that come in as BigNumber integers and ECMAscript bigint's be encoded
+  as normal CBOR integers if they fit, discarding type information?
+                
+            </td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -516,6 +565,17 @@
 </div>
     
     </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li>stream.Transform</li>
+    </ul>
+
 
     
 
@@ -582,7 +642,7 @@ CBOR bytes.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line654">line 654</a>
+        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line688">line 688</a>
     </li></ul></dd>
     
 
@@ -758,7 +818,7 @@ directly if you need to process large and complicated inputs.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line691">line 691</a>
+        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line725">line 725</a>
     </li></ul></dd>
     
 
@@ -940,7 +1000,7 @@ a Buffer containing the CBOR bytes.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line665">line 665</a>
+        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line699">line 699</a>
     </li></ul></dd>
     
 
@@ -1112,7 +1172,7 @@ a Buffer containing the CBOR bytes.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line677">line 677</a>
+        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line711">line 711</a>
     </li></ul></dd>
     
 
@@ -1319,7 +1379,7 @@ useful for objects for which you can't add an encodeCBOR method
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line151">line 151</a>
+        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line156">line 156</a>
     </li></ul></dd>
     
 
@@ -1501,7 +1561,7 @@ useful for objects for which you can't add an encodeCBOR method
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line600">line 600</a>
+        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line634">line 634</a>
     </li></ul></dd>
     
 
