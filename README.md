@@ -113,6 +113,7 @@ The following types are supported for encoding:
 * Date,
 * RegExp
 * url.URL
+* BigInt (If your JS version supports them)
 * [bignumber](https://github.com/MikeMcl/bignumber.js)
 
 Decoding supports the above types, including the following CBOR tag numbers:
