@@ -101,3 +101,15 @@ test.cb('guessEncoding', t => {
     t.end()
   }
 })
+
+test('toBigInt', t => {
+  const hbi = utils.hasBigInt
+  try {
+    utils.hasBigInt = false
+    t.is(utils.toBigInt(12), 12)
+    t.is(utils.toBigInt('12'), 12)
+    t.is(typeof utils.toBigInt('0xffffffffffffffff'), 'number')
+  } finally {
+    utils.hasBigInt = hbi
+  }
+})

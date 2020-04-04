@@ -892,6 +892,22 @@ exports.decodeGood = [
 0xd8405f44aabbccdd43eeff99ff`]
 ]
 
+exports.collapseBigIntegers = [
+  [new BigNum('0'), , '0x00'],
+  [new BigNum('1'), , '0x01'],
+  [new BigNum('-1'), , '0x20'],
+  [new BigNum('24'), , '0x1818'],
+  [new BigNum('-25'), , '0x3818'],
+  [new BigNum('01ff', 16), , '0x1901ff'],
+  [new BigNum('-01ff', 16), , '0x3901fe'],
+  [new BigNum('1ffff', 16), , '0x1a0001ffff'],
+  [new BigNum('-1ffff', 16), , '0x3a0001fffe'],
+  [new BigNum('1ffffffff', 16), , '0x1b00000001ffffffff'],
+  [new BigNum('-1ffffffff', 16), , '0x3b00000001fffffffe'],
+  [new BigNum('ffffffffffffffff', 16), , '0x1bffffffffffffffff'],
+  [new BigNum('-10000000000000000', 16), , '0x3bffffffffffffffff']
+]
+
 exports.decodeBad = [
   '0x18', // missing the next byte for AI
   '0x1c', // invalid AI

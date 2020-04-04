@@ -7,10 +7,10 @@ const NoFilter = require('nofilter')
 const BigNum = require('bignumber.js').BigNumber
 const url = require('url')
 
-function testAll(t, list) {
+function testAll(t, list, opts=undefined) {
   t.plan(list.length)
   return Promise.all(list.map(c => {
-    t.is(cbor.encode(c[0]).toString('hex'), cases.toString(c), c[1])
+    t.is(cbor.encodeOne(c[0], opts).toString('hex'), cases.toString(c), c[1])
   }))
 }
 
@@ -185,6 +185,21 @@ test('js BigInt', t => {
     return t.pass('No BigInt')
   }
   return testAll(t, cases.bigInts(cases.good))
+})
+
+test('BigNumber BigInt collapse', t => {
+  return testAll(t, cases.collapseBigIntegers, {
+    collapseBigIntegers: true
+  })
+})
+
+test('js BigInt collapse', t => {
+  if (!cbor.hasBigInt) {
+    return t.pass('No BigInt')
+  }
+  return testAll(t, cases.bigInts(cases.collapseBigIntegers), {
+    collapseBigIntegers: true
+  })
 })
 
 test('arraybuffer types', t => {

@@ -4,6 +4,7 @@ const cbor = require('../')
 const test = require('ava')
 const cases = require('./cases')
 const streams = require('./streams')
+const utils = require('../lib/utils')
 
 function testAll(t, list, opts) {
   t.plan(list.length)
@@ -58,9 +59,9 @@ test('decodeFirstSync', t => {
   t.deepEqual(cbor.Decoder.decodeFirstSync('Ag==', 'base64'), 2)
   t.deepEqual(cbor.decode('02', {}), 2)
   t.deepEqual(cbor.decode('f6'), null)
-  t.throws(() => cbor.decode(), Error)
-  t.throws(() => cbor.decode(''), Error)
-  t.throws(() => cbor.decode('63666f'), Error)
+  t.throws(() => cbor.decode())
+  t.throws(() => cbor.decode(''))
+  t.throws(() => cbor.decode('63666f'))
 })
 
 test('decodeAllSync', t => {
@@ -69,7 +70,7 @@ test('decodeAllSync', t => {
   t.deepEqual(cbor.Decoder.decodeAllSync('0202', {}), [2, 2])
   t.deepEqual(cbor.Decoder.decodeAllSync('f6f6'), [null, null])
   t.deepEqual(cbor.Decoder.decodeAllSync(''), [])
-  t.throws(() => cbor.Decoder.decodeAllSync('63666f'), Error)
+  t.throws(() => cbor.Decoder.decodeAllSync('63666f'))
 })
 
 test.cb('add_tag', t => {
@@ -199,4 +200,33 @@ test('js BigInt', t => {
     return t.pass('No BigInt')
   }
   return testAll(t, cases.bigInts(cases.good), {bigint: true})
+})
+
+test('bigint option', t => {
+  if (!cbor.hasBigInt) {
+    return t.pass('No BigInt')
+  }
+  let d = new cbor.Decoder({
+    bigint: true,
+    tags: {}
+  })
+  t.is(typeof d.tags[2], 'function')
+  d = new cbor.Decoder({
+    bigint: true,
+    tags: {
+      2: () => 'foo',
+      3: () => 'bar'
+    }
+  })
+  t.is(d.tags[2](), 'foo')
+  t.is(d.tags[3](), 'bar')
+  try {
+    utils.hasBigInt = false
+    d = new cbor.Decoder({
+      bigint: true
+    })
+    t.falsy(d.tags)
+  } finally {
+    utils.hasBigInt = true
+  }
 })
