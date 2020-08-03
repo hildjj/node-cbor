@@ -57,7 +57,7 @@
     "jsdoc": "^3.6.5",
     "light-server": "*",
     "minami": "*",
-    "nyc": "^15.1.0"
+    "nyc": "^14.1.1"
   },
   "license": "MIT",
   "readmeFilename": "README.md",

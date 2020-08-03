@@ -1,5 +1,6 @@
 {
   "reject": [
-    "ava"
+    "ava",
+    "nyc"
   ]
 }
