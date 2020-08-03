@@ -43,7 +43,7 @@
   "readmeFilename": "README.md",
   "dependencies": {
     "cbor": "^5.0.2",
-    "commander": "^5.0.0",
+    "commander": "^6.0.0",
     "json-text-sequence": "^0.1"
   },
   "engines": {
