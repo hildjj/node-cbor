@@ -2,6 +2,7 @@
 
 const cbor = require('../')
 const test = require('ava')
+const NoFilter = require('nofilter')
 const cases = require('./cases')
 const streams = require('./streams')
 const utils = require('../lib/utils')
@@ -63,6 +64,16 @@ test('decodeFirstSync', t => {
   t.throws(() => cbor.decode(''))
   t.throws(() => cbor.decode('63666f'))
   t.throws(() => cbor.decodeFirstSync('0203')) // fixed #111
+
+  // decodeFirstSync can take a ReadableStream as well.
+  const nf = new NoFilter('010203', 'hex')
+  try {
+    cbor.decodeFirstSync(nf)
+    t.fail()
+  } catch (ex) {
+    t.deepEqual(ex.value, 1)
+    t.is(nf.length, 2)
+  }
 })
 
 test('decodeAllSync', t => {
@@ -72,6 +83,9 @@ test('decodeAllSync', t => {
   t.deepEqual(cbor.Decoder.decodeAllSync('f6f6'), [null, null])
   t.deepEqual(cbor.Decoder.decodeAllSync(''), [])
   t.throws(() => cbor.Decoder.decodeAllSync('63666f'))
+
+  const nf = new NoFilter('010203', 'hex')
+  t.deepEqual(cbor.Decoder.decodeAllSync(nf), [1, 2, 3])
 })
 
 test.cb('add_tag', t => {
@@ -136,60 +150,44 @@ test.cb('stream', t => {
   d.pipe(dt)
 })
 
-test('decodeFirst', t => {
-  return cbor.decodeFirst('01')
-    .then((v) => {
-      t.is(1, v)
-      return cbor.decodeFirst('AQ==', {
-        encoding: 'base64'
-      })
-    })
-    .then((v) => {
-      t.is(1, v)
-      return cbor.decodeFirst('')
-    })
-    .then((v) => {
-      t.is(cbor.Decoder.NOT_FOUND, v)
-      return cbor.decodeFirst('', {required: true})
-    })
-    .catch((er) => {
+test('decodeFirst', async t => {
+  t.plan(8)
+  t.is(1, await cbor.decodeFirst('01'))
+  t.is(1, await cbor.decodeFirst('AQ==', {
+    encoding: 'base64'
+  }))
+  t.is(cbor.Decoder.NOT_FOUND, await cbor.decodeFirst(''))
+  await t.throwsAsync(() => cbor.decodeFirst('', {required: true}))
+  await cbor.decodeFirst(Buffer.allocUnsafe(0), (er, v) => {
+    t.falsy(er)
+    t.is(cbor.Decoder.NOT_FOUND, v)
+  })
+  await t.throwsAsync(() => cbor.decodeFirst(
+    Buffer.allocUnsafe(0),
+    {required: true},
+    (er, v) => {
       t.truthy(er)
-      cbor.decodeFirst(Buffer.allocUnsafe(0), (er, v) => {
-        t.falsy(er)
-        t.is(cbor.Decoder.NOT_FOUND, v)
-        return cbor.decodeFirst(
-          Buffer.allocUnsafe(0),
-          {required: true},
-          (er, v) => {
-            t.truthy(er)
-          })
-      })
-    })
+    }))
 })
 
-test('decodeAll', t => {
-  return cbor.decodeAll('01')
-    .then((v) => {
-      t.deepEqual([1], v)
-      return cbor.decodeAll('7f')
-    })
-    .catch(() => {
-      cbor.decodeAll('01', (er, v) => {
-        t.falsy(er)
-        t.deepEqual([1], v)
-        cbor.decodeAll('AQ==', {encoding: 'base64'}, (er, v) => {
-          t.falsy(er)
-          t.deepEqual([1], v)
-          return cbor.decodeAll('7f', {}, (er, v) => {
-            t.truthy(er)
-            return cbor.decodeAll('AQ==', 'base64', (er, v) => {
-              t.falsy(er)
-              t.deepEqual([1], v)
-            })
-          })
-        })
-      })
-    })
+test('decodeAll', async t => {
+  t.deepEqual([1], await cbor.decodeAll('01'))
+  await t.throwsAsync(() => cbor.decodeAll('7f'))
+  t.deepEqual([1], await cbor.decodeAll('01', (er, v) => {
+    t.falsy(er)
+    t.deepEqual([1], v)
+  }))
+  await cbor.decodeAll('AQ==', {encoding: 'base64'}, (er, v) => {
+    t.falsy(er)
+    t.deepEqual([1], v)
+  })
+  await t.throwsAsync(() => cbor.decodeAll('7f', {}, (er, v) => {
+    t.truthy(er)
+  }))
+  t.deepEqual([1], await cbor.decodeAll('AQ==', 'base64', (er, v) => {
+    t.falsy(er)
+    t.deepEqual([1], v)
+  }))
 })
 
 test('depth', t => {
