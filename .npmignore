@@ -23,3 +23,4 @@ test-vectors/
 .dockerignore
 npm-debug.log
 cli/
+.ncurc.json

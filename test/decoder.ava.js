@@ -55,13 +55,14 @@ test('bad first cb', t => failFirstAllCB(t, cases.decodeBad))
 
 test('decodeFirstSync', t => {
   t.deepEqual(cbor.decodeFirstSync('02'), 2)
-  t.deepEqual(cbor.decodeFirstSync('0203'), 2) // Added to disprove issue #73
+
   t.deepEqual(cbor.Decoder.decodeFirstSync('Ag==', 'base64'), 2)
   t.deepEqual(cbor.decode('02', {}), 2)
   t.deepEqual(cbor.decode('f6'), null)
   t.throws(() => cbor.decode())
   t.throws(() => cbor.decode(''))
   t.throws(() => cbor.decode('63666f'))
+  t.throws(() => cbor.decodeFirstSync('0203')) // fixed #111
 })
 
 test('decodeAllSync', t => {
