@@ -25,6 +25,9 @@ test('undefined', t => {
 test('badFunc', t => {
   t.throws(() => cbor.encode(() => 'hi'))
   t.throws(() => cbor.encode(Symbol('foo')))
+  function foo() {}
+  foo.toString = null
+  t.throws(() => cbor.encode(foo))
 })
 
 test('addSemanticType', t => {
@@ -84,6 +87,17 @@ test('pushFails', t => {
   cases.EncodeFailer.tryAll(t, undefined)
   cases.EncodeFailer.tryAll(t, cases.goodMap, true)
   cases.EncodeFailer.tryAll(t, {a: 1, b: null}, true)
+
+  return new Promise((resolve, reject) => {
+    const enc = new cbor.Encoder()
+    const o = { encodeCBOR() { return false } }
+    enc.on('error', e => {
+      t.truthy(e instanceof Error)
+      resolve(true)
+    })
+    enc.on('finish', reject)
+    enc.end(o)
+  })
 })
 
 test('_pushAny', t => {
@@ -134,14 +148,18 @@ test('detect loops', t => {
   t.is(bs.read().toString('hex'), '81a16163f4')
   t.is(Object.getOwnPropertySymbols(a).length, 1)
   t.is(Object.getOwnPropertySymbols(b).length, 1)
-  enc.removeLoopDetectors(b)
+  t.falsy(cbor.Encoder.removeLoopDetectors(b, Symbol()))
+  t.truthy(enc.removeLoopDetectors(b))
   t.is(Object.getOwnPropertySymbols(a).length, 0)
   t.is(Object.getOwnPropertySymbols(b).length, 0)
-  enc.removeLoopDetectors(b)
+  t.falsy(enc.removeLoopDetectors(b))
   t.is(Object.getOwnPropertySymbols(a).length, 0)
   t.is(Object.getOwnPropertySymbols(b).length, 0)
   a.a = a
   t.throws(() => enc.write(b))
+
+  const noLoops = new cbor.Encoder({detectLoops: false})
+  t.falsy(noLoops.removeLoopDetectors(a))
 })
 
 test('detect loops, own symbol', t => {
@@ -248,7 +266,7 @@ test('encoding "undefined"', t => {
     encodeUndefined: Buffer.from('ff', 'hex')
   }).toString('hex'), 'ff')
   t.throws(() => cbor.encodeOne(undefined, {encodeUndefined: () => {
-    throw new Error('ha') 
+    throw new Error('ha')
   }}))
   t.is(cbor.encodeOne(undefined, {
     encodeUndefined: () => Buffer.from('ff', 'hex')
@@ -278,4 +296,40 @@ test('big', async t => {
   }
   const bd = await cbor.encodeAsync([buf, buf])
   t.is(bd.length, 32777)
+})
+
+class IndefiniteClass {
+  encodeCBOR(gen) {
+    return cbor.Encoder.encodeIndefinite(gen, '1234567890', { chunkSize: 3 }) &&
+      cbor.Encoder.encodeIndefinite(gen, Buffer.from('1234567890'), { chunkSize: 3 }) &&
+      cbor.Encoder.encodeIndefinite(gen, this)
+  }
+}
+
+test('indefinite', t => {
+  const gen = new cbor.Encoder()
+
+  t.throws(() => cbor.Encoder.encodeIndefinite.call(null, gen, null))
+  t.throws(() => cbor.Encoder.encodeIndefinite.call(null, gen, true))
+  const i = new IndefiniteClass()
+  i.a = true
+  t.is(cbor.encodeOne(i).toString('hex'), '7f6331323363343536633738396130ff5f4331323343343536433738394130ffbf6161f5ff')
+  cases.EncodeFailer.tryAll(t, i)
+
+  const m = new Map([['a', true]])
+  m.encodeCBOR = cbor.Encoder.encodeIndefinite
+  t.is(cbor.encodeOne(m).toString('hex'), 'bf6161f5ff')
+  cases.EncodeFailer.tryAll(t, m)
+
+  const a = [1, Infinity, null, undefined]
+  a.encodeCBOR = cbor.Encoder.encodeIndefinite
+  t.is(cbor.encodeOne(a).toString('hex'), '9f01f97c00f6f7ff')
+  cases.EncodeFailer.tryAll(t, a)
+
+  const o = {
+    a: true,
+    encodeCBOR: cbor.Encoder.encodeIndefinite
+  }
+  t.is(cbor.encodeOne(o, { detectLoops: true }).toString('hex'), 'bf6161f5ff')
+  t.truthy(cbor.Encoder.removeLoopDetectors(o))
 })
