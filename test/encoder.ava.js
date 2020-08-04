@@ -90,7 +90,11 @@ test('pushFails', t => {
 
   return new Promise((resolve, reject) => {
     const enc = new cbor.Encoder()
-    const o = { encodeCBOR() { return false } }
+    const o = {
+      encodeCBOR() {
+        return false
+      }
+    }
     enc.on('error', e => {
       t.truthy(e instanceof Error)
       resolve(true)
@@ -301,7 +305,8 @@ test('big', async t => {
 class IndefiniteClass {
   encodeCBOR(gen) {
     return cbor.Encoder.encodeIndefinite(gen, '1234567890', { chunkSize: 3 }) &&
-      cbor.Encoder.encodeIndefinite(gen, Buffer.from('1234567890'), { chunkSize: 3 }) &&
+      cbor.Encoder.encodeIndefinite(
+        gen, Buffer.from('1234567890'), { chunkSize: 3 }) &&
       cbor.Encoder.encodeIndefinite(gen, this)
   }
 }
@@ -313,7 +318,10 @@ test('indefinite', t => {
   t.throws(() => cbor.Encoder.encodeIndefinite.call(null, gen, true))
   const i = new IndefiniteClass()
   i.a = true
-  t.is(cbor.encodeOne(i).toString('hex'), '7f6331323363343536633738396130ff5f4331323343343536433738394130ffbf6161f5ff')
+  t.is(
+    cbor.encodeOne(i).toString('hex'),
+    '7f6331323363343536633738396130ff5f4331323343343536433738394130ffbf6161f5ff'
+  )
   cases.EncodeFailer.tryAll(t, i)
 
   const m = new Map([['a', true]])

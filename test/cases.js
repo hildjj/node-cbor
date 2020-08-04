@@ -668,9 +668,11 @@ exports.decodeGood = [
 0xd74401020304`],
   [new cbor.Tagged(24, Buffer.from('6449455446', 'hex')), '24(h\'6449455446\')', `
   d8                --  next 1 byte
-    18              -- Tag #24
+    18              -- Tag #24 Encoded CBOR data item
       45            -- Bytes, length: 5
         6449455446  -- 6449455446
+        64          -- String, length: 4
+          49455446  -- "IETF"
 0xd818456449455446`],
   [0, '0_1', `
   f9                -- Float, next 2 bytes

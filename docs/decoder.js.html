@@ -553,7 +553,6 @@ class Decoder extends BinaryParseStream {
         }
         --depth
         delete parent[COUNT]
-        this.emit('stop', parent[MAJOR])
 
         if (Array.isArray(parent)) {
           switch (parent[MAJOR]) {
@@ -598,6 +597,7 @@ class Decoder extends BinaryParseStream {
               break
           }
         }
+        this.emit('stop', parent[MAJOR])
 
         const old = parent
         parent = parent[SYMS.PARENT]
