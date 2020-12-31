@@ -442,6 +442,15 @@ exports.good = [
         49          -- Bytes, length: 9
           09fffffffffffffff7 -- 09fffffffffffffff7
 0xc48220c24909fffffffffffffff7`],
+  [new BigNum(Math.PI).pow(3), '4([-45, 2(h\'056e5e99b1be81b6eefa3964490ac18c69399361\')])', `
+  c4                -- Tag #4
+    82              -- Array, 2 items
+      38            -- Negative number, next 1 byte
+        2c          -- [0], -45
+      c2            -- [1], Tag #2
+        54          -- Bytes, length: 20
+          056e5e99b1be81b6eefa3964490ac18c69399361 -- 056e5e99b1be81b6eefa3964490ac18c69399361
+0xc482382cc254056e5e99b1be81b6eefa3964490ac18c69399361`],
   [NaN, 'NaN_1', `
   f9                -- Float, next 2 bytes
     7e00            -- NaN
