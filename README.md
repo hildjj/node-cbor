@@ -211,6 +211,6 @@ a `NO_GARBAGE` environment variable:
 env NO_GARBAGE=1 npm run dev
 ```
 
-[![Build Status](https://api.travis-ci.org/hildjj/node-cbor.svg)](https://travis-ci.org/hildjj/node-cbor)
+[![Build Status](https://travis-ci.com/hildjj/node-cbor.svg?branch=master)](https://travis-ci.com/hildjj/node-cbor)
 [![Coverage Status](https://coveralls.io/repos/hildjj/node-cbor/badge.svg?branch=master)](https://coveralls.io/r/hildjj/node-cbor?branch=master)
 [![Dependency Status](https://david-dm.org/hildjj/node-cbor.svg)](https://david-dm.org/hildjj/node-cbor)
