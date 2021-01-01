@@ -1,6 +1,6 @@
 {
   "name": "cbor-cli",
-  "version": "5.0.3",
+  "version": "5.0.4",
   "description": "Command line tools to encode and parse data in the Concise Binary Object Representation (CBOR) data format (RFC7049).",
   "repository": {
     "type": "git",
