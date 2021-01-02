@@ -52,6 +52,8 @@ test('addSemanticType', t => {
   gen.write(Buffer.from('010203', 'hex'))
 
   t.is(gen.read().toString('hex'), '683078303130323033')
+
+  t.throws(() => gen.addSemanticType('foo', 'bar'))
 })
 
 test.cb('stream', t => {
@@ -340,4 +342,28 @@ test('indefinite', t => {
   }
   t.is(cbor.encodeOne(o, { detectLoops: true }).toString('hex'), 'bf6161f5ff')
   t.truthy(cbor.Encoder.removeLoopDetectors(o))
+})
+
+test('outside BigNumber', t => {
+  const key = require.resolve('bignumber.js')
+  const old = require.cache[key]
+  delete require.cache[key]
+  const bn = require('bignumber.js').BigNumber
+  // should be separate
+  t.is(bn, bn)
+  t.is(BigNum, BigNum)
+  t.not(bn, BigNum)
+  const a = bn(2)
+  const b = BigNum(2)
+  t.truthy(a instanceof bn)
+  t.truthy(b instanceof BigNum)
+  t.falsy(a instanceof BigNum)
+  t.falsy(b instanceof bn)
+
+  const pi3 = bn(Math.PI).pow(3)
+  // Before the fix, 'instanceof BigNum' is false, so pi3 gets encoded
+  // as a plain old object.
+  t.is(cbor.encodeOne(pi3).toString('hex'),
+    'c482382cc254056e5e99b1be81b6eefa3964490ac18c69399361')
+  require.cache[key] = old
 })
