@@ -10,3 +10,4 @@ typings.json
 .vscode/
 shrinkwrap.yaml
 npm-debug.log
+t.js
