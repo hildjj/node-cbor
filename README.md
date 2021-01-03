@@ -3,6 +3,11 @@ cbor
 
 Encode and parse data in the Concise Binary Object Representation (CBOR) data format ([RFC7049](http://tools.ietf.org/html/rfc7049)).
 
+Supported Node.js versions
+--------------------------
+
+This project now only supports versions of Node that the Node team is [currently supporting](https://github.com/nodejs/Release#release-schedule).  Ava's [support statement](https://github.com/avajs/ava/blob/master/docs/support-statement.md) is what we will be using as well.  Currently, that means Node `10`+ is required.  If you need to support an older version of Node (back to version 6), use cbor version 5.2.x, which will get nothing but security updates from here on out.
+
 Installation:
 ------------
 
@@ -211,6 +216,6 @@ a `NO_GARBAGE` environment variable:
 env NO_GARBAGE=1 npm run dev
 ```
 
-[![Build Status](https://travis-ci.com/hildjj/node-cbor.svg?branch=master)](https://travis-ci.com/hildjj/node-cbor)
+[![Build Status](https://github.com/hildjj/node-cbor/workflows/Tests/badge.svg)](https://github.com/hildjj/node-cbor/actions?query=workflow%3ATests)
 [![Coverage Status](https://coveralls.io/repos/hildjj/node-cbor/badge.svg?branch=master)](https://coveralls.io/r/hildjj/node-cbor?branch=master)
 [![Dependency Status](https://david-dm.org/hildjj/node-cbor.svg)](https://david-dm.org/hildjj/node-cbor)

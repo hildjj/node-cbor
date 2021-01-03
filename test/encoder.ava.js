@@ -54,6 +54,17 @@ test('addSemanticType', t => {
   t.is(gen.read().toString('hex'), '683078303130323033')
 
   t.throws(() => gen.addSemanticType('foo', 'bar'))
+  t.is(gen.addSemanticType(Buffer), hexPackBuffer)
+  t.is(gen.addSemanticType(Buffer), undefined)
+
+  // as object
+  const gen2 = new cbor.Encoder({
+    genTypes: {
+      TempClass: cases.TempClass.toCBOR
+    }
+  })
+  gen2.write(tc)
+  t.is(gen2.read().toString('hex'), 'd9fffe63666f6f')
 })
 
 test.cb('stream', t => {
@@ -187,8 +198,12 @@ test('detect loops, own symbol', t => {
 test('date types', t => {
   const d = new Date('2018-06-05T14:36:20Z')
 
+  t.throws(() => {
+    cbor.encodeOne(d, {dateType: 'blorfff'})
+  }, { instanceOf: TypeError })
+
   t.is(
-    cbor.encodeOne(d, {dateType: 'blorfff'}).toString('hex'),
+    cbor.encodeOne(d, {dateType: 'number'}).toString('hex'),
     'c11a5b169fe4')
 
   t.is(
@@ -205,9 +220,6 @@ test('date types', t => {
 })
 
 test('js BigInt', t => {
-  if (!cbor.hasBigInt) {
-    return t.pass('No BigInt')
-  }
   return testAll(t, cases.bigInts(cases.good))
 })
 
@@ -218,9 +230,6 @@ test('BigNumber BigInt collapse', t => {
 })
 
 test('js BigInt collapse', t => {
-  if (!cbor.hasBigInt) {
-    return t.pass('No BigInt')
-  }
   return testAll(t, cases.bigInts(cases.collapseBigIntegers), {
     collapseBigIntegers: true
   })

@@ -47,6 +47,8 @@ OPTIONS
 
 `-`: read from stdin instead of a file.  This is the default.
 
+`-c, --canonical`:  Canonical output
+
 `-x, --hex`: output a hex-encoded version of the CBOR data, instead of the native
   CBOR data
 

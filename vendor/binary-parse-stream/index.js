@@ -64,6 +64,8 @@ class BinaryParseStream extends TransformStream {
 
   /**
    * @abstract
+   * @protected
+   * @returns {Generator<number, undefined, Buffer>}
    */
   /* istanbul ignore next */
   *_parse() {
