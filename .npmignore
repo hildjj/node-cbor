@@ -25,3 +25,4 @@ npm-debug.log
 cli/
 .ncurc.json
 t.js
+tsconfig.json

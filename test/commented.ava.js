@@ -25,14 +25,15 @@ test('encode', t => testAll(t, cases.encodeGood))
 test('decode', t => testAll(t, cases.decodeGood))
 test('fail', t => failAll(t, cases.decodeBad))
 
-test('input_errors', t => {
+test('input_errors', async t => {
   t.throws(() => {
     cbor.comment(null, null)
   })
   t.throws(() => {
     cbor.comment('00', true)
   })
-  cbor.comment('')
+  t.throwsAsync(cbor.comment('d8184181'))
+  await cbor.comment('')
 })
 
 test.cb('max_depth', t => {

@@ -6,6 +6,7 @@ const NoFilter = require('nofilter')
 const cases = require('./cases')
 const streams = require('./streams')
 const utils = require('../lib/utils')
+const BigNumber = require('bignumber.js').BigNumber
 
 function testAll(t, list, opts) {
   t.plan(list.length)
@@ -48,8 +49,8 @@ function failFirstAllCB(t, list) {
   }))
 }
 
-test('good', t => testAll(t, cases.good))
-test('decode', t => testAll(t, cases.decodeGood))
+test('good', t => testAll(t, cases.bigInts(cases.good)))
+test('decode', t => testAll(t, cases.bigInts(cases.decodeGood)))
 test('edges', t => failAll(t, cases.decodeBad))
 test('bad first', t => failFirstAll(t, cases.decodeBad))
 test('bad first cb', t => failFirstAllCB(t, cases.decodeBad))
@@ -77,6 +78,7 @@ test('decodeFirstSync', t => {
 })
 
 test('decodeAllSync', t => {
+  t.deepEqual(cbor.Decoder.decodeAllSync(''), [])
   t.deepEqual(cbor.Decoder.decodeAllSync('0202'), [2, 2])
   t.deepEqual(cbor.Decoder.decodeAllSync('AgI=', 'base64'), [2, 2])
   t.deepEqual(cbor.Decoder.decodeAllSync('0202', {}), [2, 2])
@@ -195,16 +197,10 @@ test('depth', t => {
 })
 
 test('js BigInt', t => {
-  if (!cbor.hasBigInt) {
-    return t.pass('No BigInt')
-  }
   return testAll(t, cases.bigInts(cases.good), {bigint: true})
 })
 
 test('bigint option', t => {
-  if (!cbor.hasBigInt) {
-    return t.pass('No BigInt')
-  }
   let d = new cbor.Decoder({
     bigint: true,
     tags: {}
@@ -219,13 +215,32 @@ test('bigint option', t => {
   })
   t.is(d.tags[2](), 'foo')
   t.is(d.tags[3](), 'bar')
-  try {
-    utils.hasBigInt = false
-    d = new cbor.Decoder({
-      bigint: true
-    })
-    t.falsy(d.tags)
-  } finally {
-    utils.hasBigInt = true
-  }
+
+  t.deepEqual(cbor.decodeFirstSync('3b001fffffffffffff', { bigint: false}),
+    new BigNumber('-9007199254740992'))
+
+  t.deepEqual(cbor.decodeFirstSync('3b011fffffffffffff', { bigint: false}),
+    new BigNumber('-81064793292668928'))
+
+  t.deepEqual(cbor.decodeFirstSync('c34720000000000000', { bigint: false}),
+    new BigNumber('-9007199254740993'))
+
+  t.deepEqual(cbor.decodeFirstSync('c24720000000000000', { bigint: false}),
+    new BigNumber('9007199254740992'))
+})
+
+test('typed arrays', t => {
+  const buf = Buffer.from('c24720000000000000', 'hex')
+  t.is(cbor.decode(buf), 9007199254740992n)
+  const ab = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.length)
+  t.is(cbor.decode(ab), 9007199254740992n)
+  t.is(cbor.decode(new Uint8Array(ab)), 9007199254740992n)
+  t.is(cbor.decode(new Uint8ClampedArray(ab)), 9007199254740992n)
+
+  // beware endian-ness
+  const u8b = new Uint8ClampedArray([0x61, 0x62])
+  t.is(cbor.decode(new Uint16Array(u8b.buffer)), 'b')
+  const u8abc = new Uint8ClampedArray([0x63, 0x61, 0x62, 0x63])
+  t.is(cbor.decode(new Uint32Array(u8abc.buffer)), 'abc')
+  t.is(cbor.decode(new DataView(u8abc.buffer)), 'abc')
 })

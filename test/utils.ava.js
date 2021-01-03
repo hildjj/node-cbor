@@ -95,6 +95,17 @@ test('bufferToBignumber', t => {
 })
 
 test.cb('guessEncoding', t => {
+  const buf = Buffer.from('0102', 'hex')
+  const nof = utils.guessEncoding(
+    buf.buffer.slice(buf.offset, buf.offset+buf.length))
+  t.deepEqual(nof.read().toString('hex'), '0102')
+  const ab = new ArrayBuffer(256)
+  const u16 = new Uint16Array(ab, 100, 3)
+  u16[0] = 512
+  u16[1] = 256
+  u16[2] = 1
+  const nof2 = utils.guessEncoding(u16)
+  t.deepEqual(nof2.read().toString('hex'), '000200010100')
   try {
     utils.guessEncoding()
   } catch (er) {
@@ -102,14 +113,9 @@ test.cb('guessEncoding', t => {
   }
 })
 
-test('toBigInt', t => {
-  const hbi = utils.hasBigInt
-  try {
-    utils.hasBigInt = false
-    t.is(utils.toBigInt(12), 12)
-    t.is(utils.toBigInt('12'), 12)
-    t.is(typeof utils.toBigInt('0xffffffffffffffff'), 'number')
-  } finally {
-    utils.hasBigInt = hbi
-  }
+test('cborValueToString', t => {
+  t.is(utils.cborValueToString(Symbol()), 'Symbol')
+  t.is(utils.cborValueToString(Symbol(')')), ')')
+  t.is(utils.cborValueToString(Symbol('foo')), 'foo')
+  t.is(utils.cborValueToString(new BigNum(-4)), '-4')
 })

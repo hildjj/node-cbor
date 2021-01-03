@@ -42,7 +42,13 @@ test.before(async t => {
         const v = value['___VALUE___']
         const f = Number.parseFloat(v)
         const bn = new BigNumber(v)
-        return bn.eq(f) ? f : bn
+        if (bn.eq(f)) {
+          return f
+        }
+        if (bn.isInteger()) {
+          return BigInt(bn.toString())
+        }
+        return bn
       default:
         return value
     }
@@ -101,8 +107,6 @@ test('vectors', t => {
         // TODO: Don't know how to make these round-trip.  See:
         // https://github.com/cbor/test-vectors/issues/3
         if ([
-          '1bffffffffffffffff',
-          '3bffffffffffffffff',
           'f90000',
           'f93c00',
           'f97bff',
