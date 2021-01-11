@@ -244,3 +244,14 @@ test('typed arrays', t => {
   t.is(cbor.decode(new Uint32Array(u8abc.buffer)), 'abc')
   t.is(cbor.decode(new DataView(u8abc.buffer)), 'abc')
 })
+
+test('preferWeb', t => {
+  t.deepEqual(cbor.decodeFirstSync('40', {preferWeb: true}),
+    new Uint8Array([]))
+  t.deepEqual(cbor.decodeFirstSync('4141', {preferWeb: true}),
+    new Uint8Array([0x41]))
+  t.deepEqual(cbor.decodeFirstSync('5fff', {preferWeb: true}),
+    new Uint8Array([]))
+  t.deepEqual(cbor.decodeFirstSync('5f42010243030405ff', {preferWeb: true}),
+    new Uint8Array([0x01, 0x02, 0x03, 0x04, 0x05]))
+})
