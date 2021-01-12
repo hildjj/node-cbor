@@ -20,7 +20,7 @@ function input() {
   const txt = itxt.value
   switch (inp) {
     case 'JSON':
-      return cbor.encode(JSON.parse(txt))
+      return cbor.encodeOne(JSON.parse(txt), {canonical: true})
     case 'hex':
     case 'base64':
       return Buffer.from(txt, inp)

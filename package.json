@@ -27,7 +27,8 @@
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "lcov": "nyc --reporter=lcov npm test",
     "types": "tsc",
-    "preinstall": "node .checkVersion"
+    "preinstall": "node .checkVersion",
+    "examples": "rm -rf docs/example; (cd examples/webpack-demo; npm run build); (cd examples/browserify-demo; npm run deploy); (cd examples/parcel-demo; npm run deploy)"
   },
   "keywords": [
     "coap",

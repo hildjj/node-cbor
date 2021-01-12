@@ -4405,7 +4405,7 @@ function input() {
 
   switch (inp) {
     case 'JSON':
-      return cbor.encode(JSON.parse(txt), {
+      return cbor.encodeOne(JSON.parse(txt), {
         canonical: true
       });
 
@@ -4431,26 +4431,17 @@ function output(buf, typ) {
 
     case 'commented':
       copy.disabled = true;
-      cbor.comment(buf, {
-        bigint: true,
-        preferWeb: true
-      }).then(txt => otxt.value = txt, error);
+      cbor.comment(buf).then(txt => otxt.value = txt, error);
       break;
 
     case 'diagnostic':
       copy.disabled = true;
-      cbor.diagnose(buf, {
-        bigint: true,
-        preferWeb: true
-      }).then(txt => otxt.value = txt, error);
+      cbor.diagnose(buf).then(txt => otxt.value = txt, error);
       break;
 
     case 'js':
       copy.disabled = true;
-      cbor.decodeFirst(buf, {
-        bigint: true,
-        preferWeb: true
-      }).then(o => {
+      cbor.decodeFirst(buf).then(o => {
         otxt.value = util.inspect(o, {
           depth: Infinity,
           compact: 1,
