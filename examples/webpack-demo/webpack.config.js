@@ -5,18 +5,19 @@ const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
-  entry: './src/index.js',
+  entry: './src/index-wp.js',
   output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, '..', 'docs', 'example')
+    filename: 'bundle-wp.js',
+    path: path.resolve(__dirname, '..', '..', 'docs', 'example')
   },
   mode: 'development',
 
   plugins: [
     new NodePolyfillPlugin(),
     new HtmlWebpackPlugin({
-      title: 'CBOR for the web',
-      template: 'src/index.html'
+      filename: 'index-wp.html',
+      title: 'CBOR/web (webpack)',
+      template: 'src/webpack.html'
     })
   ],
 
