@@ -26,3 +26,8 @@ test('edges', t => {
     new cbor.Tagged('zero', 'one') // eslint-disable-line
   })
 })
+
+test('convert', t => {
+  const tag = new cbor.Tagged(2, Buffer.from([2]))
+  t.deepEqual(tag.convert(), new cbor.BigNumber(2))
+})

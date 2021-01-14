@@ -41,32 +41,22 @@
         <article>
             <pre class="prettyprint source linenums"><code>'use strict'
 
-const constants = require('./constants')
 const NoFilter = require('nofilter')
-const bignumber = require('bignumber.js').BigNumber
 const stream = require('stream')
 const util = require('util')
+const {BigNumber, NUMBYTES, SHIFT32, BI, SYMS} = require('./constants')
 
-const NUMBYTES = constants.NUMBYTES
-const SHIFT32 = constants.SHIFT32
 const MAX_SAFE_HIGH = 0x1fffff
 
 /**
  * Convert a UTF8-encoded Buffer to a JS string.  If possible, throw an error
  * on invalid UTF8.  Byte Order Marks are not looked at or stripped.
  */
-const TD = (typeof TextDecoder === 'function') ? TextDecoder : util.TextDecoder
-/* istanbul ignore else */
-if (TD) {
-  // node 11+, browsers : node 8.3+
-  const td = new TD('utf8', {fatal: true, ignoreBOM: true})
-  exports.utf8 = (buf) => td.decode(buf)
-  exports.utf8.checksUTF8 = true
-} else {
-  // TODO: polyfill a slow one or wait for node6 to die
-  exports.utf8 = (buf) => buf.toString('utf8') 
-  exports.utf8.checksUTF8 = false  
-}
+const TD = (typeof TextDecoder === 'function') ? /* istanbul ignore next */ TextDecoder : util.TextDecoder
+// TextDecoder in node 11+, browsers
+const td = new TD('utf8', {fatal: true, ignoreBOM: true})
+exports.utf8 = (buf) => td.decode(buf)
+exports.utf8.checksUTF8 = true
 
 exports.parseCBORint = function(ai, buf, bigInt=true) {
   switch (ai) {
@@ -81,9 +71,9 @@ exports.parseCBORint = function(ai, buf, bigInt=true) {
       const g = buf.readUInt32BE(4)
       if (f > MAX_SAFE_HIGH) {
         if (bigInt) {
-          return (BigInt(f) * constants.BI.SHIFT32) + BigInt(g)
+          return (BigInt(f) * BI.SHIFT32) + BigInt(g)
         }
-        return new bignumber(f).times(SHIFT32).plus(g)
+        return new BigNumber(f).times(SHIFT32).plus(g)
       } else {
         return (f * SHIFT32) + g
       }
@@ -253,7 +243,7 @@ exports.bufferEqual = function bufferEqual(a, b) {
 }
 
 exports.bufferToBignumber = function bufferToBignumber(buf) {
-  return new bignumber(buf.toString('hex'), 16)
+  return new BigNumber(buf.toString('hex'), 16)
 }
 
 exports.bufferToBigInt = function bufferToBigInt(buf) {
@@ -264,13 +254,15 @@ exports.cborValueToString = function cborValueToString(val, float_bytes=-1) {
   switch (typeof val) {
     case 'symbol':
       switch (val) {
-        case constants.SYMS.NULL:
+        case SYMS.NULL:
           return 'null'
-        case constants.SYMS.UNDEFINED:
+        case SYMS.UNDEFINED:
           return 'undefined'
-        case constants.SYMS.BREAK:
+        case SYMS.BREAK:
           return 'BREAK'
       }
+      // impossible in node 10
+      /* istanbul ignore if */
       if (val.description) {
         return val.description
       }
@@ -278,7 +270,10 @@ exports.cborValueToString = function cborValueToString(val, float_bytes=-1) {
       // toString value, which looks like `Symbol(foo)`.
       const s = val.toString()
       const m = s.match(/^Symbol\((.*)\)/)
+      /* istanbul ignore if */
       if (m &amp;&amp; m[1]) {
+        // impossible in node 12+
+        /* istanbul ignore next */
         return m[1]
       }
       return 'Symbol'
@@ -296,7 +291,7 @@ exports.cborValueToString = function cborValueToString(val, float_bytes=-1) {
     const hex = val.toString('hex')
     return (float_bytes === -Infinity) ? hex : `h'${hex}'`
   }
-  if (bignumber.isBigNumber(val)) {
+  if (BigNumber.isBigNumber(val)) {
     return val.toString()
   }
   return util.inspect(val)
@@ -309,9 +304,7 @@ exports.guessEncoding = function guessEncoding(input, encoding) {
     return new NoFilter(input)
   } else if (ArrayBuffer.isView(input)) {
     return new NoFilter(
-      Buffer.from(input.buffer.slice(
-        input.byteOffset,
-        input.byteOffset + input.byteLength)))
+      Buffer.from(input.buffer, input.byteOffset, input.byteLength))
   } else if (input instanceof ArrayBuffer) {
     return new NoFilter(Buffer.from(input))
   } else if (input instanceof stream.Readable) {

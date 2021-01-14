@@ -131,3 +131,13 @@ test('inputs', t => {
 `)
     })
 })
+
+test('options', async t => {
+  function newTag24() {}
+  const c = new cbor.Commented({
+    tags: {
+      24: newTag24
+    }
+  })
+  t.is(c.parser.tags[24], newTag24)
+})

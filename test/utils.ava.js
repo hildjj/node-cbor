@@ -116,6 +116,9 @@ test.cb('guessEncoding', t => {
 test('cborValueToString', t => {
   t.is(utils.cborValueToString(Symbol()), 'Symbol')
   t.is(utils.cborValueToString(Symbol(')')), ')')
+  t.is(utils.cborValueToString(Symbol('))')), '))')
+  t.is(utils.cborValueToString(Symbol('(()')), '(()')
   t.is(utils.cborValueToString(Symbol('foo')), 'foo')
+  t.is(utils.cborValueToString(Symbol('')), 'Symbol')
   t.is(utils.cborValueToString(new BigNum(-4)), '-4')
 })

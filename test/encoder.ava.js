@@ -207,6 +207,10 @@ test('date types', t => {
     'c11a5b169fe4')
 
   t.is(
+    cbor.encodeOne(d, {dateType: null}).toString('hex'),
+    'c11a5b169fe4')
+
+  t.is(
     cbor.encodeOne(d, {dateType: 'int'}).toString('hex'),
     'c11a5b169fe4')
 
