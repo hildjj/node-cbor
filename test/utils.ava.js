@@ -50,18 +50,6 @@ test('parseHalf', t => {
   t.deepEqual(utils.parseHalf(bin('1 11111 0000000000')), -Infinity)
 })
 
-test('extend', t => {
-  t.deepEqual(utils.extend(), {})
-  t.deepEqual(utils.extend({}, {foo: 1}), {foo: 1})
-  t.deepEqual(utils.extend({foo: 2}, {foo: 1}), {foo: 1})
-  t.deepEqual(utils.extend({foo: 2, bar: 2}, {foo: 1}), {foo: 1, bar: 2})
-  t.deepEqual(utils.extend(
-    {foo: 2, bar: 2},
-    {foo: 1},
-    {bar: 3}),
-  {foo: 1, bar: 3})
-})
-
 test('arrayEqual', t => {
   t.deepEqual(utils.arrayEqual(), true)
   t.deepEqual(utils.arrayEqual([]), false)

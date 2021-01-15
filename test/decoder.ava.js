@@ -65,6 +65,9 @@ test('decodeFirstSync', t => {
   t.throws(() => cbor.decode(''))
   t.throws(() => cbor.decode('63666f'))
   t.throws(() => cbor.decodeFirstSync('0203')) // fixed #111
+  t.throws(() => cbor.decode('01', 12))
+
+  t.is(cbor.decode('01', null), 1)
 
   // decodeFirstSync can take a ReadableStream as well.
   const nf = new NoFilter('010203', 'hex')
@@ -85,6 +88,7 @@ test('decodeAllSync', t => {
   t.deepEqual(cbor.Decoder.decodeAllSync('f6f6'), [null, null])
   t.deepEqual(cbor.Decoder.decodeAllSync(''), [])
   t.throws(() => cbor.Decoder.decodeAllSync('63666f'))
+  t.throws(() => cbor.Decoder.decodeAllSync())
 
   const nf = new NoFilter('010203', 'hex')
   t.deepEqual(cbor.Decoder.decodeAllSync(nf), [1, 2, 3])
@@ -153,12 +157,13 @@ test.cb('stream', t => {
 })
 
 test('decodeFirst', async t => {
-  t.plan(8)
+  t.plan(9)
   t.is(1, await cbor.decodeFirst('01'))
   t.is(1, await cbor.decodeFirst('AQ==', {
     encoding: 'base64'
   }))
   t.is(cbor.Decoder.NOT_FOUND, await cbor.decodeFirst(''))
+  t.throws(() => cbor.decodeFirst())
   await t.throwsAsync(() => cbor.decodeFirst('', {required: true}))
   await cbor.decodeFirst(Buffer.allocUnsafe(0), (er, v) => {
     t.falsy(er)
@@ -173,6 +178,7 @@ test('decodeFirst', async t => {
 })
 
 test('decodeAll', async t => {
+  t.throws(() => cbor.decodeAll())
   t.deepEqual([1], await cbor.decodeAll('01'))
   await t.throwsAsync(() => cbor.decodeAll('7f'))
   t.deepEqual([1], await cbor.decodeAll('01', (er, v) => {

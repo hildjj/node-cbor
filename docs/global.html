@@ -1180,7 +1180,7 @@ const val = await db.get({a:1})) // 9857298342094820394820394820398234092834n</c
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="commented.js.html">commented.js</a>, <a href="commented.js.html#line108">line 108</a>
+        <a href="commented.js.html">commented.js</a>, <a href="commented.js.html#line59">line 59</a>
     </li></ul></dd>
     
 
@@ -1386,7 +1386,8 @@ const val = await db.get({a:1})) // 9857298342094820394820394820398234092834n</c
                 </td>
             
 
-            <td class="description last">how many times to indent the dashes</td>
+            <td class="description last">how many times to indent
+  the dashes</td>
         </tr>
 
         
@@ -1395,13 +1396,13 @@ const val = await db.get({a:1})) // 9857298342094820394820394820398234092834n</c
 
         <tr>
             
-                <td class="name"><code>encoding</code></td>
+                <td class="name"><code>depth</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><code>string</code></span>
+<span class="param-type"><code>number</code></span>
 
 
             
@@ -1420,12 +1421,211 @@ const val = await db.get({a:1})) // 9857298342094820394820394820398234092834n</c
             
                 <td class="default">
                 
-                    'hex'
+                    1
                 
                 </td>
             
 
-            <td class="description last">encoding of the input</td>
+            <td class="description last">initial indentation depth</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>no_summary</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">if true, omit the summary
+  of the full bytes read at the end</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>tags</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>object</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">mapping from tag number to function(v),
+  where v is the decoded value that comes after the tag, and where the
+  function returns the correctly-created value for that tag.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>tags</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>object</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">mapping from tag number to function(v),
+  where v is the decoded value that comes after the tag, and where the
+  function returns the correctly-created value for that tag.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>bigint</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last">generate JavaScript BigInt's
+  instead of BigNumbers, when possible.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>preferWeb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">if true, prefer Uint8Arrays to
+  be generated instead of node Buffers.  This might turn on some more
+  changes in the future, so forward-compatibility is not guaranteed yet.</td>
         </tr>
 
         
@@ -1466,7 +1666,7 @@ const val = await db.get({a:1})) // 9857298342094820394820394820398234092834n</c
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="commented.js.html">commented.js</a>, <a href="commented.js.html#line114">line 114</a>
+        <a href="commented.js.html">commented.js</a>, <a href="commented.js.html#line19">line 19</a>
     </li></ul></dd>
     
 
@@ -1530,7 +1730,7 @@ const val = await db.get({a:1})) // 9857298342094820394820394820398234092834n</c
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line318">line 318</a>
+        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line331">line 331</a>
     </li></ul></dd>
     
 
@@ -1687,7 +1887,7 @@ const val = await db.get({a:1})) // 9857298342094820394820394820398234092834n</c
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line240">line 240</a>
+        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line94">line 94</a>
     </li></ul></dd>
     
 
@@ -1824,7 +2024,7 @@ const val = await db.get({a:1})) // 9857298342094820394820394820398234092834n</c
             
                 
 <div class="section-members">
-<h4 class="name" id="DecodeOptions">DecodeOptions</h4>
+<h4 class="name" id="DecoderOptions">DecoderOptions</h4>
 
 
 
@@ -1863,13 +2063,13 @@ const val = await db.get({a:1})) // 9857298342094820394820394820398234092834n</c
 
         <tr>
             
-                <td class="name"><code>encoding</code></td>
+                <td class="name"><code>max_depth</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><code>string</code></span>
+<span class="param-type"><code>number</code></span>
 
 
             
@@ -1888,13 +2088,136 @@ const val = await db.get({a:1})) // 9857298342094820394820394820398234092834n</c
             
                 <td class="default">
                 
-                    'hex'
+                    -1
                 
                 </td>
             
 
-            <td class="description last">The encoding of the input.
-  Ignored if input is a Buffer.</td>
+            <td class="description last">the maximum depth to parse.
+  Use -1 for "until you run out of memory".  Set this to a finite
+  positive number for un-trusted inputs.  Most standard inputs won't nest
+  more than 100 or so levels; I've tested into the millions before
+  running out of memory.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>tags</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>object</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">mapping from tag number to function(v),
+  where v is the decoded value that comes after the tag, and where the
+  function returns the correctly-created value for that tag.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>bigint</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last">generate JavaScript BigInt's
+  instead of BigNumbers, when possible.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>preferWeb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">if true, prefer Uint8Arrays to
+  be generated instead of node Buffers.  This might turn on some more
+  changes in the future, so forward-compatibility is not guaranteed yet.</td>
         </tr>
 
         
@@ -1935,7 +2258,560 @@ const val = await db.get({a:1})) // 9857298342094820394820394820398234092834n</c
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line142">line 142</a>
+        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line58">line 58</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+</div>
+
+            
+                
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="diagnoseCallback"><span class="type-signature"></span>diagnoseCallback<span class="signature">(error<span class="signature-attributes">opt</span>, value<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="diagnose.js.html">diagnose.js</a>, <a href="diagnose.js.html#line57">line 57</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>error</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>Error</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                if one was generated
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                the diagnostic value
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+            
+                
+<div class="section-members">
+<h4 class="name" id="DiagnoseOptions">DiagnoseOptions</h4>
+
+
+
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>separator</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    '\n'
+                
+                </td>
+            
+
+            <td class="description last">output between detected objects</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>stream_errors</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">put error info into the
+  output stream</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>max_depth</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    -1
+                
+                </td>
+            
+
+            <td class="description last">the maximum depth to parse.
+  Use -1 for "until you run out of memory".  Set this to a finite
+  positive number for un-trusted inputs.  Most standard inputs won't nest
+  more than 100 or so levels; I've tested into the millions before
+  running out of memory.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>tags</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>object</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">mapping from tag number to function(v),
+  where v is the decoded value that comes after the tag, and where the
+  function returns the correctly-created value for that tag.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>tags</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>object</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">mapping from tag number to function(v),
+  where v is the decoded value that comes after the tag, and where the
+  function returns the correctly-created value for that tag.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>bigint</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last">generate JavaScript BigInt's
+  instead of BigNumbers, when possible.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>preferWeb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">if true, prefer Uint8Arrays to
+  be generated instead of node Buffers.  This might turn on some more
+  changes in the future, so forward-compatibility is not guaranteed yet.</td>
+        </tr>
+
+        
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="diagnose.js.html">diagnose.js</a>, <a href="diagnose.js.html#line11">line 11</a>
     </li></ul></dd>
     
 
@@ -1999,7 +2875,7 @@ const val = await db.get({a:1})) // 9857298342094820394820394820398234092834n</c
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line168">line 168</a>
+        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line174">line 174</a>
     </li></ul></dd>
     
 
@@ -2111,6 +2987,1608 @@ const val = await db.get({a:1})) // 9857298342094820394820394820398234092834n</c
 
 
 </div>
+            
+                
+<div class="section-members">
+<h4 class="name" id="EncodingOptions">EncodingOptions</h4>
+
+
+
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>genTypes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>Array.&lt;any></code></span>
+|
+
+<span class="param-type"><code>Object</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    []
+                
+                </td>
+            
+
+            <td class="description last">array of pairs of
+  `type`, `function(Encoder)` for semantic types to be encoded.  Not
+  needed for Array, Date, Buffer, Map, RegExp, Set, Url, or BigNumber.
+  If an object, the keys are the constructor names for the types.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>canonical</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">should the output be
+  canonicalized</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>detectLoops</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+|
+
+<span class="param-type"><code>Symbol</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">should object loops
+  be detected?  This will currently modify the encoded object graph by
+  adding a Symbol property to each object.  If this bothers you, call
+  `removeLoopDetectors` on the encoded object when done.  Do not encode
+  the same object twice on the same encoder, without calling
+  `removeLoopDetectors` in between.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>dateType</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>"number"</code></span>
+|
+
+<span class="param-type"><code>"float"</code></span>
+|
+
+<span class="param-type"><code>"int"</code></span>
+|
+
+<span class="param-type"><code>"string"</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    "number"
+                
+                </td>
+            
+
+            <td class="description last">how should dates be encoded?  "number" means float or int, if no
+  fractional seconds.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>encodeUndefined</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>any</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">How should an
+  "undefined" in the input be encoded.  By default, just encode a CBOR
+  undefined.  If this is a buffer, use those bytes without re-encoding
+  them.  If this is a function, the function will be called (which is a
+  good time to throw an exception, if that's what you want), and the
+  return value will be used according to these rules.  Anything else will
+  be encoded as CBOR.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>disallowUndefinedKeys</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">Should
+  "undefined" be disallowed as a key in a Map that is serialized?  If
+  this is true, encode(new Map([[undefined, 1]])) will throw an
+  exception.  Note that it is impossible to get a key of undefined in a
+  normal JS object.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>collapseBigIntegers</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">Should integers
+  that come in as BigNumber integers and ECMAscript bigint's be encoded
+  as normal CBOR integers if they fit, discarding type information?</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>chunkSize</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    4096
+                
+                </td>
+            
+
+            <td class="description last">Number of characters or bytes
+  for each chunk, if obj is a string or Buffer, when indefinite encoding</td>
+        </tr>
+
+        
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line50">line 50</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+</div>
+
+            
+                
+<div class="section-members">
+<h4 class="name" id="StaticCommentOptions">StaticCommentOptions</h4>
+
+
+
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>max_depth</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    10
+                
+                </td>
+            
+
+            <td class="description last">how many times to indent
+  the dashes</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>depth</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    1
+                
+                </td>
+            
+
+            <td class="description last">initial indentation depth</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>no_summary</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">if true, omit the summary
+  of the full bytes read at the end</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>tags</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>object</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">mapping from tag number to function(v),
+  where v is the decoded value that comes after the tag, and where the
+  function returns the correctly-created value for that tag.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>tags</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>object</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">mapping from tag number to function(v),
+  where v is the decoded value that comes after the tag, and where the
+  function returns the correctly-created value for that tag.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>bigint</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last">generate JavaScript BigInt's
+  instead of BigNumbers, when possible.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>preferWeb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">if true, prefer Uint8Arrays to
+  be generated instead of node Buffers.  This might turn on some more
+  changes in the future, so forward-compatibility is not guaranteed yet.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>encoding</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    'hex'
+                
+                </td>
+            
+
+            <td class="description last">Encoding to use for input, if it
+  is a string</td>
+        </tr>
+
+        
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="commented.js.html">commented.js</a>, <a href="commented.js.html#line38">line 38</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+</div>
+
+            
+                
+<div class="section-members">
+<h4 class="name" id="StaticDecoderOptions">StaticDecoderOptions</h4>
+
+
+
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>max_depth</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    -1
+                
+                </td>
+            
+
+            <td class="description last">the maximum depth to parse.
+  Use -1 for "until you run out of memory".  Set this to a finite
+  positive number for un-trusted inputs.  Most standard inputs won't nest
+  more than 100 or so levels; I've tested into the millions before
+  running out of memory.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>tags</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>object</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">mapping from tag number to function(v),
+  where v is the decoded value that comes after the tag, and where the
+  function returns the correctly-created value for that tag.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>bigint</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last">generate JavaScript BigInt's
+  instead of BigNumbers, when possible.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>preferWeb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">if true, prefer Uint8Arrays to
+  be generated instead of node Buffers.  This might turn on some more
+  changes in the future, so forward-compatibility is not guaranteed yet.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>encoding</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    'hex'
+                
+                </td>
+            
+
+            <td class="description last">The encoding of the input.
+  Ignored if input is a Buffer.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>required</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">Should an error be thrown when no
+  data is in the input?</td>
+        </tr>
+
+        
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line74">line 74</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+</div>
+
+            
+                
+<div class="section-members">
+<h4 class="name" id="StaticDiagnoseOptions">StaticDiagnoseOptions</h4>
+
+
+
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>encoding</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    'hex'
+                
+                </td>
+            
+
+            <td class="description last">the encoding of input, ignored if
+  input is not string</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>separator</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    '\n'
+                
+                </td>
+            
+
+            <td class="description last">output between detected objects</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>stream_errors</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">put error info into the
+  output stream</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>max_depth</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    -1
+                
+                </td>
+            
+
+            <td class="description last">the maximum depth to parse.
+  Use -1 for "until you run out of memory".  Set this to a finite
+  positive number for un-trusted inputs.  Most standard inputs won't nest
+  more than 100 or so levels; I've tested into the millions before
+  running out of memory.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>tags</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>object</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">mapping from tag number to function(v),
+  where v is the decoded value that comes after the tag, and where the
+  function returns the correctly-created value for that tag.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>tags</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>object</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">mapping from tag number to function(v),
+  where v is the decoded value that comes after the tag, and where the
+  function returns the correctly-created value for that tag.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>bigint</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last">generate JavaScript BigInt's
+  instead of BigNumbers, when possible.</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>preferWeb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">if true, prefer Uint8Arrays to
+  be generated instead of node Buffers.  This might turn on some more
+  changes in the future, so forward-compatibility is not guaranteed yet.</td>
+        </tr>
+
+        
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="diagnose.js.html">diagnose.js</a>, <a href="diagnose.js.html#line33">line 33</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+</div>
+
             
     
 

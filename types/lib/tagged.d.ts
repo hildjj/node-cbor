@@ -8,10 +8,10 @@ export = Tagged;
 declare class Tagged {
     static _tag_0(v: any): Date;
     static _tag_1(v: any): Date;
-    static _tag_2(v: any): bignumber;
-    static _tag_3(v: any): bignumber;
-    static _tag_4(v: any): bignumber;
-    static _tag_5(v: any): bignumber;
+    static _tag_2(v: any): BigNumber;
+    static _tag_3(v: any): BigNumber;
+    static _tag_4(v: any): BigNumber;
+    static _tag_5(v: any): BigNumber;
     static _tag_32(v: any): url.UrlWithStringQuery;
     static _tag_35(v: any): RegExp;
     /**
@@ -50,6 +50,5 @@ declare class Tagged {
      */
     convert(converters: any): any;
 }
-import bignumber_1 = require("bignumber.js");
-import bignumber = bignumber_1.BigNumber;
+import { BigNumber } from "./constants";
 import url = require("url");

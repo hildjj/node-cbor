@@ -106,7 +106,7 @@ up by calling <a href="Decoder.html#.nullcheck">Decoder.nullcheck</a>.</div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line66">line 66</a>
+        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line127">line 127</a>
     </li></ul></dd>
     
 
@@ -160,7 +160,7 @@ up by calling <a href="Decoder.html#.nullcheck">Decoder.nullcheck</a>.</div>
             <td class="type">
             
                 
-<span class="param-type"><code>object</code></span>
+<span class="param-type"><code><a href="global.html#DecoderOptions">DecoderOptions</a></code></span>
 
 
             
@@ -188,210 +188,6 @@ up by calling <a href="Decoder.html#.nullcheck">Decoder.nullcheck</a>.</div>
 
             <td class="description last">
                 
-                
-                    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-        <th>Default</th>
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>max_depth</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>number</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    -1
-                
-                </td>
-            
-
-            <td class="description last">
-                the maximum depth to parse.
-  Use -1 for "until you run out of memory".  Set this to a finite
-  positive number for un-trusted inputs.  Most standard inputs won't nest
-  more than 100 or so levels; I've tested into the millions before
-  running out of memory.
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>tags</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>object</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">
-                mapping from tag number to function(v),
-  where v is the decoded value that comes after the tag, and where the
-  function returns the correctly-created value for that tag.
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>bigint</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>boolean</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    true
-                
-                </td>
-            
-
-            <td class="description last">
-                generate JavaScript BigInt's
-  instead of BigNumbers, when possible.
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>preferWeb</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>boolean</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-
-            <td class="description last">
-                if true, prefer Uint8Arrays to
-  be generated instead of node Buffers.  This might turn on some more
-  changes in the future, so forward-compatibility is not guaranteed yet.
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
                 
             </td>
         </tr>
@@ -451,7 +247,7 @@ up by calling <a href="Decoder.html#.nullcheck">Decoder.nullcheck</a>.</div>
 
     
 
-    <h4 class="name" id=".decodeAll"><span class="type-signature">(static) </span>decodeAll<span class="signature">(input, options, cb<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;Array>}</span></h4>
+    <h4 class="name" id=".decodeAll"><span class="type-signature">(static) </span>decodeAll<span class="signature">(input, options<span class="signature-attributes">opt</span>, cb<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;Array>}</span></h4>
 
     
 
@@ -495,7 +291,7 @@ more bytes left over at the end.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line336">line 336</a>
+        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line349">line 349</a>
     </li></ul></dd>
     
 
@@ -530,6 +326,8 @@ more bytes left over at the end.
         <th>Attributes</th>
         
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -582,6 +380,10 @@ more bytes left over at the end.
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">
                 
@@ -599,10 +401,13 @@ more bytes left over at the end.
             <td class="type">
             
                 
-<span class="param-type"><code>string</code></span>
+<span class="param-type"><code><a href="global.html#StaticDecoderOptions">StaticDecoderOptions</a></code></span>
 |
 
-<span class="param-type"><code>Object</code></span>
+<span class="param-type"><code><a href="global.html#decodeAllCallback">decodeAllCallback</a></code></span>
+|
+
+<span class="param-type"><code>string</code></span>
 
 
             
@@ -610,6 +415,8 @@ more bytes left over at the end.
 
             
                 <td class="attributes">
+                
+                    &lt;optional><br>
                 
 
                 
@@ -619,10 +426,15 @@ more bytes left over at the end.
             
 
             
+                <td class="default">
+                
+                    {}
+                
+                </td>
+            
 
             <td class="description last">
-                Decoding options.
-  If string, the input encoding.
+                Decoding options, the callback, or the input encoding.
                 
             </td>
         </tr>
@@ -655,6 +467,10 @@ more bytes left over at the end.
                 </td>
             
 
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last">
@@ -759,7 +575,7 @@ return an empty array.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line209">line 209</a>
+        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line245">line 245</a>
     </li></ul></dd>
     
 
@@ -794,6 +610,8 @@ return an empty array.
         <th>Attributes</th>
         
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -846,6 +664,10 @@ return an empty array.
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">
                 
@@ -863,7 +685,7 @@ return an empty array.
             <td class="type">
             
                 
-<span class="param-type"><code><a href="global.html#DecodeOptions">DecodeOptions</a></code></span>
+<span class="param-type"><code><a href="global.html#StaticDecoderOptions">StaticDecoderOptions</a></code></span>
 |
 
 <span class="param-type"><code>string</code></span>
@@ -885,9 +707,16 @@ return an empty array.
             
 
             
+                <td class="default">
+                
+                    {}
+                
+                </td>
+            
 
             <td class="description last">
-                Options or encoding string
+                Options or encoding
+  for input
                 
             </td>
         </tr>
@@ -989,7 +818,7 @@ if no data was found and the `required` option is false.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line259">line 259</a>
+        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line283">line 283</a>
     </li></ul></dd>
     
 
@@ -1024,6 +853,8 @@ if no data was found and the `required` option is false.
         <th>Attributes</th>
         
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -1076,6 +907,10 @@ if no data was found and the `required` option is false.
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">
                 
@@ -1093,7 +928,7 @@ if no data was found and the `required` option is false.
             <td class="type">
             
                 
-<span class="param-type"><code><a href="global.html#DecodeOptions">DecodeOptions</a></code></span>
+<span class="param-type"><code><a href="global.html#StaticDecoderOptions">StaticDecoderOptions</a></code></span>
 |
 
 <span class="param-type"><code><a href="global.html#decodeCallback">decodeCallback</a></code></span>
@@ -1118,9 +953,16 @@ if no data was found and the `required` option is false.
             
 
             
+                <td class="default">
+                
+                    {}
+                
+                </td>
+            
 
             <td class="description last">
-                options
+                options,
+  the callback, or input encoding
                 
             </td>
         </tr>
@@ -1153,6 +995,10 @@ if no data was found and the `required` option is false.
                 </td>
             
 
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last">
@@ -1256,7 +1102,7 @@ exception if the input is not valid CBOR.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line158">line 158</a>
+        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line201">line 201</a>
     </li></ul></dd>
     
 
@@ -1291,6 +1137,8 @@ exception if the input is not valid CBOR.
         <th>Attributes</th>
         
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -1343,6 +1191,10 @@ exception if the input is not valid CBOR.
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">
                 
@@ -1360,7 +1212,7 @@ exception if the input is not valid CBOR.
             <td class="type">
             
                 
-<span class="param-type"><code><a href="global.html#DecodeOptions">DecodeOptions</a></code></span>
+<span class="param-type"><code><a href="global.html#StaticDecoderOptions">StaticDecoderOptions</a></code></span>
 |
 
 <span class="param-type"><code>string</code></span>
@@ -1382,9 +1234,16 @@ exception if the input is not valid CBOR.
             
 
             
+                <td class="default">
+                
+                    {}
+                
+                </td>
+            
 
             <td class="description last">
-                Options
+                Options or encoding for
+  input
                 
             </td>
         </tr>
@@ -1484,7 +1343,7 @@ the CBOR stream.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line125">line 125</a>
+        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line173">line 173</a>
     </li></ul></dd>
     
 
@@ -1654,7 +1513,7 @@ the CBOR stream.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line370">line 370</a>
+        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line375">line 375</a>
     </li></ul></dd>
     
 

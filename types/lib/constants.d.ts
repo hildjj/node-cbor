@@ -1,3 +1,4 @@
+export { BigNumber };
 export namespace MT {
     const POS_INT: number;
     const NEG_INT: number;
@@ -62,17 +63,17 @@ export namespace BI {
 }
 export namespace BN {
     export { MINUS_ONE };
-    const NEG_MAX_1: bignumber;
+    const NEG_MAX_1: BigNumber;
     export { NEG_MAX_1 as NEG_MAX };
-    export const MAXINT: bignumber;
-    const MAXINT32_1: bignumber;
+    const TWO_1: BigNumber;
+    export { TWO_1 as TWO };
+    export const MAXINT: BigNumber;
+    const MAXINT32_1: BigNumber;
     export { MAXINT32_1 as MAXINT32 };
-    const MAXINT64_1: bignumber;
+    const MAXINT64_1: BigNumber;
     export { MAXINT64_1 as MAXINT64 };
-    const SHIFT32_1: bignumber;
+    const SHIFT32_1: BigNumber;
     export { SHIFT32_1 as SHIFT32 };
 }
-declare const MINUS_ONE_1: bignumber;
-import bignumber_1 = require("bignumber.js");
-import bignumber = bignumber_1.BigNumber;
-export {};
+import { BigNumber } from "bignumber.js";
+declare const MINUS_ONE_1: BigNumber;

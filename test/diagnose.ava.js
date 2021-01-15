@@ -86,3 +86,11 @@ test('stream errors', async t => {
   })
   t.is(d, '1\n')
 })
+
+test('static', async t => {
+  t.throws(() => cbor.diagnose())
+  t.throws(() => cbor.diagnose('01', 12))
+  t.is(await cbor.diagnose('01', null), '1\n')
+  t.is(await cbor.diagnose('01', {encoding: null}), '1\n')
+  t.is(await cbor.diagnose('01', {encoding: undefined}), '1\n')
+})

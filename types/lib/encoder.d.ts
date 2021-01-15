@@ -1,5 +1,40 @@
 export = Encoder;
 /**
+ * @typedef EncodingOptions
+ * @property {any[]|Object} [genTypes=[]] - array of pairs of
+ *   `type`, `function(Encoder)` for semantic types to be encoded.  Not
+ *   needed for Array, Date, Buffer, Map, RegExp, Set, Url, or BigNumber.
+ *   If an object, the keys are the constructor names for the types.
+ * @property {boolean} [canonical=false] - should the output be
+ *   canonicalized
+ * @property {boolean|Symbol} [detectLoops=false] - should object loops
+ *   be detected?  This will currently modify the encoded object graph by
+ *   adding a Symbol property to each object.  If this bothers you, call
+ *   `removeLoopDetectors` on the encoded object when done.  Do not encode
+ *   the same object twice on the same encoder, without calling
+ *   `removeLoopDetectors` in between.
+ * @property {("number"|"float"|"int"|"string")} [dateType="number"] -
+ *   how should dates be encoded?  "number" means float or int, if no
+ *   fractional seconds.
+ * @property {any} [encodeUndefined=undefined] - How should an
+ *   "undefined" in the input be encoded.  By default, just encode a CBOR
+ *   undefined.  If this is a buffer, use those bytes without re-encoding
+ *   them.  If this is a function, the function will be called (which is a
+ *   good time to throw an exception, if that's what you want), and the
+ *   return value will be used according to these rules.  Anything else will
+ *   be encoded as CBOR.
+ * @property {boolean} [disallowUndefinedKeys=false] - Should
+ *   "undefined" be disallowed as a key in a Map that is serialized?  If
+ *   this is true, encode(new Map([[undefined, 1]])) will throw an
+ *   exception.  Note that it is impossible to get a key of undefined in a
+ *   normal JS object.
+ * @property {boolean} [collapseBigIntegers=false] - Should integers
+ *   that come in as BigNumber integers and ECMAscript bigint's be encoded
+ *   as normal CBOR integers if they fit, discarding type information?
+ * @property {number} [chunkSize=4096] - Number of characters or bytes
+ *   for each chunk, if obj is a string or Buffer, when indefinite encoding
+ */
+/**
  * Transform JavaScript values into CBOR bytes.  The `Writable` side of
  * the stream is in object mode.
  *
@@ -35,14 +70,10 @@ declare class Encoder extends stream.Transform {
      * @param {Encoder} gen - the encoder to use
      * @param {String|Buffer|Array|Map|Object} [obj] - the object to encode.  If
      *   null, use "this" instead.
-     * @param {Object} [opts=null] - Options for encoding
-     * @param {number} [opts.chunkSize=4096] - Number of characters or bytes
-     *  for each chunk, if obj is a string or Buffer
+     * @param {EncodingOptions} [options={}] - Options for encoding
      * @returns {boolean} - true on success
      */
-    static encodeIndefinite(gen: Encoder, obj?: string | Buffer | any[] | Map<any, any> | any, opts?: {
-        chunkSize: number;
-    }): boolean;
+    static encodeIndefinite(gen: Encoder, obj?: string | Buffer | any[] | Map<any, any> | any, options?: EncodingOptions): boolean;
     /**
      * Encode one or more JavaScript objects, and return a Buffer containing the
      * CBOR bytes.
@@ -64,10 +95,10 @@ declare class Encoder extends stream.Transform {
      *
      * @static
      * @param {any} obj - the object to encode
-     * @param {Object?} options - passed to the Encoder constructor
+     * @param {EncodingOptions} [options={}] - passed to the Encoder constructor
      * @returns {Buffer} - the encoded objects
      */
-    static encodeOne(obj: any, options: any | null): Buffer;
+    static encodeOne(obj: any, options?: EncodingOptions): Buffer;
     /**
      * Encode one JavaScript object using the given options in a way that
      * is more resilient to objects being larger than the highWaterMark
@@ -76,53 +107,15 @@ declare class Encoder extends stream.Transform {
      * directly if you need to process large and complicated inputs.
      *
      * @param {any} obj - the object to encode
-     * @param {Object?} options - passed to the Encoder constructor
+     * @param {EncodingOptions} [options={}] - passed to the Encoder constructor
      */
-    static encodeAsync(obj: any, options: any | null): Promise<any>;
+    static encodeAsync(obj: any, options?: EncodingOptions): Promise<any>;
     /**
      * Creates an instance of Encoder.
      *
-     * @param {Object} [options={}] - options for the encoder
-     * @param {any[]|Object} [options.genTypes=[]] - array of pairs of
-     *   `type`, `function(Encoder)` for semantic types to be encoded.  Not
-     *   needed for Array, Date, Buffer, Map, RegExp, Set, Url, or bignumber.
-     *   If an object, the keys are the constructor names for the types.
-     * @param {boolean} [options.canonical=false] - should the output be
-     *   canonicalized
-     * @param {boolean|Symbol} [options.detectLoops=false] - should object loops
-     *   be detected?  This will currently modify the encoded object graph by
-     *   adding a Symbol property to each object.  If this bothers you, call
-     *   `removeLoopDetectors` on the encoded object when done.  Do not encode
-     *   the same object twice on the same encoder, without calling
-     *   `removeLoopDetectors` in between.
-     * @param {("number"|"float"|"int"|"string")} [options.dateType="number"] -
-     *   how should dates be encoded?  "number" means float or int, if no
-     *   fractional seconds.
-     * @param {any} [options.encodeUndefined=undefined] - How should an
-     *   "undefined" in the input be encoded.  By default, just encode a CBOR
-     *   undefined.  If this is a buffer, use those bytes without re-encoding
-     *   them.  If this is a function, the function will be called (which is a
-     *   good time to throw an exception, if that's what you want), and the
-     *   return value will be used according to these rules.  Anything else will
-     *   be encoded as CBOR.
-     * @param {boolean} [options.disallowUndefinedKeys=false] - Should
-     *   "undefined" be disallowed as a key in a Map that is serialized?  If
-     *   this is true, encode(new Map([[undefined, 1]])) will throw an
-     *   exception.  Note that it is impossible to get a key of undefined in a
-     *   normal JS object.
-     * @param {boolean} [options.collapseBigIntegers=false] - Should integers
-     *   that come in as BigNumber integers and ECMAscript bigint's be encoded
-     *   as normal CBOR integers if they fit, discarding type information?
+     * @param {EncodingOptions} [options={}] - options for the encoder
      */
-    constructor(options?: {
-        genTypes: any[] | any;
-        canonical: boolean;
-        detectLoops: boolean | Symbol;
-        dateType: ("number" | "float" | "int" | "string");
-        encodeUndefined: any;
-        disallowUndefinedKeys: boolean;
-        collapseBigIntegers: boolean;
-    });
+    constructor(options?: EncodingOptions);
     canonical: boolean;
     encodeUndefined: any;
     disallowUndefinedKeys: boolean;
@@ -148,6 +141,8 @@ declare class Encoder extends stream.Transform {
         Int32Array: (gen: any, obj: any, opts: any) => boolean;
         Float32Array: (gen: any, obj: any) => boolean;
         Float64Array: (gen: any, obj: any) => boolean;
+        Url: (gen: any, obj: any) => any;
+        URL: (gen: any, obj: any) => any;
     };
     /**
      * @callback encodeFunction
@@ -189,7 +184,7 @@ declare class Encoder extends stream.Transform {
     _pushUrl(gen: any, obj: any): any;
     _pushURL(gen: any, obj: any): any;
     /**
-     * @param {bignumber} obj
+     * @param {BigNumber} obj
      * @private
      */
     private _pushBigint;
@@ -221,4 +216,65 @@ declare class Encoder extends stream.Transform {
     _pushAny(obj: any): boolean;
     _encodeAll(objs: any): any;
 }
+declare namespace Encoder {
+    export { EncodingOptions };
+}
 import stream = require("node/stream");
+type EncodingOptions = {
+    /**
+     * - array of pairs of
+     * `type`, `function(Encoder)` for semantic types to be encoded.  Not
+     * needed for Array, Date, Buffer, Map, RegExp, Set, Url, or BigNumber.
+     * If an object, the keys are the constructor names for the types.
+     */
+    genTypes?: any[] | any;
+    /**
+     * - should the output be
+     * canonicalized
+     */
+    canonical?: boolean;
+    /**
+     * - should object loops
+     * be detected?  This will currently modify the encoded object graph by
+     * adding a Symbol property to each object.  If this bothers you, call
+     * `removeLoopDetectors` on the encoded object when done.  Do not encode
+     * the same object twice on the same encoder, without calling
+     * `removeLoopDetectors` in between.
+     */
+    detectLoops?: boolean | Symbol;
+    /**
+     * -
+     * how should dates be encoded?  "number" means float or int, if no
+     * fractional seconds.
+     */
+    dateType?: ("number" | "float" | "int" | "string");
+    /**
+     * - How should an
+     * "undefined" in the input be encoded.  By default, just encode a CBOR
+     * undefined.  If this is a buffer, use those bytes without re-encoding
+     * them.  If this is a function, the function will be called (which is a
+     * good time to throw an exception, if that's what you want), and the
+     * return value will be used according to these rules.  Anything else will
+     * be encoded as CBOR.
+     */
+    encodeUndefined?: any;
+    /**
+     * - Should
+     * "undefined" be disallowed as a key in a Map that is serialized?  If
+     * this is true, encode(new Map([[undefined, 1]])) will throw an
+     * exception.  Note that it is impossible to get a key of undefined in a
+     * normal JS object.
+     */
+    disallowUndefinedKeys?: boolean;
+    /**
+     * - Should integers
+     * that come in as BigNumber integers and ECMAscript bigint's be encoded
+     * as normal CBOR integers if they fit, discarding type information?
+     */
+    collapseBigIntegers?: boolean;
+    /**
+     * - Number of characters or bytes
+     * for each chunk, if obj is a string or Buffer, when indefinite encoding
+     */
+    chunkSize?: number;
+};

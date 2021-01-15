@@ -104,7 +104,7 @@ the stream is in object mode.</div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line56">line 56</a>
+        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line92">line 92</a>
     </li></ul></dd>
     
 
@@ -158,7 +158,7 @@ the stream is in object mode.</div>
             <td class="type">
             
                 
-<span class="param-type"><code>Object</code></span>
+<span class="param-type"><code><a href="global.html#EncodingOptions">EncodingOptions</a></code></span>
 
 
             
@@ -186,364 +186,6 @@ the stream is in object mode.</div>
 
             <td class="description last">
                 options for the encoder
-                
-                    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-        <th>Default</th>
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>genTypes</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>Array.&lt;any></code></span>
-|
-
-<span class="param-type"><code>Object</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    []
-                
-                </td>
-            
-
-            <td class="description last">
-                array of pairs of
-  `type`, `function(Encoder)` for semantic types to be encoded.  Not
-  needed for Array, Date, Buffer, Map, RegExp, Set, Url, or BigNumber.
-  If an object, the keys are the constructor names for the types.
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>canonical</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>boolean</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-
-            <td class="description last">
-                should the output be
-  canonicalized
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>detectLoops</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>boolean</code></span>
-|
-
-<span class="param-type"><code>Symbol</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-
-            <td class="description last">
-                should object loops
-  be detected?  This will currently modify the encoded object graph by
-  adding a Symbol property to each object.  If this bothers you, call
-  `removeLoopDetectors` on the encoded object when done.  Do not encode
-  the same object twice on the same encoder, without calling
-  `removeLoopDetectors` in between.
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>dateType</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>"number"</code></span>
-|
-
-<span class="param-type"><code>"float"</code></span>
-|
-
-<span class="param-type"><code>"int"</code></span>
-|
-
-<span class="param-type"><code>"string"</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    "number"
-                
-                </td>
-            
-
-            <td class="description last">
-                how should dates be encoded?  "number" means float or int, if no
-  fractional seconds.
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>encodeUndefined</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>any</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">
-                How should an
-  "undefined" in the input be encoded.  By default, just encode a CBOR
-  undefined.  If this is a buffer, use those bytes without re-encoding
-  them.  If this is a function, the function will be called (which is a
-  good time to throw an exception, if that's what you want), and the
-  return value will be used according to these rules.  Anything else will
-  be encoded as CBOR.
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>disallowUndefinedKeys</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>boolean</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-
-            <td class="description last">
-                Should
-  "undefined" be disallowed as a key in a Map that is serialized?  If
-  this is true, encode(new Map([[undefined, 1]])) will throw an
-  exception.  Note that it is impossible to get a key of undefined in a
-  normal JS object.
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>collapseBigIntegers</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>boolean</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-
-            <td class="description last">
-                Should integers
-  that come in as BigNumber integers and ECMAscript bigint's be encoded
-  as normal CBOR integers if they fit, discarding type information?
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
                 
             </td>
         </tr>
@@ -647,7 +289,7 @@ CBOR bytes.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line869">line 869</a>
+        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line871">line 871</a>
     </li></ul></dd>
     
 
@@ -776,7 +418,7 @@ CBOR bytes.
 
     
 
-    <h4 class="name" id=".encodeAsync"><span class="type-signature">(static) </span>encodeAsync<span class="signature">(obj, options<span class="signature-attributes">nullable</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".encodeAsync"><span class="type-signature">(static) </span>encodeAsync<span class="signature">(obj, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -823,7 +465,7 @@ directly if you need to process large and complicated inputs.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line908">line 908</a>
+        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line910">line 910</a>
     </li></ul></dd>
     
 
@@ -859,6 +501,8 @@ directly if you need to process large and complicated inputs.
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -892,6 +536,10 @@ directly if you need to process large and complicated inputs.
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">
                 the object to encode
@@ -909,7 +557,7 @@ directly if you need to process large and complicated inputs.
             <td class="type">
             
                 
-<span class="param-type"><code>Object</code></span>
+<span class="param-type"><code><a href="global.html#EncodingOptions">EncodingOptions</a></code></span>
 
 
             
@@ -918,15 +566,21 @@ directly if you need to process large and complicated inputs.
             
                 <td class="attributes">
                 
-
+                    &lt;optional><br>
                 
-                    &lt;nullable><br>
+
                 
 
                 
                 </td>
             
 
+            
+                <td class="default">
+                
+                    {}
+                
+                </td>
             
 
             <td class="description last">
@@ -1005,7 +659,7 @@ a Buffer containing the CBOR bytes.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line880">line 880</a>
+        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line882">line 882</a>
     </li></ul></dd>
     
 
@@ -1134,7 +788,7 @@ a Buffer containing the CBOR bytes.
 
     
 
-    <h4 class="name" id=".encodeIndefinite"><span class="type-signature">(static) </span>encodeIndefinite<span class="signature">(gen, obj<span class="signature-attributes">opt</span>, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    <h4 class="name" id=".encodeIndefinite"><span class="type-signature">(static) </span>encodeIndefinite<span class="signature">(gen, obj<span class="signature-attributes">opt</span>, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
 
     
 
@@ -1180,7 +834,7 @@ REQUIRE indefinite-encoding.  Add this to an object or class as the
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line809">line 809</a>
+        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line813">line 813</a>
     </li></ul></dd>
     
 
@@ -1319,13 +973,13 @@ REQUIRE indefinite-encoding.  Add this to an object or class as the
 
         <tr>
             
-                <td class="name"><code>opts</code></td>
+                <td class="name"><code>options</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><code>Object</code></span>
+<span class="param-type"><code><a href="global.html#EncodingOptions">EncodingOptions</a></code></span>
 
 
             
@@ -1346,85 +1000,13 @@ REQUIRE indefinite-encoding.  Add this to an object or class as the
             
                 <td class="default">
                 
-                    null
+                    {}
                 
                 </td>
             
 
             <td class="description last">
                 Options for encoding
-                
-                    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-        <th>Default</th>
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>chunkSize</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>number</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    4096
-                
-                </td>
-            
-
-            <td class="description last">
-                Number of characters or bytes
- for each chunk, if obj is a string or Buffer
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
                 
             </td>
         </tr>
@@ -1493,7 +1075,7 @@ cbor.encodeOne([o, m])</code></pre>
 
     
 
-    <h4 class="name" id=".encodeOne"><span class="type-signature">(static) </span>encodeOne<span class="signature">(obj, options<span class="signature-attributes">nullable</span>)</span><span class="type-signature"> &rarr; {Buffer}</span></h4>
+    <h4 class="name" id=".encodeOne"><span class="type-signature">(static) </span>encodeOne<span class="signature">(obj, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Buffer}</span></h4>
 
     
 
@@ -1536,7 +1118,7 @@ cbor.encodeOne([o, m])</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line894">line 894</a>
+        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line896">line 896</a>
     </li></ul></dd>
     
 
@@ -1572,6 +1154,8 @@ cbor.encodeOne([o, m])</code></pre>
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -1605,6 +1189,10 @@ cbor.encodeOne([o, m])</code></pre>
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">
                 the object to encode
@@ -1622,7 +1210,7 @@ cbor.encodeOne([o, m])</code></pre>
             <td class="type">
             
                 
-<span class="param-type"><code>Object</code></span>
+<span class="param-type"><code><a href="global.html#EncodingOptions">EncodingOptions</a></code></span>
 
 
             
@@ -1631,15 +1219,21 @@ cbor.encodeOne([o, m])</code></pre>
             
                 <td class="attributes">
                 
-
+                    &lt;optional><br>
                 
-                    &lt;nullable><br>
+
                 
 
                 
                 </td>
             
 
+            
+                <td class="default">
+                
+                    {}
+                
+                </td>
             
 
             <td class="description last">
@@ -1745,7 +1339,7 @@ out the loop detector symbol.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line631">line 631</a>
+        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line637">line 637</a>
     </li></ul></dd>
     
 
@@ -1965,7 +1559,7 @@ useful for objects for which you can't add an encodeCBOR method
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line183">line 183</a>
+        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line189">line 189</a>
     </li></ul></dd>
     
 
@@ -2147,7 +1741,7 @@ useful for objects for which you can't add an encodeCBOR method
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line740">line 740</a>
+        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line746">line 746</a>
     </li></ul></dd>
     
 
@@ -2307,7 +1901,7 @@ useful for objects for which you can't add an encodeCBOR method
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line613">line 613</a>
+        <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line619">line 619</a>
     </li></ul></dd>
     
 

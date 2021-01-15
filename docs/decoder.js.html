@@ -97,6 +97,67 @@ class UnexpectedDataError extends Error {
 }
 
 /**
+ * @typedef DecoderOptions
+ * @property {number} [max_depth=-1] - the maximum depth to parse.
+ *   Use -1 for "until you run out of memory".  Set this to a finite
+ *   positive number for un-trusted inputs.  Most standard inputs won't nest
+ *   more than 100 or so levels; I've tested into the millions before
+ *   running out of memory.
+ * @property {object} [tags] - mapping from tag number to function(v),
+ *   where v is the decoded value that comes after the tag, and where the
+ *   function returns the correctly-created value for that tag.
+ * @property {boolean} [bigint=true] generate JavaScript BigInt's
+ *   instead of BigNumbers, when possible.
+ * @property {boolean} [preferWeb=false] if true, prefer Uint8Arrays to
+ *   be generated instead of node Buffers.  This might turn on some more
+ *   changes in the future, so forward-compatibility is not guaranteed yet.
+ */
+/**
+ * @typedef StaticDecoderOptions
+ * @property {number} [max_depth=-1] - the maximum depth to parse.
+ *   Use -1 for "until you run out of memory".  Set this to a finite
+ *   positive number for un-trusted inputs.  Most standard inputs won't nest
+ *   more than 100 or so levels; I've tested into the millions before
+ *   running out of memory.
+ * @property {object} [tags] - mapping from tag number to function(v),
+ *   where v is the decoded value that comes after the tag, and where the
+ *   function returns the correctly-created value for that tag.
+ * @property {boolean} [bigint=true] generate JavaScript BigInt's
+ *   instead of BigNumbers, when possible.
+ * @property {boolean} [preferWeb=false] if true, prefer Uint8Arrays to
+ *   be generated instead of node Buffers.  This might turn on some more
+ *   changes in the future, so forward-compatibility is not guaranteed yet.
+ * @property {string} [encoding='hex'] - The encoding of the input.
+ *   Ignored if input is a Buffer.
+ * @property {boolean} [required=false] - Should an error be thrown when no
+ *   data is in the input?
+ */
+/**
+  * @callback decodeCallback
+  * @param {Error} [error] - if one was generated
+  * @param {any} [value] - the decoded value
+  */
+/**
+  * @param {StaticDecoderOptions|decodeCallback|string} opts options,
+  *   the callback, or input incoding
+  * @param {decodeCallback} [cb] - called on completion
+  * @returns {{options: StaticDecoderOptions, cb: decodeCallback}}
+  * @private
+  */
+function normalizeOptions(opts, cb) {
+  switch (typeof opts) {
+    case 'function':
+      return { options: {}, cb: /** @type {decodeCallback} */ (opts) }
+    case 'string':
+      return { options: { encoding: opts }, cb }
+    case 'object':
+      return { options: opts || {}, cb }
+    default:
+      throw new TypeError('Unknown option type')
+  }
+}
+
+/**
  * Decode a stream of CBOR bytes by transforming them into equivalent
  * JavaScript data.  Because of the limitations of Node object streams,
  * special symbols are emitted instead of NULL or UNDEFINED.  Fix those
@@ -109,20 +170,7 @@ class Decoder extends BinaryParseStream {
   /**
    * Create a parsing stream.
    *
-   * @param {object} [options={}]
-   * @param {number} [options.max_depth=-1] - the maximum depth to parse.
-   *   Use -1 for "until you run out of memory".  Set this to a finite
-   *   positive number for un-trusted inputs.  Most standard inputs won't nest
-   *   more than 100 or so levels; I've tested into the millions before
-   *   running out of memory.
-   * @param {object} [options.tags] - mapping from tag number to function(v),
-   *   where v is the decoded value that comes after the tag, and where the
-   *   function returns the correctly-created value for that tag.
-   * @param {boolean} [options.bigint=true] generate JavaScript BigInt's
-   *   instead of BigNumbers, when possible.
-   * @param {boolean} [options.preferWeb=false] if true, prefer Uint8Arrays to
-   *   be generated instead of node Buffers.  This might turn on some more
-   *   changes in the future, so forward-compatibility is not guaranteed yet.
+   * @param {DecoderOptions} [options={}]
    */
   constructor(options={}) {
     const {
@@ -181,37 +229,24 @@ class Decoder extends BinaryParseStream {
   }
 
   /**
-   * @typedef DecodeOptions
-   * @property {string} [encoding='hex'] - The encoding of the input.
-   *   Ignored if input is a Buffer.
-   */
-
-  /**
    * Decode the first CBOR item in the input, synchronously.  This will throw an
    * exception if the input is not valid CBOR.
    *
    * @static
    * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
    *   |DataView|stream.Readable} input
-   * @param {DecodeOptions|string} [options] Options
+   * @param {StaticDecoderOptions|string} [options={}] Options or encoding for
+   *   input
    * @returns {any} - the decoded value
    */
-  static decodeFirstSync(input, options) {
-    options = options || { encoding: 'hex' }
-    let opts = {}
-    let encod
-    switch (typeof options) {
-      case 'string':
-        encod = options
-        break
-      case 'object':
-        opts = utils.extend({}, options)
-        encod = opts.encoding
-        delete opts.encoding
-        break
+  static decodeFirstSync(input, options={}) {
+    if (input == null) {
+      throw new TypeError('input required')
     }
+    ({options} = normalizeOptions(options))
+    const {encoding='hex', ...opts} = options
     const c = new Decoder(opts)
-    const s = utils.guessEncoding(input, encod)
+    const s = utils.guessEncoding(input, encoding)
 
     // for/of doesn't work when you need to call next() with a value
     // generator created by parser will be "done" after each CBOR entity
@@ -244,24 +279,18 @@ class Decoder extends BinaryParseStream {
    * @static
    * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
    *   |DataView|stream.Readable} input
-   * @param {DecodeOptions|string} [options] Options or encoding string
+   * @param {StaticDecoderOptions|string} [options={}] Options or encoding
+   *   for input
    * @returns {Array} - Array of all found items
    */
-  static decodeAllSync(input, options) {
-    options = options || { encoding: 'hex' }
-    let opts = {}
-    let encod
-    switch (typeof options) {
-      case 'string':
-        encod = options
-        break
-      case 'object':
-        opts = utils.extend({}, options)
-        encod = opts.encoding
-        delete opts.encoding
+  static decodeAllSync(input, options={}) {
+    if (input == null) {
+      throw new TypeError('input required')
     }
+    ({options} = normalizeOptions(options))
+    const {encoding='hex', ...opts} = options
     const c = new Decoder(opts)
-    const s = utils.guessEncoding(input, encod)
+    const s = utils.guessEncoding(input, encoding)
     const res = []
     while (s.length > 0) {
       const parser = c._parse()
@@ -279,12 +308,6 @@ class Decoder extends BinaryParseStream {
   }
 
   /**
-   * @callback decodeCallback
-   * @param {Error} [error] - if one was generated
-   * @param {any} [value] - the decoded value
-   */
-
-  /**
    * Decode the first CBOR item in the input.  This will error if there are more
    * bytes left over at the end, and optionally if there were no valid CBOR
    * bytes in the input.  Emits the {Decoder.NOT_FOUND} Symbol in the callback
@@ -293,28 +316,18 @@ class Decoder extends BinaryParseStream {
    * @static
    * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
    *   |DataView|stream.Readable} input
-   * @param {DecodeOptions|decodeCallback|string} [options] - options
+   * @param {StaticDecoderOptions|decodeCallback|string} [options={}] - options,
+   *   the callback, or input encoding
    * @param {decodeCallback} [cb] callback
    * @returns {Promise&lt;any>} returned even if callback is specified
    */
-  static decodeFirst(input, options, cb) {
-    let opts = {}
-    let required = false
-    let encod = 'hex'
-    switch (typeof options) {
-      case 'function':
-        cb = options
-        break
-      case 'string':
-        encod = options
-        break
-      case 'object':
-        opts = utils.extend({}, options)
-        encod = opts.encoding
-        delete opts.encoding
-        required = (opts.required != null) ? opts.required : false
-        delete opts.required
+  static decodeFirst(input, options={}, cb) {
+    if (input == null) {
+      throw new TypeError('input required')
     }
+    ({options, cb} = normalizeOptions(options, cb))
+    const {encoding='hex', required=false, ...opts} = options
+
     const c = new Decoder(opts)
     let v = NOT_FOUND
     const p = new Promise((resolve, reject) => {
@@ -352,7 +365,7 @@ class Decoder extends BinaryParseStream {
     if (typeof cb === 'function') {
       p.then(v => cb(null, v), cb)
     }
-    utils.guessEncoding(input, encod).pipe(c)
+    utils.guessEncoding(input, encoding).pipe(c)
     return p
   }
 
@@ -369,26 +382,18 @@ class Decoder extends BinaryParseStream {
    * @static
    * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
    *   |DataView|stream.Readable} input
-   * @param {string|Object} options - Decoding options.
-   *   If string, the input encoding.
+   * @param {StaticDecoderOptions|decodeAllCallback|string} [options={}] -
+   *   Decoding options, the callback, or the input encoding.
    * @param {decodeAllCallback} [cb] callback
    * @returns {Promise&lt;Array>} even if callback is specified
    */
-  static decodeAll(input, options, cb) {
-    let opts = {}
-    let encod = 'hex'
-    switch (typeof options) {
-      case 'function':
-        cb = options
-        break
-      case 'string':
-        encod = options
-        break
-      case 'object':
-        opts = utils.extend({}, options)
-        encod = opts.encoding
-        delete opts.encoding
+  static decodeAll(input, options={}, cb) {
+    if (input == null) {
+      throw new TypeError('input required')
     }
+    ({options, cb} = normalizeOptions(options, cb))
+    const {encoding='hex', ...opts} = options
+
     const c = new Decoder(opts)
     const vals = []
     c.on('data', (val) => {
@@ -401,7 +406,7 @@ class Decoder extends BinaryParseStream {
     if (typeof cb === 'function') {
       p.then(v => cb(undefined, v), er => cb(er, undefined))
     }
-    utils.guessEncoding(input, encod).pipe(c)
+    utils.guessEncoding(input, encoding).pipe(c)
     return p
   }
 
