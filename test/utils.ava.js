@@ -1,8 +1,8 @@
 'use strict'
 
 const test = require('ava')
-const BigNum = require('bignumber.js').BigNumber
 const NoFilter = require('nofilter')
+const {BigNumber} = require('../lib/constants')
 const utils = require('../lib/utils')
 const {hex, bin} = utils
 
@@ -76,9 +76,9 @@ test('bufferEqual', t => {
 })
 
 test('bufferToBignumber', t => {
-  const num = new BigNum(0x12345678).toString(16)
+  const num = new BigNumber(0x12345678).toString(16)
   const numbuf = Buffer.from(num, 'hex')
-  t.deepEqual(utils.bufferToBignumber(numbuf), new BigNum(0x12345678))
+  t.deepEqual(utils.bufferToBignumber(numbuf), new BigNumber(0x12345678))
 })
 
 test.cb('guessEncoding', t => {
@@ -107,5 +107,5 @@ test('cborValueToString', t => {
   t.is(utils.cborValueToString(Symbol('(()')), '(()')
   t.is(utils.cborValueToString(Symbol('foo')), 'foo')
   t.is(utils.cborValueToString(Symbol('')), 'Symbol')
-  t.is(utils.cborValueToString(new BigNum(-4)), '-4')
+  t.is(utils.cborValueToString(new BigNumber(-4)), '-4')
 })

@@ -6,7 +6,7 @@ const NoFilter = require('nofilter')
 const cases = require('./cases')
 const streams = require('./streams')
 const utils = require('../lib/utils')
-const {BigNumber} = require('../lib/constants')
+const {BigNumber} = cbor
 const BinaryParseStream = require('../vendor/binary-parse-stream')
 
 function testAll(t, list, opts) {

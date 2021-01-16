@@ -5,7 +5,7 @@
 const cbor = require('..')
 const url = require('url')
 const concordance = require('concordance')
-const BigNum = require('bignumber.js').BigNumber
+const {BigNumber} = cbor
 
 const all = [
   ['Major type 0 (uint)', 1, '01'],
@@ -25,10 +25,10 @@ const all = [
   ['Tag 0', new Date(1500000000000), // 2017-07-14T02:40:00.000Z
     'c07818323031372d30372d31345430323a34303a30302e3030305a'],
   ['Tag 1', new Date(1500000000000), 'c11a59682f00'],
-  ['Tag 2', new BigNum('18446744073709551616'), 'c249010000000000000000'],
-  ['Tag 3', new BigNum('-18446744073709551617'), 'c349010000000000000000'],
-  ['Tag 4', new BigNum('273.15'), 'c48221196ab3'],
-  ['Tag 5', new BigNum('1.5'), 'c5822003'],
+  ['Tag 2', new BigNumber('18446744073709551616'), 'c249010000000000000000'],
+  ['Tag 3', new BigNumber('-18446744073709551617'), 'c349010000000000000000'],
+  ['Tag 4', new BigNumber('273.15'), 'c48221196ab3'],
+  ['Tag 5', new BigNumber('1.5'), 'c5822003'],
   // Didn't implement because I continue to think they're not useful
   ['Tag 21', 0, ''],
   ['Tag 22', 0, ''],
