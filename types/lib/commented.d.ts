@@ -12,8 +12,8 @@ declare class Commented extends stream.Transform {
      * @static
      * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
      *   |DataView|stream.Readable} input
-     * @param {CommentOptions|commentCallback|string|number} [options={}] encoding,
-     *   max_depth, or callback
+     * @param {CommentOptions|commentCallback|string|number} [options={}]
+     *   encoding, max_depth, or callback
      * @param {commentCallback} [cb] - called on completion
      * @returns {Promise} if cb not specified
      */

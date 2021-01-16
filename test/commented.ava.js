@@ -74,7 +74,9 @@ test.cb('function', t => {
 })
 
 test('inputs', async t => {
-  let c = await cbor.comment('mB4AAQIDBAUGBwgJAAECAwQFBgcICQABAgMEBQYHCAk=', 'base64')
+  let c = await cbor.comment(
+    'mB4AAQIDBAUGBwgJAAECAwQFBgcICQABAgMEBQYHCAk=',
+    'base64')
   t.deepEqual('\n' + c, `
   98                -- Array, length next 1 byte
     1e              -- Array, 30 items
@@ -110,17 +112,17 @@ test('inputs', async t => {
       09            -- [29], 9
 0x981e000102030405060708090001020304050607080900010203040506070809
 `)
-    c = await cbor.comment('x\u001e012345678901234567890123456789',
-      {encoding: 'utf8'})
-    /* eslint-disable max-len */
-    t.deepEqual('\n' + c, `
+  c = await cbor.comment('x\u001e012345678901234567890123456789',
+    {encoding: 'utf8'})
+  /* eslint-disable max-len */
+  t.deepEqual('\n' + c, `
   78                -- String, length next 1 byte
     1e              -- String, length: 30
       303132333435363738393031323334353637383930313233343536373839 -- "012345678901234567890123456789"
 0x781e303132333435363738393031323334353637383930313233343536373839
 `)
-    c = await cbor.comment('381d', {max_depth: 12})
-    t.deepEqual('\n' + c, `
+  c = await cbor.comment('381d', {max_depth: 12})
+  t.deepEqual('\n' + c, `
   38                    -- Negative number, next 1 byte
     1d                  -- -30
 0x381d

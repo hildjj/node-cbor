@@ -263,7 +263,6 @@ test('preferWeb', t => {
     new Uint8Array([0x01, 0x02, 0x03, 0x04, 0x05]))
 })
 
-
 test('binary-parse-stream edge', t => {
   class BPS extends BinaryParseStream {
     *_parse() {
