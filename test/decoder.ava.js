@@ -6,7 +6,8 @@ const NoFilter = require('nofilter')
 const cases = require('./cases')
 const streams = require('./streams')
 const utils = require('../lib/utils')
-const BigNumber = require('bignumber.js').BigNumber
+const {BigNumber} = require('../lib/constants')
+const BinaryParseStream = require('../vendor/binary-parse-stream')
 
 function testAll(t, list, opts) {
   t.plan(list.length)
@@ -260,4 +261,17 @@ test('preferWeb', t => {
     new Uint8Array([]))
   t.deepEqual(cbor.decodeFirstSync('5f42010243030405ff', {preferWeb: true}),
     new Uint8Array([0x01, 0x02, 0x03, 0x04, 0x05]))
+})
+
+
+test('binary-parse-stream edge', t => {
+  class BPS extends BinaryParseStream {
+    *_parse() {
+      const res = yield null
+      throw new Error('unreachable code')
+    }
+  }
+  const b = new BPS()
+  b.write('foo')
+  t.is(b.read(), null)
 })

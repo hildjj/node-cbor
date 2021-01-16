@@ -4,8 +4,7 @@ const test = require('ava')
 const BigNum = require('bignumber.js').BigNumber
 const NoFilter = require('nofilter')
 const utils = require('../lib/utils')
-const hex = utils.hex
-const bin = utils.bin
+const {hex, bin} = utils
 
 test('bin', t => {
   t.deepEqual(utils.bin('1'), hex('01'))

@@ -52,7 +52,7 @@ class BinaryParseStream extends TransformStream {
       }
 
       if (!ret.done) {
-        this.__needed = ret.value || 0
+        this.__needed = ret.value || Infinity
       } else {
         this.push(ret.value)
         this.__restart()

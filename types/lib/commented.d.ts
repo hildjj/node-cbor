@@ -12,12 +12,12 @@ declare class Commented extends stream.Transform {
      * @static
      * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
      *   |DataView|stream.Readable} input
-     * @param {StaticCommentOptions|commentCallback|string|number} [options={}] encoding,
+     * @param {CommentOptions|commentCallback|string|number} [options={}] encoding,
      *   max_depth, or callback
      * @param {commentCallback} [cb] - called on completion
      * @returns {Promise} if cb not specified
      */
-    static comment(input: string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | stream.Readable, options?: StaticCommentOptions | commentCallback | string | number, cb?: commentCallback): Promise<any>;
+    static comment(input: string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | stream.Readable, options?: CommentOptions | commentCallback | string | number, cb?: commentCallback): Promise<any>;
     /**
      * Create a CBOR commenter.
      *
@@ -66,11 +66,11 @@ declare class Commented extends stream.Transform {
     private _on_data;
 }
 declare namespace Commented {
-    export { CommentOptions, StaticCommentOptions, commentCallback };
+    export { CommentOptions, commentCallback };
 }
 import stream = require("node/stream");
 import Decoder = require("./decoder");
-type StaticCommentOptions = {
+type CommentOptions = {
     /**
      * - how many times to indent
      * the dashes
@@ -109,36 +109,3 @@ type StaticCommentOptions = {
     encoding?: string;
 };
 type commentCallback = (error?: Error, commented?: string) => any;
-type CommentOptions = {
-    /**
-     * - how many times to indent
-     * the dashes
-     */
-    max_depth?: number;
-    /**
-     * - initial indentation depth
-     */
-    depth?: number;
-    /**
-     * - if true, omit the summary
-     * of the full bytes read at the end
-     */
-    no_summary?: boolean;
-    /**
-     * - mapping from tag number to function(v),
-     * where v is the decoded value that comes after the tag, and where the
-     * function returns the correctly-created value for that tag.
-     */
-    tags?: object;
-    /**
-     * generate JavaScript BigInt's
-     * instead of BigNumbers, when possible.
-     */
-    bigint?: boolean;
-    /**
-     * if true, prefer Uint8Arrays to
-     * be generated instead of node Buffers.  This might turn on some more
-     * changes in the future, so forward-compatibility is not guaranteed yet.
-     */
-    preferWeb?: boolean;
-};
