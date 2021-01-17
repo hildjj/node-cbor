@@ -24,14 +24,14 @@ declare class Decoder extends BinaryParseStream {
      */
     static nullcheck(val: any): any;
     /**
-     * Decode the first CBOR item in the input, synchronously.  This will throw an
-     * exception if the input is not valid CBOR.
+     * Decode the first CBOR item in the input, synchronously.  This will throw
+     * an exception if the input is not valid CBOR, or if there are more bytes
+     * left over at the end (if options.extendedResults is not true).
      *
      * @static
      * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
      *   |DataView|stream.Readable} input
-     * @param {DecoderOptions|string} [options={}] Options or encoding for
-     *   input
+     * @param {DecoderOptions|string} [options={}] Options or encoding for input
      * @returns {any} - the decoded value
      */
     static decodeFirstSync(input: string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | stream.Readable, options?: DecoderOptions | string): any;
@@ -49,16 +49,17 @@ declare class Decoder extends BinaryParseStream {
      */
     static decodeAllSync(input: string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | stream.Readable, options?: DecoderOptions | string): any[];
     /**
-     * Decode the first CBOR item in the input.  This will error if there are more
-     * bytes left over at the end, and optionally if there were no valid CBOR
-     * bytes in the input.  Emits the {Decoder.NOT_FOUND} Symbol in the callback
-     * if no data was found and the `required` option is false.
+     * Decode the first CBOR item in the input.  This will error if there are
+     * more bytes left over at the end (if options.extendedResults is not true),
+     * and optionally if there were no valid CBOR bytes in the input.  Emits the
+     * {Decoder.NOT_FOUND} Symbol in the callback if no data was found and the
+     * `required` option is false.
      *
      * @static
      * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
      *   |DataView|stream.Readable} input
-     * @param {DecoderOptions|decodeCallback|string} [options={}] - options,
-     *   the callback, or input encoding
+     * @param {DecoderOptions|decodeCallback|string} [options={}] - options, the
+     *   callback, or input encoding
      * @param {decodeCallback} [cb] callback
      * @returns {Promise<any>} returned even if callback is specified
      */
@@ -91,14 +92,21 @@ declare class Decoder extends BinaryParseStream {
     max_depth: number;
     tags: any;
     preferWeb: boolean;
+    extendedResults: boolean;
     bigint: boolean;
+    valueBytes: any;
     /**
      * Stop processing
      */
     close(): void;
+    /**
+     * Only called if extendedResults is true
+     * @ignore
+     */
+    _onRead(data: any): void;
 }
 declare namespace Decoder {
-    export { NOT_FOUND, DecoderOptions, decodeCallback };
+    export { NOT_FOUND, ExtendedResults, DecoderOptions, decodeCallback };
 }
 import BinaryParseStream = require("../vendor/binary-parse-stream");
 import stream = require("node/stream");
@@ -138,6 +146,37 @@ type DecoderOptions = {
      * data is in the input?
      */
     required?: boolean;
+    /**
+     * - if true, emit extended
+     * results, which will be an object with shape {@link ExtendedResults}.
+     * The value will already have been null-checked.
+     */
+    extendedResults?: boolean;
 };
 type decodeCallback = (error?: Error, value?: any) => any;
 declare const NOT_FOUND: unique symbol;
+/**
+ * {@linkcode Decoder.decodeFirst} or
+ *   {@linkcode Decoder.decodeFirstSync} was called.
+ */
+type ExtendedResults = {
+    /**
+     * - the value that was found
+     */
+    value: any;
+    /**
+     * - the number of bytes of the original input that
+     * were read
+     */
+    length: number;
+    /**
+     * - the bytes of the original input that were used
+     * to produce the value
+     */
+    bytes: Buffer;
+    /**
+     * - the bytes that were left over from the original
+     * input.  This property only exists if {
+     */
+    unused?: Buffer;
+};

@@ -69,7 +69,7 @@ type DiagnoseOptions = {
      */
     bigint?: boolean;
     /**
-     * if true, prefer Uint8Arrays to
+     * - if true, prefer Uint8Arrays to
      * be generated instead of node Buffers.  This might turn on some more
      * changes in the future, so forward-compatibility is not guaranteed yet.
      */

@@ -1770,7 +1770,7 @@ const val = await db.get({a:1})) // 9857298342094820394820394820398234092834n</c
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line317">line 317</a>
+        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line356">line 356</a>
     </li></ul></dd>
     
 
@@ -1927,7 +1927,7 @@ const val = await db.get({a:1})) // 9857298342094820394820394820398234092834n</c
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line78">line 78</a>
+        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line93">line 93</a>
     </li></ul></dd>
     
 
@@ -2343,6 +2343,47 @@ const val = await db.get({a:1})) // 9857298342094820394820394820398234092834n</c
         
 
     
+
+        <tr>
+            
+                <td class="name"><code>extendedResults</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">if true, emit extended
+  results, which will be an object with shape <a href="global.html#ExtendedResults">ExtendedResults</a>.
+  The value will already have been null-checked.</td>
+        </tr>
+
+        
+
+    
     </tbody>
 </table>
 
@@ -2378,7 +2419,7 @@ const val = await db.get({a:1})) // 9857298342094820394820394820398234092834n</c
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line58">line 58</a>
+        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line70">line 70</a>
     </li></ul></dd>
     
 
@@ -3570,6 +3611,227 @@ const val = await db.get({a:1})) // 9857298342094820394820394820398234092834n</c
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="encoder.js.html">encoder.js</a>, <a href="encoder.js.html#line50">line 50</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+</div>
+
+            
+                
+<div class="section-members">
+<h4 class="name" id="ExtendedResults">ExtendedResults</h4>
+
+
+
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>any</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">the value that was found</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>length</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">the number of bytes of the original input that
+  were read</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>bytes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>Buffer</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">the bytes of the original input that were used
+  to produce the value</td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>unused</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>Buffer</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">the bytes that were left over from the original
+  input.  This property only exists if <a href="Decoder.html#.decodeFirst"><code>Decoder.decodeFirst</code></a> or
+  <a href="Decoder.html#.decodeFirstSync"><code>Decoder.decodeFirstSync</code></a> was called.</td>
+        </tr>
+
+        
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line59">line 59</a>
     </li></ul></dd>
     
 

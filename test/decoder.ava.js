@@ -274,3 +274,30 @@ test('binary-parse-stream edge', t => {
   b.write('foo')
   t.is(b.read(), null)
 })
+
+test('extended results', async t => {
+  t.deepEqual(cbor.decodeFirstSync('f663616263', {extendedResults: true}), {
+    length: 1,
+    bytes: Buffer.from('f6', 'hex'),
+    value: null,
+    unused: Buffer.from('63616263', 'hex')
+  })
+  t.deepEqual(cbor.decodeAllSync('f663616263', {extendedResults: true}), [
+    {
+      length: 1,
+      bytes: Buffer.from('f6', 'hex'),
+      value: null
+    },
+    {
+      length: 4,
+      bytes: Buffer.from('63616263', 'hex'),
+      value: 'abc'
+    }
+  ])
+  t.deepEqual(await cbor.decodeFirst('f663616263', {extendedResults: true}), {
+    length: 1,
+    bytes: Buffer.from('f6', 'hex'),
+    value: null,
+    unused: Buffer.from('63616263', 'hex')
+  })
+})

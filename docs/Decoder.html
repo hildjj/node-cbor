@@ -106,7 +106,7 @@ up by calling <a href="Decoder.html#.nullcheck">Decoder.nullcheck</a>.</div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line111">line 111</a>
+        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line126">line 126</a>
     </li></ul></dd>
     
 
@@ -291,7 +291,7 @@ more bytes left over at the end.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line335">line 335</a>
+        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line374">line 374</a>
     </li></ul></dd>
     
 
@@ -575,7 +575,7 @@ return an empty array.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line231">line 231</a>
+        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line260">line 260</a>
     </li></ul></dd>
     
 
@@ -779,10 +779,11 @@ return an empty array.
 
 
 <div class="description">
-    Decode the first CBOR item in the input.  This will error if there are more
-bytes left over at the end, and optionally if there were no valid CBOR
-bytes in the input.  Emits the {Decoder.NOT_FOUND} Symbol in the callback
-if no data was found and the `required` option is false.
+    Decode the first CBOR item in the input.  This will error if there are
+more bytes left over at the end (if options.extendedResults is not true),
+and optionally if there were no valid CBOR bytes in the input.  Emits the
+{Decoder.NOT_FOUND} Symbol in the callback if no data was found and the
+`required` option is false.
 </div>
 
 
@@ -818,7 +819,7 @@ if no data was found and the `required` option is false.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line269">line 269</a>
+        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line302">line 302</a>
     </li></ul></dd>
     
 
@@ -961,8 +962,8 @@ if no data was found and the `required` option is false.
             
 
             <td class="description last">
-                options,
-  the callback, or input encoding
+                options, the
+  callback, or input encoding
                 
             </td>
         </tr>
@@ -1065,8 +1066,9 @@ if no data was found and the `required` option is false.
 
 
 <div class="description">
-    Decode the first CBOR item in the input, synchronously.  This will throw an
-exception if the input is not valid CBOR.
+    Decode the first CBOR item in the input, synchronously.  This will throw
+an exception if the input is not valid CBOR, or if there are more bytes
+left over at the end (if options.extendedResults is not true).
 </div>
 
 
@@ -1102,7 +1104,7 @@ exception if the input is not valid CBOR.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line187">line 187</a>
+        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line209">line 209</a>
     </li></ul></dd>
     
 
@@ -1242,8 +1244,7 @@ exception if the input is not valid CBOR.
             
 
             <td class="description last">
-                Options or encoding for
-  input
+                Options or encoding for input
                 
             </td>
         </tr>
@@ -1343,7 +1344,7 @@ the CBOR stream.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line159">line 159</a>
+        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line181">line 181</a>
     </li></ul></dd>
     
 
@@ -1513,7 +1514,7 @@ the CBOR stream.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line361">line 361</a>
+        <a href="decoder.js.html">decoder.js</a>, <a href="decoder.js.html#line400">line 400</a>
     </li></ul></dd>
     
 
