@@ -17,6 +17,7 @@ export var hasBigInt: boolean;
 export var comment: typeof import("./commented").comment;
 export var decodeAll: typeof import("./decoder").decodeAll;
 export var decodeAllSync: typeof import("./decoder").decodeAllSync;
+export var decodeFirst: typeof import("./decoder").decodeFirst;
 export var decodeFirstSync: typeof import("./decoder").decodeFirstSync;
 export var decode: typeof import("./decoder").decodeFirstSync;
 export var diagnose: typeof import("./diagnose").diagnose;
