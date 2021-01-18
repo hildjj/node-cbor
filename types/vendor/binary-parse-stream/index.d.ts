@@ -23,4 +23,4 @@ declare class BinaryParseStream extends Stream.Transform {
     __restart(): void;
     __parser: Generator<number, undefined, Buffer>;
 }
-import Stream = require("node/stream");
+import Stream = require("stream");

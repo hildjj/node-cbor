@@ -111,7 +111,7 @@ declare namespace Decoder {
     export { NOT_FOUND, ExtendedResults, DecoderOptions, decodeCallback };
 }
 import BinaryParseStream = require("../vendor/binary-parse-stream");
-import stream = require("node/stream");
+import stream = require("stream");
 type DecoderOptions = {
     /**
      * - the maximum depth to parse.

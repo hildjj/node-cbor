@@ -37,7 +37,7 @@ declare class Diagnose extends stream.Transform {
 declare namespace Diagnose {
     export { DiagnoseOptions, diagnoseCallback };
 }
-import stream = require("node/stream");
+import stream = require("stream");
 import Decoder = require("./decoder");
 type DiagnoseOptions = {
     /**

@@ -22,12 +22,12 @@ declare class CborMap extends Map<any, any> {
     private static _decode;
     /**
      * Creates an instance of CborMap.
-     * @param {Iterable<any, any>} [iterable] An Array or other iterable
+     * @param {Iterable<[any, any]>} [iterable] An Array or other iterable
      *   object whose elements are key-value pairs (arrays with two elements, e.g.
      *   <code>[[ 1, 'one' ],[ 2, 'two' ]]</code>). Each key-value pair is added
      *   to the new CborMap; null values are treated as undefined.
      */
-    constructor(iterable?: Iterable<any, any>);
+    constructor(iterable?: Iterable<[any, any]>);
     /**
      * Push the simple value onto the CBOR stream
      *

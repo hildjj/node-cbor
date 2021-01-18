@@ -219,7 +219,7 @@ declare class Encoder extends stream.Transform {
 declare namespace Encoder {
     export { EncodingOptions };
 }
-import stream = require("node/stream");
+import stream = require("stream");
 type EncodingOptions = {
     /**
      * - array of pairs of

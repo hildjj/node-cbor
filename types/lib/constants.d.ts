@@ -62,7 +62,7 @@ export namespace BI {
     const SHIFT32: bigint;
 }
 export namespace BN {
-    export { MINUS_ONE };
+    export { MINUS_ONE_1 as MINUS_ONE };
     const NEG_MAX_1: BigNumber;
     export { NEG_MAX_1 as NEG_MAX };
     const TWO_1: BigNumber;

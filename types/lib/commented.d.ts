@@ -68,7 +68,7 @@ declare class Commented extends stream.Transform {
 declare namespace Commented {
     export { CommentOptions, commentCallback };
 }
-import stream = require("node/stream");
+import stream = require("stream");
 import Decoder = require("./decoder");
 type CommentOptions = {
     /**
