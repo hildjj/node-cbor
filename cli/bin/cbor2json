@@ -5,13 +5,16 @@ const cbor = require('cbor')
 const utils = require('../lib/utils')
 const pkg = require('../package.json')
 
-const opts = require('commander')
+const {program} = require('commander')
+
+program
   .version(pkg.version)
   .usage('[options] <file ...>')
   .option('-x, --hex <STRING>', 'Hex string input')
   .parse(process.argv)
 
-const argv = opts.args
+const opts = program.opts()
+const argv = program.args
 if (opts.hex) {
   argv.push(new utils.DeHexStream(opts.hex))
 }

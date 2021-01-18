@@ -4,15 +4,17 @@
 const cbor = require('cbor')
 const utils = require('../lib/utils')
 const pkg = require('../package.json')
+const {program} = require('commander')
 
-const opts = require('commander')
+program
   .version(pkg.version)
   .usage('[options] <file ...>')
   .option('-x, --hex', 'Hex string output')
   .option('-c, --canonical', 'Canonical output')
   .parse(process.argv)
 
-const argv = opts.args
+const opts = program.opts()
+const argv = program.args
 if (argv.length === 0) {
   argv.push('-')
 }
