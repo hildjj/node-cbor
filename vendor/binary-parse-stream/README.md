@@ -8,7 +8,7 @@
 
 ## Synchronous
 
-  This module uses the exact same generator interface as [binary-parser](https://github.com/nathan7/binary-parser), which presents a synchronous interface to a generator parser.
+  This module uses the exact same generator interface as [binary-parse-stream](https://github.com/nathan7/binary-parse-stream), which presents a synchronous interface to a generator parser.
 
 ## Usage
 

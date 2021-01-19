@@ -4,7 +4,7 @@
 // the ability to read -1, which was odd and un-needed.
 // License for binary-parse-stream: MIT
 
-// binary-parse-stream is now unmaintained, so I'm going to rewrite it as
+// binary-parse-stream is now unmaintained, so I have rewritten it as
 // more modern JS so I can get tsc to help check types.
 
 'use strict'
