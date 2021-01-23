@@ -15,17 +15,14 @@
     "fs": false
   },
   "scripts": {
-    "clean": "rm -rf coverage .nyc_output/ docs/api man/*",
+    "clean": "rm -rf coverage docs/api man/*",
     "lint": "eslint lib/*.js cli/lib/* cli/bin/* test/*.js",
     "doc": "jsdoc -c .jsdoc.conf",
-    "coverage": "nyc npm test",
-    "coveragehtml": "nyc -r html ava",
     "test": "ava",
     "release": "npm version patch && git push --follow-tags && npm publish",
-    "predev": "npm run coveragehtml",
-    "dev": "light-server -q -s. -w 'lib/*.js # npm run doc' -w 'lib/*.js,test/*.js # npm run coveragehtml' -o /coverage/index.html",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls",
-    "lcov": "nyc --reporter=lcov npm test",
+    "predev": "npm run coverage",
+    "dev": "light-server -q -s. -w 'lib/*.js # npm run doc' -w 'lib/*.js,test/*.js,vendor/**/*.js # npm run coverage' -o /coverage/lcov-report/index.html",
+    "coverage": "c8 --reporter=lcov npm test",
     "types": "tsc",
     "preinstall": "node .checkVersion",
     "examples": "rm -rf docs/example; (cd examples/webpack-demo; npm run build); (cd examples/browserify-demo; npm run deploy); (cd examples/parcel-demo; npm run deploy)"
@@ -55,11 +52,11 @@
   "devDependencies": {
     "@types/node": "*",
     "ava": "3.15.0",
+    "c8": "^7.4.0",
     "garbage": "0.0",
     "jsdoc": "^3.6.6",
     "light-server": "*",
     "minami": "*",
-    "nyc": "^15.1.0",
     "typescript": "^4.1.3"
   },
   "license": "MIT",

@@ -36,9 +36,9 @@ jobs:
             ${{ runner.os }}-
       - run: git submodule update --init
       - run: npm install --only=prod
-      - run: npm install ava nyc garbage
+      - run: npm install ava c8 garbage
       - name: Test ${{ matrix.node-version }}
-        run: npm run lcov
+        run: npm run coverage
       - name: Coveralls Parallel
         uses: coverallsapp/github-action@master
         with:

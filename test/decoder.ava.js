@@ -263,7 +263,7 @@ test('preferWeb', t => {
     new Uint8Array([0x01, 0x02, 0x03, 0x04, 0x05]))
 })
 
-test('binary-parse-stream edge', t => {
+test.cb('binary-parse-stream edge', t => {
   class BPS extends BinaryParseStream {
     *_parse() {
       const res = yield null
@@ -273,6 +273,13 @@ test('binary-parse-stream edge', t => {
   const b = new BPS()
   b.write('foo')
   t.is(b.read(), null)
+
+  const c = new BinaryParseStream()
+  c.on('error', e => {
+    t.truthy(e)
+    t.end()
+  })
+  c.write('foo')
 })
 
 test('extended results', async t => {

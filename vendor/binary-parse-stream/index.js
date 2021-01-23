@@ -67,7 +67,6 @@ class BinaryParseStream extends TransformStream {
    * @protected
    * @returns {Generator<number, undefined, Buffer>}
    */
-  /* istanbul ignore next */
   *_parse() {
     throw new Error('Must be implemented in subclass')
   }
