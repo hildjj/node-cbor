@@ -48,7 +48,8 @@
   ],
   "ava": {
     "files": [
-      "test/*.ava.js"
+      "test/*.ava.js",
+      "cli/test/*.ava.js"
     ]
   },
   "types": "./types/lib/cbor.d.ts",
