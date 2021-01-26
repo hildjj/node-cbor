@@ -7,9 +7,21 @@ const path = require('path')
 const pkg = require('../package.json')
 
 function exec(bin, opts = {}) {
+  opts = {
+    args: [],
+    encoding: 'utf8',
+    env: {},
+    ...opts
+  }
   return new Promise((resolve, reject) => {
-    const c = spawn(path.join(__dirname, '..', 'bin', bin), opts.args || [], {
-      stdio: 'pipe'
+    bin = path.join(__dirname, '..', 'bin', bin + '.js')
+    const env = {
+      ...process.env,
+      ...opts.env
+    }
+    const c = spawn(bin, opts.args, {
+      stdio: 'pipe',
+      env
     })
     c.on('error', reject)
     const bufs = []
@@ -17,12 +29,14 @@ function exec(bin, opts = {}) {
     c.stderr.on('data', b => bufs.push(b))
     c.on('close', code => {
       const buf = Buffer.concat(bufs)
+      const str = buf.toString(opts.encoding)
       if (code !== 0) {
         const err = new Error(`process fail, code ${code}`)
         err.buf = buf
+        err.str = str
         reject(err)
       } else {
-        resolve(buf)
+        resolve(str)
       }
     })
     if (opts.stdin != null) {
@@ -34,61 +48,71 @@ function exec(bin, opts = {}) {
 
 test('json2cbor', async t => {
   let buf = await exec('json2cbor', {
-    stdin: '{"foo": false}'
+    stdin: '{"foo": false}',
+    encoding: 'hex'
   })
-  t.deepEqual(buf.toString('hex'), 'a163666f6ff4')
+  t.deepEqual(buf, 'a163666f6ff4')
   buf = await exec('json2cbor', {
     args: ['-xc'],
     stdin: `{
   "foo": false,
   "bar": -1
 }`})
-  t.deepEqual(buf.toString('utf8'), 'a2636261722063666f6ff4\n')
+  t.deepEqual(buf, 'a2636261722063666f6ff4\n')
   const pf = path.join(__dirname, '..', 'package.json')
   buf = await exec('json2cbor', {
-    args: [pf, pf, pf]
+    args: [pf, pf, pf],
+    encoding: 'hex'
   })
   t.truthy(buf.length > 0)
 
   const ver = await exec('json2cbor', { args: ['-V'] })
-  t.is(ver.toString(), pkg.version + '\n')
+  t.is(ver, pkg.version + '\n')
 
   const help = await exec('json2cbor', { args: ['-h'] })
-  t.truthy(help.toString().startsWith('Usage: '))
+  t.truthy(help.startsWith('Usage: '))
 
   const er = await t.throwsAsync(() => {
     return exec('json2cbor', { args: ['-Q'] })
   })
   t.is(er.buf.toString('utf8'), 'error: unknown option \'-Q\'\n')
+  t.is(er.str, 'error: unknown option \'-Q\'\n')
+
+  await t.throwsAsync(() => {
+    return exec('json2cbor', {
+      args: ['-x', '-'],
+      stdin: 'treu' // sic
+    })
+  })
 })
 
 test('cbor2json', async t => {
   let buf = await exec(t.title, {
     stdin: Buffer.from('12', 'hex')
   })
-  t.deepEqual(buf.toString('utf8'), '18\n')
+  t.deepEqual(buf, '18\n')
   buf = await exec(t.title, {
     args: ['-x', '12']
   })
-  t.deepEqual(buf.toString('utf8'), '18\n')
+  t.deepEqual(buf, '18\n')
 })
 
 test('cbor2diag', async t => {
   let buf = await exec(t.title, {
     stdin: Buffer.from('c100', 'hex')
   })
-  t.deepEqual(buf.toString('utf8'), '1(0)\n')
+  t.deepEqual(buf, '1(0)\n')
   buf = await exec(t.title, {
     args: ['-x', 'c100']
   })
-  t.deepEqual(buf.toString('utf8'), '1(0)\n')
+  t.deepEqual(buf, '1(0)\n')
 })
 
 test('cbor2comment', async t => {
   let buf = await exec(t.title, {
     stdin: Buffer.from('c100', 'hex')
   })
-  t.deepEqual('\n' + buf.toString('utf8'), `
+  t.deepEqual(buf, `\
   c1                -- Tag #1
     00              -- 0
 0xc100
@@ -98,9 +122,97 @@ test('cbor2comment', async t => {
       '--tabsize', '14',
       '-x', 'c100']
   })
-  t.deepEqual('\n' + buf.toString('utf8'), `
+  t.deepEqual(buf, `\
   c1                        -- Tag #1
     00                      -- 0
 0xc100
 `)
+})
+
+test('cbor', async t => {
+  let buf = await exec(t.title, {
+    stdin: 'true',
+    env: {
+      NODE_REPL_HISTORY: ''
+    }
+  })
+  t.regex(buf,
+    // eslint-disable-next-line max-len
+    /^cbor v[0-9.]*(#.*)? \(javascript output from typing 0x00\)\ncbor> true\n0xf5\ncbor> $/)
+
+  await t.throwsAsync(() => exec(t.title, {
+    args: ['-t', 'foo'],
+    env: {
+      NODE_REPL_HISTORY: ''
+    }
+  }))
+
+  buf = await exec(t.title, {
+    args: ['-t', 'diag', '-c'],
+    stdin: '0x818100',
+    env: {
+      NODE_REPL_HISTORY: ''
+    }
+  })
+  t.regex(buf, /\[\[0\]\]\n/)
+
+  buf = await exec(t.title, {
+    args: ['-t', 'comment', '-c'],
+    stdin: '0x818100',
+    env: {
+      NODE_REPL_HISTORY: ''
+    }
+  })
+  t.regex(buf, /Array, 1 item/)
+
+  buf = await exec(t.title, {
+    args: ['-t', 'js'],
+    stdin: '0xa1616101',
+    env: {
+      NODE_REPL_HISTORY: ''
+    }
+  })
+  t.regex(buf, /  a: 1\n/)
+  buf = await exec(t.title, {
+    stdin: 'comment("01")',
+    env: {
+      NODE_REPL_HISTORY: ''
+    }
+  })
+  t.regex(buf, /Promise/)
+  t.regex(buf, /0x01/)
+  buf = await exec(t.title, {
+    stdin: 'diagnose("01")',
+    env: {
+      NODE_REPL_HISTORY: ''
+    }
+  })
+  t.regex(buf, /Promise\n1\n/)
+
+  buf = await exec(t.title, {
+    args: ['-t', 'd'],
+    stdin: '0x81',
+    env: {
+      NODE_REPL_HISTORY: ''
+    }
+  })
+  t.regex(buf, /Error: unexpected end of input/)
+
+  buf = await exec(t.title, {
+    args: ['-t', 'c'],
+    stdin: '0x81',
+    env: {
+      NODE_REPL_HISTORY: ''
+    }
+  })
+  t.regex(buf, /Error: unexpected end of input/)
+
+  buf = await exec(t.title, {
+    args: ['-t', 'javascript'],
+    stdin: '0x81',
+    env: {
+      NODE_REPL_HISTORY: ''
+    }
+  })
+  t.regex(buf, /Error: unexpected end of input/)
 })

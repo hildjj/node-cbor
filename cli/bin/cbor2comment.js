@@ -6,14 +6,14 @@ const utils = require('../lib/utils')
 const pkg = require('../package.json')
 const {program} = require('commander')
 
-program
+const opts = program
   .version(pkg.version)
   .usage('[options] <file ...>')
   .option('-x, --hex <string>', 'Hex string input')
   .option('-t, --tabsize [spaces]', 'Indent amount')
   .parse(process.argv)
+  .opts()
 
-const opts = program.opts()
 const numTabs = (opts.tabsize | 0) || 10
 const argv = program.args
 if (opts.hex) {

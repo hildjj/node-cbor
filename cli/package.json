@@ -7,8 +7,14 @@
     "url": "http://github.com/hildjj/node-cbor.git"
   },
   "homepage": "https://github.com/hildjj/node-cbor/tree/master/cli",
+  "bin": {
+    "cbor": "bin/cbor.js",
+    "cbor2comment": "bin/cbor2comment.js",
+    "cbor2diag": "bin/cbor2diag.js",
+    "cbor2json": "bin/cbor2json.js",
+    "json2cbor": "bin/json2cbor.js"
+  },
   "directories": {
-    "bin": "bin",
     "man": "man"
   },
   "scripts": {
@@ -17,7 +23,9 @@
     "test": "ava",
     "man": "mkdir -p man; for f in man_src/*.md; do b=`basename $f`; marked-man $f -o man/${b%.md}.1; gzip -9f man/${b%.md}.1; done",
     "release": "npm version patch && git push --follow-tags && npm publish",
-    "typecheck": "tsc --allowJs --checkJs --noEmit --target ES6 --moduleResolution node lib/*.js"
+    "typecheck": "tsc --allowJs --checkJs --noEmit --target ES6 --moduleResolution node lib/*.js",
+    "coverage": "nyc -r html ava",
+    "dev": "light-server -q -s. -w 'lib/*.js,test/*.js,bin/*.js # npm run coverage' -o /coverage/index.html"
   },
   "keywords": [
     "coap",
@@ -37,7 +45,8 @@
   "devDependencies": {
     "ava": "3.15.0",
     "marked-man": "^0.7.0",
-    "mock-stdio": "^1.0.3"
+    "mock-stdio": "^1.0.3",
+    "nyc": "^15.1.0"
   },
   "license": "MIT",
   "readmeFilename": "README.md",
