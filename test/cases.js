@@ -5,7 +5,6 @@ const NoFilter = require('nofilter')
 const cbor = require('../')
 const constants = require('../lib/constants')
 const utils = require('../lib/utils')
-const url = require('url')
 
 class TempClass {
   constructor(val) {
@@ -173,7 +172,7 @@ exports.good = [
       514b67b0      -- 1363896240
 0xc11a514b67b0`],
 
-  [url.parse('http://www.example.com'), '32("http://www.example.com/")', `
+  [new URL('http://www.example.com'), '32("http://www.example.com/")', `
   d8                --  next 1 byte
     20              -- Tag #32
       77            -- String, length: 23
