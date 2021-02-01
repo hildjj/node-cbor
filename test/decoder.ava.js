@@ -6,6 +6,7 @@ const NoFilter = require('nofilter')
 const cases = require('./cases')
 const streams = require('./streams')
 const utils = require('../lib/utils')
+const constants = require('../lib/constants')
 const {BigNumber} = cbor
 const BinaryParseStream = require('../vendor/binary-parse-stream')
 
@@ -300,4 +301,24 @@ test('extended results', async t => {
     value: null,
     unused: Buffer.from('63616263', 'hex')
   })
+})
+
+test('no bignumber', t => {
+  const {BigNumber, BN} = constants
+  constants.BigNumber = null
+  delete constants.BN
+
+  t.throws(() => cbor.decodeFirstSync('3b001fffffffffffff', {bigint: false}))
+  t.throws(() => cbor.decodeFirstSync('1b7fffffffffffffff', {bigint: false}))
+  let tag = cbor.decodeFirstSync('c24a1bffffffffffffffffff',
+    {bigint: false})
+  t.truthy(tag instanceof cbor.Tagged)
+  t.truthy(tag.err)
+  tag = cbor.decodeFirstSync('c4820a0a')
+  t.truthy(tag.err)
+  tag = cbor.decodeFirstSync('c5820a0a')
+  t.truthy(tag.err)
+
+  constants.BigNumber = BigNumber
+  constants.BN = BN
 })

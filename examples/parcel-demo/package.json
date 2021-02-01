@@ -4,14 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "prebuild": "rm -rf dist",
     "build": "parcel build src/index-p.html -d dist --public-url .",
-    "deploy": "ls dist/* | grep -v .map | xargs -I {} cp {} ../../docs/example",
+    "deploy": "mkdir -p ../../docs/example; ls dist/* | grep -v .map | xargs -I {} cp {} ../../docs/example",
     "predeploy": "npm run build"
   },
   "keywords": [],
   "author": "Joe Hildebrand <joe-github@cursive.net>",
   "license": "MPL-2.0",
-  "dependencies": {
+  "devDependencies": {
+    "cssnano": "^4.1.10",
     "parcel-bundler": "^1.12.4",
     "regenerator-runtime": "^0.13.7"
   }

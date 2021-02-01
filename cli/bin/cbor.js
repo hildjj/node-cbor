@@ -1,5 +1,4 @@
-#!/bin/sh
-//bin/false 2>/dev/null || exec `which node` --experimental-repl-await $0 $@
+#!/usr/bin/env node
 
 'use strict'
 const child_process = require('child_process')

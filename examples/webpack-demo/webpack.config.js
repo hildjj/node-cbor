@@ -1,8 +1,8 @@
 'use strict'
 
 const path = require('path')
-const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const webpack = require('webpack')
 
 module.exports = {
   entry: './src/index-wp.js',
@@ -11,9 +11,20 @@ module.exports = {
     path: path.resolve(__dirname, '..', '..', 'docs', 'example')
   },
   mode: 'development',
+  target: 'web',
+
+  resolve: {
+    fallback: {
+      process: 'process/browser',
+      stream: 'stream-browserify'
+    }
+  },
 
   plugins: [
-    new NodePolyfillPlugin(),
+    new webpack.ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
+      process: 'process/browser'
+    }),
     new HtmlWebpackPlugin({
       filename: 'index-wp.html',
       title: 'CBOR/web (webpack)',

@@ -88,6 +88,10 @@ test('vectors', t => {
       buffer,
       'base64 and hex encoded bytes mismatched ')
 
+    if (decoded && (typeof decoded === 'object')) {
+      delete decoded[cbor.Tagged.INTERNAL_JSON]
+      delete redecoded[cbor.Tagged.INTERNAL_JSON]
+    }
     t.deepEqual(
       decoded,
       redecoded,

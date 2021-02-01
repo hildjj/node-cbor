@@ -5,13 +5,14 @@
   "private": "true",
   "scripts": {
     "build": "browserify --standalone cbor ../../lib/cbor.js -t [ babelify  ] | terser --compress -o dist/bundle-bf.js; browserify src/index.js -t [ babelify  ] -o dist/index-bf.js; cp src/*.{css,html} dist",
-    "deploy": "cp dist/* ../../docs/example",
+    "deploy": "mkdir -p ../../docs/example; cp dist/* ../../docs/example",
     "predeploy": "npm run build"
   },
   "keywords": [],
   "author": "Joe Hildebrand <joe-github@cursive.net>",
   "license": "MPL-2.0",
   "devDependencies": {
+    "@babel/core": "^7.12.10",
     "babelify": "^10.0.0",
     "browserify": "^17.0.0",
     "terser": "^5.5.1"
