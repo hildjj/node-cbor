@@ -29,3 +29,4 @@ tsconfig.json
 webpack-demo/
 .github/
 examples/
+pnpm-lock.yaml

@@ -1,6 +1,7 @@
 'use strict'
 
 const cbor = require('../')
+const constants = require('../lib/constants')
 const test = require('ava')
 const cases = require('./cases')
 const NoFilter = require('nofilter')
@@ -377,4 +378,16 @@ test('outside BigNumber', t => {
   t.is(cbor.encodeOne(pi3).toString('hex'),
     'c482382cc254056e5e99b1be81b6eefa3964490ac18c69399361')
   require.cache[key] = old
+})
+
+test('no bignumber', t => {
+  const {BigNumber, BN} = constants
+  constants.BigNumber = null
+  delete constants.BN
+
+  const enc = new cbor.Encoder()
+  t.falsy(enc.semanticTypes[BigNumber.name])
+
+  constants.BigNumber = BigNumber
+  constants.BN = BN
 })

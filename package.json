@@ -52,11 +52,29 @@
       "cli/test/*.ava.js"
     ]
   },
+  "nyc": {
+    "exclude": [
+      "cli/test/*",
+      "test/*"
+    ]
+  },
   "types": "./types/lib/cbor.d.ts",
+  "dependencies": {
+    "nofilter": "^1.0.4"
+  },
+  "peerDependencies": {
+    "bignumber.js": "^9.0.1"
+  },
+  "peerDependenciesMeta": {
+    "bignumber.js": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@types/node": "*",
     "ava": "3.15.0",
-    "garbage": "0.0",
+    "bignumber.js": "^9.0.1",
+    "garbage": "~0.0.0",
     "jsdoc": "^3.6.6",
     "light-server": "*",
     "minami": "*",
@@ -65,10 +83,6 @@
   },
   "license": "MIT",
   "readmeFilename": "README.md",
-  "dependencies": {
-    "bignumber.js": "^9.0.1",
-    "nofilter": "^1.0.4"
-  },
   "engines": {
     "node": ">=10.18.0"
   }
