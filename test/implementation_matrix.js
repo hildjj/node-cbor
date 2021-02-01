@@ -3,7 +3,6 @@
 // Data to fill out:
 // https://github.com/cbor-wg/CBORbis/wiki/Implementation-matrix
 const cbor = require('..')
-const url = require('url')
 const concordance = require('concordance')
 const {BigNumber} = cbor
 
@@ -35,7 +34,7 @@ const all = [
   ['Tag 23', 0, ''],
   // this one is only useful in certain circumstances
   ['Tag 24', 0, ''],
-  ['Tag 32', url.parse('https://mozilla.com/'),
+  ['Tag 32', new URL('https://mozilla.com/'),
     'd8207468747470733a2f2f6d6f7a696c6c612e636f6d2f'],
   ['Tag 33', 0, ''],
   ['Tag 34', 0, ''],

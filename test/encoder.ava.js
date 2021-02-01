@@ -6,7 +6,6 @@ const test = require('ava')
 const cases = require('./cases')
 const NoFilter = require('nofilter')
 const {BigNumber} = cbor
-const url = require('url')
 
 function testAll(t, list, opts=undefined) {
   t.plan(list.length)
@@ -302,10 +301,8 @@ test('encoding "undefined"', t => {
 })
 
 test('URL', t => {
-  if (url.URL) {
-    t.is(cbor.encodeOne(new url.URL('https://example.net')).toString('hex'),
-      'd8207468747470733a2f2f6578616d706c652e6e65742f')
-  }
+  t.is(cbor.encodeOne(new URL('https://example.net')).toString('hex'),
+    'd8207468747470733a2f2f6578616d706c652e6e65742f')
 })
 
 test('big', async t => {
