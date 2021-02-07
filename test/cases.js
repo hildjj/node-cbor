@@ -26,7 +26,7 @@ async function requireWithFailedDependency(source, dependency, fn) {
     }
   }
   delete require.cache[src]
-  await fn()
+  await fn(require(source))
   require.cache[src] = old_src
   require.cache[dep] = old_dep
 }
