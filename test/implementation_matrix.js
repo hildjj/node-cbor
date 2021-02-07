@@ -52,12 +52,7 @@ if (typeof String.prototype.padEnd != 'function') {
 
 function deepEqual(actual, expected) {
   const ret = concordance.compare(actual, expected)
-  if (!ret.pass) {
-    const a = ret.actual || concordance.describe(actual)
-    const e = ret.expected || concordance.describe(expected)
-    return false
-  }
-  return true
+  return ret.pass
 }
 
 function markdownOut(title, decode, encode) {

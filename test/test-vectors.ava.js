@@ -21,7 +21,7 @@ test.before(async t => {
     vecStr = await readFile(
       path.join(__dirname, '..', 'test-vectors', 'appendix_a.json'),
       {encoding: 'utf8'})
-  } catch (er) {
+  } catch (ignored) {
     t.fail('use command `git submodule update --init` to load test-vectors')
     return t.end()
   }
@@ -59,7 +59,7 @@ test.before(async t => {
     failStr = await readFile(
       path.join(__dirname, '..', 'test-vectors', 'fail.json'),
       {encoding: 'utf8'})
-  } catch (er) {
+  } catch (ignored) {
     t.fail('use command `git submodule update --init` to load test-vectors')
     return t.end()
   }
