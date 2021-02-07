@@ -113,8 +113,7 @@ test('cborValueToString', t => {
 })
 
 test('web util', async t => {
-  cases.requireWithFailedDependency('../lib/utils', 'util', () => {
-    const utils = require('../lib/utils')
+  cases.requireWithFailedDependency('../lib/utils', 'util', utils => {
     t.falsy(utils.inspect)
   })
 })
