@@ -60,7 +60,7 @@
   },
   "types": "./types/lib/cbor.d.ts",
   "dependencies": {
-    "nofilter": "^1.0.4"
+    "nofilter": "^2.0.0"
   },
   "peerDependencies": {
     "bignumber.js": "^9.0.1"
