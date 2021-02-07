@@ -15,16 +15,16 @@ module.exports = {
 
   resolve: {
     fallback: {
-      process: 'process/browser',
-      stream: 'stream-browserify'
+      process: 'process',
+      stream: 'stream-browserify',
+      util: 'node-inspect-extracted'
     }
   },
 
   plugins: [
-    new webpack.ProvidePlugin({
-      Buffer: ['buffer', 'Buffer'],
-      process: 'process/browser'
-    }),
+    // new webpack.ProvidePlugin({
+    //   process: 'process/browser'
+    // }),
     new HtmlWebpackPlugin({
       filename: 'index-wp.html',
       title: 'CBOR/web (webpack)',
