@@ -1,6 +1,9 @@
 'use strict'
 const cbor = require('cbor')
 const util = require('util')
+const { Buffer } = require('buffer')
+const process = require('process')
+console.log('PNT:', process.nextTick)
 import './style.css'
 
 const ofmt = document.getElementById('output-fmt')
@@ -77,6 +80,7 @@ function convert() {
     output(input())
   } catch (e) {
     error(e)
+    throw e
   }
 }
 
