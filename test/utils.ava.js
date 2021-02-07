@@ -1,10 +1,10 @@
 'use strict'
 
 const test = require('ava')
-const NoFilter = require('nofilter')
-const {BigNumber} = require('../lib/constants')
+const cases = require('./cases')
+const constants = require('../lib/constants')
 const utils = require('../lib/utils')
-const {hex, bin} = utils
+const { hex, bin } = utils
 
 test('bin', t => {
   t.deepEqual(utils.bin('1'), hex('01'))
@@ -76,9 +76,11 @@ test('bufferEqual', t => {
 })
 
 test('bufferToBignumber', t => {
-  const num = new BigNumber(0x12345678).toString(16)
+  const num = new constants.BigNumber(0x12345678).toString(16)
   const numbuf = Buffer.from(num, 'hex')
-  t.deepEqual(utils.bufferToBignumber(numbuf), new BigNumber(0x12345678))
+  t.deepEqual(
+    utils.bufferToBignumber(numbuf),
+    new constants.BigNumber(0x12345678))
 })
 
 test.cb('guessEncoding', t => {
@@ -95,7 +97,7 @@ test.cb('guessEncoding', t => {
   t.deepEqual(nof2.read().toString('hex'), '000200010100')
   try {
     utils.guessEncoding()
-  } catch (er) {
+  } catch (ignored) {
     t.end()
   }
 })
@@ -107,5 +109,12 @@ test('cborValueToString', t => {
   t.is(utils.cborValueToString(Symbol('(()')), '(()')
   t.is(utils.cborValueToString(Symbol('foo')), 'foo')
   t.is(utils.cborValueToString(Symbol('')), 'Symbol')
-  t.is(utils.cborValueToString(new BigNumber(-4)), '-4')
+  t.is(utils.cborValueToString(new constants.BigNumber(-4)), '-4')
+})
+
+test('web util', async t => {
+  cases.requireWithFailedDependency('../lib/utils', 'util', () => {
+    const utils = require('../lib/utils')
+    t.falsy(utils.inspect)
+  })
 })

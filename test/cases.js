@@ -5,6 +5,32 @@ const NoFilter = require('nofilter')
 const cbor = require('../')
 const constants = require('../lib/constants')
 const utils = require('../lib/utils')
+const path = require('path')
+
+async function requireWithFailedDependency(source, dependency, fn) {
+  const src = require.resolve(source)
+  const dep = require.resolve(dependency)
+  const old_src = require.cache[src]
+  const old_dep = require.cache[dep]
+  require.cache[dep] = {
+    loaded: true,
+    get exports() {
+      // see @node/lib/internal/modules/cjs/loader.js#tryPackage()
+      const err = new Error(
+        `Cannot find module '${dep}'. ` +
+        'Please verify that the package.json has a valid "main" entry'
+      )
+      err.code = 'MODULE_NOT_FOUND'
+      err.path = path.resolve(dependency, 'package.json')
+      err.requestPath = __filename
+    }
+  }
+  delete require.cache[src]
+  await fn()
+  require.cache[src] = old_src
+  require.cache[dep] = old_dep
+}
+exports.requireWithFailedDependency = requireWithFailedDependency
 
 class TempClass {
   constructor(val) {

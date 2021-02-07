@@ -43,6 +43,14 @@ module.exports = {
     'no-undef-init': 'error',
     'no-undef': 'error',
     'no-unexpected-multiline': 'error',
+    'no-unused-expressions': ['error', { allowShortCircuit: true }],
+    'no-unused-labels': 'error',
+    'no-unused-vars': [
+      'error', {
+        args: 'none',
+        caughtErrors: 'all',
+        caughtErrorsIgnorePattern: '^ignore'
+      }],
     'no-var': 'error',
     'object-curly-spacing': 'off',
     'one-var': ['error', 'never'],

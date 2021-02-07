@@ -5,7 +5,6 @@ const test = require('ava')
 const NoFilter = require('nofilter')
 const cases = require('./cases')
 const streams = require('./streams')
-const utils = require('../lib/utils')
 const constants = require('../lib/constants')
 const {BigNumber} = cbor
 const BinaryParseStream = require('../vendor/binary-parse-stream')
@@ -267,7 +266,7 @@ test('preferWeb', t => {
 test('binary-parse-stream edge', t => {
   class BPS extends BinaryParseStream {
     *_parse() {
-      const res = yield null
+      yield null
       throw new Error('unreachable code')
     }
   }

@@ -2,7 +2,6 @@
 
 const fs = require('fs')
 const stream = require('stream')
-const util = require('util')
 
 exports.DeHexStream = class DeHexStream extends stream.Readable {
   constructor(hex) {
