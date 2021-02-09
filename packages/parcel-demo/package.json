@@ -1,0 +1,26 @@
+{
+  "name": "parcel-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "prebuild": "rm -rf dist",
+    "build": "parcel build src/index-p.html -d dist --no-source-maps --public-url .",
+    "deploy": "ls dist/* | xargs -I {} cp {} ../../docs/example",
+    "predeploy": "npm run build"
+  },
+  "keywords": [],
+  "author": "Joe Hildebrand <joe-github@cursive.net>",
+  "license": "MIT",
+  "devDependencies": {
+    "cbor-web": "*",
+    "node-inspect-extracted": "*",
+    "cssnano": "^4.1.10",
+    "parcel-bundler": "^1.12.4",
+    "regenerator-runtime": "^0.13.7"
+  },
+  "alias": {
+    "bignumber.js": "BigNumber"
+  }
+}

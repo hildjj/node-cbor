@@ -12,3 +12,5 @@ shrinkwrap.yaml
 npm-debug.log
 t.js
 pnpm-lock.yaml
+yarn.lock
+yarn-error.log

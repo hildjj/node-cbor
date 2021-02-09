@@ -10,7 +10,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     strategy:
       matrix:
@@ -25,29 +25,19 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install, production
-        uses: bahmutov/npm-install@v1
+        run: yarn install --no-progress --no-lockfile
         env:
           NODE_ENV: production
       - name: Install test tools
-        uses: bahmutov/npm-install@v1
-        with:
-          install-command: npm install --no-save ava nyc garbage
-      - name: Overwrite cli cbor version with ..
-        run: npm i ..
-        working-directory: cli
-      - name: Install cli, production
-        uses: bahmutov/npm-install@v1
-        with:
-          working-directory: cli
-        env:
-          NODE_ENV: production
+        run: npm install --no-save ava nyc
+      - name: Install cbor test tools
+        run: npm install --no-save garbage bignumber.js
+        working-directory: ./packages/cbor
       - name: Install cli test tools
-        uses: bahmutov/npm-install@v1
-        with:
-          working-directory: cli
-          install-command: npm install --no-save mock-stdio
+        run: npm install --no-save mock-stdio nofilter
+        working-directory: ./packages/cbor-cli
       - name: Test ${{ matrix.node-version }}
-        run: npm run lcov
+        run: npm run coverage
       - name: Coveralls Parallel
         uses: coverallsapp/github-action@master
         with:

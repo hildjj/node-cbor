@@ -1,0 +1,22 @@
+{
+  "name": "cbor-web",
+  "version": "6.0.1",
+  "description": "",
+  "main": "dist/cbor.js",
+  "scripts": {
+    "build": "webpack"
+  },
+  "keywords": [],
+  "author": "Joe Hildebrand <joe-github@cursive.net>",
+  "license": "MIT",
+  "devDependencies": {
+    "buffer": "^6.0.3",
+    "cbor": "*",
+    "node-inspect-extracted": "^1.0.2",
+    "nofilter": "^2.0.0",
+    "process": "^0.11.10",
+    "stream-browserify": "^3.0.0",
+    "webpack": "^5.21.2",
+    "webpack-cli": "^4.5.0"
+  }
+}

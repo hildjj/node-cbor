@@ -1,64 +1,25 @@
 {
-  "name": "cbor",
+  "name": "cbor-monorepo",
+  "private": true,
+  "main": "./packages/cbor/lib/cbor.js",
   "version": "6.0.1",
-  "description": "Encode and parse data in the Concise Binary Object Representation (CBOR) data format (RFC7049).",
-  "main": "./lib/cbor.js",
-  "repository": {
-    "type": "git",
-    "url": "http://github.com/hildjj/node-cbor.git"
-  },
-  "homepage": "http://hildjj.github.io/node-cbor/",
-  "directories": {
-    "lib": "lib"
-  },
-  "browser": {
-    "fs": false
-  },
-  "scripts": {
-    "clean": "rm -rf coverage .nyc_output/ docs/api man/*",
-    "lint": "eslint lib/*.js cli/lib/* cli/bin/* test/*.js",
-    "doc": "jsdoc -c .jsdoc.conf",
-    "coverage": "nyc npm test",
-    "coveragehtml": "nyc -r html ava",
-    "test": "ava",
-    "release": "npm version patch && git push --follow-tags && npm publish",
-    "predev": "npm run coveragehtml",
-    "dev": "light-server -q -s. -w 'lib/*.js # npm run doc' -w 'lib/*.js,test/*.js # npm run coveragehtml' -o /coverage/index.html",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls",
-    "lcov": "nyc --reporter=lcov npm test",
-    "types": "tsc",
-    "preinstall": "node .checkVersion",
-    "examples": "rm -rf docs/example; (cd examples/webpack-demo; npm run build); (cd examples/browserify-demo; npm run deploy); (cd examples/parcel-demo; npm run deploy)"
-  },
-  "keywords": [
-    "coap",
-    "cbor",
-    "json"
-  ],
   "author": {
     "name": "Joe Hildebrand",
     "email": "joe-github@cursive.net"
   },
-  "contributors": [
-    "Patrick Gansterer <paroga@paroga.com> (http://paroga.com/)",
-    "Artyom Yagilev <github@scorpi.org> (http://scorpi.org/)",
-    "Denis Lapaev <den@lapaev.me> (http://lapaev.me/)",
-    "Ruben Bridgewater <ruben@bridgewater.de>",
-    "Burt Harris <Burt_Harris_cbor@azxs.33mail.com>"
+  "workspaces": [
+    "./packages/*"
   ],
-  "ava": {
-    "files": [
-      "test/*.ava.js",
-      "cli/test/*.ava.js"
-    ]
+  "scripts": {
+    "clean": "rm -rf node_modules coverage .nyc_output packages/*/node_modules packages/*/coverage pacakges/*/.nyc_output",
+    "lint": "eslint packages/*/{src,lib,test,bin}/**.js",
+    "test": "ava packages/*/test/*.ava.js",
+    "yi": "yarn install --no-lockfile",
+    "build": "pnpm -r build",
+    "coverage": "nyc -r lcov npm test",
+    "predeploy": "rm -rf docs/example && mkdir -p docs/example",
+    "deploy": "pnpm -r deploy"
   },
-  "nyc": {
-    "exclude": [
-      "cli/test/*",
-      "test/*"
-    ]
-  },
-  "types": "./types/lib/cbor.d.ts",
   "dependencies": {
     "nofilter": "^2.0.0"
   },
@@ -71,19 +32,11 @@
     }
   },
   "devDependencies": {
-    "@types/node": "*",
-    "ava": "3.15.0",
-    "bignumber.js": "^9.0.1",
-    "garbage": "~0.0.0",
-    "jsdoc": "^3.6.6",
-    "light-server": "*",
-    "minami": "*",
+    "ava": "^3.15.0",
+    "eslint": "^7.19.0",
+    "light-server": "^2.9.1",
     "nyc": "^15.1.0",
-    "typescript": "^4.1.3"
+    "rimraf": "^3.0.2"
   },
-  "license": "MIT",
-  "readmeFilename": "README.md",
-  "engines": {
-    "node": ">=10.18.0"
-  }
+  "license": "MIT"
 }
