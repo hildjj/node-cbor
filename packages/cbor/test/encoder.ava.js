@@ -163,36 +163,36 @@ test('detect loops', t => {
   const b = [a]
   enc.write(b)
   t.is(bs.read().toString('hex'), '81a16163f4')
-  t.is(Object.getOwnPropertySymbols(a).length, 1)
-  t.is(Object.getOwnPropertySymbols(b).length, 1)
-  t.falsy(cbor.Encoder.removeLoopDetectors(b, Symbol()))
-  t.truthy(enc.removeLoopDetectors(b))
-  t.is(Object.getOwnPropertySymbols(a).length, 0)
-  t.is(Object.getOwnPropertySymbols(b).length, 0)
-  t.falsy(enc.removeLoopDetectors(b))
-  t.is(Object.getOwnPropertySymbols(a).length, 0)
-  t.is(Object.getOwnPropertySymbols(b).length, 0)
+  t.falsy(enc.detectLoops.has(a))
+  t.truthy(enc.detectLoops.has(b))
+  t.truthy(enc.removeLoopDetectors())
+  t.falsy(enc.detectLoops.has(a))
+  t.falsy(enc.detectLoops.has(b))
   a.a = a
   t.throws(() => enc.write(b))
 
+  const can = new cbor.Encoder({ detectLoops: true, canonical: true})
+  const c = { d: null }
+  // this isn't a loop.
+  const m = new Map([[c, c]])
+  can.write(m)
+
   const noLoops = new cbor.Encoder({detectLoops: false})
-  t.falsy(noLoops.removeLoopDetectors(a))
+  t.falsy(noLoops.removeLoopDetectors())
 })
 
 test('detect loops, own symbol', t => {
   const s = Symbol('MINE')
-  const enc = new cbor.Encoder({detectLoops: s})
+  t.throws(() => new cbor.Encoder({detectLoops: s}))
+  const ws = new WeakSet()
+  const enc = new cbor.Encoder({detectLoops: ws})
   const bs = new NoFilter()
   enc.pipe(bs)
 
   const a = {c: new Date()}
   enc.write(a)
-  const a_syms = Object.getOwnPropertySymbols(a)
-  const date_syms = Object.getOwnPropertySymbols(a.c)
-  t.is(a_syms.length, 1)
-  t.is(date_syms.length, 1)
-  t.is(a[a_syms[0]], s)
-  t.is(a.c[date_syms[0]], s)
+  t.falsy(ws.has(a))
+  t.truthy(ws.has(a.c))
 })
 
 test('date types', t => {
@@ -350,7 +350,6 @@ test('indefinite', t => {
     encodeCBOR: cbor.Encoder.encodeIndefinite
   }
   t.is(cbor.encodeOne(o, { detectLoops: true }).toString('hex'), 'bf6161f5ff')
-  t.truthy(cbor.Encoder.removeLoopDetectors(o))
 })
 
 test('outside BigNumber', t => {

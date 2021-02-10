@@ -22,7 +22,6 @@ const BUF_NAN = Buffer.from('f97e00', 'hex')
 const BUF_INF_NEG = Buffer.from('f9fc00', 'hex')
 const BUF_INF_POS = Buffer.from('f97c00', 'hex')
 const BUF_NEG_ZERO = Buffer.from('f98000', 'hex')
-const LOOP_DETECT = Symbol('CBOR_LOOP_DETECT')
 
 /**
  * @param {string} str
@@ -55,12 +54,13 @@ function parseDateType(str) {
  *   If an object, the keys are the constructor names for the types.
  * @property {boolean} [canonical=false] - should the output be
  *   canonicalized
- * @property {boolean|Symbol} [detectLoops=false] - should object loops
- *   be detected?  This will currently modify the encoded object graph by
- *   adding a Symbol property to each object.  If this bothers you, call
- *   `removeLoopDetectors` on the encoded object when done.  Do not encode
+ * @property {boolean|WeakSet} [detectLoops=false] - should object loops
+ *   be detected?  This will currently add memory to track every part of the
+ *   object being encoded in a WeakSet.  Do not encode
  *   the same object twice on the same encoder, without calling
- *   `removeLoopDetectors` in between.
+ *   `removeLoopDetectors` in between, which will clear the WeakSet.
+ *   You may pass in your own WeakSet to be used; this is useful in some
+ *   recursive scenarios.
  * @property {("number"|"float"|"int"|"string")} [dateType="number"] -
  *   how should dates be encoded?  "number" means float or int, if no
  *   fractional seconds.
@@ -118,13 +118,13 @@ class Encoder extends stream.Transform {
     this.disallowUndefinedKeys = disallowUndefinedKeys
     this.dateType = parseDateType(dateType)
     this.collapseBigIntegers = this.canonical ? true : collapseBigIntegers
-
-    // new Symbol for each instance.  Note: means we can't re-use the same
-    // encoder and encoded object
-    if (typeof(detectLoops) === 'symbol') {
-      this.detectLoops = detectLoops
-    } else {
-      this.detectLoops = detectLoops ? Symbol('CBOR_DETECT') : null
+    this.detectLoops = detectLoops
+    if (typeof detectLoops === 'boolean') {
+      if (detectLoops) {
+        this.detectLoops = new WeakSet()
+      }
+    } else if (!(detectLoops instanceof WeakSet)) {
+      throw new TypeError('detectLoops must be boolean or WeakSet')
     }
 
     this.semanticTypes = {
@@ -537,7 +537,7 @@ class Encoder extends stream.Transform {
       const enc = new Encoder({
         genTypes: this.semanticTypes,
         canonical: this.canonical,
-        detectLoops: this.detectLoops,
+        detectLoops: !!this.detectLoops, // give enc its own loop detector
         dateType: this.dateType,
         disallowUndefinedKeys: this.disallowUndefinedKeys,
         collapseBigIntegers: this.collapseBigIntegers
@@ -609,55 +609,15 @@ class Encoder extends stream.Transform {
   }
 
   /**
-   * Remove all of the loop detector additions to the given object.
+   * Remove the loop detector WeakSet for this Encoder.
    *
-   * @param {Object} obj - object to clean
-   * @returns {boolean} - true when the object was cleaned, else false
+   * @returns {boolean} - true when the Encoder was reset, else false
    */
-  removeLoopDetectors(obj) {
+  removeLoopDetectors() {
     if (!this.detectLoops) {
       return false
     }
-    return Encoder.removeLoopDetectors(obj, this.detectLoops)
-  }
-
-  /**
-   * Remove all of the loop detector additions to the given object.
-   * The static version is easier to call when you don't have a full
-   * encoder instance available; it uses a good heuristic to figure
-   * out the loop detector symbol.
-   *
-   * @param {Object} obj - object to clean
-   * @param {Symbol} [detector=null] - the symbol to clean, or null
-   *   to use the first detected symbol
-   * @returns {boolean} - true when the object was cleaned, else false
-   */
-  static removeLoopDetectors(obj, detector=null) {
-    if ((typeof(obj) !== 'object') || !obj) {
-      return false
-    }
-    const dl = obj[LOOP_DETECT]
-    if (!dl) {
-      // ironically, use loop marking to detect loops on removal as well
-      return false
-    }
-    if (detector == null) {
-      detector = dl
-    } else {
-      if (detector !== dl) {
-        return false
-      }
-    }
-    delete obj[LOOP_DETECT]
-    if (Array.isArray(obj)) {
-      for (const i of obj) {
-        this.removeLoopDetectors(i, detector)
-      }
-    } else {
-      for (const k in obj) {
-        this.removeLoopDetectors(obj[k], detector)
-      }
-    }
+    this.detectLoops = new WeakSet()
     return true
   }
 
@@ -672,10 +632,12 @@ class Encoder extends stream.Transform {
     if (!opts.indefinite) {
       // this will only happen the first time through for indefinite encoding
       if (this.detectLoops) {
-        if (obj[LOOP_DETECT] === this.detectLoops) {
-          throw new Error('Loop detected while CBOR encoding')
+        if (this.detectLoops.has(obj)) {
+          throw new Error(`\
+Loop detected while CBOR encoding.
+Call removeLoopDetectors before resuming.`)
         } else {
-          obj[LOOP_DETECT] = this.detectLoops
+          this.detectLoops.add(obj)
         }
       }
     }
@@ -731,6 +693,8 @@ class Encoder extends stream.Transform {
       if (!this.push(BREAK)) {
         return false
       }
+    } else if (this.detectLoops) {
+      this.detectLoops.delete(obj)
     }
     return true
   }
