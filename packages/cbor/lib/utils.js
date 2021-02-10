@@ -11,14 +11,13 @@ const MAX_SAFE_HIGH = 0x1fffff
 let util = null
 try {
   util = require('util')
-} catch {
-  try {
-    util = require('node-inspect-extracted')
-  } catch {
-    // ignored
-  }
+} catch (ignored) {
+  // polyfill node-inspect-extracted in, if you're on the web
 }
-exports.inspect = util ? util.inspect : null
+// I don't think the else is possible in node.  The normal
+// methods of causing require('util') to fail don't work with
+// internal packages.
+exports.inspect = util ? util.inspect : /* istanbul ignore next */ null
 
 /**
  * Convert a UTF8-encoded Buffer to a JS string.  If possible, throw an error

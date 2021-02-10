@@ -15,15 +15,15 @@ test('create', t => {
 
 test('edges', t => {
   t.throws(() => {
-    new cbor.Tagged(-11, 'one') // eslint-disable-line
+    new cbor.Tagged(-11, 'one')
   })
 
   t.throws(() => {
-    new cbor.Tagged(1.1, 'one') // eslint-disable-line
+    new cbor.Tagged(1.1, 'one')
   })
 
   t.throws(() => {
-    new cbor.Tagged('zero', 'one') // eslint-disable-line
+    new cbor.Tagged('zero', 'one')
   })
 })
 
@@ -46,6 +46,9 @@ test('tag 21', t => {
   t.is(JSON.stringify(tag), '{"tag":21,"value":[{"a":"Zg=="}]}')
   tag = new cbor.Tagged(21, 12).convert()
   t.is(JSON.stringify(tag), '{"tag":21,"value":12}')
+
+  tag = new cbor.Tagged(1, 2, 'this is an error')
+  t.is(JSON.stringify(tag), '{"tag":1,"value":2,"err":"this is an error"}')
 })
 
 test('tag 22', t => {
@@ -100,4 +103,21 @@ test('tag 34', t => {
   t.falsy(tag.err)
   tag = new cbor.Tagged(34, 'AAAA').convert()
   t.falsy(tag.err)
+})
+
+test('converters', t => {
+  let res = new cbor.Tagged(1, 1).convert({
+    1() {
+      throw new Error()
+    }
+  })
+  t.truthy(res.err instanceof Error)
+  res = new cbor.Tagged(1, 1).convert({
+    1() {
+      const e = new Error()
+      delete e.message
+      throw e
+    }
+  })
+  t.truthy(res.err instanceof Error)
 })

@@ -7,7 +7,7 @@
     "type": "git",
     "url": "http://github.com/hildjj/node-cbor.git"
   },
-  "homepage": "http://hildjj.github.io/node-cbor/",
+  "homepage": "https://github.com/hildjj/node-cbor/tree/master/packages/cbor",
   "directories": {
     "lib": "lib"
   },
@@ -63,7 +63,7 @@
     "garbage": "~0.0.0",
     "jsdoc": "^3.6.6",
     "minami": "*",
-    "typescript": "^4.1.3"
+    "typescript": "^4.1.4"
   },
   "license": "MIT",
   "readmeFilename": "README.md",

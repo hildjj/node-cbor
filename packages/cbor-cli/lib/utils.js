@@ -36,7 +36,8 @@ exports.streamFiles = function streamFiles(files, streamFunc, cb) {
   if (!f) {
     return cb()
   }
-  const sf = streamFunc()
+  const sf = streamFunc(f)
+  // go to the next file
   sf.on('end', () => exports.streamFiles(files, streamFunc, cb))
   sf.on('error', cb)
   const s = (f === '-') ?

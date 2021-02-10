@@ -24,18 +24,10 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install, production
+      - name: Yarn cache
+        uses: c-hive/gha-yarn-cache@v1
+      - name: Install
         run: yarn install --no-progress --no-lockfile
-        env:
-          NODE_ENV: production
-      - name: Install test tools
-        run: npm install --no-save ava nyc
-      - name: Install cbor test tools
-        run: npm install --no-save garbage bignumber.js
-        working-directory: ./packages/cbor
-      - name: Install cli test tools
-        run: npm install --no-save mock-stdio nofilter
-        working-directory: ./packages/cbor-cli
       - name: Test ${{ matrix.node-version }}
         run: npm run coverage
       - name: Coveralls Parallel
@@ -46,7 +38,7 @@ jobs:
           parallel: true
   finish:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Coveralls Finished
         uses: coverallsapp/github-action@master

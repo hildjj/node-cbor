@@ -6,12 +6,14 @@
     "type": "git",
     "url": "http://github.com/hildjj/node-cbor.git"
   },
-  "homepage": "https://github.com/hildjj/node-cbor/tree/master/cli",
+  "homepage": "https://github.com/hildjj/node-cbor/tree/master/packages/cbor-cli",
   "bin": {
     "cbor": "bin/cbor.js",
     "cbor2comment": "bin/cbor2comment.js",
     "cbor2diag": "bin/cbor2diag.js",
+    "cbor2js": "bin/cbor2js.js",
     "cbor2json": "bin/cbor2json.js",
+    "js2cbor": "bin/js2cbor.js",
     "json2cbor": "bin/json2cbor.js"
   },
   "directories": {
@@ -49,7 +51,7 @@
     "bignumber.js": "^9.0.1",
     "cbor": "^6.0.1",
     "commander": "^7.0.0",
-    "json-text-sequence": "^0.1"
+    "json-text-sequence": "^0.2.0"
   },
   "engines": {
     "node": ">=6.0.0"
