@@ -289,6 +289,7 @@ const B64URL_SWAPS = {
 
 /**
  * @param {Buffer} buf - Buffer to convert
+ * @private
  */
 exports.base64url = function base64url(buf) {
   return buf.toString('base64').replace(/[=+/]/g, (c) => B64URL_SWAPS[c])

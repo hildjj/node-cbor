@@ -27,6 +27,7 @@ const LOOP_DETECT = Symbol('CBOR_LOOP_DETECT')
 /**
  * @param {string} str
  * @returns {"number"|"float"|"int"|"string"}
+ * @private
  */
 function parseDateType(str) {
   if (!str) {

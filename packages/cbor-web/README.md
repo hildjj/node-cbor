@@ -13,6 +13,10 @@ need your own version of
 [bignumber.js](https://github.com/MikeMcl/bignumber.js).  Decoding `c4820a0a`
 (hex) will give you a BigNumber if you have everything installed correctly.
 
+## Examples
+
+You can see `cbor-web` in action on the web [here](https://hildjj.github.io/node-cbor/example/).
+
 ## Ways to use this
 
  - you can load this in a script tag, which puts a `cbor` property on the
