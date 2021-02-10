@@ -140,7 +140,7 @@ test('cbor', async t => {
   console.log('cli VERSION:', buf)
   t.regex(buf,
     // eslint-disable-next-line max-len
-    /^cbor v[0-9.]*(#\S+)? \(javascript output from typing 0x00\)\ncbor> true\n0xf5\ncbor> $/)
+    /^cbor v[0-9.]*(#\S*)? \(javascript output from typing 0x00\)\ncbor> true\n0xf5\ncbor> $/)
 
   await t.throwsAsync(() => exec(t.title, {
     args: ['-t', 'foo'],
