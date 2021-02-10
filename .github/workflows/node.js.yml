@@ -24,8 +24,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Yarn cache
-        uses: c-hive/gha-yarn-cache@v1
       - name: Install
         run: yarn install --no-progress --no-lockfile
       - name: Test ${{ matrix.node-version }}
