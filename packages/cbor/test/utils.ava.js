@@ -1,7 +1,6 @@
 'use strict'
 
 const test = require('ava')
-const cases = require('./cases')
 const constants = require('../lib/constants')
 const utils = require('../lib/utils')
 const { hex, bin } = utils
@@ -110,10 +109,4 @@ test('cborValueToString', t => {
   t.is(utils.cborValueToString(Symbol('foo')), 'foo')
   t.is(utils.cborValueToString(Symbol('')), 'Symbol')
   t.is(utils.cborValueToString(new constants.BigNumber(-4)), '-4')
-})
-
-test('web util', async t => {
-  cases.requireWithFailedDependency('../lib/utils', 'util', utils => {
-    t.falsy(utils.inspect)
-  })
 })

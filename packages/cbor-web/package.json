@@ -9,10 +9,23 @@
   "keywords": [],
   "author": "Joe Hildebrand <joe-github@cursive.net>",
   "license": "MIT",
+  "homepage": "https://github.com/hildjj/node-cbor/tree/master/packages/cbor-web",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/hildjj/node-cbor.git"
+  },
+  "peerDependencies": {
+    "bignumber.js": "^9.0.1"
+  },
+  "peerDependenciesMeta": {
+    "bignumber.js": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "buffer": "^6.0.3",
     "cbor": "*",
-    "node-inspect-extracted": "^1.0.2",
+    "node-inspect-extracted": "^1.0.3",
     "nofilter": "^2.0.0",
     "process": "^0.11.10",
     "stream-browserify": "^3.0.0",

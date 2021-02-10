@@ -7,12 +7,11 @@
     "build": "node build.js",
     "deploy": "ls dist/* | xargs -I {} cp {} ../../docs/example"
   },
-  "keywords": [],
   "author": "Joe Hildebrand <joe-github@cursive.net>",
-  "license": "MPL-2.0",
+  "license": "MIT",
   "devDependencies": {
     "bignumber.js": "^9.0.1",
     "cbor-web": "*",
-    "node-inspect-extracted": "^1.0.2"
+    "node-inspect-extracted": "^1.0.3"
   }
 }

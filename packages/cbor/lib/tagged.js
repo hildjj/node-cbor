@@ -107,7 +107,7 @@ class Tagged {
     try {
       return f.call(this, this.value)
     } catch (error) {
-      if (error && error.message) {
+      if (error && error.message && (error.message.length > 0)) {
         this.err = error.message
       } else {
         this.err = error

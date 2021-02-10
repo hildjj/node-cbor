@@ -17,7 +17,7 @@
     "yi": "yarn install --no-lockfile",
     "build": "pnpm -r build",
     "coverage": "nyc -r lcov npm test",
-    "predeploy": "rm -rf docs/example && mkdir -p docs/example",
+    "predeploy": "rm -rf docs/example && mkdir -p docs/example && (cd packages/cbor-web; npm run build)",
     "deploy": "pnpm -r deploy"
   },
   "dependencies": {

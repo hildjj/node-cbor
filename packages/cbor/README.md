@@ -1,30 +1,34 @@
-cbor
-====
+# cbor
 
 Encode and parse data in the Concise Binary Object Representation (CBOR) data format ([RFC7049](http://tools.ietf.org/html/rfc7049)).
 
-Supported Node.js versions
---------------------------
+## Supported Node.js versions
 
-This project now only supports versions of Node that the Node team is [currently supporting](https://github.com/nodejs/Release#release-schedule).  Ava's [support statement](https://github.com/avajs/ava/blob/master/docs/support-statement.md) is what we will be using as well.  Currently, that means Node `10`+ is required.  If you need to support an older version of Node (back to version 6), use cbor version 5.2.x, which will get nothing but security updates from here on out.
+This project now only supports versions of Node that the Node team is
+[currently supporting](https://github.com/nodejs/Release#release-schedule).
+Ava's [support
+statement](https://github.com/avajs/ava/blob/master/docs/support-statement.md)
+is what we will be using as well.  Currently, that means Node `10`+ is
+required.  If you need to support an older version of Node (back to version
+6), use cbor version 5.2.x, which will get nothing but security updates from
+here on out.
 
-Installation:
-------------
+## Installation:
 
 ```bash
 $ npm install --save cbor
+# optional, if you need big floats or big decimals:
+$ npm install --save bignumber.js
 ```
 
 **NOTE**
-This package now requires node.js 8.3 or higher.  It will work on node.js 6, in
-a less-tested, less-featureful way.  Please start upgrading if it is possible
-for you.
+If you are going to use this on the web, use [cbor-web](../cbor-web) instead.
 
-Documentation:
--------------
+## Documentation:
+
 See the full API [documentation](http://hildjj.github.io/node-cbor/).
 
-For a command-line interface, see [cbor-cli](https://github.com/hildjj/node-cbor/tree/master/cli).
+For a command-line interface, see [cbor-cli](../cbor-cli).
 
 Example:
 ```javascript
@@ -117,22 +121,29 @@ The following types are supported for encoding:
 * Buffer
 * Date,
 * RegExp
-* url.URL
-* BigInt (If your JS version supports them)
-* [bignumber](https://github.com/MikeMcl/bignumber.js)
+* URL
+* TypedArrays, ArrayBuffer, DataView
+* Map, Set
+* BigInt
+* [bignumber](https://github.com/MikeMcl/bignumber.js) (If you install it.  It is needed for big float and big decimal types)
 
 Decoding supports the above types, including the following CBOR tag numbers:
 
-| Tag | Generated Type |
-|-----|----------------|
-| 0   | Date           |
-| 1   | Date           |
-| 2   | bignumber      |
-| 3   | bignumber      |
-| 4   | bignumber      |
-| 5   | bignumber      |
-| 32  | url.URL        |
-| 35  | RegExp         |
+| Tag | Generated Type      |
+|-----|---------------------|
+| 0   | Date                |
+| 1   | Date                |
+| 2   | BigInt              |
+| 3   | BigInt              |
+| 4   | bignumber           |
+| 5   | bignumber           |
+| 21  | Tagged, with toJSON |
+| 22  | Tagged, with toJSON |
+| 23  | Tagged, with toJSON |
+| 32  | URL                 |
+| 33  | Tagged              |
+| 34  | Tagged              |
+| 35  | RegExp              |
 
 ## Adding new Encoders
 
@@ -205,7 +216,12 @@ const d = new Decoder({tags: { 64000: (val) => {
 Developers
 ----------
 
-The tests for this package use a set of test vectors from RFC 7049 appendix A by importing a machine readable version of them from https://github.com/cbor/test-vectors. For these tests to work, you will need to use the command `git submodule update --init` after cloning or pulling this code.   See https://gist.github.com/gitaarik/8735255#file-git_submodules-md for more information.
+The tests for this package use a set of test vectors from RFC 7049 appendix A
+by importing a machine readable version of them from
+https://github.com/cbor/test-vectors. For these tests to work, you will need
+to use the command `git submodule update --init` after cloning or pulling this
+code.   See https://gist.github.com/gitaarik/8735255#file-git_submodules-md
+for more information.
 
 Get a list of build steps with `npm run`.  I use `npm run dev`, which rebuilds,
 runs tests, and refreshes a browser window with coverage metrics every time I

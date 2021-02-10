@@ -135,9 +135,12 @@ test('cbor', async t => {
       NODE_REPL_HISTORY: ''
     }
   })
+  // I might leave this in for a while to ensure that we're running the cbor
+  // version I think we should be in CI.
+  console.log('cli VERSION:', buf)
   t.regex(buf,
     // eslint-disable-next-line max-len
-    /^cbor v[0-9.]*(#.*)? \(javascript output from typing 0x00\)\ncbor> true\n0xf5\ncbor> $/)
+    /^cbor v[0-9.]*(#\S+)? \(javascript output from typing 0x00\)\ncbor> true\n0xf5\ncbor> $/)
 
   await t.throwsAsync(() => exec(t.title, {
     args: ['-t', 'foo'],
@@ -214,4 +217,43 @@ test('cbor', async t => {
     }
   })
   t.regex(buf, /Error: unexpected end of input/)
+})
+
+test('cbor2js', async t => {
+  let buf = await exec(t.title, {
+    stdin: Buffer.from('a16161f5', 'hex')
+  })
+  t.is(buf, '{\n  a: true\n}\n')
+  buf = await exec(t.title, {
+    args: ['-x', 'a16161f5', '-e']
+  })
+  t.is(buf, 'module.exports = {\n  a: true\n}\n')
+})
+
+test('js2cbor', async t => {
+  let buf = await exec(t.title, {
+    args: ['-x'],
+    stdin: 'module.exports = {\n  a: true\n}\n'
+  })
+  t.is(buf, 'a16161f5\n')
+  const fixture_files = [
+    {
+      name: 'object.js',
+      // eslint-disable-next-line max-len
+      result : 'a263666f6fc1fb41d808c21e2a5e35636261724e3031363132393038363634363632'
+    },
+    {
+      name: 'function.js',
+      // eslint-disable-next-line max-len
+      result: 'a363666f6fc1fb41d808c21e2a5e35636261724e30313631323930383636343636326466696c65826866697874757265736b66756e6374696f6e2e6a73'
+    }
+  ]
+  const fixtures = path.resolve(__dirname, 'fixtures')
+  for (const {name, result} of fixture_files) {
+    buf = await exec(t.title, {
+      args: [path.resolve(fixtures, name)],
+      encoding: 'hex'
+    })
+    t.is(buf, result)
+  }
 })
