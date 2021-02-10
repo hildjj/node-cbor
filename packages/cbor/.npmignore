@@ -30,3 +30,4 @@ webpack-demo/
 .github/
 examples/
 pnpm-lock.yaml
+.ncurc.js
