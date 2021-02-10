@@ -1,6 +1,6 @@
 {
   "name": "cbor-web",
-  "version": "6.0.1",
+  "version": "7.0.0",
   "description": "",
   "main": "dist/cbor.js",
   "scripts": {
@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "buffer": "^6.0.3",
-    "cbor": "*",
+    "cbor": "^7.0.0",
     "node-inspect-extracted": "^1.0.3",
     "nofilter": "^2.0.0",
     "process": "^0.11.10",
