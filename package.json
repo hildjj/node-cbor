@@ -14,6 +14,7 @@
     "clean": "rm -rf node_modules coverage .nyc_output packages/*/node_modules packages/*/coverage pacakges/*/.nyc_output",
     "install-local": "npm install --no-save $npm_package_config_devPackages",
     "install-global": "npm install -g $npm_package_config_devPackages",
+    "install-all": "pnpm install -r",
     "docs": "jsdoc -c .jsdoc.conf",
     "lint": "eslint packages/*/{src,lib,test,bin}/**.js",
     "test-all": "nve --continue --parallel 15,14,12,10 npm test",
