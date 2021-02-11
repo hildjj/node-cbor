@@ -18,6 +18,7 @@ module.exports = {
     'bignumber.js': 'BigNumber'
   },
   resolve: {
+    symlinks: false,
     fallback: {
       stream: 'stream-browserify',
       util: 'node-inspect-extracted'

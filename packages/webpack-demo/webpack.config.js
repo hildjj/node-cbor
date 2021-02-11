@@ -12,8 +12,16 @@ module.exports = {
   mode: 'development',
   target: 'web',
 
+  // this will be loaded from the .html file in a <script> tag
   externals: {
     'BigNumber': true
+  },
+
+  resolve: {
+    // this causes things to work in a pnpm repo (with symlinks),
+    // but means that the full set of dependencies of all dependencies
+    // needs to be listed in package.json.
+    symlinks: false
   },
 
   plugins: [
