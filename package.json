@@ -23,7 +23,8 @@
     "build": "pnpm -r build",
     "coverage": "nyc -r lcov npm test",
     "predeploy": "rm -rf docs/example/* && pnpm -r --filter cbor-web build",
-    "deploy": "pnpm -r deploy"
+    "deploy": "pnpm -r deploy",
+    "prune": "pnpm store prune"
   },
   "config": {
     "devPackages": "pnpm lerna eslint jsdoc light-server webpack webpack-cli parcel-bundler nve"

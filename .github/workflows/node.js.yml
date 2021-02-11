@@ -42,7 +42,7 @@ jobs:
       - name: Test ${{ matrix.node-version }}
         run: npm run coverage
       - name: clean pnpm store
-        run: pnpm store prune
+        run: npm run prune
       - name: Coveralls Parallel
         uses: coverallsapp/github-action@master
         with:
