@@ -12,14 +12,20 @@
   ],
   "scripts": {
     "clean": "rm -rf node_modules coverage .nyc_output packages/*/node_modules packages/*/coverage pacakges/*/.nyc_output",
+    "install-local": "npm install --no-save $npm_package_config_devPackages",
+    "install-global": "npm install -g $npm_package_config_devPackages",
     "docs": "jsdoc -c .jsdoc.conf",
     "lint": "eslint packages/*/{src,lib,test,bin}/**.js",
+    "test-all": "nve --continue --parallel 15,14,12,10 npm test",
+    "coverage-all": "nyc -r lcov npm run test-all",
     "test": "ava packages/*/test/*.ava.js",
-    "yi": "yarn install --no-lockfile",
     "build": "pnpm -r build",
     "coverage": "nyc -r lcov npm test",
-    "predeploy": "rm -rf docs/example && mkdir -p docs/example && (cd packages/cbor-web; npm run build)",
+    "predeploy": "rm -rf docs/example/* && pnpm -r --filter cbor-web build",
     "deploy": "pnpm -r deploy"
+  },
+  "config": {
+    "devPackages": "pnpm lerna eslint jsdoc light-server webpack webpack-cli parcel-bundler nve"
   },
   "dependencies": {
     "nofilter": "^2.0.0"
@@ -34,10 +40,6 @@
   },
   "devDependencies": {
     "ava": "^3.15.0",
-    "eslint": "^7.19.0",
-    "jsdoc": "^3.6.6",
-    "lerna": "^3.22.1",
-    "light-server": "^2.9.1",
     "minami": "*",
     "nyc": "^15.1.0"
   },

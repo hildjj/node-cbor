@@ -19,13 +19,13 @@ This is a monorepo that holds a few related packages:
 
 ## Tooling
 
- - Install with `npm run yi`, which uses yarn.  I'm doing that because a modern
-   version of yarn is available on all of the node versions in GitHub Actions.
-   Once all of the node versions I'm supporting have npm 7+, that will
-   probably work with some small tweaks.  The important thing (for example) is
-   that the `cbor-cli` package ends up depending on the local version of
-   `cbor`.
+ - Install with `pnpm install -r`, [see](https://pnpm.js.org/).  The important
+   thing (for example) is that the `cbor-cli` package ends up depending on the
+   local version of `cbor`.
  - monorepo-wide scripts:
+   - `install-global` (make available everywhere) or `install-local` (use
+     `npx` if you want to us it outside a package script) install all of the
+     tooling that might be needed locally, but isn't needed on CI
    - `deploy`: build and deploy `cbor-web` and all of the actions
    - `coverage`: run tests and report coverage; look in `coverage/lcov-report/index.html`.
    - `lint`: run eslint over all projects

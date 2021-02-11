@@ -18,7 +18,6 @@
     "cbor-web": "^7.0.0",
     "cssnano": "^4.1.10",
     "node-inspect-extracted": "*",
-    "parcel-bundler": "^1.12.4",
     "regenerator-runtime": "^0.13.7"
   },
   "alias": {
