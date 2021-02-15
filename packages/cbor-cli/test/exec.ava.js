@@ -4,6 +4,7 @@ const test = require('ava')
 const { spawn } = require('child_process')
 const path = require('path')
 const pkg = require('../package.json')
+const { Buffer } = require('buffer') // not the mangled version
 
 function exec(bin, opts = {}) {
   opts = {
@@ -56,7 +57,8 @@ test('json2cbor', async t => {
     stdin: `{
   "foo": false,
   "bar": -1
-}`})
+}`
+  })
   t.deepEqual(buf, 'a2636261722063666f6ff4\n')
   const pf = path.join(__dirname, '..', 'package.json')
   buf = await exec('json2cbor', {
@@ -118,8 +120,10 @@ test('cbor2comment', async t => {
 `)
   buf = await exec(t.title, {
     args: [
-      '--tabsize', '14',
-      '-x', 'c100']
+      '--tabsize',
+      '14',
+      '-x',
+      'c100']
   })
   t.deepEqual(buf, `\
   c1                        -- Tag #1
@@ -236,11 +240,11 @@ test('js2cbor', async t => {
     stdin: 'module.exports = {\n  a: true\n}\n'
   })
   t.is(buf, 'a16161f5\n')
-  const fixture_files = [
+  const fixtureFiles = [
     {
       name: 'object.js',
       // eslint-disable-next-line max-len
-      result : 'a263666f6fc1fb41d808c21e2a5e35636261724e3031363132393038363634363632'
+      result: 'a263666f6fc1fb41d808c21e2a5e35636261724e3031363132393038363634363632'
     },
     {
       name: 'function.js',
@@ -249,7 +253,7 @@ test('js2cbor', async t => {
     }
   ]
   const fixtures = path.resolve(__dirname, 'fixtures')
-  for (const {name, result} of fixture_files) {
+  for (const {name, result} of fixtureFiles) {
     buf = await exec(t.title, {
       args: [path.resolve(fixtures, name)],
       encoding: 'hex'

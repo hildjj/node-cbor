@@ -2,9 +2,10 @@
 
 // Data to fill out:
 // https://github.com/cbor-wg/CBORbis/wiki/Implementation-matrix
-const cbor = require('..')
+const cbor = require(process.env.CBOR_PACKAGE || '../')
 const concordance = require('concordance')
 const {BigNumber} = cbor
+const Buffer = cbor.encode(0).constructor
 
 const all = [
   ['Major type 0 (uint)', 1, '01'],
@@ -21,7 +22,8 @@ const all = [
   ['Indefinite length array/map', [], '9fff'],
   ['Indefinite length string', 'streaming', '7f657374726561646d696e67ff'],
   ['Canonical CBOR', {b: 1, a: 2}, 'a2616102616201', true], // note: re-ordering
-  ['Tag 0', new Date(1500000000000), // 2017-07-14T02:40:00.000Z
+  ['Tag 0',
+    new Date(1500000000000), // 2017-07-14T02:40:00.000Z
     'c07818323031372d30372d31345430323a34303a30302e3030305a'],
   ['Tag 1', new Date(1500000000000), 'c11a59682f00'],
   ['Tag 2', new BigNumber('18446744073709551616'), 'c249010000000000000000'],
@@ -34,7 +36,8 @@ const all = [
   ['Tag 23', 0, ''],
   // this one is only useful in certain circumstances
   ['Tag 24', 0, ''],
-  ['Tag 32', new URL('https://mozilla.com/'),
+  ['Tag 32',
+    new URL('https://mozilla.com/'),
     'd8207468747470733a2f2f6d6f7a696c6c612e636f6d2f'],
   ['Tag 33', 0, ''],
   ['Tag 34', 0, ''],
@@ -42,13 +45,6 @@ const all = [
   ['Tag 36', 0, ''],
   ['Tag 55799', 0, '']
 ]
-
-let addedPad = false
-
-if (typeof String.prototype.padEnd != 'function') {
-  String.prototype.padEnd = () => this
-  addedPad = true
-}
 
 function deepEqual(actual, expected) {
   const ret = concordance.compare(actual, expected)
@@ -58,28 +54,26 @@ function deepEqual(actual, expected) {
 function markdownOut(title, decode, encode) {
   const DE = (decode ? 'D' : ' ') + (encode ? 'E' : ' ')
   console.log(
-    `| ${title.padEnd(28)}|          | ${DE}        |           |       |`)
+    `| ${title.padEnd(28)}|          | ${DE}        |           |       |`
+  )
 }
 
 function test(title, native, encoded, canonical) {
   if (encoded.length > 0) {
     const e = !!canonical ?
-      cbor.Encoder.encodeCanonical(native) : cbor.encode(native)
+      cbor.Encoder.encodeCanonical(native) :
+      cbor.encode(native)
     const d = cbor.decodeFirstSync(encoded)
     markdownOut(
       title,
       deepEqual(native, d),
-      deepEqual(e, Buffer.from(encoded, 'hex')))
+      deepEqual(e, Buffer.from(encoded, 'hex'))
+    )
   } else {
     markdownOut(title)
   }
 }
 
 for (const t of all) {
-  test.apply(null, t)
-}
-
-// don't leave String modified
-if (addedPad) {
-  String.prototype.padEnd = null
+  test(...t)
 }

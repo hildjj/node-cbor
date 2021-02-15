@@ -2,14 +2,13 @@
 
 const constants = require('./constants')
 const utils = require('./utils')
-const { Buffer } = require('buffer')
 
 function setBuffersToJSON(obj, fn) {
   // The data item tagged can be a byte string or any other data item.  In the
   // latter case, the tag applies to all of the byte string data items
   // contained in the data item, except for those contained in a nested data
   // item tagged with an expected conversion.
-  if (Buffer.isBuffer(obj)) {
+  if (utils.isBufferish(obj)) {
     obj.toJSON = fn
   } else if (Array.isArray(obj)) {
     for (const v of obj) {
@@ -32,7 +31,6 @@ const INTERNAL_JSON = Symbol('INTERNAL_JSON')
  * be an extension point you're not yet expecting.
  */
 class Tagged {
-
   /**
    * Creates an instance of Tagged.
    *
@@ -97,7 +95,7 @@ class Tagged {
    * @returns {any} - the converted item
    */
   convert(converters) {
-    let f = converters != null ? converters[this.tag] : void 0
+    let f = converters != null ? converters[this.tag] : undefined
     if (typeof f !== 'function') {
       f = Tagged['_tag_' + this.tag]
       if (typeof f !== 'function') {
@@ -157,10 +155,11 @@ class Tagged {
 
   // Expected conversion to base64url encoding; see Section 3.4.5.2
   static _tag_21(v) {
-    if (Buffer.isBuffer(v)) {
+    if (utils.isBufferish(v)) {
       this[INTERNAL_JSON] = () => utils.base64url(v)
     } else {
-      setBuffersToJSON(v, function() { // no =>, honor `this`
+      setBuffersToJSON(v, function b64urlThis() { // no =>, honor `this`
+        // eslint-disable-next-line no-invalid-this
         return utils.base64url(this)
       })
     }
@@ -169,11 +168,12 @@ class Tagged {
 
   // Expected conversion to base64 encoding; see Section 3.4.5.2
   static _tag_22(v) {
-    if (Buffer.isBuffer(v)) {
-      this[INTERNAL_JSON] = () => v.toString('base64')
+    if (utils.isBufferish(v)) {
+      this[INTERNAL_JSON] = () => utils.base64(v)
     } else {
-      setBuffersToJSON(v, function() { // no =>, honor `this`
-        return this.toString('base64')
+      setBuffersToJSON(v, function b64this() { // no =>, honor `this`
+        // eslint-disable-next-line no-invalid-this
+        return utils.base64(this)
       })
     }
     return this
@@ -181,10 +181,11 @@ class Tagged {
 
   // Expected conversion to base16 encoding; see Section Section 3.4.5.2
   static _tag_23(v) {
-    if (Buffer.isBuffer(v)) {
+    if (utils.isBufferish(v)) {
       this[INTERNAL_JSON] = () => v.toString('hex')
     } else {
-      setBuffersToJSON(v, function() { // no =>, honor `this`
+      setBuffersToJSON(v, function hexThis() { // no =>, honor `this`
+      // eslint-disable-next-line no-invalid-this
         return this.toString('hex')
       })
     }
@@ -213,12 +214,12 @@ class Tagged {
     // -  the padding bits in a 2- or 3-character block are not 0, or
     if (last === 2) {
       // The last 4 bits of the last character need to be zero.
-      if ('AQgw'.indexOf(v[v.length-1]) === -1) {
+      if ('AQgw'.indexOf(v[v.length - 1]) === -1) {
         throw new Error('Invalid base64 padding')
       }
     } else if (last === 3) {
       // The last 2 bits of the last character need to be zero.
-      if ('AEIMQUYcgkosw048'.indexOf(v[v.length-1]) === -1) {
+      if ('AEIMQUYcgkosw048'.indexOf(v[v.length - 1]) === -1) {
         throw new Error('Invalid base64 padding')
       }
     }
@@ -248,12 +249,12 @@ class Tagged {
     // -  the padding bits in a 2- or 3-character block are not 0, or
     if (m[1] === '=') {
       // The last 4 bits of the last character need to be zero.
-      if ('AQgw'.indexOf(v[v.length-2]) === -1) {
+      if ('AQgw'.indexOf(v[v.length - 2]) === -1) {
         throw new Error('Invalid base64 padding')
       }
     } else if (m[1] === '==') {
       // The last 2 bits of the last character need to be zero.
-      if ('AEIMQUYcgkosw048'.indexOf(v[v.length-3]) === -1) {
+      if ('AEIMQUYcgkosw048'.indexOf(v[v.length - 3]) === -1) {
         throw new Error('Invalid base64 padding')
       }
     }

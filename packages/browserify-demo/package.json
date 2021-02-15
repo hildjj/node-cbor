@@ -9,6 +9,11 @@
     "deploy": "cp dist/* ../../docs/example",
     "predeploy": "npm run build"
   },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/hildjj/node-cbor.git",
+    "directory": "packages/browserify-demo"
+  },
   "keywords": [],
   "author": "Joe Hildebrand <joe-github@cursive.net>",
   "license": "MIT",

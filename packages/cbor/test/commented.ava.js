@@ -1,10 +1,11 @@
 'use strict'
 
-const cbor = require('../')
+const cbor = require(process.env.CBOR_PACKAGE || '../')
 const test = require('ava')
 const cases = require('./cases')
 const streams = require('./streams')
-const NoFilter = require('nofilter')
+// use mangled version
+const NoFilter = new cbor.Commented().all.constructor
 
 function testAll(t, list) {
   t.plan(list.length)
@@ -17,7 +18,8 @@ function testAll(t, list) {
 function failAll(t, list) {
   t.plan(list.length)
   return Promise.all(list.map(c => t.throwsAsync(
-    cbor.comment(cases.toBuffer(c)))))
+    cbor.comment(cases.toBuffer(c))
+  )))
 }
 
 test('good', t => testAll(t, cases.good))
@@ -34,7 +36,6 @@ test('input_errors', async t => {
   })
   await t.throwsAsync(cbor.comment('d8184181'))
   t.is(await cbor.comment('', null), '')
-
 })
 
 test.cb('max_depth', t => {
@@ -61,7 +62,7 @@ test.cb('stream', t => {
 `)
     t.end()
   })
-  parser.on('error', (er) => t.fail(er))
+  parser.on('error', er => t.fail(er))
 
   const h = new streams.DeHexStream('6161')
   h.pipe(parser)
@@ -76,7 +77,8 @@ test.cb('function', t => {
 test('inputs', async t => {
   let c = await cbor.comment(
     'mB4AAQIDBAUGBwgJAAECAwQFBgcICQABAgMEBQYHCAk=',
-    'base64')
+    'base64'
+  )
   t.deepEqual('\n' + c, `
   98                -- Array, length next 1 byte
     1e              -- Array, 30 items
@@ -129,7 +131,7 @@ test('inputs', async t => {
 `)
 })
 
-test('options', async t => {
+test('options', t => {
   function newTag24() {}
   const c = new cbor.Commented({
     tags: {

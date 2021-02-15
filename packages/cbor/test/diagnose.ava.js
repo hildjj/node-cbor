@@ -1,9 +1,11 @@
 'use strict'
 
-const NoFilter = require('nofilter')
-const cbor = require('../')
+const cbor = require(process.env.CBOR_PACKAGE || '../')
 const test = require('ava')
 const cases = require('./cases')
+// use mangled versions
+const Buffer = cbor.encode(0).constructor
+const NoFilter = new cbor.Commented().all.constructor
 
 function testAll(t, list) {
   t.plan(list.length)
@@ -18,7 +20,8 @@ function testAll(t, list) {
 function failAll(t, list) {
   t.plan(list.length)
   return Promise.all(list.map(c => t.throwsAsync(
-    cbor.diagnose(cases.toBuffer(c)))))
+    cbor.diagnose(cases.toBuffer(c))
+  )))
 }
 
 test('diagnose', t => testAll(t, cases.good))
@@ -48,7 +51,7 @@ test.cb('stream', t => {
     t.is(bs.toString('utf8'), '1-')
     t.end()
   })
-  dt.on('error', (er) => t.falsy(er))
+  dt.on('error', er => t.falsy(er))
   dt.pipe(bs)
   dt.end(Buffer.from('01', 'hex'))
 })
@@ -61,11 +64,11 @@ test.cb('inputs', t => {
     t.falsy(er)
     t.truthy(d)
     cbor.diagnose('AQ==', {encoding: 'base64'})
-      .then((d) => {
-        t.truthy(d)
-        cbor.diagnose('AQ==', {encoding: 'base64'}, (er, d) => {
-          t.falsy(er)
-          t.truthy(d)
+      .then(d2 => {
+        t.truthy(d2)
+        cbor.diagnose('AQ==', {encoding: 'base64'}, (er2, d3) => {
+          t.falsy(er2)
+          t.truthy(d3)
           t.end()
         })
       })

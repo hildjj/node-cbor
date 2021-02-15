@@ -3,8 +3,7 @@
 const { Buffer } = require('buffer')
 const encoder = require('./encoder')
 const decoder = require('./decoder')
-const constants = require('./constants')
-const MT = constants.MT
+const { MT } = require('./constants')
 
 /**
  * Wrapper around a JavaScript Map object that allows the keys to be
@@ -156,7 +155,7 @@ class CborMap extends Map {
     }
     if (gen.canonical) {
       const entries = Array.from(super.entries())
-        .map((kv) => [Buffer.from(kv[0], 'base64'), kv[1]])
+        .map(kv => [Buffer.from(kv[0], 'base64'), kv[1]])
       entries.sort((a, b) => a[0].compare(b[0]))
       for (const kv of entries) {
         if (!(gen.push(kv[0]) && gen.pushAny(kv[1]))) {

@@ -11,6 +11,11 @@
   "keywords": [],
   "author": "Joe Hildebrand <joe-github@cursive.net>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/hildjj/node-cbor.git",
+    "directory": "packages/webpack-demo"
+  },
   "devDependencies": {
     "base64-js": "^1.5.1",
     "bignumber.js": "^9.0.1",

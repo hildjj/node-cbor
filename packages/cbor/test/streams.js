@@ -1,6 +1,8 @@
 'use strict'
 
 const stream = require('stream')
+const cbor = require(process.env.CBOR_PACKAGE || '../')
+const Buffer = cbor.encode(0).constructor
 
 exports.DeHexStream = class DeHexStream extends stream.Readable {
   constructor(hex) {

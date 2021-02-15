@@ -9,27 +9,27 @@ const cbor = require('cbor')
 const commander = require('commander')
 const pkg = require('../package.json')
 const HEX = /^\s*(?:['"`]|0x)([0-9a-f]+)\s*$/
-const program = commander.program
 const OUTPUT_TYPES = {
-  'comment': 'comment',
-  'c': 'comment',
-  'diagnose': 'diagnose',
-  'd': 'diagnose',
-  'diag': 'diagnose',
-  'javascript': 'javascript',
-  'js': 'javascript',
-  'j': 'javascript'
+  comment: 'comment',
+  c: 'comment',
+  diagnose: 'diagnose',
+  d: 'diagnose',
+  diag: 'diagnose',
+  javascript: 'javascript',
+  js: 'javascript',
+  j: 'javascript'
 }
 function outputType(val) {
   const norm = OUTPUT_TYPES[val]
   if (!norm) {
     throw new commander.InvalidOptionArgumentError(
-      'Not one of: ' + Object.keys(OUTPUT_TYPES).join(', '))
+      'Not one of: ' + Object.keys(OUTPUT_TYPES).join(', ')
+    )
   }
   return norm
 }
 
-const opts = program
+const opts = commander.program
   .version(pkg.version)
   .usage('[options]')
   .option('-c, --color', 'Force color output even if stdout is not a TTY')
@@ -37,7 +37,8 @@ const opts = program
     '-t, --type <type>',
     'Output type (one of: javascript, diagnose, comment)',
     outputType,
-    'javascript')
+    'javascript'
+  )
   .parse(process.argv)
   .opts()
 
@@ -48,7 +49,8 @@ const COLOR = process.stdout.isTTY || opts.color
 // `{node-cbor}/lib/cbor.js`
 const cborPath = path.resolve(path.dirname(require.resolve('cbor')), '..')
 const cborPkg = JSON.parse(
-  fs.readFileSync(path.join(cborPath, 'package.json'), 'utf8'))
+  fs.readFileSync(path.join(cborPath, 'package.json'), 'utf8')
+)
 let branch = ''
 try {
   // too hard to test both branches.
@@ -58,9 +60,12 @@ try {
       'git branch --show-current', {
         cwd: cborPath,
         encoding: 'utf8'
-      }).trimEnd()
+      }
+    ).trimEnd()
   }
-} catch (ignored) {}
+} catch (ignored) {
+  // no git repo
+}
 
 console.log(
   `cbor v${cborPkg.version}${branch} (${opts.type} output from typing 0x00)`
@@ -82,6 +87,7 @@ class PlainResults {
   constructor(str) {
     this.str = str
   }
+
   [util.inspect.custom](depth, options) {
     if (typeof this.str === 'string') {
       const m = this.str.match(/(.*)(0x[0-9a-f]+)\n$/msi)
@@ -126,42 +132,48 @@ cborRepl.eval = (cmd, context, filename, callback) => {
   if (m) {
     switch (opts.type) {
       case 'diagnose':
-        return cbor.diagnose(m[1], (er, txt) => {
+        cbor.diagnose(m[1], (er, txt) => {
           if (er) {
-            return callback(er)
+            callback(er)
+          } else {
+            callback(null, new PlainResults(txt))
           }
-          callback(null, new PlainResults(txt))
         })
+        return
       case 'comment':
-        return cbor.comment(m[1], (er, txt) => {
+        cbor.comment(m[1], (er, txt) => {
           if (er) {
-            return callback(er)
+            callback(er)
+          } else {
+            callback(null, new PlainResults(txt))
           }
-          callback(null, new PlainResults(txt))
         })
+        return
       case 'javascript':
-        return cbor.decodeFirst(m[1], (er, o) => {
+        cbor.decodeFirst(m[1], (er, o) => {
           if (er) {
-            return callback(er)
+            callback(er)
+          } else {
+            callback(null, new PlainResults(o))
           }
-          callback(null, new PlainResults(o))
         })
+        return
     }
-  } else {
-    originalEval(cmd, context, filename, (er, output) => {
-      // all bare promises just delay the results.  This probably
-      // would be bad if this was a system where Promises might last a
-      // long time; the command line would lock up while waiting.
-      if (!er && (output instanceof Promise)) {
-        console.log(stylizeWithColor('Promise', 'special'))
-        output.then(results => callback(null, results), callback)
-      } else {
-        callback(er, output)
-      }
-    })
   }
+  originalEval(cmd, context, filename, (er, output) => {
+    // all bare promises just delay the results.  This probably
+    // would be bad if this was a system where Promises might last a
+    // long time; the command line would lock up while waiting.
+    if (!er && (output instanceof Promise)) {
+      console.log(stylizeWithColor('Promise', 'special'))
+      output.then(results => callback(null, results), callback)
+    } else {
+      callback(er, output)
+    }
+  })
 }
-cborRepl.writer = (output) => {
+
+cborRepl.writer = output => {
   let str = repl.writer(output)
   if (!(output instanceof Error) &&
       !(output instanceof PlainResults)) {
@@ -170,8 +182,11 @@ cborRepl.writer = (output) => {
       const buf = cbor.encodeCanonical(output)
       str += stylizeWithColor(
         '\n0x' + buf.toString('hex'),
-        'special')
-    } catch (ignored) {}
+        'special'
+      )
+    } catch (ignored) {
+      // If it didn't work, oh well, we tried
+    }
   }
   return str
 }
@@ -196,7 +211,7 @@ cborRepl.writer = (output) => {
 // needed in node 11+
 /* istanbul ignore else */
 if (typeof cborRepl.setupHistory === 'function') {
-  cborRepl.setupHistory(process.env.NODE_REPL_HISTORY, (er) => {
+  cborRepl.setupHistory(process.env.NODE_REPL_HISTORY, er => {
     // No good way to get this to fire, even with bad permissions
     // or invalid file
     /* istanbul ignore if */

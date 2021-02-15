@@ -33,16 +33,12 @@ jobs:
           # pnpm cache files are stored in `~/.pnpm-store` on Linux/macOS
           path: ~/.pnpm-store
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.node-version }}
-          restore-keys: |
-            {{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.node-version }}
       - name: Install pnpm
-        run: npm install pnpm
-      - name: Install
-        run: npm run install-all
+        uses: pnpm/action-setup@v1.2.1
+        with:
+          run_install: true
       - name: Test ${{ matrix.node-version }}
         run: npm run coverage
-      - name: clean pnpm store
-        run: npm run prune
       - name: Coveralls Parallel
         uses: coverallsapp/github-action@master
         with:

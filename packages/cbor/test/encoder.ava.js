@@ -1,17 +1,20 @@
 'use strict'
 
-const cbor = require('../')
-const constants = require('../lib/constants')
+const cbor_src = process.env.CBOR_PACKAGE || '../'
+const cbor = require(cbor_src)
 const test = require('ava')
 const cases = require('./cases')
-const NoFilter = require('nofilter')
 const {BigNumber} = cbor
+// use mangled versions
+const Buffer = cbor.encode(0).constructor
+const NoFilter = new cbor.Commented().all.constructor
 
-function testAll(t, list, opts=undefined) {
+function testAll(t, list, opts = undefined) {
   t.plan(list.length)
-  return Promise.all(list.map(c => {
-    t.is(cbor.encodeOne(c[0], opts).toString('hex'), cases.toString(c), c[1])
-  }))
+  return list.every(({orig, diag, commented}) => {
+    t.is(cbor.encodeOne(orig, opts).toString('hex'), cases.toString(diag), diag)
+    return true
+  })
 }
 
 test('good', t => testAll(t, cases.good))
@@ -42,8 +45,8 @@ test('addSemanticType', t => {
   gen.write(tc)
   t.is(gen.read().toString('hex'), 'd9fffe63666f6f')
 
-  function hexPackBuffer(gen, obj, bufs) {
-    gen.write('0x' + obj.toString('hex'))
+  function hexPackBuffer(gen2, obj, bufs) {
+    gen2.write('0x' + obj.toString('hex'))
   // intentionally don't return
   }
 
@@ -124,7 +127,7 @@ test('_pushAny', t => {
   const bs = new NoFilter()
   enc.pipe(bs)
   enc._pushAny(0)
-  t.deepEqual(bs.read(), Buffer.from('00', 'hex'))
+  t.deepEqual(bs.read().toString('hex'), '00')
 })
 
 test('canonical', t => {
@@ -134,7 +137,7 @@ test('canonical', t => {
   enc.write(cases.goodMap)
   t.is(bs.read().toString('hex'),
     'ad0063626172613063666f6f616101616201626161026262620263616161036362626203806b656d7074792061727261798101656172726179a069656d707479206f626aa1613102636f626af6646e756c6c') // eslint-disable-line max-len
-  enc.write({aa: 2, b:1})
+  enc.write({aa: 2, b: 1})
   t.is(bs.read().toString('hex'),
     'a261620162616102')
 })
@@ -204,23 +207,28 @@ test('date types', t => {
 
   t.is(
     cbor.encodeOne(d, {dateType: 'number'}).toString('hex'),
-    'c11a5b169fe4')
+    'c11a5b169fe4'
+  )
 
   t.is(
     cbor.encodeOne(d, {dateType: null}).toString('hex'),
-    'c11a5b169fe4')
+    'c11a5b169fe4'
+  )
 
   t.is(
     cbor.encodeOne(d, {dateType: 'int'}).toString('hex'),
-    'c11a5b169fe4')
+    'c11a5b169fe4'
+  )
 
   t.is(
     cbor.encodeOne(d, {dateType: 'float'}).toString('hex'),
-    'c1fb41d6c5a7f9000000')
+    'c1fb41d6c5a7f9000000'
+  )
 
   t.is(
     cbor.encodeOne(d, {dateType: 'string'}).toString('hex'),
-    'c07818323031382d30362d30355431343a33363a32302e3030305a')
+    'c07818323031382d30362d30355431343a33363a32302e3030305a'
+  )
 })
 
 test('js BigInt', t => {
@@ -242,37 +250,48 @@ test('js BigInt collapse', t => {
 test('arraybuffer types', t => {
   t.is(
     cbor.encodeOne(Buffer.alloc(3)).toString('hex'),
-    '43000000')
+    '43000000'
+  )
   t.is(
     cbor.encodeOne(new Uint8Array(3)).toString('hex'),
-    '43000000')
+    '43000000'
+  )
   t.is(
     cbor.encodeOne(new Uint8ClampedArray(3)).toString('hex'),
-    '43000000')
+    '43000000'
+  )
   t.is(
     cbor.encodeOne(new ArrayBuffer(3)).toString('hex'),
-    '43000000')
+    '43000000'
+  )
   t.is(
     cbor.encodeOne(new Uint16Array(3)).toString('hex'),
-    '83000000')
+    '83000000'
+  )
   t.is(
     cbor.encodeOne(new Uint32Array(3)).toString('hex'),
-    '83000000')
+    '83000000'
+  )
   t.is(
     cbor.encodeOne(new Int8Array(3)).toString('hex'),
-    '83000000')
+    '83000000'
+  )
   t.is(
     cbor.encodeOne(new Int16Array(3)).toString('hex'),
-    '83000000')
+    '83000000'
+  )
   t.is(
     cbor.encodeOne(new Int32Array(3)).toString('hex'),
-    '83000000')
+    '83000000'
+  )
   t.is(
     cbor.encodeOne(new Float32Array(3)).toString('hex'),
-    '83fa00000000fa00000000fa00000000')
+    '83fa00000000fa00000000fa00000000'
+  )
   t.is(
     cbor.encodeOne(new Float64Array(3)).toString('hex'),
-    '83fb0000000000000000fb0000000000000000fb0000000000000000')
+    '83fb0000000000000000fb0000000000000000fb0000000000000000'
+  )
 
   cases.EncodeFailer.tryAll(t, new Float32Array(3))
   cases.EncodeFailer.tryAll(t, new Float64Array(3))
@@ -281,20 +300,21 @@ test('arraybuffer types', t => {
 test('encoding "undefined"', t => {
   t.is(cbor.encodeOne(undefined).toString('hex'), 'f7')
   t.is(cbor.encodeOne(undefined, {encodeUndefined: null}).toString('hex'), 'f6')
+  const undefStr = cbor.encode('undefined')
   t.is(cbor.encodeOne(undefined, {
-    encodeUndefined: Buffer.from('ff', 'hex')
-  }).toString('hex'), 'ff')
+    encodeUndefined: undefStr
+  }).toString('hex'), '69756e646566696e6564')
   t.throws(() => cbor.encodeOne(undefined, {encodeUndefined: () => {
     throw new Error('ha')
   }}))
   t.is(cbor.encodeOne(undefined, {
-    encodeUndefined: () => Buffer.from('ff', 'hex')
-  }).toString('hex'), '41ff')
+    encodeUndefined: () => undefStr
+  }).toString('hex'), '4a69756e646566696e6564')
   const m = new Map([[undefined, 1]])
-  t.throws(() => cbor.encodeOne(m, { 
-    disallowUndefinedKeys: true 
+  t.throws(() => cbor.encodeOne(m, {
+    disallowUndefinedKeys: true
   }))
-  t.throws(() => cbor.encodeOne(m, { 
+  t.throws(() => cbor.encodeOne(m, {
     disallowUndefinedKeys: true,
     canonical: true
   }))
@@ -307,7 +327,7 @@ test('URL', t => {
 
 test('big', async t => {
   const buf = Buffer.alloc(16385)
-  const bc = cbor.encodeOne([buf, buf], {highWaterMark:50000})
+  const bc = cbor.encodeOne([buf, buf], {highWaterMark: 50000})
   t.is(bc.length, 32777)
   const bd = await cbor.encodeAsync([buf, buf])
   t.is(bd.length, 32777)
@@ -315,9 +335,10 @@ test('big', async t => {
 
 class IndefiniteClass {
   encodeCBOR(gen) {
+    const b = Buffer.from('1234567890')
+    const buf = new Uint8Array(b.buffer, b.byteOffset, b.byteLength)
     return cbor.Encoder.encodeIndefinite(gen, '1234567890', { chunkSize: 3 }) &&
-      cbor.Encoder.encodeIndefinite(
-        gen, Buffer.from('1234567890'), { chunkSize: 3 }) &&
+      cbor.Encoder.encodeIndefinite(gen, buf, { chunkSize: 3 }) &&
       cbor.Encoder.encodeIndefinite(gen, this)
   }
 }
@@ -362,7 +383,7 @@ test('outside BigNumber', t => {
   t.is(BigNumber, BigNumber)
   t.not(bn, BigNumber)
   const a = bn(2)
-  const b = BigNumber(2)
+  const b = new BigNumber(2)
   t.truthy(a instanceof bn)
   t.truthy(b instanceof BigNumber)
   t.falsy(a instanceof BigNumber)
@@ -376,14 +397,16 @@ test('outside BigNumber', t => {
   require.cache[key] = old
 })
 
-test('no bignumber', t => {
-  const {BigNumber, BN} = constants
-  constants.BigNumber = null
-  delete constants.BN
+test('no bignumber', async t => {
+  await cases.withoutBigNumber(cbor_src, newCbor => {
+    const enc = new newCbor.Encoder()
+    t.falsy(enc.semanticTypes[BigNumber.name])
+  })
+})
 
-  const enc = new cbor.Encoder()
-  t.falsy(enc.semanticTypes[BigNumber.name])
-
-  constants.BigNumber = BigNumber
-  constants.BN = BN
+test.only('Buffers', t => {
+  // sanity checks for mangled library
+  const b = Buffer.from('0102', 'hex')
+  t.is(b.toString('hex'), '0102')
+  t.deepEqual(b, Buffer.from('0102', 'hex'))
 })

@@ -1,6 +1,6 @@
 'use strict'
 
-const cbor = require('../')
+const cbor = require(process.env.CBOR_PACKAGE || '../')
 const test = require('ava')
 const cases = require('./cases')
 

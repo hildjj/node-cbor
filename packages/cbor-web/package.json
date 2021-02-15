@@ -12,7 +12,8 @@
   "homepage": "https://github.com/hildjj/node-cbor/tree/master/packages/cbor-web",
   "repository": {
     "type": "git",
-    "url": "http://github.com/hildjj/node-cbor.git"
+    "url": "http://github.com/hildjj/node-cbor.git",
+    "directory": "packages/cbor-web"
   },
   "peerDependencies": {
     "bignumber.js": "^9.0.1"

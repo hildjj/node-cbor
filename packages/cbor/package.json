@@ -5,7 +5,8 @@
   "main": "./lib/cbor.js",
   "repository": {
     "type": "git",
-    "url": "http://github.com/hildjj/node-cbor.git"
+    "url": "http://github.com/hildjj/node-cbor.git",
+    "directory": "packages/cbor"
   },
   "homepage": "https://github.com/hildjj/node-cbor/tree/master/packages/cbor",
   "directories": {

@@ -10,9 +10,8 @@ const { Buffer } = require('buffer')
 function plural(c) {
   if (c > 1) {
     return 's'
-  } else {
-    return ''
   }
+  return ''
 }
 
 /**
@@ -76,19 +75,20 @@ class Commented extends stream.Transform {
    *
    * @param {CommentOptions} [options={}] - Stream options
    */
-  constructor(options={}) {
+  constructor(options = {}) {
     const {
-      depth=1,
-      max_depth=10,
-      no_summary=false,
+      depth = 1,
+      max_depth = 10,
+      no_summary = false,
       // decoder options
-      tags={},
+      tags = {},
       bigint,
       preferWeb,
       encoding,
       // stream.Transform options
       ...superOpts
     } = options
+
     super({
       ...superOpts,
       readableObjectMode: false,
@@ -125,7 +125,8 @@ class Commented extends stream.Transform {
    * @private
    */
   _tag_24(v) {
-    const c = new Commented({depth: this.depth+1, no_summary: true})
+    const c = new Commented({depth: this.depth + 1, no_summary: true})
+
     c.on('data', b => this.push(b))
     c.on('error', er => this.emit('error', er))
     c.end(v)
@@ -152,15 +153,16 @@ class Commented extends stream.Transform {
    * @param {commentCallback} [cb] - called on completion
    * @returns {Promise} if cb not specified
    */
-  static comment(input, options={}, cb) {
+  static comment(input, options = {}, cb = null) {
     if (input == null) {
       throw new Error('input required')
     }
     ({options, cb} = normalizeOptions(options, cb))
     const bs = new NoFilter()
-    const {encoding='hex', ...opts} = options
+    const {encoding = 'hex', ...opts} = options
     const d = new Commented(opts)
     let p = null
+
     if (typeof cb === 'function') {
       d.on('end', () => {
         cb(null, bs.toString('utf8'))
@@ -171,7 +173,7 @@ class Commented extends stream.Transform {
         d.on('end', () => {
           resolve(bs.toString('utf8'))
         })
-        return d.on('error', reject)
+        d.on('error', reject)
       })
     }
     d.pipe(bs)
@@ -194,10 +196,11 @@ class Commented extends stream.Transform {
   _on_read(buf) {
     this.all.write(buf)
     const hex = buf.toString('hex')
+
     this.push(new Array(this.depth + 1).join('  '))
     this.push(hex)
-    let ind = (this.max_depth - this.depth) * 2
-    ind -= hex.length
+
+    let ind = ((this.max_depth - this.depth) * 2) - hex.length
     if (ind < 1) {
       ind = 1
     }
@@ -209,8 +212,9 @@ class Commented extends stream.Transform {
    * @private
    */
   _on_more(mt, len, parent_mt, pos) {
-    this.depth++
     let desc = ''
+
+    this.depth++
     switch (mt) {
       case MT.POS_INT:
         desc = 'Positive number,'
@@ -245,8 +249,9 @@ class Commented extends stream.Transform {
    * @private
    */
   _on_start_string(mt, tag, parent_mt, pos) {
-    this.depth++
     let desc = ''
+
+    this.depth++
     switch (mt) {
       case MT.BYTE_STRING:
         desc = 'Bytes, length: ' + tag
@@ -278,7 +283,7 @@ class Commented extends stream.Transform {
     switch (mt) {
       case MT.TAG:
         this.push(`Tag #${tag}`)
-        if (tag == 24) {
+        if (tag === 24) {
           this.push(' Encoded CBOR data item')
         }
         break

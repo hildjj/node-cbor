@@ -1,13 +1,15 @@
 'use strict'
 
-const cbor = require('../')
+const cbor_src = process.env.CBOR_PACKAGE || '../'
+const cbor = require(cbor_src)
 const test = require('ava')
-const NoFilter = require('nofilter')
 const cases = require('./cases')
 const streams = require('./streams')
-const constants = require('../lib/constants')
 const {BigNumber} = cbor
 const BinaryParseStream = require('../vendor/binary-parse-stream')
+// use mangled versions
+const Buffer = cbor.encode(0).constructor
+const NoFilter = new cbor.Commented().all.constructor
 
 function testAll(t, list, opts) {
   t.plan(list.length)
@@ -31,7 +33,8 @@ function failAll(t, list) {
 function failFirstAll(t, list) {
   t.plan(list.length)
   return Promise.all(
-    list.map(c => t.throwsAsync(cbor.decodeFirst(cases.toBuffer(c)))))
+    list.map(c => t.throwsAsync(cbor.decodeFirst(cases.toBuffer(c))))
+  )
 }
 
 function failFirstAllCB(t, list) {
@@ -79,6 +82,8 @@ test('decodeFirstSync', t => {
     t.deepEqual(ex.value, 1)
     t.is(nf.length, 2)
   }
+
+  t.throws(() => cbor.decodeFirstSync(1))
 })
 
 test('decodeAllSync', t => {
@@ -108,11 +113,11 @@ test.cb('add_tag', t => {
   t.deepEqual(d.tags[0], replaceTag)
   t.deepEqual(d.tags[127], newTag)
 
-  d.on('error', (er) => {
+  d.on('error', er => {
     t.truthy(false, er)
   })
   let count = 0
-  d.on('data', (val) => {
+  d.on('data', val => {
     switch (count++) {
       case 0:
         t.deepEqual(val, new cbor.Tagged(127, 1, 'Invalid tag'))
@@ -136,10 +141,10 @@ test.cb('parse_tag', t => {
 })
 
 test.cb('error', t => {
-  cbor.decodeFirst('d87f01c001', 'hex').catch((er) => {
+  cbor.decodeFirst('d87f01c001', 'hex').catch(er => {
     t.truthy(er)
-    cbor.Decoder.decodeFirst('', {required: true}, (er, d) => {
-      t.truthy(er)
+    cbor.Decoder.decodeFirst('', {required: true}, (er2, d) => {
+      t.truthy(er2)
       t.falsy(d)
       t.end()
     })
@@ -149,9 +154,9 @@ test.cb('error', t => {
 test.cb('stream', t => {
   const dt = new cbor.Decoder()
 
-  dt.on('data', (v) => t.deepEqual(v, 1))
+  dt.on('data', v => t.deepEqual(v, 1))
   dt.on('end', () => t.end())
-  dt.on('error', (er) => t.falsy(er))
+  dt.on('error', er => t.falsy(er))
 
   const d = new streams.DeHexStream('01')
   d.pipe(dt)
@@ -175,7 +180,8 @@ test('decodeFirst', async t => {
     {required: true},
     (er, v) => {
       t.truthy(er)
-    }))
+    }
+  ))
 })
 
 test('decodeAll', async t => {
@@ -265,6 +271,7 @@ test('preferWeb', t => {
 
 test('binary-parse-stream edge', t => {
   class BPS extends BinaryParseStream {
+    // eslint-disable-next-line class-methods-use-this
     *_parse() {
       yield null
       throw new Error('unreachable code')
@@ -302,22 +309,40 @@ test('extended results', async t => {
   })
 })
 
-test('no bignumber', t => {
-  const {BigNumber, BN} = constants
-  constants.BigNumber = null
-  delete constants.BN
+test('no bignumber', async t => {
+  await cases.withoutBigNumber(cbor_src, newCbor => {
+    t.throws(
+      () => newCbor.decodeFirstSync('3b001fffffffffffff', {bigint: false})
+    )
+    t.throws(
+      () => newCbor.decodeFirstSync('1b7fffffffffffffff', {bigint: false})
+    )
+    let tag = newCbor.decodeFirstSync('c24a1bffffffffffffffffff',
+      {bigint: false})
+    t.truthy(tag instanceof newCbor.Tagged)
+    t.truthy(tag.err)
+    tag = newCbor.decodeFirstSync('c4820a0a')
+    t.truthy(tag.err)
+    tag = newCbor.decodeFirstSync('c5820a0a')
+    t.truthy(tag.err)
+  })
+})
 
-  t.throws(() => cbor.decodeFirstSync('3b001fffffffffffff', {bigint: false}))
-  t.throws(() => cbor.decodeFirstSync('1b7fffffffffffffff', {bigint: false}))
-  let tag = cbor.decodeFirstSync('c24a1bffffffffffffffffff',
-    {bigint: false})
-  t.truthy(tag instanceof cbor.Tagged)
-  t.truthy(tag.err)
-  tag = cbor.decodeFirstSync('c4820a0a')
-  t.truthy(tag.err)
-  tag = cbor.decodeFirstSync('c5820a0a')
-  t.truthy(tag.err)
-
-  constants.BigNumber = BigNumber
-  constants.BN = BN
+test('Buffers', t => {
+  // sanity checks for mangled library
+  const b = Buffer.from('0102', 'hex')
+  t.is(b.toString('hex'), '0102')
+  t.deepEqual(b, Buffer.from('0102', 'hex'))
+  t.deepEqual(cbor.decode('818181420102', {extendedResults: true}), {
+    bytes: Buffer.from('818181420102', 'hex'),
+    length: 6,
+    unused: null,
+    value: [
+      [
+        [
+          Buffer.from('0102', 'hex')
+        ]
+      ]
+    ]
+  })
 })

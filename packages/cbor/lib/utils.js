@@ -26,10 +26,40 @@ exports.inspect = util ? util.inspect : /* istanbul ignore next */ null
 /* istanbul ignore next */ // TextDecoder in node 11+, browsers
 const TD = (typeof TextDecoder === 'function') ? TextDecoder : util.TextDecoder
 const td = new TD('utf8', {fatal: true, ignoreBOM: true})
-exports.utf8 = (buf) => td.decode(buf)
+exports.utf8 = buf => td.decode(buf)
 exports.utf8.checksUTF8 = true
 
-exports.parseCBORint = function(ai, buf, bigInt=true) {
+function isReadable(s) {
+  // is this a readable stream?  In the webpack version, instanceof isn't
+  // working correctly.
+  if (s instanceof stream.Readable) {
+    return true
+  }
+  return ['read', 'on', 'pipe'].every(f => typeof s[f] === 'function')
+}
+
+exports.isBufferish = function isBufferish(b) {
+  return b &&
+    (typeof b === 'object') &&
+    ((Buffer.isBuffer(b)) ||
+      (b instanceof Uint8Array) ||
+      (b instanceof Uint8ClampedArray) ||
+      (b instanceof ArrayBuffer) ||
+      (b instanceof DataView))
+}
+
+exports.bufferishToBuffer = function bufferishToBuffer(b) {
+  if (Buffer.isBuffer(b)) {
+    return b
+  } else if (ArrayBuffer.isView(b)) {
+    return Buffer.from(b.buffer, b.byteOffset, b.byteLength)
+  } else if (b instanceof ArrayBuffer) {
+    return Buffer.from(b)
+  }
+  return null
+}
+
+exports.parseCBORint = function parseCBORint(ai, buf, bigInt = true) {
   switch (ai) {
     case NUMBYTES.ONE:
       return buf.readUInt8(0)
@@ -37,7 +67,7 @@ exports.parseCBORint = function(ai, buf, bigInt=true) {
       return buf.readUInt16BE(0)
     case NUMBYTES.FOUR:
       return buf.readUInt32BE(0)
-    case NUMBYTES.EIGHT:
+    case NUMBYTES.EIGHT: {
       const f = buf.readUInt32BE(0)
       const g = buf.readUInt32BE(4)
       if (f > MAX_SAFE_HIGH) {
@@ -47,10 +77,12 @@ exports.parseCBORint = function(ai, buf, bigInt=true) {
         if (!constants.BigNumber) {
           throw new Error('No bigint and no bignumber.js')
         }
-        return new constants.BigNumber(f).times(SHIFT32).plus(g)
-      } else {
-        return (f * SHIFT32) + g
+        return new constants.BigNumber(f)
+          .times(SHIFT32)
+          .plus(g)
       }
+      return (f * SHIFT32) + g
+    }
     default:
       throw new Error('Invalid additional info for int: ' + ai)
   }
@@ -138,9 +170,8 @@ exports.parseHalf = function parseHalf(buf) {
     return sign * 5.9604644775390625e-8 * mant
   } else if (exp === 0x1f) {
     return sign * (mant ? 0 / 0 : 2e308)
-  } else {
-    return sign * Math.pow(2, exp - 25) * (1024 + mant)
   }
+  return sign * Math.pow(2, exp - 25) * (1024 + mant)
 }
 
 exports.parseCBORfloat = function parseCBORfloat(buf) {
@@ -183,27 +214,6 @@ exports.arrayEqual = function arrayEqual(a, b) {
   return (a.length === b.length) && a.every((elem, i) => elem === b[i])
 }
 
-exports.bufferEqual = function bufferEqual(a, b) {
-  if ((a == null) && (b == null)) {
-    return true
-  }
-  if ((a == null) || (b == null)) {
-    return false
-  }
-  if (!(Buffer.isBuffer(a) && Buffer.isBuffer(b) && (a.length === b.length))) {
-    return false
-  }
-  const len = a.length
-  let ret = true
-  let i
-  let j
-  for (i = j = 0; j < len; i = ++j) {
-    const byte = a[i]
-    ret = ret && (b[i] === byte)
-  }
-  return !!ret
-}
-
 exports.bufferToBignumber = function bufferToBignumber(buf) {
   if (!constants.BigNumber) {
     throw new Error('No bigint and no bignumber.js')
@@ -215,9 +225,9 @@ exports.bufferToBigInt = function bufferToBigInt(buf) {
   return BigInt('0x' + buf.toString('hex'))
 }
 
-exports.cborValueToString = function cborValueToString(val, float_bytes=-1) {
+exports.cborValueToString = function cborValueToString(val, float_bytes = -1) {
   switch (typeof val) {
-    case 'symbol':
+    case 'symbol': {
       switch (val) {
         case SYMS.NULL:
           return 'null'
@@ -242,6 +252,7 @@ exports.cborValueToString = function cborValueToString(val, float_bytes=-1) {
         return m[1]
       }
       return 'Symbol'
+    }
     case 'string':
       return JSON.stringify(val)
     case 'bigint':
@@ -252,8 +263,9 @@ exports.cborValueToString = function cborValueToString(val, float_bytes=-1) {
       }
       return util.inspect(val)
   }
-  if (Buffer.isBuffer(val)) {
-    const hex = val.toString('hex')
+  const buf = exports.bufferishToBuffer(val)
+  if (buf) {
+    const hex = buf.toString('hex')
     return (float_bytes === -Infinity) ? hex : `h'${hex}'`
   }
   if (constants.BigNumber && constants.BigNumber.isBigNumber(val)) {
@@ -266,16 +278,14 @@ exports.cborValueToString = function cborValueToString(val, float_bytes=-1) {
 }
 
 exports.guessEncoding = function guessEncoding(input, encoding) {
-  if (typeof input == 'string') {
+  if (typeof input === 'string') {
     return new NoFilter(input, (encoding != null) ? encoding : 'hex')
-  } else if (Buffer.isBuffer(input)) {
-    return new NoFilter(input)
-  } else if (ArrayBuffer.isView(input)) {
-    return new NoFilter(
-      Buffer.from(input.buffer, input.byteOffset, input.byteLength))
-  } else if (input instanceof ArrayBuffer) {
-    return new NoFilter(Buffer.from(input))
-  } else if (input instanceof stream.Readable) {
+  }
+  const buf = exports.bufferishToBuffer(input)
+  if (buf) {
+    return new NoFilter(buf)
+  }
+  if (isReadable(input)) {
     return input
   }
   throw new Error('Unknown input type')
@@ -288,10 +298,21 @@ const B64URL_SWAPS = {
 }
 
 /**
- * @param {Buffer} buf - Buffer to convert
+ * @param {Buffer|Uint8Array|Uint8ClampedArray|ArrayBuffer|DataView} buf -
+ *   Buffer to convert
  * @private
  */
 exports.base64url = function base64url(buf) {
-  return buf.toString('base64').replace(/[=+/]/g, (c) => B64URL_SWAPS[c])
+  return exports.bufferishToBuffer(buf)
+    .toString('base64')
+    .replace(/[=+/]/g, c => B64URL_SWAPS[c])
 }
 
+/**
+ * @param {Buffer|Uint8Array|Uint8ClampedArray|ArrayBuffer|DataView} buf -
+ *   Buffer to convert
+ * @private
+ */
+exports.base64 = function base64(buf) {
+  return exports.bufferishToBuffer(buf).toString('base64')
+}

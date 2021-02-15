@@ -15,7 +15,11 @@ module.exports = {
   },
   target: 'web',
   externals: {
-    'bignumber.js': 'BigNumber'
+    'bignumber.js': {
+      root: 'BigNumber',
+      commonjs: 'bignumber.js',
+      commonjs2: 'bignumber.js'
+    }
   },
   resolve: {
     symlinks: false,

@@ -24,7 +24,7 @@ utils.streamFiles(argv, () => {
   const p = new Parser()
   const d = new cbor.Encoder({canonical: opts.canonical})
   p.pipe(d)
-  p.on('truncated', (b) => {
+  p.on('truncated', b => {
     try {
       d.write(JSON.parse(b))
     } catch (e) {

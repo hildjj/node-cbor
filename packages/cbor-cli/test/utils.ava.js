@@ -4,6 +4,7 @@ const test = require('ava')
 const NoFilter = require('nofilter')
 const mockIo = require('mock-stdio')
 const utils = require('../lib/utils')
+const { Buffer } = require('buffer') // not the mangled version
 
 const BAD_FILE = '/tmp/hopefully-does-not-exist'
 
@@ -11,18 +12,17 @@ test('DeHexStream', t => {
   ;[
     ['6161', 'aa'],
     ['0x00', '\x00']
-  ].map((hd) => {
+  ].forEach(hd => {
     const d = new utils.DeHexStream(hd[0])
     t.deepEqual(d.read().toString(), hd[1])
   })
   ;[
     ['', null],
     ['0x', null]
-  ].map((hd) => {
+  ].forEach(hd => {
     const d = new utils.DeHexStream(hd[0])
     t.deepEqual(d.read(), hd[1])
   })
-
 })
 
 test.cb('HexStream', t => {
@@ -40,7 +40,7 @@ test.cb('streamFilesNone', t => {
   utils.streamFiles([], () => {}, () => {
     utils.streamFiles([BAD_FILE], () => {
       return new utils.HexStream()
-    }, (er) => {
+    }, er => {
       t.truthy(er)
       t.end()
     })
@@ -51,7 +51,7 @@ test.cb('streamFilesDash', t => {
   const u = new utils.HexStream()
   const bs = new NoFilter()
   u.pipe(bs)
-  utils.streamFiles([new utils.DeHexStream('6161')], () => u, (er) => {
+  utils.streamFiles([new utils.DeHexStream('6161')], () => u, er => {
     t.falsy(er)
     t.deepEqual(bs.toString('utf8'), '6161')
     t.end()
@@ -64,7 +64,7 @@ test.cb('streamFilesInputs', t => {
   u.pipe(bs)
   utils.streamFiles([
     new utils.DeHexStream('48656c6c6f2c20576f726c64210a')
-  ], () => u, (er) => {
+  ], () => u, er => {
     t.falsy(er)
     t.end()
   })

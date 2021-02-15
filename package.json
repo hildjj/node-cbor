@@ -24,7 +24,8 @@
     "coverage": "nyc -r lcov npm test",
     "predeploy": "rm -rf docs/example/* && pnpm -r --filter cbor-web build",
     "deploy": "pnpm -r deploy",
-    "prune": "pnpm store prune"
+    "prune": "pnpm store prune",
+    "spot-check": "ava test/*.ava.js && CBOR_PACKAGE=${INIT_CWD}/packages/cbor-web/dist/cbor.js npm test"
   },
   "config": {
     "devPackages": "pnpm lerna eslint jsdoc light-server webpack webpack-cli parcel-bundler nve"
@@ -41,7 +42,9 @@
     }
   },
   "devDependencies": {
+    "@cto.af/eslint-config": "*",
     "ava": "^3.15.0",
+    "eslint-plugin-node": "^11.1.0",
     "minami": "*",
     "nyc": "^15.1.0"
   },

@@ -46,15 +46,15 @@ function output(buf, typ) {
       break
     case 'commented':
       copy.disabled = true
-      cbor.comment(buf).then(
-        txt => otxt.value = txt,
-        error)
+      cbor.comment(buf).then(txt => {
+        otxt.value = txt
+      }, error)
       break
     case 'diagnostic':
       copy.disabled = true
-      cbor.diagnose(buf).then(
-        txt => otxt.value = txt,
-        error)
+      cbor.diagnose(buf).then(txt => {
+        otxt.value = txt
+      }, error)
       break
     case 'js':
       copy.disabled = true

@@ -61,16 +61,15 @@ function normalizeOptions(opts, cb) {
  * @extends {stream.Transform}
  */
 class Diagnose extends stream.Transform {
-
   /**
    * Creates an instance of Diagnose.
    *
    * @param {DiagnoseOptions} [options={}] - options for creation
    */
-  constructor(options={}) {
+  constructor(options = {}) {
     const {
-      separator='\n',
-      stream_errors=false,
+      separator = '\n',
+      stream_errors = false,
       // decoder options
       tags,
       max_depth,
@@ -109,15 +108,14 @@ class Diagnose extends stream.Transform {
   }
 
   _flush(cb) {
-    return this.parser._flush((er) => {
+    return this.parser._flush(er => {
       if (this.stream_errors) {
         if (er) {
           this._on_error(er)
         }
         return cb()
-      } else {
-        return cb(er)
       }
+      return cb(er)
     })
   }
 
@@ -131,12 +129,12 @@ class Diagnose extends stream.Transform {
    * @param {diagnoseCallback} [cb] - callback
    * @returns {Promise} if callback not specified
    */
-  static diagnose(input, options={}, cb) {
+  static diagnose(input, options = {}, cb = null) {
     if (input == null) {
       throw new Error('input required')
     }
     ({options, cb} = normalizeOptions(options, cb))
-    const {encoding='hex', ...opts} = options
+    const {encoding = 'hex', ...opts} = options
 
     const bs = new NoFilter()
     const d = new Diagnose(opts)
@@ -147,7 +145,7 @@ class Diagnose extends stream.Transform {
     } else {
       p = new Promise((resolve, reject) => {
         d.on('end', () => resolve(bs.toString('utf8')))
-        return d.on('error', reject)
+        d.on('error', reject)
       })
     }
     d.pipe(bs)
@@ -158,14 +156,13 @@ class Diagnose extends stream.Transform {
   _on_error(er) {
     if (this.stream_errors) {
       return this.push(er.toString())
-    } else {
-      return this.emit('error', er)
     }
+    return this.emit('error', er)
   }
 
   _on_more(mt, len, parent_mt, pos) {
     if (mt === MT.SIMPLE_FLOAT) {
-      return this.float_bytes = {
+      this.float_bytes = {
         2: 1,
         4: 2,
         8: 3
@@ -179,15 +176,15 @@ class Diagnose extends stream.Transform {
       case MT.UTF8_STRING:
       case MT.ARRAY:
         if (pos > 0) {
-          return this.push(', ')
+          this.push(', ')
         }
         break
       case MT.MAP:
         if (pos > 0) {
           if (pos % 2) {
-            return this.push(': ')
+            this.push(': ')
           } else {
-            return this.push(', ')
+            this.push(', ')
           }
         }
     }
@@ -200,7 +197,7 @@ class Diagnose extends stream.Transform {
     this._fore(parent_mt, pos)
     const fb = this.float_bytes
     this.float_bytes = -1
-    return this.push(utils.cborValueToString(val, fb))
+    this.push(utils.cborValueToString(val, fb))
   }
 
   _on_start(mt, tag, parent_mt, pos) {
@@ -221,26 +218,30 @@ class Diagnose extends stream.Transform {
         break
     }
     if (tag === SYMS.STREAM) {
-      return this.push('_ ')
+      this.push('_ ')
     }
   }
 
   _on_stop(mt) {
     switch (mt) {
       case MT.TAG:
-        return this.push(')')
+        this.push(')')
+        break
       case MT.ARRAY:
-        return this.push(']')
+        this.push(']')
+        break
       case MT.MAP:
-        return this.push('}')
+        this.push('}')
+        break
       case MT.BYTE_STRING:
       case MT.UTF8_STRING:
-        return this.push(')')
+        this.push(')')
+        break
     }
   }
 
   _on_data() {
-    return this.push(this.separator)
+    this.push(this.separator)
   }
 }
 

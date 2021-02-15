@@ -8,6 +8,7 @@ const {program} = require('commander')
 const path = require('path')
 const stream = require('stream')
 const Module = require('module')
+const { Buffer } = require('buffer') // not the mangled version
 
 program
   .version(pkg.version)
@@ -33,10 +34,12 @@ class ModuleStream extends stream.Transform {
     this.bufs = []
     this.filename = filename
   }
+
   _transform(chunk, encoding, callback) {
     this.bufs.push(chunk)
     callback()
   }
+
   _flush() {
     const m = new Module(this.filename, module)
     m.filename = this.filename
@@ -46,7 +49,7 @@ class ModuleStream extends stream.Transform {
   }
 }
 
-utils.streamFiles(argv, (f) => {
+utils.streamFiles(argv, f => {
   const m = new ModuleStream(f)
   const d = new cbor.Encoder({canonical: opts.canonical})
   m.on('data', mod => {

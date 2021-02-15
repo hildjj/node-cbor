@@ -4,6 +4,7 @@ const test = require('ava')
 const constants = require('../lib/constants')
 const utils = require('../lib/utils')
 const { hex, bin } = utils
+const { Buffer } = require('buffer') // NOT the mangled version
 
 test('bin', t => {
   t.deepEqual(utils.bin('1'), hex('01'))
@@ -57,35 +58,20 @@ test('arrayEqual', t => {
   t.deepEqual(utils.arrayEqual([1, 2, 3], [1, 2, 4]), false)
 })
 
-test('bufferEqual', t => {
-  t.deepEqual(utils.bufferEqual(), true)
-  t.deepEqual(utils.bufferEqual(Buffer.allocUnsafe(0)), false)
-  t.deepEqual(
-    utils.bufferEqual(
-      Buffer.allocUnsafe(0),
-      Buffer.allocUnsafe(0)),
-    true)
-  t.deepEqual(utils.bufferEqual(Buffer.from([1]), Buffer.allocUnsafe(0)), false)
-  t.deepEqual(utils.bufferEqual(
-    Buffer.from([1, 2, 3]),
-    Buffer.from([1, 2, 3])), true)
-  t.deepEqual(utils.bufferEqual(
-    Buffer.from([1, 2, 3]),
-    Buffer.from([1, 2, 4])), false)
-})
-
 test('bufferToBignumber', t => {
   const num = new constants.BigNumber(0x12345678).toString(16)
   const numbuf = Buffer.from(num, 'hex')
   t.deepEqual(
     utils.bufferToBignumber(numbuf),
-    new constants.BigNumber(0x12345678))
+    new constants.BigNumber(0x12345678)
+  )
 })
 
 test.cb('guessEncoding', t => {
   const buf = Buffer.from('0102', 'hex')
   const nof = utils.guessEncoding(
-    buf.buffer.slice(buf.offset, buf.offset+buf.length))
+    buf.buffer.slice(buf.offset, buf.offset + buf.length)
+  )
   t.deepEqual(nof.read().toString('hex'), '0102')
   const ab = new ArrayBuffer(256)
   const u16 = new Uint16Array(ab, 100, 3)
@@ -102,6 +88,7 @@ test.cb('guessEncoding', t => {
 })
 
 test('cborValueToString', t => {
+  // eslint-disable-next-line symbol-description
   t.is(utils.cborValueToString(Symbol()), 'Symbol')
   t.is(utils.cborValueToString(Symbol(')')), ')')
   t.is(utils.cborValueToString(Symbol('))')), '))')

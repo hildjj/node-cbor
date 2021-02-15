@@ -5,7 +5,9 @@
 let bn = null
 try {
   bn = require('bignumber.js').BigNumber
-} catch (ignored) {}
+} catch (ignored) {
+  // bignumber.js isn't available
+}
 /** @type {typeof import('bignumber.js').BigNumber?} */
 exports.BigNumber = bn
 
@@ -67,11 +69,11 @@ exports.SIMPLE = {
 }
 
 exports.SYMS = {
-  NULL: Symbol('null'),
-  UNDEFINED: Symbol('undef'),
-  PARENT: Symbol('parent'),
-  BREAK: Symbol('break'),
-  STREAM: Symbol('stream')
+  NULL: Symbol.for('github.com/hildjj/node-cbor/null'),
+  UNDEFINED: Symbol.for('github.com/hildjj/node-cbor/undef'),
+  PARENT: Symbol.for('github.com/hildjj/node-cbor/parent'),
+  BREAK: Symbol.for('github.com/hildjj/node-cbor/break'),
+  STREAM: Symbol.for('github.com/hildjj/node-cbor/stream')
 }
 
 exports.SHIFT32 = 0x100000000
@@ -89,7 +91,8 @@ if (exports.BigNumber) {
   exports.BN = {
     MINUS_ONE,
     NEG_MAX: MINUS_ONE.minus(
-      new exports.BigNumber(Number.MAX_SAFE_INTEGER.toString(16), 16)),
+      new exports.BigNumber(Number.MAX_SAFE_INTEGER.toString(16), 16)
+    ),
     TWO: new exports.BigNumber(2),
     MAXINT: new exports.BigNumber('0x20000000000000'),
     MAXINT32: new exports.BigNumber(0xffffffff),

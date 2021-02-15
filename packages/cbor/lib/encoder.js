@@ -90,23 +90,23 @@ function parseDateType(str) {
  * @extends {stream.Transform}
  */
 class Encoder extends stream.Transform {
-
   /**
    * Creates an instance of Encoder.
    *
    * @param {EncodingOptions} [options={}] - options for the encoder
    */
-  constructor(options={}) {
+  constructor(options = {}) {
     const {
-      canonical=false,
+      canonical = false,
       encodeUndefined,
-      disallowUndefinedKeys=false,
-      dateType='number',
-      collapseBigIntegers=false,
-      detectLoops=false,
-      genTypes=[],
+      disallowUndefinedKeys = false,
+      dateType = 'number',
+      collapseBigIntegers = false,
+      detectLoops = false,
+      genTypes = [],
       ...superOpts
     } = options
+
     super({
       ...superOpts,
       readableObjectMode: false,
@@ -131,8 +131,10 @@ class Encoder extends stream.Transform {
       Array: this._pushArray,
       Date: this._pushDate,
       Buffer: this._pushBuffer,
+      [Buffer.name]: this._pushBuffer, // might be mangled
       Map: this._pushMap,
       NoFilter: this._pushNoFilter,
+      [NoFilter.name]: this._pushNoFilter, // might be mangled
       RegExp: this._pushRegexp,
       Set: this._pushSet,
       ArrayBuffer: this._pushUint8Array,
@@ -168,6 +170,8 @@ class Encoder extends stream.Transform {
     return cb((ret === false) ? new Error('Push Error') : undefined)
   }
 
+  // TODO: make static?
+  // eslint-disable-next-line class-methods-use-this
   _flush(cb) {
     return cb()
   }
@@ -287,9 +291,8 @@ class Encoder extends stream.Transform {
       default:
         if (mt === MT.NEG_INT) {
           return this._pushFloat(orig)
-        } else {
-          return this._pushFloat(obj)
         }
+        return this._pushFloat(obj)
     }
   }
 
@@ -300,9 +303,8 @@ class Encoder extends stream.Transform {
 
     if (obj < 0) {
       return this._pushInt(-obj - 1, MT.NEG_INT, obj)
-    } else {
-      return this._pushInt(obj, MT.POS_INT)
     }
+    return this._pushInt(obj, MT.POS_INT)
   }
 
   _pushNumber(obj) {
@@ -333,10 +335,12 @@ class Encoder extends stream.Transform {
         return this._pushUInt8(UNDEFINED)
       case 'function':
         return this.pushAny(this.encodeUndefined.call(this, obj))
-      case 'object':
-        if (Buffer.isBuffer(this.encodeUndefined)) {
-          return this.push(this.encodeUndefined)
+      case 'object': {
+        const buf = utils.bufferishToBuffer(this.encodeUndefined)
+        if (buf) {
+          return this.push(buf)
         }
+      }
     }
     return this.pushAny(this.encodeUndefined)
   }
@@ -345,10 +349,13 @@ class Encoder extends stream.Transform {
     return this._pushUInt8(NULL)
   }
 
+  // TODO: make this static, and not-private
+  // eslint-disable-next-line class-methods-use-this
   _pushArray(gen, obj, opts) {
-    opts = Object.assign({
-      indefinite: false
-    }, opts)
+    opts = {
+      indefinite: false,
+      ...opts
+    }
     const len = obj.length
     if (opts.indefinite) {
       if (!gen._pushUInt8((MT.ARRAY << 5) | NUMBYTES.INDEFINITE)) {
@@ -374,6 +381,8 @@ class Encoder extends stream.Transform {
     return this._pushInt(tag, MT.TAG)
   }
 
+  // TODO: make this static, and consider not-private
+  // eslint-disable-next-line class-methods-use-this
   _pushDate(gen, obj) {
     switch (gen.dateType) {
       case 'string':
@@ -396,18 +405,26 @@ class Encoder extends stream.Transform {
     }
   }
 
+  // TODO: make static?
+  // eslint-disable-next-line class-methods-use-this
   _pushBuffer(gen, obj) {
     return gen._pushInt(obj.length, MT.BYTE_STRING) && gen.push(obj)
   }
 
+  // TODO: make static?
+  // eslint-disable-next-line class-methods-use-this
   _pushNoFilter(gen, obj) {
     return gen._pushBuffer(gen, obj.slice())
   }
 
+  // TODO: make static?
+  // eslint-disable-next-line class-methods-use-this
   _pushRegexp(gen, obj) {
     return gen._pushTag(TAG.REGEXP) && gen.pushAny(obj.source)
   }
 
+  // TODO: make static?
+  // eslint-disable-next-line class-methods-use-this
   _pushSet(gen, obj) {
     if (!gen._pushInt(obj.size, MT.ARRAY)) {
       return false
@@ -420,6 +437,8 @@ class Encoder extends stream.Transform {
     return true
   }
 
+  // TODO: make static?
+  // eslint-disable-next-line class-methods-use-this
   _pushURL(gen, obj) {
     return gen._pushTag(TAG.URI) && gen.pushAny(obj.toString())
   }
@@ -446,8 +465,11 @@ class Encoder extends stream.Transform {
       }
       return this._pushUInt8((m << 5) | NUMBYTES.EIGHT) &&
         this._pushUInt32BE(
-          obj.dividedToIntegerBy(constants.BN.SHIFT32).toNumber()) &&
-        this._pushUInt32BE(obj.mod(constants.BN.SHIFT32).toNumber())
+          obj.dividedToIntegerBy(constants.BN.SHIFT32).toNumber()
+        ) &&
+        this._pushUInt32BE(
+          obj.mod(constants.BN.SHIFT32).toNumber()
+        )
     }
     let str = obj.toString(16)
     if (str.length % 2) {
@@ -490,6 +512,8 @@ class Encoder extends stream.Transform {
     return this._pushTag(tag) && this._pushBuffer(this, buf)
   }
 
+  // TODO: make static
+  // eslint-disable-next-line class-methods-use-this
   _pushBigNumber(gen, obj) {
     if (obj.isNaN()) {
       return gen._pushNaN()
@@ -512,15 +536,15 @@ class Encoder extends stream.Transform {
     }
     if (slide.abs().isLessThan(constants.BN.MAXINT)) {
       return gen._pushIntNum(slide.toNumber())
-    } else {
-      return gen._pushBigint(slide)
     }
+    return gen._pushBigint(slide)
   }
 
   _pushMap(gen, obj, opts) {
-    opts = Object.assign({
-      indefinite: false
-    }, opts)
+    opts = {
+      indefinite: false,
+      ...opts
+    }
     if (opts.indefinite) {
       if (!gen._pushUInt8((MT.MAP << 5) | NUMBYTES.INDEFINITE)) {
         return false
@@ -542,7 +566,7 @@ class Encoder extends stream.Transform {
         disallowUndefinedKeys: this.disallowUndefinedKeys,
         collapseBigIntegers: this.collapseBigIntegers
       })
-      const bs = new NoFilter({highWaterMark:this.readableHighWaterMark})
+      const bs = new NoFilter({highWaterMark: this.readableHighWaterMark})
       enc.pipe(bs)
       entries.sort(([a], [b]) => {
         // a, b are the keys
@@ -578,10 +602,14 @@ class Encoder extends stream.Transform {
     return true
   }
 
+  // TODO: make static?
+  // eslint-disable-next-line class-methods-use-this
   _pushUint8Array(gen, obj) {
     return gen._pushBuffer(gen, Buffer.from(obj))
   }
 
+  // TODO: make static?
+  // eslint-disable-next-line class-methods-use-this
   _pushFloat32Array(gen, obj) {
     const len = obj.length
     if (!gen._pushInt(len, MT.ARRAY)) {
@@ -595,6 +623,8 @@ class Encoder extends stream.Transform {
     return true
   }
 
+  // TODO: make static?
+  // eslint-disable-next-line class-methods-use-this
   _pushFloat64Array(gen, obj) {
     const len = obj.length
     if (!gen._pushInt(len, MT.ARRAY)) {
@@ -625,10 +655,11 @@ class Encoder extends stream.Transform {
     if (!obj) {
       return this._pushNull(obj)
     }
-    opts = Object.assign({
+    opts = {
       indefinite: false,
-      skipTypes: false
-    }, opts)
+      skipTypes: false,
+      ...opts
+    }
     if (!opts.indefinite) {
       // this will only happen the first time through for indefinite encoding
       if (this.detectLoops) {
@@ -673,17 +704,15 @@ Call removeLoopDetectors before resuming.`)
     } else if (!this._pushInt(keys.length, MT.MAP)) {
       return false
     }
-    let ck
+    let ck = null
     for (let j = 0, len2 = keys.length; j < len2; j++) {
       const k = keys[j]
       if (this.canonical && ((ck = cbor_keys[k]))) {
         if (!this.push(ck)) { // already a Buffer
           return false
         }
-      } else {
-        if (!this._pushString(k)) {
-          return false
-        }
+      } else if (!this._pushString(k)) {
+        return false
       }
       if (!this.pushAny(obj[k])) {
         return false
@@ -724,7 +753,7 @@ Call removeLoopDetectors before resuming.`)
           case SYMS.NULL:
             return this._pushNull(null)
           case SYMS.UNDEFINED:
-            return this._pushUndefined(void 0)
+            return this._pushUndefined(undefined)
           // TODO: Add pluggable support for other symbols
           default:
             throw new Error('Unknown symbol: ' + obj.toString())
@@ -732,7 +761,8 @@ Call removeLoopDetectors before resuming.`)
       default:
         throw new Error(
           'Unknown type: ' + typeof obj + ', ' +
-          (!!obj.toString ? obj.toString() : ''))
+          (!!obj.toString ? obj.toString() : '')
+        )
     }
   }
 
@@ -743,7 +773,7 @@ Call removeLoopDetectors before resuming.`)
   }
 
   _encodeAll(objs) {
-    const bs = new NoFilter({ highWaterMark:this.readableHighWaterMark })
+    const bs = new NoFilter({ highWaterMark: this.readableHighWaterMark })
     this.pipe(bs)
     for (const o of objs) {
       this.pushAny(o)
@@ -772,7 +802,7 @@ Call removeLoopDetectors before resuming.`)
    * @param {EncodingOptions} [options={}] - Options for encoding
    * @returns {boolean} - true on success
    */
-  static encodeIndefinite(gen, obj, options={}) {
+  static encodeIndefinite(gen, obj, options = {}) {
     if (obj == null) {
       if (this == null) {
         throw new Error('No object to encode')
@@ -781,10 +811,11 @@ Call removeLoopDetectors before resuming.`)
     }
 
     // TODO: consider other options
-    const { chunkSize=4096 } = options
+    const { chunkSize = 4096 } = options
 
     let ret = true
     const objType = typeof obj
+    let buf = null
     if (objType === 'string') {
       // TODO: make sure not to split surrogate pairs at the edges of chunks,
       // since such half-surrogates cannot be legally encoded as UTF-8.
@@ -796,12 +827,12 @@ Call removeLoopDetectors before resuming.`)
         offset = endIndex
       }
       ret = ret && gen.push(BREAK)
-    } else if (Buffer.isBuffer(obj)) {
+    } else if (buf = utils.bufferishToBuffer(obj)) {
       ret = ret && gen._pushUInt8((MT.BYTE_STRING << 5) | NUMBYTES.INDEFINITE)
       let offset = 0
-      while (offset < obj.length) {
+      while (offset < buf.length) {
         const endIndex = offset + chunkSize
-        ret = ret && gen._pushBuffer(gen, obj.slice(offset, endIndex))
+        ret = ret && gen._pushBuffer(gen, buf.slice(offset, endIndex))
         offset = endIndex
       }
       ret = ret && gen.push(BREAK)
@@ -864,7 +895,7 @@ Call removeLoopDetectors before resuming.`)
   /**
    * Encode one JavaScript object using the given options in a way that
    * is more resilient to objects being larger than the highWaterMark
-   * number of bytes.  As with the other static encode functions, this 
+   * number of bytes.  As with the other static encode functions, this
    * will still use a large amount of memory.  Use a stream-based approach
    * directly if you need to process large and complicated inputs.
    *

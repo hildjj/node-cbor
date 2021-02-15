@@ -1,9 +1,6 @@
 'use strict'
 
-const constants = require('./constants')
-const MT = constants.MT
-const SIMPLE = constants.SIMPLE
-const SYMS = constants.SYMS
+const {MT, SIMPLE, SYMS} = require('./constants')
 
 /**
  * A CBOR Simple Value that does not map onto a known constant.
@@ -18,7 +15,7 @@ class Simple {
     if (typeof value !== 'number') {
       throw new Error('Invalid Simple type: ' + (typeof value))
     }
-    if ((value < 0) || (value > 255) || ((value|0) !== value)) {
+    if ((value < 0) || (value > 255) || ((value | 0) !== value)) {
       throw new Error('value must be a small positive integer: ' + value)
     }
     this.value = value
@@ -73,7 +70,7 @@ class Simple {
    *   indefinitely encoded?
    * @returns {(null|undefined|boolean|Symbol|Simple)} - the decoded value
    */
-  static decode(val, has_parent=true, parent_indefinite=false) {
+  static decode(val, has_parent = true, parent_indefinite = false) {
     switch (val) {
       case SIMPLE.FALSE:
         return false
@@ -82,15 +79,13 @@ class Simple {
       case SIMPLE.NULL:
         if (has_parent) {
           return null
-        } else {
-          return SYMS.NULL
         }
+        return SYMS.NULL
       case SIMPLE.UNDEFINED:
         if (has_parent) {
-          return void 0
-        } else {
-          return SYMS.UNDEFINED
+          return undefined
         }
+        return SYMS.UNDEFINED
       case -1:
         if (!has_parent || !parent_indefinite) {
           throw new Error('Invalid BREAK')

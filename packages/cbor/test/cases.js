@@ -1,11 +1,14 @@
 'use strict'
 
 const BigNum = require('bignumber.js').BigNumber
-const NoFilter = require('nofilter')
-const cbor = require('../')
+const cbor = require(process.env.CBOR_PACKAGE || '../')
 const constants = require('../lib/constants')
 const utils = require('../lib/utils')
 const path = require('path')
+
+// use mangled versions
+const Buffer = cbor.encode(0).constructor
+const NoFilter = new cbor.Commented().all.constructor
 
 async function requireWithFailedDependency(source, dependency, fn) {
   const src = require.resolve(source)
@@ -23,23 +26,48 @@ async function requireWithFailedDependency(source, dependency, fn) {
       err.code = 'MODULE_NOT_FOUND'
       err.path = path.resolve(dependency, 'package.json')
       err.requestPath = __filename
+      throw err
     }
   }
   delete require.cache[src]
+
   await fn(require(source))
+
+  // eslint-disable-next-line require-atomic-updates
   require.cache[src] = old_src
+  // eslint-disable-next-line require-atomic-updates
   require.cache[dep] = old_dep
 }
 exports.requireWithFailedDependency = requireWithFailedDependency
+
+function withoutBigNumber(cbor_src, fn) {
+  return requireWithFailedDependency(cbor_src, 'bignumber.js', newCbor => {
+    if (newCbor.BigNumber) {
+      // this gets the node version. requireWithFailedDependency works with
+      // webpack because it re-requires all of the dependencies
+      const {BigNumber, BN} = constants
+      constants.BigNumber = null
+      delete constants.BN
+      fn(newCbor)
+      constants.Bignumber = BigNumber
+      constants.BN = BN
+    } else {
+      fn(newCbor)
+    }
+  })
+}
+exports.withoutBigNumber = withoutBigNumber
 
 class TempClass {
   constructor(val) {
     // render as the string tempClass with the tag 0xffff
     this.value = val || 'tempClass'
   }
+
   encodeCBOR(gen) {
     return gen._pushTag(0xffff) && gen.pushAny(this.value)
   }
+
   static toCBOR(gen, obj) {
     return gen._pushTag(0xfffe) && gen.pushAny(obj.value)
   }
@@ -234,7 +262,7 @@ exports.good = [
 0x66efbbbf424f4d`],
   ['"\\', '"\\"\\\\"', `
   62                -- String, length: 2
-    225c            -- "\\\"\\\\"
+    225c            -- "\\"\\\\"
 0x62225c`],
   ['\u00fc', '"\u00fc"', `
   62                -- String, length: 2
@@ -311,7 +339,7 @@ exports.good = [
       33            -- {Key:1}, "3"
     04              -- {Val:1}, 4
 0xa2613102613304`],
-  [{'a': 1, 'b': [2, 3]}, '{"a": 1, "b": [2, 3]}', `
+  [{a: 1, b: [2, 3]}, '{"a": 1, "b": [2, 3]}', `
   a2                -- Map, 2 pairs
     61              -- String, length: 1
       61            -- {Key:0}, "a"
@@ -322,7 +350,7 @@ exports.good = [
       02            -- [0], 2
       03            -- [1], 3
 0xa26161016162820203`],
-  [['a', {'b': 'c'}], '["a", {"b": "c"}]', `
+  [['a', {b: 'c'}], '["a", {"b": "c"}]', `
   82                -- Array, 2 items
     61              -- String, length: 1
       61            -- [0], "a"
@@ -332,7 +360,7 @@ exports.good = [
       61            -- String, length: 1
         63          -- {Val:0}, "c"
 0x826161a161626163`],
-  [{'a': 'A', 'b': 'B', 'c': 'C', 'd': 'D', 'e': 'E'}, '{"a": "A", "b": "B", "c": "C", "d": "D", "e": "E"}', `
+  [{a: 'A', b: 'B', c: 'C', d: 'D', e: 'E'}, '{"a": "A", "b": "B", "c": "C", "d": "D", "e": "E"}', `
   a5                -- Map, 5 pairs
     61              -- String, length: 1
       61            -- {Key:0}, "a"
@@ -404,7 +432,7 @@ exports.good = [
       18            -- Positive number, next 1 byte
         19          -- [24], 25
 0x98190102030405060708090a0b0c0d0e0f101112131415161718181819`],
-  [{'a': 1, 'b': [2, 3]}, '{"a": 1, "b": [2, 3]}', `
+  [{a: 1, b: [2, 3]}, '{"a": 1, "b": [2, 3]}', `
   a2                -- Map, 2 pairs
     61              -- String, length: 1
       61            -- {Key:0}, "a"
@@ -415,7 +443,7 @@ exports.good = [
       02            -- [0], 2
       03            -- [1], 3
 0xa26161016162820203`],
-  [['a', {'b': 'c'}], '["a", {"b": "c"}]', `
+  [['a', {b: 'c'}], '["a", {"b": "c"}]', `
   82                -- Array, 2 items
     61              -- String, length: 1
       61            -- [0], "a"
@@ -549,7 +577,7 @@ exports.good = [
     01              -- {Key:0}, 1
     02              -- {Val:0}, 2
 0xa10102`],
-  [new Map([[{b:1}, {b:1}]]), '{{"b": 1}: {"b": 1}}', `
+  [new Map([[{b: 1}, {b: 1}]]), '{{"b": 1}: {"b": 1}}', `
   a1                -- Map, 1 pair
     a1              -- {Key:0}, Map, 1 pair
       61            -- String, length: 1
@@ -884,7 +912,7 @@ exports.decodeGood = [
       19            -- [24], 25
     ff              -- BREAK
 0x9f0102030405060708090a0b0c0d0e0f101112131415161718181819ff`],
-  [{'a': 1, 'b': [2, 3]}, '{_ "a": 1, "b": [_ 2, 3]}', `
+  [{a: 1, b: [2, 3]}, '{_ "a": 1, "b": [_ 2, 3]}', `
   bf                -- Map (streaming)
     61              -- String, length: 1
       61            -- {Key:0}, "a"
@@ -929,19 +957,19 @@ exports.decodeGood = [
 ]
 
 exports.collapseBigIntegers = [
-  [new BigNum('0'), , '0x00'],
-  [new BigNum('1'), , '0x01'],
-  [new BigNum('-1'), , '0x20'],
-  [new BigNum('24'), , '0x1818'],
-  [new BigNum('-25'), , '0x3818'],
-  [new BigNum('01ff', 16), , '0x1901ff'],
-  [new BigNum('-01ff', 16), , '0x3901fe'],
-  [new BigNum('1ffff', 16), , '0x1a0001ffff'],
-  [new BigNum('-1ffff', 16), , '0x3a0001fffe'],
-  [new BigNum('1ffffffff', 16), , '0x1b00000001ffffffff'],
-  [new BigNum('-1ffffffff', 16), , '0x3b00000001fffffffe'],
-  [new BigNum('ffffffffffffffff', 16), , '0x1bffffffffffffffff'],
-  [new BigNum('-10000000000000000', 16), , '0x3bffffffffffffffff']
+  [new BigNum('0'), undefined, '0x00'],
+  [new BigNum('1'), undefined, '0x01'],
+  [new BigNum('-1'), undefined, '0x20'],
+  [new BigNum('24'), undefined, '0x1818'],
+  [new BigNum('-25'), undefined, '0x3818'],
+  [new BigNum('01ff', 16), undefined, '0x1901ff'],
+  [new BigNum('-01ff', 16), undefined, '0x3901fe'],
+  [new BigNum('1ffff', 16), undefined, '0x1a0001ffff'],
+  [new BigNum('-1ffff', 16), undefined, '0x3a0001fffe'],
+  [new BigNum('1ffffffff', 16), undefined, '0x1b00000001ffffffff'],
+  [new BigNum('-1ffffffff', 16), undefined, '0x3b00000001fffffffe'],
+  [new BigNum('ffffffffffffffff', 16), undefined, '0x1bffffffffffffffff'],
+  [new BigNum('-10000000000000000', 16), undefined, '0x3bffffffffffffffff']
 ]
 
 exports.decodeBad = [
@@ -985,6 +1013,7 @@ if (utils.utf8.checksUTF8) {
 const HEX = /0x([0-9a-f]+)$/i
 exports.toBuffer = function toBuffer(c) {
   if (Array.isArray(c)) {
+    // eslint-disable-next-line prefer-destructuring
     c = c[2]
   }
   const match = c.match(HEX)
@@ -993,6 +1022,7 @@ exports.toBuffer = function toBuffer(c) {
 
 exports.toString = function toString(c) {
   if (Array.isArray(c)) {
+    // eslint-disable-next-line prefer-destructuring
     c = c[2]
   }
   const match = c.match(HEX)
@@ -1008,6 +1038,7 @@ class EncodeFailer extends cbor.Encoder {
     this.count = count
     this.start = count
   }
+
   push(fresh, encoding) {
     if (this.count-- <= 0) {
       super.push(null)
@@ -1015,14 +1046,16 @@ class EncodeFailer extends cbor.Encoder {
     }
     return super.push(fresh, encoding)
   }
+
   get used() {
     return this.start - this.count
   }
+
   static tryAll(t, f, canonical) {
     let enc = new EncodeFailer()
     enc.canonical = canonical
     t.truthy(enc.pushAny(f))
-    const used = enc.used
+    const {used} = enc
     for (let i = 0; i < used; i++) {
       enc = new EncodeFailer(i)
       enc.canonical = canonical

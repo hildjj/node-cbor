@@ -9,6 +9,11 @@
   },
   "author": "Joe Hildebrand <joe-github@cursive.net>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/hildjj/node-cbor.git",
+    "directory": "packages/plain-demo"
+  },
   "devDependencies": {
     "bignumber.js": "^9.0.1",
     "cbor-web": "^7.0.0",

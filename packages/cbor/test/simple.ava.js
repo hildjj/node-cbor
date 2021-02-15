@@ -1,7 +1,7 @@
 'use strict'
 
 const test = require('ava')
-const cbor = require('../lib/cbor')
+const cbor = require(process.env.CBOR_PACKAGE || '../')
 const constants = require('../lib/constants')
 
 test('create', t => {

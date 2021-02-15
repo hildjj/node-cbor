@@ -25,7 +25,7 @@ if (argv.length === 0) {
 
 utils.streamFiles(argv, () => {
   const d = new cbor.Decoder()
-  d.on('data', (v) => {
+  d.on('data', v => {
     console.log(JSON.stringify(v))
   })
   return d

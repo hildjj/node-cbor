@@ -2,6 +2,7 @@
 'use strict'
 
 const util = require('node-inspect-extracted')
+const Buffer = require('buffer')
 
 const ofmt = document.getElementById('output-fmt')
 const otxt = document.getElementById('output-text')
@@ -40,15 +41,15 @@ function output(buf, typ) {
       break
     case 'commented':
       copy.disabled = true
-      cbor.comment(buf).then(
-        txt => otxt.value = txt,
-        error)
+      cbor.comment(buf).then(txt => {
+        otxt.value = txt
+      }, error)
       break
     case 'diagnostic':
       copy.disabled = true
-      cbor.diagnose(buf).then(
-        txt => otxt.value = txt,
-        error)
+      cbor.diagnose(buf).then(txt => {
+        otxt.value = txt
+      }, error)
       break
     case 'js':
       copy.disabled = true

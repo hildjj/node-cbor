@@ -16,6 +16,7 @@ const NOT_FOUND = Symbol('not found')
 
 function parentArray(parent, typ, count) {
   const a = []
+
   a[COUNT] = count
   a[SYMS.PARENT] = parent
   a[MAJOR] = typ
@@ -24,6 +25,7 @@ function parentArray(parent, typ, count) {
 
 function parentBufferStream(parent, typ) {
   const b = new NoFilter()
+
   b[COUNT] = -1
   b[SYMS.PARENT] = parent
   b[MAJOR] = typ
@@ -124,23 +126,23 @@ function normalizeOptions(opts, cb) {
  * @extends {BinaryParseStream}
  */
 class Decoder extends BinaryParseStream {
-
   /**
    * Create a parsing stream.
    *
    * @param {DecoderOptions} [options={}]
    */
-  constructor(options={}) {
+  constructor(options = {}) {
     const {
-      tags={},
-      max_depth=-1,
-      bigint=true,
-      preferWeb=false,
-      required=false,
-      encoding='hex',
-      extendedResults=false,
+      tags = {},
+      max_depth = -1,
+      bigint = true,
+      preferWeb = false,
+      required = false,
+      encoding = 'hex',
+      extendedResults = false,
       ...superOpts
     } = options
+
     super({defaultEncoding: encoding, ...superOpts})
 
     this.running = true
@@ -209,12 +211,12 @@ class Decoder extends BinaryParseStream {
    * @param {DecoderOptions|string} [options={}] Options or encoding for input
    * @returns {any} - the decoded value
    */
-  static decodeFirstSync(input, options={}) {
+  static decodeFirstSync(input, options = {}) {
     if (input == null) {
       throw new TypeError('input required')
     }
     ({options} = normalizeOptions(options))
-    const {encoding='hex', ...opts} = options
+    const {encoding = 'hex', ...opts} = options
     const c = new Decoder(opts)
     const s = utils.guessEncoding(input, encoding)
 
@@ -223,8 +225,10 @@ class Decoder extends BinaryParseStream {
     // parser will yield numbers of bytes that it wants
     const parser = c._parse()
     let state = parser.next()
+
     while (!state.done) {
       const b = s.read(state.value)
+
       if ((b == null) || (b.length !== state.value)) {
         throw new Error('Insufficient data')
       }
@@ -233,11 +237,13 @@ class Decoder extends BinaryParseStream {
       }
       state = parser.next(b)
     }
-    let val
+
+    let val = null
     if (!c.extendedResults) {
       val = Decoder.nullcheck(state.value)
       if (s.length > 0) {
         const nextByte = s.read(1)
+
         s.unshift(nextByte)
         throw new UnexpectedDataError(nextByte[0], val)
       }
@@ -260,20 +266,23 @@ class Decoder extends BinaryParseStream {
    *   for input
    * @returns {Array} - Array of all found items
    */
-  static decodeAllSync(input, options={}) {
+  static decodeAllSync(input, options = {}) {
     if (input == null) {
       throw new TypeError('input required')
     }
     ({options} = normalizeOptions(options))
-    const {encoding='hex', ...opts} = options
+    const {encoding = 'hex', ...opts} = options
     const c = new Decoder(opts)
     const s = utils.guessEncoding(input, encoding)
     const res = []
+
     while (s.length > 0) {
       const parser = c._parse()
       let state = parser.next()
+
       while (!state.done) {
         const b = s.read(state.value)
+
         if ((b == null) || (b.length !== state.value)) {
           throw new Error('Insufficient data')
         }
@@ -302,23 +311,23 @@ class Decoder extends BinaryParseStream {
    * @param {decodeCallback} [cb] callback
    * @returns {Promise<any>} returned even if callback is specified
    */
-  static decodeFirst(input, options={}, cb) {
+  static decodeFirst(input, options = {}, cb = null) {
     if (input == null) {
       throw new TypeError('input required')
     }
     ({options, cb} = normalizeOptions(options, cb))
-    const {encoding='hex', required=false, ...opts} = options
+    const {encoding = 'hex', required = false, ...opts} = options
 
     const c = new Decoder(opts)
     /** @type {any} */
     let v = NOT_FOUND
     const s = utils.guessEncoding(input, encoding)
     const p = new Promise((resolve, reject) => {
-      c.on('data', (val) => {
+      c.on('data', val => {
         v = Decoder.nullcheck(val)
         c.close()
       })
-      c.once('error', (er) => {
+      c.once('error', er => {
         if (c.extendedResults && (er instanceof UnexpectedDataError)) {
           v.unused = c.bs.slice()
           return resolve(v)
@@ -335,14 +344,13 @@ class Decoder extends BinaryParseStream {
           case NOT_FOUND:
             if (required) {
               return reject(new Error('No CBOR found'))
-            } else {
-              return resolve(v)
             }
+            return resolve(v)
           // Pretty sure this can't happen, but not *certain*.
           /* istanbul ignore next */
           case ERROR:
             /* istanbul ignore next */
-            return void 0
+            return undefined
           default:
             return resolve(v)
         }
@@ -350,7 +358,7 @@ class Decoder extends BinaryParseStream {
     })
 
     if (typeof cb === 'function') {
-      p.then(v => cb(null, v), cb)
+      p.then(val => cb(null, val), cb)
     }
     s.pipe(c)
     return p
@@ -374,22 +382,23 @@ class Decoder extends BinaryParseStream {
    * @param {decodeAllCallback} [cb] callback
    * @returns {Promise<Array>} even if callback is specified
    */
-  static decodeAll(input, options={}, cb) {
+  static decodeAll(input, options = {}, cb = null) {
     if (input == null) {
       throw new TypeError('input required')
     }
     ({options, cb} = normalizeOptions(options, cb))
-    const {encoding='hex', ...opts} = options
+    const {encoding = 'hex', ...opts} = options
 
     const c = new Decoder(opts)
     const vals = []
-    c.on('data', (val) => {
-      return vals.push(Decoder.nullcheck(val))
-    })
+
+    c.on('data', val => vals.push(Decoder.nullcheck(val)))
+
     const p = new Promise((resolve, reject) => {
       c.on('error', reject)
       c.on('end', () => resolve(vals))
     })
+
     if (typeof cb === 'function') {
       p.then(v => cb(undefined, v), er => cb(er, undefined))
     }
@@ -421,11 +430,13 @@ class Decoder extends BinaryParseStream {
     let parent = null
     let depth = 0
     let val = null
+
     while (true) {
       if ((this.max_depth >= 0) && (depth > this.max_depth)) {
         throw new Error('Maximum depth ' + this.max_depth + ' exceeded')
       }
-      const octet = (yield 1)[0]
+
+      const [octet] = yield 1
       if (!this.running) {
         this.bs.unshift(Buffer.from([octet]))
         throw new UnexpectedDataError(octet)
@@ -434,21 +445,24 @@ class Decoder extends BinaryParseStream {
       const ai = octet & 0x1f
       const parent_major = (parent != null) ? parent[MAJOR] : undefined
       const parent_length = (parent != null) ? parent.length : undefined
+
       switch (ai) {
         case NUMBYTES.ONE:
           this.emit('more-bytes', mt, 1, parent_major, parent_length)
-          val = (yield 1)[0]
+          ;[val] = yield 1
           break
         case NUMBYTES.TWO:
         case NUMBYTES.FOUR:
-        case NUMBYTES.EIGHT:
+        case NUMBYTES.EIGHT: {
           const numbytes = 1 << (ai - 24)
+
           this.emit('more-bytes', mt, numbytes, parent_major, parent_length)
           const buf = yield numbytes
           val = (mt === MT.SIMPLE_FLOAT) ?
             buf :
             utils.parseCBORint(ai, buf, this.bigint)
           break
+        }
         case 28:
         case 29:
         case 30:
@@ -547,7 +561,8 @@ class Decoder extends BinaryParseStream {
             val = Simple.decode(
               val,
               hasParent,
-              hasParent && (parent[COUNT] < 0))
+              hasParent && (parent[COUNT] < 0)
+            )
           } else {
             val = utils.parseCBORfloat(val)
           }
@@ -562,13 +577,15 @@ class Decoder extends BinaryParseStream {
           case !Array.isArray(parent):
             parent.push(val)
             break
-          case !(parent instanceof NoFilter):
+          case !(parent instanceof NoFilter): {
             const pm = parent[MAJOR]
+
             if ((pm != null) && (pm !== mt)) {
               this.running = false
               throw new Error('Invalid major type in indefinite encoding')
             }
             parent.write(val)
+          }
         }
         if ((--parent[COUNT]) !== 0) {
           again = true
@@ -582,8 +599,9 @@ class Decoder extends BinaryParseStream {
             case MT.ARRAY:
               val = parent
               break
-            case MT.MAP:
+            case MT.MAP: {
               let allstrings = true
+
               if ((parent.length % 2) !== 0) {
                 throw new Error('Invalid map length: ' + parent.length)
               }
@@ -599,16 +617,19 @@ class Decoder extends BinaryParseStream {
                   val[parent[i]] = parent[i + 1]
                 }
               } else {
-                val = new Map
+                val = new Map()
                 for (let i = 0, len = parent.length; i < len; i += 2) {
                   val.set(parent[i], parent[i + 1])
                 }
               }
               break
-            case MT.TAG:
+            }
+            case MT.TAG: {
               const t = new Tagged(parent[0], parent[1])
+
               val = t.convert(this.tags)
               break
+            }
           }
         } else /* istanbul ignore else */ if (parent instanceof NoFilter) {
           // only parent types are Array and NoFilter for (Array/Map) and
@@ -640,6 +661,7 @@ class Decoder extends BinaryParseStream {
             bytes,
             length: bytes.length
           }
+
           this.valueBytes = new NoFilter()
           return ret
         }

@@ -1,14 +1,15 @@
 'use strict'
-const cbor = require('../')
+const cbor = require(process.env.CBOR_PACKAGE || '../')
 const {BigNumber} = cbor
 const test = require('ava')
 const util = require('util')
 const fs = require('fs')
 const path = require('path')
-const readFile = util.promisify ? 
-  util.promisify(fs.readFile) : 
+const Buffer = cbor.encode(0).constructor
+const readFile = util.promisify ?
+  util.promisify(fs.readFile) :
   (...args) => new Promise((resolve, reject) => {
-    fs.readFile(...args, (er, res) => er ? reject(er) : resolve(res))
+    fs.readFile(...args, (er, res) => (er ? reject(er) : resolve(res)))
   })
 
 let vectors = null
@@ -18,14 +19,16 @@ test.before(async t => {
   // Read tests in.  Edit them to make the big integers come out correctly.
   let vecStr = null
   const vectorDir = path.resolve(
-    __dirname, '..', '..', '..', 'test-vectors')
+    __dirname, '..', '..', '..', 'test-vectors'
+  )
   const appendix_a = path.join(vectorDir, 'appendix_a.json')
   try {
     vecStr = await readFile(appendix_a, {encoding: 'utf8'})
   } catch (ignored) {
     t.fail(`"${appendix_a}" not found.
 use command \`git submodule update --init\` to load test-vectors`)
-    return t.end()
+    t.end()
+    return
   }
 
   // HACK: don't lose data when JSON parsing
@@ -40,7 +43,7 @@ use command \`git submodule update --init\` to load test-vectors`)
       return value
     }
     switch (value['___TYPE___']) {
-      case 'number':
+      case 'number': {
         const v = value['___VALUE___']
         const f = Number.parseFloat(v)
         const bn = new BigNumber(v)
@@ -51,6 +54,7 @@ use command \`git submodule update --init\` to load test-vectors`)
           return BigInt(bn.toString())
         }
         return bn
+      }
       default:
         return value
     }
@@ -63,7 +67,8 @@ use command \`git submodule update --init\` to load test-vectors`)
   } catch (ignored) {
     t.fail(`"${fail}" not found.
 use command \`git submodule update --init\` to load test-vectors`)
-    return t.end()
+    t.end()
+    return
   }
   failures = JSON.parse(failStr)
 })
@@ -74,7 +79,7 @@ test('vectors', t => {
     t.truthy(v.hex)
     const buffer = Buffer.from(v.hex, 'hex')
 
-    let decoded
+    let decoded = null
     try {
       decoded = cbor.decode(buffer)
     } catch (e) {
@@ -88,7 +93,8 @@ test('vectors', t => {
     t.deepEqual(
       Buffer.from(v.cbor, 'base64'),
       buffer,
-      'base64 and hex encoded bytes mismatched ')
+      'base64 and hex encoded bytes mismatched '
+    )
 
     if (decoded && (typeof decoded === 'object')) {
       delete decoded[cbor.Tagged.INTERNAL_JSON]
@@ -97,13 +103,15 @@ test('vectors', t => {
     t.deepEqual(
       decoded,
       redecoded,
-      `round trip error: ${v.hex} -> ${encoded.toString('hex')}`)
+      `round trip error: ${v.hex} -> ${encoded.toString('hex')}`
+    )
 
     if (v.hasOwnProperty('diagnostic')) {
       cbor.diagnose(buffer)
         .then(d => t.deepEqual(
           d.trim().replace(/_\d+($|\))/, '$1'),
-          v.diagnostic))
+          v.diagnostic
+        ))
     }
 
     if (v.hasOwnProperty('decoded')) {
@@ -119,7 +127,7 @@ test('vectors', t => {
           'fa47c35000',
           'f9c400'
         ].indexOf(v.hex) === -1) {
-          t.deepEqual(encoded, buffer)
+          t.deepEqual(encoded.toString('hex'), v.hex)
         } else {
           // Trigger if assumptions change
           t.notDeepEqual(encoded, buffer)
