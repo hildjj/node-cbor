@@ -36,6 +36,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v1.2.1
         with:
+          version: 5.17.2
           run_install: true
       - name: Test ${{ matrix.node-version }}
         run: npm run coverage
