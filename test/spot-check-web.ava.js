@@ -3,11 +3,12 @@
 const path = require('path')
 const test = require('ava')
 const cbor_modules = path.resolve(
-  __dirname, '..', 'packages', 'cbor', 'node_modules')
+  __dirname, '..', 'packages', 'cbor', 'node_modules'
+)
 const cbor_web = '../packages/cbor-web/dist/cbor'
 let cbor = require(cbor_web)
 
-test('exists', async t => {
+test('exists', t => {
   // Loaded once with no BigNumber
   t.truthy(cbor)
   t.truthy(cbor.encode)
@@ -24,7 +25,7 @@ test('exists', async t => {
   t.truthy(require('bignumber.js'))
   cbor = require(cbor_web)
   t.truthy(cbor.BigNumber)
-  t.is(cbor.BigNumber(10).toString(16), 'a')
+  t.is(new cbor.BigNumber(10).toString(16), 'a')
 })
 
 test('spot check', t => {

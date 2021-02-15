@@ -41,7 +41,7 @@ test('input_errors', async t => {
 test.cb('max_depth', t => {
   cbor.comment('01', 2, (er, str) => {
     t.falsy(er)
-    t.deepEqual('\n' + str, `
+    t.is('\n' + str, `
   01 -- 1
 0x01
 `)
@@ -55,7 +55,7 @@ test.cb('stream', t => {
   parser.pipe(bs)
 
   parser.on('end', () => {
-    t.deepEqual('\n' + bs.toString('utf8'), `
+    t.is('\n' + bs.toString('utf8'), `
   61                -- String, length: 1
     61              -- "a"
 0x6161
@@ -79,7 +79,7 @@ test('inputs', async t => {
     'mB4AAQIDBAUGBwgJAAECAwQFBgcICQABAgMEBQYHCAk=',
     'base64'
   )
-  t.deepEqual('\n' + c, `
+  t.is('\n' + c, `
   98                -- Array, length next 1 byte
     1e              -- Array, 30 items
       00            -- [0], 0
@@ -117,14 +117,14 @@ test('inputs', async t => {
   c = await cbor.comment('x\u001e012345678901234567890123456789',
     {encoding: 'utf8'})
   /* eslint-disable max-len */
-  t.deepEqual('\n' + c, `
+  t.is('\n' + c, `
   78                -- String, length next 1 byte
     1e              -- String, length: 30
       303132333435363738393031323334353637383930313233343536373839 -- "012345678901234567890123456789"
 0x781e303132333435363738393031323334353637383930313233343536373839
 `)
   c = await cbor.comment('381d', {max_depth: 12})
-  t.deepEqual('\n' + c, `
+  t.is('\n' + c, `
   38                    -- Negative number, next 1 byte
     1d                  -- -30
 0x381d

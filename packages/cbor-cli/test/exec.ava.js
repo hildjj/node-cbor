@@ -51,7 +51,7 @@ test('json2cbor', async t => {
     stdin: '{"foo": false}',
     encoding: 'hex'
   })
-  t.deepEqual(buf, 'a163666f6ff4')
+  t.is(buf, 'a163666f6ff4')
   buf = await exec('json2cbor', {
     args: ['-xc'],
     stdin: `{
@@ -59,7 +59,7 @@ test('json2cbor', async t => {
   "bar": -1
 }`
   })
-  t.deepEqual(buf, 'a2636261722063666f6ff4\n')
+  t.is(buf, 'a2636261722063666f6ff4\n')
   const pf = path.join(__dirname, '..', 'package.json')
   buf = await exec('json2cbor', {
     args: [pf, pf, pf],
@@ -91,29 +91,29 @@ test('cbor2json', async t => {
   let buf = await exec(t.title, {
     stdin: Buffer.from('12', 'hex')
   })
-  t.deepEqual(buf, '18\n')
+  t.is(buf, '18\n')
   buf = await exec(t.title, {
     args: ['-x', '12']
   })
-  t.deepEqual(buf, '18\n')
+  t.is(buf, '18\n')
 })
 
 test('cbor2diag', async t => {
   let buf = await exec(t.title, {
     stdin: Buffer.from('c100', 'hex')
   })
-  t.deepEqual(buf, '1(0)\n')
+  t.is(buf, '1(0)\n')
   buf = await exec(t.title, {
     args: ['-x', 'c100']
   })
-  t.deepEqual(buf, '1(0)\n')
+  t.is(buf, '1(0)\n')
 })
 
 test('cbor2comment', async t => {
   let buf = await exec(t.title, {
     stdin: Buffer.from('c100', 'hex')
   })
-  t.deepEqual(buf, `\
+  t.is(buf, `\
   c1                -- Tag #1
     00              -- 0
 0xc100
@@ -125,7 +125,7 @@ test('cbor2comment', async t => {
       '-x',
       'c100']
   })
-  t.deepEqual(buf, `\
+  t.is(buf, `\
   c1                        -- Tag #1
     00                      -- 0
 0xc100

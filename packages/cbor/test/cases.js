@@ -1025,6 +1025,9 @@ exports.toString = function toString(c) {
     // eslint-disable-next-line prefer-destructuring
     c = c[2]
   }
+  if (c == null) {
+    return c
+  }
   const match = c.match(HEX)
   return match[1]
 }

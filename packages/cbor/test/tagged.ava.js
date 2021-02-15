@@ -7,11 +7,11 @@ const Buffer = cbor.encode(0).constructor
 test('create', t => {
   const tag = new cbor.Tagged(1, 'one')
   t.truthy(tag)
-  t.deepEqual(tag.tag, 1)
-  t.deepEqual(tag.value, 'one')
-  t.deepEqual(tag.toString(), '1("one")')
+  t.is(tag.tag, 1)
+  t.is(tag.value, 'one')
+  t.is(tag.toString(), '1("one")')
 
-  t.deepEqual(cbor.encode(tag).toString('hex'), 'c1636f6e65')
+  t.is(cbor.encode(tag).toString('hex'), 'c1636f6e65')
 })
 
 test('edges', t => {

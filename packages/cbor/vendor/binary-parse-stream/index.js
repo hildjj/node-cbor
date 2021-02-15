@@ -37,16 +37,17 @@ class BinaryParseStream extends TransformStream {
     this.bs.write(fresh)
 
     while (this.bs.length >= this.__needed) {
-      let ret
+      let ret = null
       const chunk = (this.__needed === null) ?
-        undefined : this.bs.read(this.__needed)
+        undefined :
+        this.bs.read(this.__needed)
 
       try {
         ret = this.__parser.next(chunk)
       } catch (e) {
         return cb(e)
       }
-  
+
       if (this.__needed) {
         this.__fresh = false
       }
@@ -58,7 +59,7 @@ class BinaryParseStream extends TransformStream {
         this.__restart()
       }
     }
-  
+
     return cb()
   }
 
@@ -68,7 +69,7 @@ class BinaryParseStream extends TransformStream {
    * @returns {Generator<number, undefined, Buffer>}
    */
   /* istanbul ignore next */
-  *_parse() {
+  *_parse() { // eslint-disable-line class-methods-use-this, require-yield
     throw new Error('Must be implemented in subclass')
   }
 

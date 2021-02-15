@@ -60,11 +60,11 @@ test('bad first', t => failFirstAll(t, cases.decodeBad))
 test('bad first cb', t => failFirstAllCB(t, cases.decodeBad))
 
 test('decodeFirstSync', t => {
-  t.deepEqual(cbor.decodeFirstSync('02'), 2)
+  t.is(cbor.decodeFirstSync('02'), 2)
 
-  t.deepEqual(cbor.Decoder.decodeFirstSync('Ag==', 'base64'), 2)
-  t.deepEqual(cbor.decode('02', {}), 2)
-  t.deepEqual(cbor.decode('f6'), null)
+  t.is(cbor.Decoder.decodeFirstSync('Ag==', 'base64'), 2)
+  t.is(cbor.decode('02', {}), 2)
+  t.is(cbor.decode('f6'), null)
   t.throws(() => cbor.decode())
   t.throws(() => cbor.decode(''))
   t.throws(() => cbor.decode('63666f'))
@@ -79,7 +79,7 @@ test('decodeFirstSync', t => {
     cbor.decodeFirstSync(nf)
     t.fail()
   } catch (ex) {
-    t.deepEqual(ex.value, 1)
+    t.is(ex.value, 1)
     t.is(nf.length, 2)
   }
 
@@ -154,7 +154,7 @@ test.cb('error', t => {
 test.cb('stream', t => {
   const dt = new cbor.Decoder()
 
-  dt.on('data', v => t.deepEqual(v, 1))
+  dt.on('data', v => t.is(v, 1))
   dt.on('end', () => t.end())
   dt.on('error', er => t.falsy(er))
 
@@ -164,10 +164,10 @@ test.cb('stream', t => {
 
 test('decodeFirst', async t => {
   t.plan(9)
-  t.is(1, await cbor.decodeFirst('01'))
-  t.is(1, await cbor.decodeFirst('AQ==', {
+  t.is(await cbor.decodeFirst('01'), 1)
+  t.is(await cbor.decodeFirst('AQ==', {
     encoding: 'base64'
-  }))
+  }), 1)
   t.is(cbor.Decoder.NOT_FOUND, await cbor.decodeFirst(''))
   t.throws(() => cbor.decodeFirst())
   await t.throwsAsync(() => cbor.decodeFirst('', {required: true}))
@@ -186,23 +186,23 @@ test('decodeFirst', async t => {
 
 test('decodeAll', async t => {
   t.throws(() => cbor.decodeAll())
-  t.deepEqual([1], await cbor.decodeAll('01'))
+  t.deepEqual(await cbor.decodeAll('01'), [1])
   await t.throwsAsync(() => cbor.decodeAll('7f'))
-  t.deepEqual([1], await cbor.decodeAll('01', (er, v) => {
+  t.deepEqual(await cbor.decodeAll('01', (er, v) => {
     t.falsy(er)
-    t.deepEqual([1], v)
-  }))
+    t.deepEqual(v, [1])
+  }), [1])
   await cbor.decodeAll('AQ==', {encoding: 'base64'}, (er, v) => {
     t.falsy(er)
-    t.deepEqual([1], v)
+    t.deepEqual(v, [1])
   })
   await t.throwsAsync(() => cbor.decodeAll('7f', {}, (er, v) => {
     t.truthy(er)
   }))
-  t.deepEqual([1], await cbor.decodeAll('AQ==', 'base64', (er, v) => {
+  t.deepEqual(await cbor.decodeAll('AQ==', 'base64', (er, v) => {
     t.falsy(er)
-    t.deepEqual([1], v)
-  }))
+    t.deepEqual(v, [1])
+  }), [1])
 })
 
 test('depth', t => {

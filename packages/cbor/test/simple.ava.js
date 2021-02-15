@@ -6,11 +6,11 @@ const constants = require('../lib/constants')
 
 test('create', t => {
   const u = new cbor.Simple(0)
-  t.deepEqual(u.value, 0)
+  t.is(u.value, 0)
 
-  t.deepEqual(cbor.Simple.isSimple(u), true)
-  t.deepEqual(cbor.Simple.isSimple('foo'), false)
-  t.deepEqual(u.toString(), 'simple(0)')
+  t.is(cbor.Simple.isSimple(u), true)
+  t.is(cbor.Simple.isSimple('foo'), false)
+  t.is(u.toString(), 'simple(0)')
 
   t.throws(() => new cbor.Simple('0'))
   t.throws(() => new cbor.Simple(-1))

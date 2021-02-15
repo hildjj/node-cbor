@@ -11,8 +11,10 @@ const NoFilter = new cbor.Commented().all.constructor
 
 function testAll(t, list, opts = undefined) {
   t.plan(list.length)
-  return list.every(({orig, diag, commented}) => {
-    t.is(cbor.encodeOne(orig, opts).toString('hex'), cases.toString(diag), diag)
+  return list.every(([orig, diag, commented]) => {
+    const actual = cbor.encodeOne(orig, opts).toString('hex')
+    const expected = cases.toString(commented)
+    t.is(actual, expected, diag)
     return true
   })
 }
@@ -86,7 +88,7 @@ test.cb('streamNone', t => {
   const bs = new NoFilter()
   const gen = new cbor.Encoder()
   gen.on('end', () => {
-    t.deepEqual(bs.read(), null)
+    t.is(bs.read(), null)
     t.end()
   })
   gen.pipe(bs)
@@ -127,7 +129,7 @@ test('_pushAny', t => {
   const bs = new NoFilter()
   enc.pipe(bs)
   enc._pushAny(0)
-  t.deepEqual(bs.read().toString('hex'), '00')
+  t.is(bs.read().toString('hex'), '00')
 })
 
 test('canonical', t => {

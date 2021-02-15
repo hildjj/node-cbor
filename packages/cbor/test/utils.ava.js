@@ -13,10 +13,10 @@ test('bin', t => {
 })
 
 test('parseCBORint', t => {
-  t.deepEqual(utils.parseCBORint(24, hex('ff')), 255)
-  t.deepEqual(utils.parseCBORint(25, hex('ffff')), 65535)
-  t.deepEqual(utils.parseCBORint(26, hex('00010000')), 65536)
-  t.deepEqual(utils.parseCBORint(27, hex('0000000100000000')), 4294967296)
+  t.is(utils.parseCBORint(24, hex('ff')), 255)
+  t.is(utils.parseCBORint(25, hex('ffff')), 65535)
+  t.is(utils.parseCBORint(26, hex('00010000')), 65536)
+  t.is(utils.parseCBORint(27, hex('0000000100000000')), 4294967296)
   t.throws(() => {
     utils.parseCBORint(28, hex('ff'))
   })
@@ -26,10 +26,10 @@ test('parseCBORint', t => {
 })
 
 test('parseCBORfloat', t => {
-  t.deepEqual(utils.parseCBORfloat(bin('0 00000 0000000000')), 0)
-  t.deepEqual(utils.parseCBORfloat(bin('0 00000000 00000000000000000000000')),
+  t.is(utils.parseCBORfloat(bin('0 00000 0000000000')), 0)
+  t.is(utils.parseCBORfloat(bin('0 00000000 00000000000000000000000')),
     0)
-  t.deepEqual(utils.parseCBORfloat(bin('0 00000000000 0000000000000000000000000000000000000000000000000000')), 0) // eslint-disable-line max-len
+  t.is(utils.parseCBORfloat(bin('0 00000000000 0000000000000000000000000000000000000000000000000000')), 0) // eslint-disable-line max-len
   t.throws(() => {
     utils.parseCBORfloat(hex('ff'))
   })
@@ -39,23 +39,23 @@ test('parseCBORfloat', t => {
 })
 
 test('parseHalf', t => {
-  t.deepEqual(utils.parseHalf(bin('0 01111 0000000000')), 1)
+  t.is(utils.parseHalf(bin('0 01111 0000000000')), 1)
   t.deepEqual(utils.parseHalf(bin('1 10000 0000000000')), -2)
-  t.deepEqual(utils.parseHalf(bin('0 11110 1111111111')), 65504)
-  t.deepEqual(utils.parseHalf(bin('0 00001 0000000000')), 0.00006103515625)
-  t.deepEqual(utils.parseHalf(bin('0 00000 0000000000')), 0)
+  t.is(utils.parseHalf(bin('0 11110 1111111111')), 65504)
+  t.is(utils.parseHalf(bin('0 00001 0000000000')), 0.00006103515625)
+  t.is(utils.parseHalf(bin('0 00000 0000000000')), 0)
   t.deepEqual(utils.parseHalf(bin('1 00000 0000000000')), -0)
   t.deepEqual(utils.parseHalf(bin('0 11111 0000000000')), Infinity)
   t.deepEqual(utils.parseHalf(bin('1 11111 0000000000')), -Infinity)
 })
 
 test('arrayEqual', t => {
-  t.deepEqual(utils.arrayEqual(), true)
-  t.deepEqual(utils.arrayEqual([]), false)
-  t.deepEqual(utils.arrayEqual([], []), true)
-  t.deepEqual(utils.arrayEqual([1], []), false)
-  t.deepEqual(utils.arrayEqual([1, 2, 3], [1, 2, 3]), true)
-  t.deepEqual(utils.arrayEqual([1, 2, 3], [1, 2, 4]), false)
+  t.is(utils.arrayEqual(), true)
+  t.is(utils.arrayEqual([]), false)
+  t.is(utils.arrayEqual([], []), true)
+  t.is(utils.arrayEqual([1], []), false)
+  t.is(utils.arrayEqual([1, 2, 3], [1, 2, 3]), true)
+  t.is(utils.arrayEqual([1, 2, 3], [1, 2, 4]), false)
 })
 
 test('bufferToBignumber', t => {
@@ -72,14 +72,14 @@ test.cb('guessEncoding', t => {
   const nof = utils.guessEncoding(
     buf.buffer.slice(buf.offset, buf.offset + buf.length)
   )
-  t.deepEqual(nof.read().toString('hex'), '0102')
+  t.is(nof.read().toString('hex'), '0102')
   const ab = new ArrayBuffer(256)
   const u16 = new Uint16Array(ab, 100, 3)
   u16[0] = 512
   u16[1] = 256
   u16[2] = 1
   const nof2 = utils.guessEncoding(u16)
-  t.deepEqual(nof2.read().toString('hex'), '000200010100')
+  t.is(nof2.read().toString('hex'), '000200010100')
   try {
     utils.guessEncoding()
   } catch (ignored) {

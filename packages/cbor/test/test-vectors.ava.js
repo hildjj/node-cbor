@@ -27,7 +27,6 @@ test.before(async t => {
   } catch (ignored) {
     t.fail(`"${appendix_a}" not found.
 use command \`git submodule update --init\` to load test-vectors`)
-    t.end()
     return
   }
 
@@ -67,7 +66,6 @@ use command \`git submodule update --init\` to load test-vectors`)
   } catch (ignored) {
     t.fail(`"${fail}" not found.
 use command \`git submodule update --init\` to load test-vectors`)
-    t.end()
     return
   }
   failures = JSON.parse(failStr)

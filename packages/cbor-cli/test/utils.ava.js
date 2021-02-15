@@ -30,7 +30,7 @@ test.cb('HexStream', t => {
   const bs = new NoFilter()
   h.pipe(bs)
   h.on('end', () => {
-    t.deepEqual(bs.toString('utf8'), '61')
+    t.is(bs.toString('utf8'), '61')
     t.end()
   })
   h.end(Buffer.from([0x61]))
@@ -53,7 +53,7 @@ test.cb('streamFilesDash', t => {
   u.pipe(bs)
   utils.streamFiles([new utils.DeHexStream('6161')], () => u, er => {
     t.falsy(er)
-    t.deepEqual(bs.toString('utf8'), '6161')
+    t.is(bs.toString('utf8'), '6161')
     t.end()
   })
 })

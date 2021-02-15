@@ -16,7 +16,7 @@
     "install-global": "npm install -g $npm_package_config_devPackages",
     "install-all": "pnpm install -r",
     "docs": "jsdoc -c .jsdoc.conf",
-    "lint": "eslint packages/*/{src,lib,test,bin}/**.js",
+    "lint": "eslint test/*.js packages/*/{src,lib,test,bin,vendor/binary-parse-stream}/**.js",
     "test-all": "nve --continue --parallel 15,14,12,10 npm test",
     "coverage-all": "nyc -r lcov npm run test-all",
     "test": "ava packages/*/test/*.ava.js",
@@ -44,6 +44,7 @@
   "devDependencies": {
     "@cto.af/eslint-config": "*",
     "ava": "^3.15.0",
+    "eslint-plugin-ava": "^11.0.0",
     "eslint-plugin-node": "^11.1.0",
     "minami": "*",
     "nyc": "^15.1.0"
