@@ -28,7 +28,7 @@
     "spot-check": "ava test/*.ava.js && CBOR_PACKAGE=${INIT_CWD}/packages/cbor-web/dist/cbor.js npm test"
   },
   "config": {
-    "devPackages": "pnpm lerna eslint jsdoc light-server webpack webpack-cli parcel-bundler nve"
+    "devPackages": "pnpm lerna eslint jsdoc light-server typescript parcel-bundler nve"
   },
   "dependencies": {
     "nofilter": "^2.0.0"

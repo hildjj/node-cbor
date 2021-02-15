@@ -18,10 +18,10 @@
   "author": "Joe Hildebrand <joe-github@cursive.net>",
   "license": "MIT",
   "devDependencies": {
-    "@babel/core": "^7.12.13",
+    "@babel/core": "^7.12.16",
     "babelify": "^10.0.0",
     "browserify": "^17.0.0",
     "node-inspect-extracted": "*",
-    "terser": "^5.5.1"
+    "terser": "^5.6.0"
   }
 }

@@ -57,8 +57,7 @@
   "devDependencies": {
     "@types/node": "*",
     "bignumber.js": "^9.0.1",
-    "garbage": "~0.0.0",
-    "typescript": "^4.1.4"
+    "garbage": "~0.0.0"
   },
   "license": "MIT",
   "readmeFilename": "README.md",

@@ -51,7 +51,7 @@
   "dependencies": {
     "bignumber.js": "^9.0.1",
     "cbor": "^7.0.0",
-    "commander": "^7.0.0",
+    "commander": "^7.1.0",
     "json-text-sequence": "^0.2.0"
   },
   "engines": {
