@@ -404,7 +404,7 @@ test('no bignumber', async t => {
   })
 })
 
-test.only('Buffers', t => {
+test('Buffers', t => {
   // sanity checks for mangled library
   const b = Buffer.from('0102', 'hex')
   t.is(b.toString('hex'), '0102')
