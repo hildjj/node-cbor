@@ -22,7 +22,7 @@
     "test": "ava test/*.ava.js",
     "release": "npm version patch && git push --follow-tags && npm publish",
     "predev": "npm run coverage",
-    "dev": "light-server -q -s. -w 'lib/*.js # npm run doc' -w 'lib/*.js,test/*.js # npm run coverage' -o /coverage/lcov-report/index.html",
+    "dev": "light-server -q -s. -w 'lib/*.js,test/*.js # npm run coverage' -o /coverage/lcov-report/index.html",
     "types": "tsc",
     "preinstall": "node .checkVersion"
   },

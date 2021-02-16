@@ -137,17 +137,22 @@ class Encoder extends stream.Transform {
       [NoFilter.name]: this._pushNoFilter, // might be mangled
       RegExp: this._pushRegexp,
       Set: this._pushSet,
-      ArrayBuffer: this._pushUint8Array,
-      Uint8ClampedArray: this._pushUint8Array,
-      Uint8Array: this._pushUint8Array,
-      Uint16Array: this._pushArray,
-      Uint32Array: this._pushArray,
-      Int8Array: this._pushArray,
-      Int16Array: this._pushArray,
-      Int32Array: this._pushArray,
-      Float32Array: this._pushFloat32Array,
-      Float64Array: this._pushFloat64Array,
-      URL: this._pushURL
+      ArrayBuffer: this._pushArrayBuffer,
+      Uint8ClampedArray: this._pushTypedArray,
+      Uint8Array: this._pushTypedArray,
+      Uint16Array: this._pushTypedArray,
+      Uint32Array: this._pushTypedArray,
+      Int8Array: this._pushTypedArray,
+      Int16Array: this._pushTypedArray,
+      Int32Array: this._pushTypedArray,
+      Float32Array: this._pushTypedArray,
+      Float64Array: this._pushTypedArray,
+      BigUint64Array: this._pushTypedArray,
+      BigInt64Array: this._pushTypedArray,
+      URL: this._pushURL,
+      Boolean: this._pushBoxed,
+      Number: this._pushBoxed,
+      String: this._pushBoxed
     }
     if (constants.BigNumber) {
       this.semanticTypes[constants.BigNumber.name] = this._pushBigNumber
@@ -426,6 +431,9 @@ class Encoder extends stream.Transform {
   // TODO: make static?
   // eslint-disable-next-line class-methods-use-this
   _pushSet(gen, obj) {
+    if (!gen._pushTag(TAG.SET)) {
+      return false
+    }
     if (!gen._pushInt(obj.size, MT.ARRAY)) {
       return false
     }
@@ -441,6 +449,12 @@ class Encoder extends stream.Transform {
   // eslint-disable-next-line class-methods-use-this
   _pushURL(gen, obj) {
     return gen._pushTag(TAG.URI) && gen.pushAny(obj.toString())
+  }
+
+  // TODO: make static?
+  // eslint-disable-next-line class-methods-use-this
+  _pushBoxed(gen, obj) {
+    return gen._pushAny(obj.valueOf())
   }
 
   /**
@@ -540,6 +554,8 @@ class Encoder extends stream.Transform {
     return gen._pushBigint(slide)
   }
 
+  // TODO: make static
+  // eslint-disable-next-line class-methods-use-this
   _pushMap(gen, obj, opts) {
     opts = {
       indefinite: false,
@@ -559,14 +575,14 @@ class Encoder extends stream.Transform {
       // gets with object keys later
       const entries = [...obj.entries()]
       const enc = new Encoder({
-        genTypes: this.semanticTypes,
-        canonical: this.canonical,
-        detectLoops: !!this.detectLoops, // give enc its own loop detector
-        dateType: this.dateType,
-        disallowUndefinedKeys: this.disallowUndefinedKeys,
-        collapseBigIntegers: this.collapseBigIntegers
+        genTypes: gen.semanticTypes,
+        canonical: gen.canonical,
+        detectLoops: !!gen.detectLoops, // give enc its own loop detector
+        dateType: gen.dateType,
+        disallowUndefinedKeys: gen.disallowUndefinedKeys,
+        collapseBigIntegers: gen.collapseBigIntegers
       })
-      const bs = new NoFilter({highWaterMark: this.readableHighWaterMark})
+      const bs = new NoFilter({highWaterMark: gen.readableHighWaterMark})
       enc.pipe(bs)
       entries.sort(([a], [b]) => {
         // a, b are the keys
@@ -602,40 +618,43 @@ class Encoder extends stream.Transform {
     return true
   }
 
-  // TODO: make static?
+  // TODO: make static
   // eslint-disable-next-line class-methods-use-this
-  _pushUint8Array(gen, obj) {
+  _pushTypedArray(gen, obj) {
+    // see https://tools.ietf.org/html/rfc8746
+
+    let typ = 0b01000000
+    let sz = obj.BYTES_PER_ELEMENT
+    const {name} = obj.constructor
+
+    if (name.startsWith('Float')) {
+      typ |= 0b00010000
+      sz /= 2
+    } else if (!name.includes('U')) {
+      typ |= 0b00001000
+    }
+    if (name.includes('Clamped') || ((sz !== 1) && !utils.isBigEndian())) {
+      typ |= 0b00000100
+    }
+    typ |= {
+      1: 0b00,
+      2: 0b01,
+      4: 0b10,
+      8: 0b11
+    }[sz]
+    if (!gen._pushTag(typ)) {
+      return false
+    }
+    return gen._pushBuffer(
+      gen,
+      Buffer.from(obj.buffer, obj.byteOffset, obj.byteLength)
+    )
+  }
+
+  // TODO: make static
+  // eslint-disable-next-line class-methods-use-this
+  _pushArrayBuffer(gen, obj) {
     return gen._pushBuffer(gen, Buffer.from(obj))
-  }
-
-  // TODO: make static?
-  // eslint-disable-next-line class-methods-use-this
-  _pushFloat32Array(gen, obj) {
-    const len = obj.length
-    if (!gen._pushInt(len, MT.ARRAY)) {
-      return false
-    }
-    for (let j = 0; j < len; j++) {
-      if (!gen._pushUInt8(FLOAT) || !gen._pushFloatBE(obj[j])) {
-        return false
-      }
-    }
-    return true
-  }
-
-  // TODO: make static?
-  // eslint-disable-next-line class-methods-use-this
-  _pushFloat64Array(gen, obj) {
-    const len = obj.length
-    if (!gen._pushInt(len, MT.ARRAY)) {
-      return false
-    }
-    for (let j = 0; j < len; j++) {
-      if (!gen._pushUInt8(DOUBLE) || !gen._pushDoubleBE(obj[j])) {
-        return false
-      }
-    }
-    return true
   }
 
   /**

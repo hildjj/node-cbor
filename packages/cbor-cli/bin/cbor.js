@@ -56,12 +56,17 @@ try {
   // too hard to test both branches.
   /* istanbul ignore next */
   if (fs.statSync(path.resolve(cborPath, '..', '..', '.git')).isDirectory()) {
-    branch = '#' + child_process.execSync(
-      'git branch --show-current', {
-        cwd: cborPath,
-        encoding: 'utf8'
-      }
-    ).trimEnd()
+    try {
+      branch = '#' + child_process.execSync(
+        'git branch --show-current', {
+          cwd: cborPath,
+          encoding: 'utf8',
+          stdio: 'pipe'
+        }
+      ).trimEnd()
+    } catch (ignored) {
+      // any failures with git, we throw up our hands
+    }
   }
 } catch (ignored) {
   // no git repo

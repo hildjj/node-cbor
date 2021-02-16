@@ -10,6 +10,11 @@ const path = require('path')
 const Buffer = cbor.encode(0).constructor
 const NoFilter = new cbor.Commented().all.constructor
 
+function lbe(little, big) {
+  return utils.isBigEndian() ? big : little
+}
+exports.lbe = lbe
+
 async function requireWithFailedDependency(source, dependency, fn) {
   const src = require.resolve(source)
   const dep = require.resolve(dependency)
@@ -672,7 +677,58 @@ exports.good = [
   d9                --  next 2 bytes
     0100            -- Tag #256
       01            -- 1
-0xd9010001`]
+0xd9010001`],
+  [new Uint8Array([1, 2, 3]), '64(h\'010203\')', `
+  d8                --  next 1 byte
+    40              -- Tag #64
+      43            -- Bytes, length: 3
+        010203      -- 010203
+0xd84043010203`],
+  [new Uint8ClampedArray([1, 2, 3]), '68(h\'010203\')', `
+  d8                --  next 1 byte
+    44              -- Tag #68
+      43            -- Bytes, length: 3
+        010203      -- 010203
+0xd84443010203`],
+  lbe([new Uint16Array([1, 2, 3]), '69(h\'010002000300\')', `
+  d8                --  next 1 byte
+    45              -- Tag #69
+      46            -- Bytes, length: 6
+        010002000300 -- 010002000300
+0xd84546010002000300`],
+  [new Uint16Array([1, 2, 3]), '65(h\'000100020003\')', `
+  d8                --  next 1 byte
+    41              -- Tag #65
+      46            -- Bytes, length: 6
+        000100020003 -- 000100020003
+0xd84146000100020003`]),
+  lbe([new Uint32Array([1, 2, 3]), '70(h\'010000000200000003000000\')', `
+  d8                --  next 1 byte
+    46              -- Tag #70
+      4c            -- Bytes, length: 12
+        010000000200000003000000 -- 010000000200000003000000
+0xd8464c010000000200000003000000`],
+  [new Uint32Array([1, 2, 3]), '66(h\'000000010000000200000003\')', `
+  d8                --  next 1 byte
+    42              -- Tag #66
+      4c            -- Bytes, length: 12
+        000000010000000200000003 -- 000000010000000200000003
+0xd8424c000000010000000200000003`]),
+  lbe([new BigUint64Array([1n, 2n, 3n]), '71(h\'010000000000000002000000000000000300000000000000\')', `
+  d8                --  next 1 byte
+    47              -- Tag #71
+      58            -- Bytes, length next 1 byte
+        18          -- Bytes, length: 24
+          010000000000000002000000000000000300000000000000 -- 010000000000000002000000000000000300000000000000
+0xd8475818010000000000000002000000000000000300000000000000`],
+  [new BigUint64Array([1n, 2n, 3n]), '67(h\'000000000000000100000000000000020000000000000003\')', `
+  d8                --  next 1 byte
+    43              -- Tag #67
+      58            -- Bytes, length next 1 byte
+        18          -- Bytes, length: 24
+          000000000000000100000000000000020000000000000003 -- 000000000000000100000000000000020000000000000003
+0xd8435818000000000000000100000000000000020000000000000003`])
+
 ]
 
 exports.encodeGood = [
@@ -696,10 +752,12 @@ exports.encodeGood = [
 0xf97e00`],
 
   [new Set([1, 2]), '[1, 2]', `
-  82                -- Array, 2 items
-    01              -- [0], 1
-    02              -- [1], 2
-0x820102`], // TODO: define a tag for Set
+  d9                --  next 2 bytes
+    0102            -- Tag #258
+      82            -- Array, 2 items
+        01          -- [0], 1
+        02          -- [1], 2
+0xd90102820102`],
 
   // internal types
   [new NoFilter(Buffer.from([1, 2, 3, 4])), 'h\'01020304\'', `

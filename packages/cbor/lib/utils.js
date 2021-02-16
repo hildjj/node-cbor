@@ -271,7 +271,7 @@ exports.cborValueToString = function cborValueToString(val, float_bytes = -1) {
   if (constants.BigNumber && constants.BigNumber.isBigNumber(val)) {
     return val.toString()
   }
-  if (typeof val.inspect === 'function') {
+  if (val && (typeof val.inspect === 'function')) {
     return val.inspect()
   }
   return util.inspect(val)
@@ -315,4 +315,10 @@ exports.base64url = function base64url(buf) {
  */
 exports.base64 = function base64(buf) {
   return exports.bufferishToBuffer(buf).toString('base64')
+}
+
+exports.isBigEndian = function isBigEndian() {
+  const array = new Uint8Array(4)
+  const view = new Uint32Array(array.buffer)
+  return !((view[0] = 1) & array[0])
 }

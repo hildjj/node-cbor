@@ -122,3 +122,23 @@ test('converters', t => {
   })
   t.truthy(res.err instanceof Error)
 })
+
+test('Typed Arrays', t => {
+  let tag = new cbor.Tagged(1, 'foo')
+  t.throws(() => tag._toTypedArray(tag.value))
+  tag = new cbor.Tagged(90, 'foo')
+  t.throws(() => tag._toTypedArray(tag.value))
+  tag = new cbor.Tagged(76, 'foo')
+  t.throws(() => tag._toTypedArray(tag.value))
+
+  // endian
+  tag = new cbor.Tagged(65, Buffer.from('000100020003', 'hex'))
+  t.deepEqual(tag._toTypedArray(tag.value), new Uint16Array([1, 2, 3]))
+
+  tag = new cbor.Tagged(68, Buffer.from('010203', 'hex'))
+  t.deepEqual(tag._toTypedArray(tag.value), new Uint8ClampedArray([1, 2, 3]))
+
+  tag = new cbor.Tagged(73, Buffer.from('000100020003', 'hex'))
+  t.deepEqual(tag._toTypedArray(tag.value), new Int16Array([1, 2, 3]))
+
+})

@@ -24,6 +24,47 @@ function setBuffersToJSON(obj, fn) {
   }
 }
 
+function swapEndian(ab, size, byteOffset, byteLength) {
+  const dv = new DataView(ab)
+  const [getter, setter] = {
+    2: [dv.getUint16, dv.setUint16],
+    4: [dv.getUint32, dv.setUint32],
+    8: [dv.getBigUint64, dv.setBigUint64]
+  }[size]
+
+  const end = byteOffset + byteLength
+  for (let offset = byteOffset; offset < end; offset += size) {
+    setter.call(dv, offset, getter.call(dv, offset, true))
+  }
+}
+
+const TYPED_ARRAY_TAGS = {
+  64: Uint8Array,
+  65: Uint16Array,
+  66: Uint32Array,
+  67: BigUint64Array,
+  68: Uint8ClampedArray,
+  69: Uint16Array,
+  70: Uint32Array,
+  71: BigUint64Array,
+  72: Int8Array,
+  73: Int16Array,
+  74: Int32Array,
+  75: BigInt64Array,
+  // 76: reserved
+  77: Int16Array,
+  78: Int32Array,
+  79: BigInt64Array,
+  // 80: not implemented, float16 array
+  81: Float32Array,
+  82: Float64Array,
+  // 83: not implemented, float128 array
+  // 84: not implemented, float16 array
+  85: Float32Array,
+  86: Float64Array
+  // 87: not implemented, float128 array
+}
+
 const INTERNAL_JSON = Symbol('INTERNAL_JSON')
 /**
  * A CBOR tagged item, where the tag does not have semantics specified at the
@@ -99,7 +140,12 @@ class Tagged {
     if (typeof f !== 'function') {
       f = Tagged['_tag_' + this.tag]
       if (typeof f !== 'function') {
-        return this
+        f = TYPED_ARRAY_TAGS[this.tag]
+        if (typeof f === 'function') {
+          f = this._toTypedArray
+        } else {
+          return this
+        }
       }
     }
     try {
@@ -112,6 +158,25 @@ class Tagged {
       }
       return this
     }
+  }
+
+  _toTypedArray(val) {
+    const {tag} = this
+    // see https://tools.ietf.org/html/rfc8746
+    const TypedClass = TYPED_ARRAY_TAGS[tag]
+    if (!TypedClass) {
+      throw new Error(`Invalid typed array tag: ${tag}`)
+    }
+    const little = tag & 0b00000100
+    const float = (tag & 0b00010000) >> 4
+    const sz = 2 ** (float + (tag & 0b00000011))
+
+    if ((!little !== utils.isBigEndian()) && (sz > 1)) {
+      swapEndian(val.buffer, sz, val.byteOffset, val.byteLength)
+    }
+
+    const ab = val.buffer.slice(val.byteOffset, val.byteOffset + val.byteLength)
+    return new TypedClass(ab)
   }
 
   // Standard date/time string; see Section 3.4.1
@@ -268,6 +333,11 @@ class Tagged {
   // Regular expression; see Section 2.4.4.3
   static _tag_35(v) {
     return new RegExp(v)
+  }
+
+  // https://github.com/input-output-hk/cbor-sets-spec/blob/master/CBOR_SETS.md
+  static _tag_258(v) {
+    return new Set(v)
   }
 }
 Tagged.INTERNAL_JSON = INTERNAL_JSON

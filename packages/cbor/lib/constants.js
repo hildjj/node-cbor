@@ -43,7 +43,9 @@ exports.TAG = {
   BASE64URL: 33,
   BASE64: 34,
   REGEXP: 35,
-  MIME: 36
+  MIME: 36,
+  // https://github.com/input-output-hk/cbor-sets-spec/blob/master/CBOR_SETS.md
+  SET: 258
 }
 
 /**

@@ -3,6 +3,7 @@
 const test = require('ava')
 const constants = require('../lib/constants')
 const utils = require('../lib/utils')
+const { lbe } = require('./cases')
 const { hex, bin } = utils
 const { Buffer } = require('buffer') // NOT the mangled version
 
@@ -79,7 +80,7 @@ test.cb('guessEncoding', t => {
   u16[1] = 256
   u16[2] = 1
   const nof2 = utils.guessEncoding(u16)
-  t.is(nof2.read().toString('hex'), '000200010100')
+  t.is(nof2.read().toString('hex'), lbe('000200010100', '020001000001'))
   try {
     utils.guessEncoding()
   } catch (ignored) {

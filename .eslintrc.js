@@ -4,7 +4,9 @@ module.exports = {
   root: true,
   extends: '@cto.af',
   globals: {
-    BigInt: false
+    BigInt: false,
+    BigInt64Array: false,
+    BigUint64Array: false
   },
   plugins: [
     'ava'

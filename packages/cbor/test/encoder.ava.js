@@ -255,44 +255,72 @@ test('arraybuffer types', t => {
     '43000000'
   )
   t.is(
-    cbor.encodeOne(new Uint8Array(3)).toString('hex'),
-    '43000000'
+    cbor.encodeOne(new Uint8Array([1, 2, 3])).toString('hex'),
+    'd84043010203'
   )
   t.is(
-    cbor.encodeOne(new Uint8ClampedArray(3)).toString('hex'),
-    '43000000'
+    cbor.encodeOne(new Uint8ClampedArray([1, 2, 3])).toString('hex'),
+    'd84443010203'
   )
   t.is(
     cbor.encodeOne(new ArrayBuffer(3)).toString('hex'),
     '43000000'
   )
   t.is(
-    cbor.encodeOne(new Uint16Array(3)).toString('hex'),
-    '83000000'
+    cbor.encodeOne(new Uint16Array([1, 2, 3])).toString('hex'),
+    cases.lbe('d84546010002000300', 'd84146000100020003')
   )
   t.is(
-    cbor.encodeOne(new Uint32Array(3)).toString('hex'),
-    '83000000'
+    cbor.encodeOne(new Uint32Array([1, 2, 3])).toString('hex'),
+    cases.lbe(
+      'd8464c010000000200000003000000',
+      'd8424c000000010000000200000003'
+    )
   )
   t.is(
-    cbor.encodeOne(new Int8Array(3)).toString('hex'),
-    '83000000'
+    cbor.encodeOne(new Int8Array([1, 2, 3])).toString('hex'),
+    'd84843010203'
   )
   t.is(
-    cbor.encodeOne(new Int16Array(3)).toString('hex'),
-    '83000000'
+    cbor.encodeOne(new Int16Array([1, 2, 3])).toString('hex'),
+    cases.lbe('d84d46010002000300', 'd84946000100020003')
   )
   t.is(
-    cbor.encodeOne(new Int32Array(3)).toString('hex'),
-    '83000000'
+    cbor.encodeOne(new Int32Array([1, 2, 3])).toString('hex'),
+    cases.lbe(
+      'd84e4c010000000200000003000000',
+      'd84a4c000000010000000200000003'
+    )
   )
   t.is(
-    cbor.encodeOne(new Float32Array(3)).toString('hex'),
-    '83fa00000000fa00000000fa00000000'
+    cbor.encodeOne(new Float32Array([1, 2, 3])).toString('hex'),
+    cases.lbe(
+      'd8554c0000803f0000004000004040',
+      'd8514c3f8000004000000040400000'
+    )
   )
   t.is(
-    cbor.encodeOne(new Float64Array(3)).toString('hex'),
-    '83fb0000000000000000fb0000000000000000fb0000000000000000'
+    cbor.encodeOne(new Float64Array([1, 2, 3])).toString('hex'),
+    cases.lbe(
+      'd8565818000000000000f03f00000000000000400000000000000840',
+      'd85258183ff000000000000040000000000000004008000000000000'
+    )
+  )
+
+  t.is(
+    cbor.encodeOne(new BigInt64Array([1n, 2n, 3n])).toString('hex'),
+    cases.lbe(
+      'd84f5818010000000000000002000000000000000300000000000000',
+      'd84b5818000000000000000100000000000000020000000000000003'
+    )
+  )
+
+  t.is(
+    cbor.encodeOne(new BigUint64Array([1n, 2n, 3n])).toString('hex'),
+    cases.lbe(
+      'd8475818010000000000000002000000000000000300000000000000',
+      'd8435818000000000000000100000000000000020000000000000003'
+    )
   )
 
   cases.EncodeFailer.tryAll(t, new Float32Array(3))
@@ -411,4 +439,13 @@ test('Buffers', t => {
   const b = Buffer.from('0102', 'hex')
   t.is(b.toString('hex'), '0102')
   t.deepEqual(b, Buffer.from('0102', 'hex'))
+})
+
+test('boxed', t => {
+  // eslint-disable-next-line no-new-wrappers
+  t.is(cbor.encode(new Number(12)).toString('hex'), '0c')
+  // eslint-disable-next-line no-new-wrappers
+  t.is(cbor.encode(new String(12)).toString('hex'), '623132')
+  // eslint-disable-next-line no-new-wrappers
+  t.is(cbor.encode(new Boolean(12)).toString('hex'), 'f5')
 })
