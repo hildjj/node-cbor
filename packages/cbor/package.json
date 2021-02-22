@@ -1,6 +1,6 @@
 {
   "name": "cbor",
-  "version": "7.0.1",
+  "version": "7.0.2",
   "description": "Encode and parse data in the Concise Binary Object Representation (CBOR) data format (RFC7049).",
   "main": "./lib/cbor.js",
   "repository": {

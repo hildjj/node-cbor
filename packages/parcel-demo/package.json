@@ -1,6 +1,6 @@
 {
   "name": "parcel-demo",
-  "version": "7.0.1",
+  "version": "7.0.2",
   "description": "",
   "main": "index.js",
   "private": true,
@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "buffer": "^6.0.3",
-    "cbor-web": "^7.0.1",
+    "cbor-web": "^7.0.2",
     "cssnano": "^4.1.10",
     "node-inspect-extracted": "*",
     "regenerator-runtime": "^0.13.7"
