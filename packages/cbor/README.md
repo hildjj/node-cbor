@@ -144,6 +144,26 @@ Decoding supports the above types, including the following CBOR tag numbers:
 | 33  | Tagged              |
 | 34  | Tagged              |
 | 35  | RegExp              |
+| 64  | Uint8Array          |
+| 65  | Uint16Array         |
+| 66  | Uint32Array         |
+| 67  | BigUint64Array      |
+| 68  | Uint8ClampedArray   |
+| 69  | Uint16Array         |
+| 70  | Uint32Array         |
+| 71  | BigUint64Array      |
+| 72  | Int8Array           |
+| 73  | Int16Array          |
+| 74  | Int32Array          |
+| 75  | BigInt64Array       |
+| 77  | Int16Array          |
+| 78  | Int32Array          |
+| 79  | BigInt64Array       |
+| 81  | Float32Array        |
+| 82  | Float64Array        |
+| 85  | Float32Array        |
+| 86  | Float64Array        |
+| 258 | Set                 |
 
 ## Adding new Encoders
 
