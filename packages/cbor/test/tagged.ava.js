@@ -140,5 +140,4 @@ test('Typed Arrays', t => {
 
   tag = new cbor.Tagged(73, Buffer.from('000100020003', 'hex'))
   t.deepEqual(tag._toTypedArray(tag.value), new Int16Array([1, 2, 3]))
-
 })

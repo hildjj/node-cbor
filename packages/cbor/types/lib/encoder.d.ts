@@ -33,6 +33,9 @@ export = Encoder;
  *   as normal CBOR integers if they fit, discarding type information?
  * @property {number} [chunkSize=4096] - Number of characters or bytes
  *   for each chunk, if obj is a string or Buffer, when indefinite encoding
+ * @property {boolean} [omitUndefinedProperties=false] - When encoding
+ *   objects or Maps, do not include a key if its corresponding value is
+ *   `undefined`.
  */
 /**
  * Transform JavaScript values into CBOR bytes.  The `Writable` side of
@@ -277,4 +280,9 @@ type EncodingOptions = {
      * for each chunk, if obj is a string or Buffer, when indefinite encoding
      */
     chunkSize?: number;
+    /**
+     *  - When encoding objects or Maps, do not include a key if its
+     *  corresponding value is `undefined`.
+     */
+    omitUndefinedProperties?: boolean;
 };

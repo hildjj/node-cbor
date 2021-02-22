@@ -449,3 +449,16 @@ test('boxed', t => {
   // eslint-disable-next-line no-new-wrappers
   t.is(cbor.encode(new Boolean(12)).toString('hex'), 'f5')
 })
+
+test('omitUndefinedProperties', t => {
+  let buf = cbor.encodeOne(
+    {a: undefined, b: null, c: 0},
+    {omitUndefinedProperties: true}
+  )
+  t.is(buf.toString('hex'), 'a26162f6616300')
+  buf = cbor.encodeOne(
+    new Map([['a', undefined], ['b', null], ['c', 0]]),
+    {omitUndefinedProperties: true}
+  )
+  t.is(buf.toString('hex'), 'a26162f6616300')
+})

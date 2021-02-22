@@ -81,6 +81,9 @@ function parseDateType(str) {
  *   as normal CBOR integers if they fit, discarding type information?
  * @property {number} [chunkSize=4096] - Number of characters or bytes
  *   for each chunk, if obj is a string or Buffer, when indefinite encoding
+ * @property {boolean} [omitUndefinedProperties=false] - When encoding
+ *   objects or Maps, do not include a key if its corresponding value is
+ *   `undefined`.
  */
 
 /**
@@ -103,6 +106,7 @@ class Encoder extends stream.Transform {
       dateType = 'number',
       collapseBigIntegers = false,
       detectLoops = false,
+      omitUndefinedProperties = false,
       genTypes = [],
       ...superOpts
     } = options
@@ -126,6 +130,7 @@ class Encoder extends stream.Transform {
     } else if (!(detectLoops instanceof WeakSet)) {
       throw new TypeError('detectLoops must be boolean or WeakSet')
     }
+    this.omitUndefinedProperties = omitUndefinedProperties
 
     this.semanticTypes = {
       Array: this._pushArray,
@@ -561,11 +566,15 @@ class Encoder extends stream.Transform {
       indefinite: false,
       ...opts
     }
+    let entries = [...obj.entries()]
+    if (gen.omitUndefinedProperties) {
+      entries = entries.filter(([k, v]) => v !== undefined)
+    }
     if (opts.indefinite) {
       if (!gen._pushUInt8((MT.MAP << 5) | NUMBYTES.INDEFINITE)) {
         return false
       }
-    } else if (!gen._pushInt(obj.size, MT.MAP)) {
+    } else if (!gen._pushInt(entries.length, MT.MAP)) {
       return false
     }
     // memoizing the cbor only helps in certain cases, and hurts in most
@@ -573,7 +582,6 @@ class Encoder extends stream.Transform {
     if (gen.canonical) {
       // keep the key/value pairs together, so we don't have to do odd
       // gets with object keys later
-      const entries = [...obj.entries()]
       const enc = new Encoder({
         genTypes: gen.semanticTypes,
         canonical: gen.canonical,
@@ -601,7 +609,7 @@ class Encoder extends stream.Transform {
         }
       }
     } else {
-      for (const [k, v] of obj) {
+      for (const [k, v] of entries) {
         if (gen.disallowUndefinedKeys && (typeof k === 'undefined')) {
           throw new Error('Invalid Map key: undefined')
         }
@@ -701,7 +709,11 @@ Call removeLoopDetectors before resuming.`)
         return converter.call(obj, this, obj)
       }
     }
-    const keys = Object.keys(obj).filter(k => typeof obj[k] !== 'function')
+    const keys = Object.keys(obj).filter(k => {
+      const tv = typeof obj[k]
+      return (tv !== 'function') &&
+        (!this.omitUndefinedProperties || (tv !== 'undefined'))
+    })
     const cbor_keys = {}
     if (this.canonical) {
       // note: this can't be a normal sort, because 'b' needs to sort before

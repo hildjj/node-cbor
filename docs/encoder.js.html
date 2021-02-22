@@ -122,6 +122,9 @@ function parseDateType(str) {
  *   as normal CBOR integers if they fit, discarding type information?
  * @property {number} [chunkSize=4096] - Number of characters or bytes
  *   for each chunk, if obj is a string or Buffer, when indefinite encoding
+ * @property {boolean} [omitUndefinedProperties=false] - When encoding
+ *   objects or Maps, do not include a key if its corresponding value is
+ *   `undefined`.
  */
 
 /**
@@ -144,6 +147,7 @@ class Encoder extends stream.Transform {
       dateType = 'number',
       collapseBigIntegers = false,
       detectLoops = false,
+      omitUndefinedProperties = false,
       genTypes = [],
       ...superOpts
     } = options
@@ -167,6 +171,7 @@ class Encoder extends stream.Transform {
     } else if (!(detectLoops instanceof WeakSet)) {
       throw new TypeError('detectLoops must be boolean or WeakSet')
     }
+    this.omitUndefinedProperties = omitUndefinedProperties
 
     this.semanticTypes = {
       Array: this._pushArray,
@@ -178,17 +183,22 @@ class Encoder extends stream.Transform {
       [NoFilter.name]: this._pushNoFilter, // might be mangled
       RegExp: this._pushRegexp,
       Set: this._pushSet,
-      ArrayBuffer: this._pushUint8Array,
-      Uint8ClampedArray: this._pushUint8Array,
-      Uint8Array: this._pushUint8Array,
-      Uint16Array: this._pushArray,
-      Uint32Array: this._pushArray,
-      Int8Array: this._pushArray,
-      Int16Array: this._pushArray,
-      Int32Array: this._pushArray,
-      Float32Array: this._pushFloat32Array,
-      Float64Array: this._pushFloat64Array,
-      URL: this._pushURL
+      ArrayBuffer: this._pushArrayBuffer,
+      Uint8ClampedArray: this._pushTypedArray,
+      Uint8Array: this._pushTypedArray,
+      Uint16Array: this._pushTypedArray,
+      Uint32Array: this._pushTypedArray,
+      Int8Array: this._pushTypedArray,
+      Int16Array: this._pushTypedArray,
+      Int32Array: this._pushTypedArray,
+      Float32Array: this._pushTypedArray,
+      Float64Array: this._pushTypedArray,
+      BigUint64Array: this._pushTypedArray,
+      BigInt64Array: this._pushTypedArray,
+      URL: this._pushURL,
+      Boolean: this._pushBoxed,
+      Number: this._pushBoxed,
+      String: this._pushBoxed
     }
     if (constants.BigNumber) {
       this.semanticTypes[constants.BigNumber.name] = this._pushBigNumber
@@ -467,6 +477,9 @@ class Encoder extends stream.Transform {
   // TODO: make static?
   // eslint-disable-next-line class-methods-use-this
   _pushSet(gen, obj) {
+    if (!gen._pushTag(TAG.SET)) {
+      return false
+    }
     if (!gen._pushInt(obj.size, MT.ARRAY)) {
       return false
     }
@@ -482,6 +495,12 @@ class Encoder extends stream.Transform {
   // eslint-disable-next-line class-methods-use-this
   _pushURL(gen, obj) {
     return gen._pushTag(TAG.URI) &amp;&amp; gen.pushAny(obj.toString())
+  }
+
+  // TODO: make static?
+  // eslint-disable-next-line class-methods-use-this
+  _pushBoxed(gen, obj) {
+    return gen._pushAny(obj.valueOf())
   }
 
   /**
@@ -581,16 +600,22 @@ class Encoder extends stream.Transform {
     return gen._pushBigint(slide)
   }
 
+  // TODO: make static
+  // eslint-disable-next-line class-methods-use-this
   _pushMap(gen, obj, opts) {
     opts = {
       indefinite: false,
       ...opts
     }
+    let entries = [...obj.entries()]
+    if (gen.omitUndefinedProperties) {
+      entries = entries.filter(([k, v]) => v !== undefined)
+    }
     if (opts.indefinite) {
       if (!gen._pushUInt8((MT.MAP &lt;&lt; 5) | NUMBYTES.INDEFINITE)) {
         return false
       }
-    } else if (!gen._pushInt(obj.size, MT.MAP)) {
+    } else if (!gen._pushInt(entries.length, MT.MAP)) {
       return false
     }
     // memoizing the cbor only helps in certain cases, and hurts in most
@@ -598,16 +623,15 @@ class Encoder extends stream.Transform {
     if (gen.canonical) {
       // keep the key/value pairs together, so we don't have to do odd
       // gets with object keys later
-      const entries = [...obj.entries()]
       const enc = new Encoder({
-        genTypes: this.semanticTypes,
-        canonical: this.canonical,
-        detectLoops: !!this.detectLoops, // give enc its own loop detector
-        dateType: this.dateType,
-        disallowUndefinedKeys: this.disallowUndefinedKeys,
-        collapseBigIntegers: this.collapseBigIntegers
+        genTypes: gen.semanticTypes,
+        canonical: gen.canonical,
+        detectLoops: !!gen.detectLoops, // give enc its own loop detector
+        dateType: gen.dateType,
+        disallowUndefinedKeys: gen.disallowUndefinedKeys,
+        collapseBigIntegers: gen.collapseBigIntegers
       })
-      const bs = new NoFilter({highWaterMark: this.readableHighWaterMark})
+      const bs = new NoFilter({highWaterMark: gen.readableHighWaterMark})
       enc.pipe(bs)
       entries.sort(([a], [b]) => {
         // a, b are the keys
@@ -626,7 +650,7 @@ class Encoder extends stream.Transform {
         }
       }
     } else {
-      for (const [k, v] of obj) {
+      for (const [k, v] of entries) {
         if (gen.disallowUndefinedKeys &amp;&amp; (typeof k === 'undefined')) {
           throw new Error('Invalid Map key: undefined')
         }
@@ -643,40 +667,43 @@ class Encoder extends stream.Transform {
     return true
   }
 
-  // TODO: make static?
+  // TODO: make static
   // eslint-disable-next-line class-methods-use-this
-  _pushUint8Array(gen, obj) {
+  _pushTypedArray(gen, obj) {
+    // see https://tools.ietf.org/html/rfc8746
+
+    let typ = 0b01000000
+    let sz = obj.BYTES_PER_ELEMENT
+    const {name} = obj.constructor
+
+    if (name.startsWith('Float')) {
+      typ |= 0b00010000
+      sz /= 2
+    } else if (!name.includes('U')) {
+      typ |= 0b00001000
+    }
+    if (name.includes('Clamped') || ((sz !== 1) &amp;&amp; !utils.isBigEndian())) {
+      typ |= 0b00000100
+    }
+    typ |= {
+      1: 0b00,
+      2: 0b01,
+      4: 0b10,
+      8: 0b11
+    }[sz]
+    if (!gen._pushTag(typ)) {
+      return false
+    }
+    return gen._pushBuffer(
+      gen,
+      Buffer.from(obj.buffer, obj.byteOffset, obj.byteLength)
+    )
+  }
+
+  // TODO: make static
+  // eslint-disable-next-line class-methods-use-this
+  _pushArrayBuffer(gen, obj) {
     return gen._pushBuffer(gen, Buffer.from(obj))
-  }
-
-  // TODO: make static?
-  // eslint-disable-next-line class-methods-use-this
-  _pushFloat32Array(gen, obj) {
-    const len = obj.length
-    if (!gen._pushInt(len, MT.ARRAY)) {
-      return false
-    }
-    for (let j = 0; j &lt; len; j++) {
-      if (!gen._pushUInt8(FLOAT) || !gen._pushFloatBE(obj[j])) {
-        return false
-      }
-    }
-    return true
-  }
-
-  // TODO: make static?
-  // eslint-disable-next-line class-methods-use-this
-  _pushFloat64Array(gen, obj) {
-    const len = obj.length
-    if (!gen._pushInt(len, MT.ARRAY)) {
-      return false
-    }
-    for (let j = 0; j &lt; len; j++) {
-      if (!gen._pushUInt8(DOUBLE) || !gen._pushDoubleBE(obj[j])) {
-        return false
-      }
-    }
-    return true
   }
 
   /**
@@ -723,7 +750,11 @@ Call removeLoopDetectors before resuming.`)
         return converter.call(obj, this, obj)
       }
     }
-    const keys = Object.keys(obj).filter(k => typeof obj[k] !== 'function')
+    const keys = Object.keys(obj).filter(k => {
+      const tv = typeof obj[k]
+      return (tv !== 'function') &amp;&amp;
+        (!this.omitUndefinedProperties || (tv !== 'undefined'))
+    })
     const cbor_keys = {}
     if (this.canonical) {
       // note: this can't be a normal sort, because 'b' needs to sort before
