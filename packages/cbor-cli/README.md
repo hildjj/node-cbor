@@ -9,7 +9,7 @@ Object Representation (CBOR) data format
 This project now only supports versions of Node that the Node team is
 [currently supporting](https://github.com/nodejs/Release#release-schedule).
 Ava's [support
-statement](https://github.com/avajs/ava/blob/master/docs/support-statement.md)
+statement](https://github.com/avajs/ava/blob/main/docs/support-statement.md)
 is what we will be using as well.  Currently, that means Node `10`+ is
 required.  If you need to support an older version of Node (back to version
 6), use cbor version 5.2.x, which will get nothing but security updates from

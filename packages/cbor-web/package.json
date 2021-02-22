@@ -9,7 +9,7 @@
   "keywords": [],
   "author": "Joe Hildebrand <joe-github@cursive.net>",
   "license": "MIT",
-  "homepage": "https://github.com/hildjj/node-cbor/tree/master/packages/cbor-web",
+  "homepage": "https://github.com/hildjj/node-cbor/tree/main/packages/cbor-web",
   "repository": {
     "type": "git",
     "url": "http://github.com/hildjj/node-cbor.git",

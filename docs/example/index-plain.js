@@ -27,7 +27,7 @@ function input() {
         .match(/.{1,2}/g)
         .map(byte => parseInt(byte, 16)))
     case 'base64':
-      return new Uint8Array([... atob(txt)].map(c => c.charCodeAt(0)))
+      return new Uint8Array([...atob(txt)].map(c => c.charCodeAt(0)))
     default:
       throw new Error(`Unknown input: "${inp}"`)
   }
@@ -41,25 +41,26 @@ function output(buf, typ) {
       copy.disabled = false
       otxt.value = Array.prototype.map.call(
         buf,
-        (x) => ('00' + x.toString(16)).slice(-2))
-        .join('')
+        x => ('00' + x.toString(16)).slice(-2)
+      ).join('')
       break
     case 'base64':
       copy.disabled = false
-      otxt.value =  btoa(Array.prototype.reduce.call(
-        buf, (t, b) => t + String.fromCharCode(b), ''))
+      otxt.value = btoa(Array.prototype.reduce.call(
+        buf, (t, b) => t + String.fromCharCode(b), ''
+      ))
       break
     case 'commented':
       copy.disabled = true
-      cbor.comment(buf).then(
-        txt => otxt.value = txt,
-        error)
+      cbor.comment(buf).then(txt => {
+        otxt.value = txt
+      }, error)
       break
     case 'diagnostic':
       copy.disabled = true
-      cbor.diagnose(buf).then(
-        txt => otxt.value = txt,
-        error)
+      cbor.diagnose(buf).then(txt => {
+        otxt.value = txt
+      }, error)
       break
     case 'js':
       copy.disabled = true

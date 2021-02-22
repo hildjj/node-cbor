@@ -35,8 +35,8 @@ This is a monorepo that holds a few related packages:
 If you really need to get at a specific rev from GitHub, you can no longer do
 `npm install hildjj/node-cbor`.  Instead you need:
 
-    npm install https://gitpkg.now.sh/hildjj/node-cbor/packages/cbor?master
+    npm install https://gitpkg.now.sh/hildjj/node-cbor/packages/cbor?main
 
 ## Supported Node.js versions
 
-This project now only supports versions of Node that the Node team is [currently supporting](https://github.com/nodejs/Release#release-schedule).  Ava's [support statement](https://github.com/avajs/ava/blob/master/docs/support-statement.md) is what we will be using as well.  Currently, that means Node `10`+ is required.  If you need to support an older version of Node (back to version 6), use cbor version 5.2.x, which will get nothing but security updates from here on out.
+This project now only supports versions of Node that the Node team is [currently supporting](https://github.com/nodejs/Release#release-schedule).  Ava's [support statement](https://github.com/avajs/ava/blob/main/docs/support-statement.md) is what we will be using as well.  Currently, that means Node `10`+ is required.  If you need to support an older version of Node (back to version 6), use cbor version 5.2.x, which will get nothing but security updates from here on out.

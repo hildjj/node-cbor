@@ -8,7 +8,7 @@
     "url": "http://github.com/hildjj/node-cbor.git",
     "directory": "packages/cbor"
   },
-  "homepage": "https://github.com/hildjj/node-cbor/tree/master/packages/cbor",
+  "homepage": "https://github.com/hildjj/node-cbor/tree/main/packages/cbor",
   "directories": {
     "lib": "lib"
   },
