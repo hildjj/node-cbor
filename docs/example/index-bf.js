@@ -2024,9 +2024,13 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 /* eslint-disable no-undef */
 'use strict';
 
-const util = require('node-inspect-extracted');
+const {
+  inspect
+} = require('node-inspect-extracted');
 
-const Buffer = require('buffer');
+const {
+  Buffer
+} = require('buffer');
 
 const ofmt = document.getElementById('output-fmt');
 const otxt = document.getElementById('output-text');
@@ -2087,7 +2091,7 @@ function output(buf, typ) {
     case 'js':
       copy.disabled = true;
       cbor.decodeFirst(buf).then(o => {
-        otxt.value = util.inspect(o, {
+        otxt.value = inspect(o, {
           depth: Infinity,
           compact: 1,
           maxArrayLength: Infinity,

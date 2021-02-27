@@ -2,12 +2,11 @@
   "name": "parcel-demo",
   "version": "7.0.2",
   "description": "",
-  "main": "index.js",
   "private": true,
   "scripts": {
     "prebuild": "rm -rf dist",
-    "build": "parcel build src/index-p.html -d dist --no-source-maps --public-url .",
-    "deploy": "ls dist/* | xargs -I {} cp {} ../../docs/example",
+    "build": "parcel build src/index-p.html --dist-dir dist --no-source-maps --public-url .",
+    "deploy": "cp dist/* ../../docs/example",
     "predeploy": "npm run build"
   },
   "keywords": [],
@@ -19,13 +18,21 @@
     "directory": "packages/parcel-demo"
   },
   "devDependencies": {
-    "buffer": "^6.0.3",
-    "cbor-web": "^7.0.2",
+    "@babel/core": "^7.13.8",
+    "@parcel/optimizer-cssnano": "^2.0.0-nightly.612",
+    "@parcel/optimizer-htmlnano": "^2.0.0-nightly.612",
+    "@parcel/packager-css": "^2.0.0-nightly.612",
+    "@parcel/packager-html": "^2.0.0-nightly.612",
+    "@parcel/transformer-css": "^2.0.0-nightly.612",
+    "@parcel/transformer-html": "^2.0.0-nightly.612",
+    "@parcel/transformer-postcss": "^2.0.0-nightly.612",
+    "@parcel/transformer-posthtml": "^2.0.0-nightly.612",
+    "bignumber.js": "^9.0.1",
+    "cbor": "^7.0.2",
     "cssnano": "^4.1.10",
     "node-inspect-extracted": "*",
+    "parcel": "^2.0.0-beta.1",
+    "postcss": "^8.2.6",
     "regenerator-runtime": "^0.13.7"
-  },
-  "alias": {
-    "bignumber.js": "BigNumber"
   }
 }

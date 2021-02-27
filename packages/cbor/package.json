@@ -44,7 +44,8 @@
   ],
   "types": "./types/lib/cbor.d.ts",
   "dependencies": {
-    "nofilter": "^2.0.0"
+    "@cto.af/textdecoder": "^0.0.0",
+    "nofilter": "^2.0.3"
   },
   "peerDependencies": {
     "bignumber.js": "^9.0.1"

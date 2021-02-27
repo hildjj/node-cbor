@@ -3,11 +3,9 @@
 'use strict'
 
 const regeneratorRuntime = require('regenerator-runtime')
-const util = require('node-inspect-extracted')
-const cbor = require('cbor-web')
+const { inspect } = require('node-inspect-extracted')
 const { Buffer } = require('buffer')
-
-console.log(cbor.BigNumber)
+const cbor = require('cbor')
 
 const ofmt = document.getElementById('output-fmt')
 const otxt = document.getElementById('output-text')
@@ -59,7 +57,7 @@ function output(buf, typ) {
     case 'js':
       copy.disabled = true
       cbor.decodeFirst(buf).then(o => {
-        otxt.value = util.inspect(o, {
+        otxt.value = inspect(o, {
           depth: Infinity,
           compact: 1,
           maxArrayLength: Infinity,

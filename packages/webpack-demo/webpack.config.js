@@ -14,7 +14,7 @@ module.exports = {
 
   // this will be loaded from the .html file in a <script> tag
   externals: {
-    'BigNumber': true
+    util: '{}'
   },
 
   resolve: {

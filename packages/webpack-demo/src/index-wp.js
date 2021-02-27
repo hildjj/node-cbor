@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 'use strict'
 const cbor = require('cbor-web')
-const util = require('node-inspect-extracted')
+const { inspect } = require('node-inspect-extracted')
 const { Buffer } = require('buffer')
 
 // eslint-disable-next-line no-unused-vars
@@ -59,7 +59,7 @@ function output(buf, typ) {
     case 'js':
       copy.disabled = true
       cbor.decodeFirst(buf).then(o => {
-        otxt.value = util.inspect(o, {
+        otxt.value = inspect(o, {
           depth: Infinity,
           compact: 1,
           maxArrayLength: Infinity,

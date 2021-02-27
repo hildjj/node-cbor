@@ -1,0 +1,17 @@
+{
+  "name": "puppeteer-demo",
+  "version": "6.0.1",
+  "description": "Run all web demos in puppeteer",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Joe Hildebrand <joe-github@cursive.net>",
+  "license": "MIT",
+  "devDependencies": {
+    "chalk": "^4.1.0",
+    "puppeteer": "^8.0.0"
+  }
+}

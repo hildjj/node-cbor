@@ -3,6 +3,7 @@
 const { Buffer } = require('buffer')
 const NoFilter = require('nofilter')
 const stream = require('stream')
+const TextDecoder = require('@cto.af/textdecoder')
 const constants = require('./constants')
 const { NUMBYTES, SHIFT32, BI, SYMS } = constants
 
@@ -13,19 +14,20 @@ try {
   util = require('util')
 } catch (ignored) {
   // polyfill node-inspect-extracted in, if you're on the web
+
+  // I don't think getting here is possible in non-webpack node.  The normal
+  // methods of causing require('util') to fail don't work with
+  // internal packages.
+  /* istanbul ignore next */
+  util = require('node-inspect-extracted')
 }
-// I don't think the else is possible in node.  The normal
-// methods of causing require('util') to fail don't work with
-// internal packages.
-exports.inspect = util ? util.inspect : /* istanbul ignore next */ null
+exports.inspect = util.inspect
 
 /**
  * Convert a UTF8-encoded Buffer to a JS string.  If possible, throw an error
  * on invalid UTF8.  Byte Order Marks are not looked at or stripped.
  */
-/* istanbul ignore next */ // TextDecoder in node 11+, browsers
-const TD = (typeof TextDecoder === 'function') ? TextDecoder : util.TextDecoder
-const td = new TD('utf8', {fatal: true, ignoreBOM: true})
+const td = new TextDecoder('utf8', {fatal: true, ignoreBOM: true})
 exports.utf8 = buf => td.decode(buf)
 exports.utf8.checksUTF8 = true
 

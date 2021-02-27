@@ -19,13 +19,13 @@ module.exports = {
       root: 'BigNumber',
       commonjs: 'bignumber.js',
       commonjs2: 'bignumber.js'
-    }
+    },
+    util: true
   },
   resolve: {
     symlinks: false,
     fallback: {
-      stream: 'stream-browserify',
-      util: 'node-inspect-extracted'
+      stream: 'stream-browserify'
     }
   },
   plugins: [
