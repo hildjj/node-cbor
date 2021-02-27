@@ -4,12 +4,31 @@ const puppeteer = require('puppeteer')
 const chalk = require('chalk')
 const path = require('path')
 const assert = require('assert')
+const fs = require('fs')
 
 const TOP = 'file://' +
   path.resolve(__dirname, '..', '..', 'docs', 'example', 'index.html')
 
+let executablePath = process.env.PUPPETEER_EXECUTABLE_PATH
+if (!executablePath) {
+  executablePath = path.resolve(
+    '/',
+    'Applications',
+    'Google Chrome.app',
+    'Contents',
+    'MacOS',
+    'Google Chrome'
+  )
+}
+if (!executablePath) {
+  throw new Error('Set PUPPETEER_EXECUTABLE_PATH environment variable')
+}
+fs.accessSync(executablePath, fs.constants.X_OK)
+
 async function main() {
   const browser = await puppeteer.launch({
+    executablePath,
+    slowMo: 100,
     headless: false,
     defaultViewport: null
   })

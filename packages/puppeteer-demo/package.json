@@ -12,6 +12,7 @@
   "license": "MIT",
   "devDependencies": {
     "chalk": "^4.1.0",
+    "chrome-finder": "^1.0.7",
     "puppeteer": "^8.0.0"
   }
 }

@@ -24,6 +24,7 @@
     "coverage:all": "nyc -r lcov npm run test:all",
     "predeploy": "rm -rf docs/example/* && pnpm -r --filter cbor-web build",
     "deploy": "pnpm -r deploy",
+    "web": "node packages/puppeteer-demo/index.js",
     "prune": "pnpm store prune",
     "spot-check": "ava test/*.ava.js && CBOR_PACKAGE=${INIT_CWD}/packages/cbor-web/dist/cbor.js npm test"
   },
