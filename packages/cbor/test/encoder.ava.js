@@ -233,21 +233,19 @@ test('date types', t => {
   )
 })
 
-test('js BigInt', t => {
-  return testAll(t, cases.bigInts(cases.good))
-})
+test('js BigInt', t => testAll(t, cases.bigInts(cases.good)))
 
-test('BigNumber BigInt collapse', t => {
-  return testAll(t, cases.collapseBigIntegers, {
-    collapseBigIntegers: true
-  })
-})
+test('BigNumber BigInt collapse', t => testAll(
+  t,
+  cases.collapseBigIntegers,
+  { collapseBigIntegers: true }
+))
 
-test('js BigInt collapse', t => {
-  return testAll(t, cases.bigInts(cases.collapseBigIntegers), {
-    collapseBigIntegers: true
-  })
-})
+test('js BigInt collapse', t => testAll(
+  t,
+  cases.bigInts(cases.collapseBigIntegers),
+  { collapseBigIntegers: true }
+))
 
 test('arraybuffer types', t => {
   t.is(

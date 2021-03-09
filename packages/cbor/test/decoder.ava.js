@@ -13,16 +13,18 @@ const NoFilter = new cbor.Commented().all.constructor
 
 function testAll(t, list, opts) {
   t.plan(list.length)
-  return Promise.all(list.map(c => {
-    return cbor.decodeFirst(cases.toBuffer(c), opts)
-      .then(d => {
-        if ((typeof(c[0]) === 'number') && isNaN(c[0])) {
-          t.truthy(isNaN(d))
-        } else {
-          t.deepEqual(d, c[0], cases.toString(c))
-        }
-      })
-  }))
+  return Promise.all(
+    list.map(
+      c => cbor.decodeFirst(cases.toBuffer(c), opts)
+        .then(d => {
+          if ((typeof(c[0]) === 'number') && isNaN(c[0])) {
+            t.truthy(isNaN(d))
+          } else {
+            t.deepEqual(d, c[0], cases.toString(c))
+          }
+        })
+    )
+  )
 }
 
 function failAll(t, list) {
@@ -39,8 +41,8 @@ function failFirstAll(t, list) {
 
 function failFirstAllCB(t, list) {
   t.plan(list.length)
-  return Promise.all(list.map(c => {
-    return new Promise((resolve, reject) => {
+  return Promise.all(
+    list.map(c => new Promise((resolve, reject) => {
       cbor.decodeFirst(cases.toBuffer(c), (er, d) => {
         if (d == null) {
           t.truthy(er, c)
@@ -49,8 +51,8 @@ function failFirstAllCB(t, list) {
         }
         resolve()
       })
-    })
-  }))
+    }))
+  )
 }
 
 test('good', t => testAll(t, cases.bigInts(cases.good)))
@@ -205,12 +207,12 @@ test('decodeAll', async t => {
   }), [1])
 })
 
-test('depth', t => {
-  return t.throwsAsync(cbor.decodeFirst('818180', {max_depth: 1}))
+test('depth', async t => {
+  await t.throwsAsync(cbor.decodeFirst('818180', {max_depth: 1}))
 })
 
-test('js BigInt', t => {
-  return testAll(t, cases.bigInts(cases.good), {bigint: true})
+test('js BigInt', async t => {
+  await testAll(t, cases.bigInts(cases.good), {bigint: true})
 })
 
 test('bigint option', t => {

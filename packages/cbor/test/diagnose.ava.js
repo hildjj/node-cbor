@@ -9,12 +9,11 @@ const NoFilter = new cbor.Commented().all.constructor
 
 function testAll(t, list) {
   t.plan(list.length)
-  return Promise.all(list.map(c => {
-    return cbor.diagnose(cases.toBuffer(c))
-      .then(d => {
-        return t.is(d, c[1] + '\n')
-      })
-  }))
+  return Promise.all(
+    list.map(
+      c => cbor.diagnose(cases.toBuffer(c)).then(d => t.is(d, c[1] + '\n'))
+    )
+  )
 }
 
 function failAll(t, list) {

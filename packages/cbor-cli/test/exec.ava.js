@@ -73,18 +73,16 @@ test('json2cbor', async t => {
   const help = await exec('json2cbor', { args: ['-h'] })
   t.truthy(help.startsWith('Usage: '))
 
-  const er = await t.throwsAsync(() => {
-    return exec('json2cbor', { args: ['-Q'] })
-  })
+  const er = await t.throwsAsync(() => exec('json2cbor', { args: ['-Q'] }))
   t.is(er.buf.toString('utf8'), 'error: unknown option \'-Q\'\n')
   t.is(er.str, 'error: unknown option \'-Q\'\n')
 
-  await t.throwsAsync(() => {
-    return exec('json2cbor', {
+  await t.throwsAsync(
+    () => exec('json2cbor', {
       args: ['-x', '-'],
       stdin: 'treu' // sic
     })
-  })
+  )
 })
 
 test('cbor2json', async t => {

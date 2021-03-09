@@ -38,9 +38,7 @@ test.cb('HexStream', t => {
 
 test.cb('streamFilesNone', t => {
   utils.streamFiles([], () => {}, () => {
-    utils.streamFiles([BAD_FILE], () => {
-      return new utils.HexStream()
-    }, er => {
+    utils.streamFiles([BAD_FILE], () => new utils.HexStream(), er => {
       t.truthy(er)
       t.end()
     })
