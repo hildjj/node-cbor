@@ -152,8 +152,6 @@ class Encoder extends stream.Transform {
       Int32Array: this._pushTypedArray,
       Float32Array: this._pushTypedArray,
       Float64Array: this._pushTypedArray,
-      BigUint64Array: this._pushTypedArray,
-      BigInt64Array: this._pushTypedArray,
       URL: this._pushURL,
       Boolean: this._pushBoxed,
       Number: this._pushBoxed,
@@ -161,6 +159,13 @@ class Encoder extends stream.Transform {
     }
     if (constants.BigNumber) {
       this.semanticTypes[constants.BigNumber.name] = this._pushBigNumber
+    }
+    // Safari needs to get better.
+    if (typeof BigUint64Array !== 'undefined') {
+      this.semanticTypes[BigUint64Array.name] = this._pushTypedArray
+    }
+    if (typeof BigInt64Array !== 'undefined') {
+      this.semanticTypes[BigInt64Array.name] = this._pushTypedArray
     }
 
     if (Array.isArray(genTypes)) {

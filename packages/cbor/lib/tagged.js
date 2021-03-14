@@ -42,19 +42,19 @@ const TYPED_ARRAY_TAGS = {
   64: Uint8Array,
   65: Uint16Array,
   66: Uint32Array,
-  67: BigUint64Array,
+  // 67: BigUint64Array,  Safari doesn't implement
   68: Uint8ClampedArray,
   69: Uint16Array,
   70: Uint32Array,
-  71: BigUint64Array,
+  // 71: BigUint64Array,  Safari doesn't implement
   72: Int8Array,
   73: Int16Array,
   74: Int32Array,
-  75: BigInt64Array,
+  // 75: BigInt64Array,  Safari doesn't implement
   // 76: reserved
   77: Int16Array,
   78: Int32Array,
-  79: BigInt64Array,
+  // 79: BigInt64Array,  Safari doesn't implement
   // 80: not implemented, float16 array
   81: Float32Array,
   82: Float64Array,
@@ -63,6 +63,16 @@ const TYPED_ARRAY_TAGS = {
   85: Float32Array,
   86: Float64Array
   // 87: not implemented, float128 array
+}
+
+// Safari
+if (typeof BigUint64Array !== 'undefined') {
+  TYPED_ARRAY_TAGS[67] = BigUint64Array
+  TYPED_ARRAY_TAGS[71] = BigUint64Array
+}
+if (typeof BigInt64Array !== 'undefined') {
+  TYPED_ARRAY_TAGS[75] = BigInt64Array
+  TYPED_ARRAY_TAGS[79] = BigInt64Array
 }
 
 const INTERNAL_JSON = Symbol('INTERNAL_JSON')
