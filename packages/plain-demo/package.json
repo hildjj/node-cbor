@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "build": "node build.js",
+    "predeploy": "npm run build",
     "deploy": "ls dist/* | xargs -I {} cp {} ../../docs/example"
   },
   "author": "Joe Hildebrand <joe-github@cursive.net>",
@@ -17,6 +18,6 @@
   "devDependencies": {
     "bignumber.js": "^9.0.1",
     "cbor-web": "^7.0.3",
-    "node-inspect-extracted": "^1.0.3"
+    "node-inspect-extracted": "^1.0.4"
   }
 }
