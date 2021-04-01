@@ -1,6 +1,6 @@
 {
   "name": "plain-demo",
-  "version": "7.0.4",
+  "version": "7.0.5",
   "description": "A demo for cbor-web with no bundler",
   "private": true,
   "scripts": {
@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "bignumber.js": "^9.0.1",
-    "cbor-web": "^7.0.4",
+    "cbor-web": "^7.0.5",
     "node-inspect-extracted": "^1.0.5"
   }
 }

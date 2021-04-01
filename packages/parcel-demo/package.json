@@ -1,6 +1,6 @@
 {
   "name": "parcel-demo",
-  "version": "7.0.4",
+  "version": "7.0.5",
   "description": "",
   "private": true,
   "scripts": {
@@ -28,7 +28,7 @@
     "@parcel/transformer-postcss": "^2.0.0-nightly.612",
     "@parcel/transformer-posthtml": "^2.0.0-nightly.612",
     "bignumber.js": "^9.0.1",
-    "cbor": "^7.0.4",
+    "cbor": "^7.0.5",
     "cssnano": "^4.1.10",
     "node-inspect-extracted": "*",
     "parcel": "^2.0.0-beta.2",
