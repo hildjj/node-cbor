@@ -254,4 +254,3 @@ env NO_GARBAGE=1 npm run dev
 
 [![Build Status](https://github.com/hildjj/node-cbor/workflows/Tests/badge.svg)](https://github.com/hildjj/node-cbor/actions?query=workflow%3ATests)
 [![Coverage Status](https://coveralls.io/repos/hildjj/node-cbor/badge.svg?branch=main)](https://coveralls.io/r/hildjj/node-cbor?branch=main)
-[![Dependency Status](https://david-dm.org/hildjj/node-cbor.svg)](https://david-dm.org/hildjj/node-cbor)
