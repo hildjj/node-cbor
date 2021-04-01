@@ -606,7 +606,8 @@ class Decoder extends BinaryParseStream {
                 throw new Error('Invalid map length: ' + parent.length)
               }
               for (let i = 0, len = parent.length; i < len; i += 2) {
-                if (typeof parent[i] !== 'string') {
+                if ((typeof parent[i] !== 'string') ||
+                    (parent[i] === '__proto__')) {
                   allstrings = false
                   break
                 }
