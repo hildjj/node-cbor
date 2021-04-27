@@ -1,3 +1,7 @@
+# [3.0.0](https://github.com/dignifiedquire/borc/compare/v2.1.2...v3.0.0) (2021-04-27)
+
+
+
 <a name="2.1.2"></a>
 ## [2.1.2](https://github.com/dignifiedquire/borc/compare/v2.1.1...v2.1.2) (2020-03-26)
 
