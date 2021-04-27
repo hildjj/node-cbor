@@ -1,6 +1,6 @@
 {
   "name": "borc",
-  "version": "2.1.2",
+  "version": "3.0.0",
   "description": "Encode and parse data in the Concise Binary Object Representation (CBOR) data format (RFC7049).",
   "main": "./src/index.js",
   "repository": {
@@ -77,6 +77,7 @@
     "Rüdiger Klaehn <rklaehn@gmail.com>",
     "Scorpi <cobblebone@gmail.com>",
     "Alan Shaw <alan.shaw@protocol.ai>",
+    "Alex Potsides <alex@achingbrain.net>",
     "Benjamin Cabé <kartben@gmail.com>",
     "Ryan Pendergast <ryan.pendergast@gmail.com>"
   ]
