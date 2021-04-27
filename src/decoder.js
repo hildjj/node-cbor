@@ -109,7 +109,7 @@ class Decoder {
 
   // Finish the current parent
   _closeParent () {
-    var p = this._parents.pop()
+    const p = this._parents.pop()
 
     if (p.length > 0) {
       throw new Error(`Missing ${p.length} elements`)

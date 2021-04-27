@@ -3,7 +3,7 @@
 const { Buffer } = require('buffer')
 const Bignum = require('bignumber.js').BigNumber
 const { URL } = require('iso-url')
-const expect = require('chai').expect
+const { expect } = require('aegir/utils/chai')
 
 const cbor = require('../../')
 const constants = require('../../src/constants')
@@ -1156,7 +1156,7 @@ exports.canonNums = [
   [3.4028234663852886e38, 'fa7f7fffff'],
   [0.00006103515625, 'f90400'],
   [0.2498779296875, 'f933ff'],
-  [2.9802322387695312e-8, 'fa33000000'],
+  [2.9802322387695312e-8, 'fa33000000'], // eslint-disable-line no-loss-of-precision
   [4.1727979294137185e-8, 'fa33333866'],
   [0.000007636845111846924, 'fa37002000'],
 

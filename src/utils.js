@@ -9,14 +9,13 @@ const SHIFT16 = constants.SHIFT16
 const MAX_SAFE_HIGH = 0x1fffff
 
 exports.parseHalf = function parseHalf (buf) {
-  var exp, mant, sign
-  sign = buf[0] & 0x80 ? -1 : 1
-  exp = (buf[0] & 0x7C) >> 2
-  mant = ((buf[0] & 0x03) << 8) | buf[1]
+  const sign = buf[0] & 0x80 ? -1 : 1
+  const exp = (buf[0] & 0x7C) >> 2
+  const mant = ((buf[0] & 0x03) << 8) | buf[1]
   if (!exp) {
     return sign * 5.9604644775390625e-8 * mant
   } else if (exp === 0x1f) {
-    return sign * (mant ? 0 / 0 : 2e308)
+    return sign * (mant ? 0 / 0 : 2e308) // eslint-disable-line no-loss-of-precision
   } else {
     return sign * Math.pow(2, exp - 25) * (1024 + mant)
   }
@@ -95,7 +94,7 @@ exports.writeHalf = function writeHalf (buf, half) {
   //   int exp = (u32.u >> 23) & 0xff;
   //   int mant = u32.u & 0x7fffff;
 
-  var s16 = (u >> 16) & 0x8000 // top bit is sign
+  let s16 = (u >> 16) & 0x8000 // top bit is sign
   const exp = (u >> 23) & 0xff // then 5 bits of exponent
   const mant = u & 0x7fffff
 
@@ -138,8 +137,8 @@ exports.writeHalf = function writeHalf (buf, half) {
 }
 
 exports.keySorter = function (a, b) {
-  var lenA = a[0].byteLength
-  var lenB = b[0].byteLength
+  const lenA = a[0].byteLength
+  const lenB = b[0].byteLength
 
   if (lenA > lenB) {
     return 1

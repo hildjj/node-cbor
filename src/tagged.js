@@ -9,7 +9,7 @@ class Tagged {
   /**
    * Creates an instance of Tagged.
    *
-   * @param {Number} tag - the number of the tag
+   * @param {number} tag - the number of the tag
    * @param {any} value - the value inside the tag
    * @param {Error} err - the error that was thrown parsing the tag, or null
    */
@@ -28,7 +28,7 @@ class Tagged {
   /**
    * Convert to a String
    *
-   * @returns {String} string of the form '1(2)'
+   * @returns {string} string of the form '1(2)'
    */
   toString () {
     return `${this.tag}(${JSON.stringify(this.value)})`
@@ -37,7 +37,7 @@ class Tagged {
   /**
    * Push the simple value onto the CBOR stream
    *
-   * @param {cbor.Encoder} gen The generator to push onto
+   * @param {cbor.Encoder} gen - The generator to push onto
    * @returns {number}
    */
   encodeCBOR (gen) {
@@ -52,12 +52,12 @@ class Tagged {
    * of a function.
    *
    * @param {Object} converters - keys in the object are a tag number, the value
-   *   is a function that takes the decoded CBOR and returns a JavaScript value
-   *   of the appropriate type.  Throw an exception in the function on errors.
+   * is a function that takes the decoded CBOR and returns a JavaScript value
+   * of the appropriate type.  Throw an exception in the function on errors.
    * @returns {any} - the converted item
    */
   convert (converters) {
-    var er, f
+    let er, f
     f = converters != null ? converters[this.tag] : undefined
     if (typeof f !== 'function') {
       f = Tagged['_tag' + this.tag]

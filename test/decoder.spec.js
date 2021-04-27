@@ -2,9 +2,7 @@
 'use strict'
 
 const { Buffer } = require('buffer')
-const chai = require('chai')
-chai.use(require('dirty-chai'))
-const expect = chai.expect
+const { expect } = require('aegir/utils/chai')
 const Bignumber = require('bignumber.js').BigNumber
 
 const cases = require('./fixtures/cases')
@@ -15,7 +13,7 @@ const decoder = new cbor.Decoder()
 
 describe('Decoder', function () {
   describe('vectors', () => {
-    for (var i = 0; i < vectors.length; i++) {
+    for (let i = 0; i < vectors.length; i++) {
       if (vectors[i].diagnostic) {
         continue
       }

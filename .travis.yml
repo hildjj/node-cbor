@@ -1,27 +1,35 @@
 language: node_js
-cache: npm
-stages:
-  - check
-  - test
-  - cov
+cache: false
+dist: bionic
+
+branches:
+  only:
+  - master
+  - /^release\/.*$/
 
 node_js:
-  - '10'
-  - '12'
+  - 'lts/*'
+  - 'node'
+
+stages:
+  - check
 
 os:
   - linux
   - osx
   - windows
 
-script: npx nyc -s npm run test:node -- --bail
-after_success: npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
+env:
+  # This stops Windows builds from hanging
+  # https://travis-ci.community/t/timeout-after-build-finished-and-succeeded/1336
+  - YARN_GPG=no
+
+script: npx aegir test -t node --bail
 
 jobs:
   include:
     - stage: check
       script:
-        - npx aegir commitlint --travis
         - npx aegir dep-check
         - npm run lint
 
@@ -35,7 +43,7 @@ jobs:
       name: firefox
       addons:
         firefox: latest
-      script: npx aegir test -t browser -t webworker -- --browsers FirefoxHeadless
+      script: npx aegir test -t browser -t webworker -- --browser firefox
 
 notifications:
   email: false

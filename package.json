@@ -11,6 +11,12 @@
   "browser": {
     "fs": false
   },
+  "bin": {
+    "cbor2comment": "./bin/cbor2comment.js",
+    "cbor2diag": "./bin/cbor2diag.js",
+    "cbor2json": "./bin/cbor2json.js",
+    "json2cbor": "./bin/json2cbor.js"
+  },
   "files": [
     "src",
     "dist"
@@ -42,24 +48,22 @@
     "email": "dignifiedquire@gmail.com"
   },
   "devDependencies": {
-    "aegir": "^21.4.5",
+    "aegir": "^33.1.0",
     "ava": "^3.5.1",
     "benchmark": "^2.1.0",
     "budo": "^11.2.0",
-    "cbor": "^4.0.0",
-    "chai": "^4.1.2",
-    "dirty-chai": "^2.0.1",
+    "cbor": "^7.0.5",
     "garbage": "0.0.0"
   },
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {
     "bignumber.js": "^9.0.0",
-    "buffer": "^5.5.0",
+    "buffer": "^6.0.3",
     "commander": "^2.15.0",
     "ieee754": "^1.1.13",
-    "iso-url": "~0.4.7",
-    "json-text-sequence": "~0.1.0",
+    "iso-url": "^1.1.5",
+    "json-text-sequence": "~0.3.0",
     "readable-stream": "^3.6.0"
   },
   "engines": {

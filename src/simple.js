@@ -45,7 +45,7 @@ class Simple {
   /**
    * Push the simple value onto the CBOR stream
    *
-   * @param {cbor.Encoder} gen The generator to push onto
+   * @param {cbor.Encoder} gen - The generator to push onto
    * @returns {number}
    */
   encodeCBOR (gen) {
@@ -68,9 +68,9 @@ class Simple {
    * `null` or `undefined`, so that the value can be passed through a
    * stream in object mode.
    *
-   * @param {Number} val - the CBOR additional info to convert
+   * @param {number} val - the CBOR additional info to convert
    * @param {bool} hasParent - Does the CBOR item have a parent?
-   * @returns {(null|undefined|Boolean|Symbol)} - the decoded value
+   * @returns {(null | undefined | boolean | symbol)} - the decoded value
    */
   static decode (val, hasParent) {
     if (hasParent == null) {

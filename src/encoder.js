@@ -324,20 +324,20 @@ class Encoder {
       return this._pushUInt8(NULL)
     }
 
-    var len = this.semanticTypes.length
-    for (var i = 0; i < len; i++) {
+    const len = this.semanticTypes.length
+    for (let i = 0; i < len; i++) {
       if (obj instanceof this.semanticTypes[i][0]) {
         return this.semanticTypes[i][1].call(obj, this, obj)
       }
     }
 
-    var f = obj.encodeCBOR
+    const f = obj.encodeCBOR
     if (typeof f === 'function') {
       return f.call(obj, this)
     }
 
-    var keys = Object.keys(obj)
-    var keyLength = keys.length
+    const keys = Object.keys(obj)
+    const keyLength = keys.length
     if (!this._pushInt(keyLength, MT.MAP)) {
       return false
     }
@@ -360,7 +360,7 @@ class Encoder {
       return a
     }).sort(utils.keySorter)
 
-    for (var j = 0; j < len; j++) {
+    for (let j = 0; j < len; j++) {
       if (!this.push(map[j][0])) {
         return false
       }
@@ -390,7 +390,7 @@ class Encoder {
    * @returns {boolean} true on success
    */
   pushAny (obj) {
-    var typ = toType(obj)
+    const typ = toType(obj)
 
     switch (typ) {
       case 'Number':
@@ -441,22 +441,22 @@ class Encoder {
       return null
     }
 
-    var result = this.result
-    var resultLength = this.resultLength
-    var resultMethod = this.resultMethod
-    var offset = this.offset
+    const result = this.result
+    const resultLength = this.resultLength
+    const resultMethod = this.resultMethod
+    const offset = this.offset
 
     // Determine the size of the buffer
-    var size = 0
-    var i = 0
+    let size = 0
+    let i = 0
 
     for (; i < offset; i++) {
       size += resultLength[i]
     }
 
-    var res = Buffer.allocUnsafe(size)
-    var index = 0
-    var length = 0
+    const res = Buffer.allocUnsafe(size)
+    let index = 0
+    let length = 0
 
     // Write the content into the result buffer
     for (i = 0; i < offset; i++) {
@@ -488,7 +488,7 @@ class Encoder {
       index += length
     }
 
-    var tmp = res
+    const tmp = res
 
     this._reset()
 
@@ -504,6 +504,7 @@ class Encoder {
 
   /**
    * Encode the given value
+   *
    * @param {*} o
    * @returns {Buffer}
    */
