@@ -191,7 +191,10 @@ class Tagged {
 
   // Standard date/time string; see Section 3.4.1
   static _tag_0(v) {
-    return new Date(v)
+    //the string representation of a date allows for higher precision than JS's date, so we need to return it verbatim
+    //we still try to parse though, so it errors
+    new Date(v)
+    return v
   }
 
   // Epoch-based date/time; see Section 3.4.2
