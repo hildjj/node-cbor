@@ -15,7 +15,7 @@
     "install:local": "npm install --no-save $npm_package_config_devPackages",
     "install:global": "npm install -g $npm_package_config_devPackages",
     "docs": "jsdoc -c .jsdoc.conf",
-    "lint": "eslint test/*.js packages/*/{src,lib,test,bin,vendor/binary-parse-stream}/**.js",
+    "lint": "eslint . --ext cjs --ext js",
     "test": "ava packages/*/test/*.ava.js",
     "test:all": "nve --continue --parallel 15,14,12,10 npm test",
     "test:bigendian": "docker run --rm -it -v ${PWD}:/root/cbor -w /root/cbor s390x/node npm test",
