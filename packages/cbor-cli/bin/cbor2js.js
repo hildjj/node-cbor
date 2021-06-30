@@ -43,4 +43,4 @@ utils.streamFiles(argv, () => {
     }))
   })
   return d
-}, utils.printError)
+}).catch(utils.printError)

@@ -32,18 +32,18 @@ exports.printError = function printError(er) {
   }
 }
 
-exports.streamFiles = function streamFiles(files, streamFunc, cb) {
-  const f = files.shift()
-  if (!f) {
-    return cb()
+exports.streamFiles = async function streamFiles(files, streamFunc) {
+  for (const f of files) {
+    await new Promise((resolve, reject) => {
+      const sf = streamFunc(f)
+      sf.on('end', resolve)
+      sf.on('error', reject)
+
+      const s = (f === '-') ?
+        process.stdin :
+        (f instanceof stream.Stream) ? f : fs.createReadStream(f)
+      s.on('error', reject)
+      s.pipe(sf)
+    })
   }
-  const sf = streamFunc(f)
-  // go to the next file
-  sf.on('end', () => exports.streamFiles(files, streamFunc, cb))
-  sf.on('error', cb)
-  const s = (f === '-') ?
-    process.stdin :
-    (f instanceof stream.Stream) ? f : fs.createReadStream(f)
-  s.on('error', cb)
-  return s.pipe(sf)
 }

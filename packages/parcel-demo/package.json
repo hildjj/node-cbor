@@ -22,7 +22,7 @@
     "bignumber.js": "^9.0.1",
     "cbor": "^7.0.6",
     "node-inspect-extracted": "*",
-    "parcel": "2.0.0-beta.1",
+    "parcel": "2.0.0-beta.2",
     "regenerator-runtime": "^0.13.7"
   }
 }

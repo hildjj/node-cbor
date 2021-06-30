@@ -68,7 +68,7 @@ test('bufferToBignumber', t => {
   )
 })
 
-test.cb('guessEncoding', t => {
+test('guessEncoding', t => {
   const buf = Buffer.from('0102', 'hex')
   const nof = utils.guessEncoding(
     buf.buffer.slice(buf.offset, buf.offset + buf.length)
@@ -81,11 +81,7 @@ test.cb('guessEncoding', t => {
   u16[2] = 1
   const nof2 = utils.guessEncoding(u16)
   t.is(nof2.read().toString('hex'), lbe('000200010100', '020001000001'))
-  try {
-    utils.guessEncoding()
-  } catch (ignored) {
-    t.end()
-  }
+  t.throws(() => utils.guessEncoding())
 })
 
 test('cborValueToString', t => {

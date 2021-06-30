@@ -2,7 +2,10 @@
 
 const cbor = require(process.env.CBOR_PACKAGE || '../')
 const test = require('ava')
+const pEvent = require('p-event')
+const util = require('util')
 const cases = require('./cases')
+const pdiagnose = util.promisify(cbor.diagnose)
 // use mangled versions
 const Buffer = cbor.encode(0).constructor
 const NoFilter = new cbor.Commented().all.constructor
@@ -27,51 +30,38 @@ test('diagnose', t => testAll(t, cases.good))
 test('decode', t => testAll(t, cases.decodeGood))
 test('edges', t => failAll(t, cases.decodeBad))
 
-test.cb('construct', t => {
+test('construct', async t => {
   const d = new cbor.Diagnose()
   t.is(d.stream_errors, false)
   d.stream_errors = true
   const bs = new NoFilter()
   d.pipe(bs)
-  d.on('end', () => {
-    t.is(bs.toString('utf8'), 'Error: unexpected end of input')
-    t.end()
-  })
   d.end(Buffer.from([0x18]))
+  await pEvent(d, 'end')
+  t.is(bs.toString('utf8'), 'Error: unexpected end of input')
 })
 
-test.cb('stream', t => {
+test('stream', async t => {
   const dt = new cbor.Diagnose({
     separator: '-'
   })
   const bs = new NoFilter()
-
-  dt.on('end', () => {
-    t.is(bs.toString('utf8'), '1-')
-    t.end()
-  })
-  dt.on('error', er => t.falsy(er))
   dt.pipe(bs)
   dt.end(Buffer.from('01', 'hex'))
+  await pEvent(dt, 'end')
+  t.is(bs.toString('utf8'), '1-')
 })
 
-test.cb('inputs', t => {
+test('inputs', async t => {
   t.throws(() => {
     cbor.diagnose()
   })
-  cbor.diagnose('01', (er, d) => {
-    t.falsy(er)
-    t.truthy(d)
-    cbor.diagnose('AQ==', {encoding: 'base64'})
-      .then(d2 => {
-        t.truthy(d2)
-        cbor.diagnose('AQ==', {encoding: 'base64'}, (er2, d3) => {
-          t.falsy(er2)
-          t.truthy(d3)
-          t.end()
-        })
-      })
-  })
+  const d = await pdiagnose('01')
+  t.truthy(d)
+  const d2 = await cbor.diagnose('AQ==', {encoding: 'base64'})
+  t.truthy(d2)
+  const d3 = await pdiagnose('AQ==', {encoding: 'base64'})
+  t.truthy(d3)
 })
 
 test('async', async t => {

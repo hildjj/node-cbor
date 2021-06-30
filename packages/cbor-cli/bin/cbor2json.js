@@ -29,4 +29,4 @@ utils.streamFiles(argv, () => {
     console.log(JSON.stringify(v))
   })
   return d
-}, utils.printError)
+}).catch(utils.printError)

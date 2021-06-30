@@ -3,6 +3,7 @@
 const cbor_src = process.env.CBOR_PACKAGE || '../'
 const cbor = require(cbor_src)
 const test = require('ava')
+const pEvent = require('p-event')
 const cases = require('./cases')
 const {BigNumber} = cbor
 // use mangled versions
@@ -72,27 +73,23 @@ test('addSemanticType', t => {
   t.is(gen2.read().toString('hex'), 'd9fffe63666f6f')
 })
 
-test.cb('stream', t => {
+test('stream', async t => {
   const bs = new NoFilter()
   const gen = new cbor.Encoder()
-  gen.on('end', () => {
-    t.deepEqual(bs.read(), Buffer.from([1, 2]))
-    t.end()
-  })
   gen.pipe(bs)
   gen.write(1)
   gen.end(2)
+  await pEvent(gen, 'end')
+  t.deepEqual(bs.read(), Buffer.from([1, 2]))
 })
 
-test.cb('streamNone', t => {
+test('streamNone', async t => {
   const bs = new NoFilter()
   const gen = new cbor.Encoder()
-  gen.on('end', () => {
-    t.is(bs.read(), null)
-    t.end()
-  })
   gen.pipe(bs)
   gen.end()
+  await pEvent(gen, 'end')
+  t.is(bs.read(), null)
 })
 
 test('pushFails', t => {

@@ -122,12 +122,15 @@ class Encoder extends stream.Transform {
     this.disallowUndefinedKeys = disallowUndefinedKeys
     this.dateType = parseDateType(dateType)
     this.collapseBigIntegers = this.canonical ? true : collapseBigIntegers
-    this.detectLoops = detectLoops
+    /** @type WeakSet? */
+    this.detectLoops = undefined
     if (typeof detectLoops === 'boolean') {
       if (detectLoops) {
         this.detectLoops = new WeakSet()
       }
-    } else if (!(detectLoops instanceof WeakSet)) {
+    } else if (detectLoops instanceof WeakSet) {
+      this.detectLoops = detectLoops
+    } else {
       throw new TypeError('detectLoops must be boolean or WeakSet')
     }
     this.omitUndefinedProperties = omitUndefinedProperties
@@ -195,7 +198,7 @@ class Encoder extends stream.Transform {
    * @callback encodeFunction
    * @param {Encoder} encoder - the encoder to serialize into.  Call "write"
    *   on the encoder as needed.
-   * @return {bool} - true on success, else false
+   * @return {boolean} - true on success, else false
    */
 
   /**

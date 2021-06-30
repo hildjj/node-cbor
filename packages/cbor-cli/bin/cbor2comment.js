@@ -31,4 +31,4 @@ utils.streamFiles(argv, () => {
   })
   c.pipe(process.stdout)
   return c
-}, utils.printError)
+}).catch(utils.printError)

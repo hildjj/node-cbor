@@ -3,10 +3,13 @@
 const cbor_src = process.env.CBOR_PACKAGE || '../'
 const cbor = require(cbor_src)
 const test = require('ava')
+const pEvent = require('p-event')
+const util = require('util')
 const cases = require('./cases')
 const streams = require('./streams')
 const {BigNumber} = cbor
 const BinaryParseStream = require('../vendor/binary-parse-stream')
+const pdecodeFirst = util.promisify(cbor.decodeFirst)
 // use mangled versions
 const Buffer = cbor.encode(0).constructor
 const NoFilter = new cbor.Commented().all.constructor
@@ -102,7 +105,7 @@ test('decodeAllSync', t => {
   t.deepEqual(cbor.Decoder.decodeAllSync(nf), [1, 2, 3])
 })
 
-test.cb('add_tag', t => {
+test('add_tag', async t => {
   function replaceTag(val) {
     return {foo: val}
   }
@@ -118,50 +121,50 @@ test.cb('add_tag', t => {
   d.on('error', er => {
     t.truthy(false, `Failed: ${er}`)
   })
+
+  const b = Buffer.from('d87f01c001', 'hex')
+  d.end(b)
+
+  const ait = pEvent.iterator(d, 'data', {
+    resolutionEvents: ['finish']
+  })
+
   let count = 0
-  d.on('data', val => {
+  for await (const val of ait) {
     switch (count++) {
       case 0:
         t.deepEqual(val, new cbor.Tagged(127, 1, 'Invalid tag'))
         break
       case 1:
         t.deepEqual(val, {foo: 1})
-        t.end()
         break
     }
-  })
-  const b = Buffer.from('d87f01c001', 'hex')
-  d.end(b)
+  }
 })
 
-test.cb('parse_tag', t => {
-  cbor.decodeFirst('d87f01', 'hex', (er, vals) => {
-    t.falsy(er)
-    t.deepEqual(vals, new cbor.Tagged(127, 1))
-    t.end()
-  })
+test('parse_tag', async t => {
+  const vals = await pdecodeFirst('d87f01', 'hex')
+  t.deepEqual(vals, new cbor.Tagged(127, 1))
 })
 
-test.cb('error', t => {
-  cbor.decodeFirst('d87f01c001', 'hex').catch(er => {
-    t.truthy(er)
-    cbor.Decoder.decodeFirst('', {required: true}, (er2, d) => {
-      t.truthy(er2)
-      t.falsy(d)
-      t.end()
-    })
-  })
+test('error', async t => {
+  await t.throwsAsync(() => pdecodeFirst('d87f01c001', 'hex'))
+  await t.throwsAsync(() => pdecodeFirst('', {required: true}))
 })
 
-test.cb('stream', t => {
+test('stream', async t => {
   const dt = new cbor.Decoder()
-
-  dt.on('data', v => t.is(v, 1))
-  dt.on('end', () => t.end())
-  dt.on('error', er => t.falsy(er))
 
   const d = new streams.DeHexStream('01')
   d.pipe(dt)
+
+  const ait = pEvent.iterator(dt, 'data', {
+    resolutionEvents: ['end']
+  })
+
+  for await (const v of ait) {
+    t.is(v, 1)
+  }
 })
 
 test('decodeFirst', async t => {

@@ -2,10 +2,13 @@
 
 const cbor = require(process.env.CBOR_PACKAGE || '../')
 const test = require('ava')
+const pEvent = require('p-event')
+const util = require('util')
 const cases = require('./cases')
 const streams = require('./streams')
 // use mangled version
 const NoFilter = new cbor.Commented().all.constructor
+const pcomment = util.promisify(cbor.comment)
 
 function testAll(t, list) {
   t.plan(list.length)
@@ -40,40 +43,37 @@ test('input_errors', async t => {
   t.is(await cbor.comment('', null), '')
 })
 
-test.cb('max_depth', t => {
-  cbor.comment('01', 2, (er, str) => {
-    t.falsy(er)
-    t.is('\n' + str, `
+test('max_depth', async t => {
+  const str = await pcomment('01', 2)
+  t.is(str, `\
   01 -- 1
 0x01
 `)
-    t.end()
-  })
 })
 
-test.cb('stream', t => {
+test('stream', async t => {
   const bs = new NoFilter()
   const parser = new cbor.Commented()
   parser.pipe(bs)
-
-  parser.on('end', () => {
-    t.is('\n' + bs.toString('utf8'), `
-  61                -- String, length: 1
-    61              -- "a"
-0x6161
-`)
-    t.end()
-  })
   parser.on('error', er => t.fail(`Failed: ${er}`))
 
   const h = new streams.DeHexStream('6161')
   h.pipe(parser)
+
+  await pEvent(parser, 'end')
+  t.is('\n' + bs.toString('utf8'), `
+  61                -- String, length: 1
+    61              -- "a"
+0x6161
+`)
 })
 
-test.cb('function', t => {
-  cbor.comment('00', c => {
-    t.end()
-  })
+test('function', async t => {
+  const str = await pcomment('00')
+  t.is(str, `\
+  00                -- 0
+0x00
+`)
 })
 
 test('inputs', async t => {

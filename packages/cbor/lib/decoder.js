@@ -205,7 +205,7 @@ class Decoder extends BinaryParseStream {
    *
    * @static
    * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
-   *   |DataView|stream.Readable} input - If a Readable stream, must have
+   *   |DataView|ReadableStream} input - If a Readable stream, must have
    *   received the `readable` event already, or you will get an error
    *   claiming "Insufficient data"
    * @param {DecoderOptions|string} [options={}] Options or encoding for input
@@ -261,7 +261,7 @@ class Decoder extends BinaryParseStream {
    *
    * @static
    * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
-   *   |DataView|stream.Readable} input
+   *   |DataView|ReadableStream} input
    * @param {DecoderOptions|string} [options={}] Options or encoding
    *   for input
    * @returns {Array} - Array of all found items
@@ -305,7 +305,7 @@ class Decoder extends BinaryParseStream {
    *
    * @static
    * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
-   *   |DataView|stream.Readable} input
+   *   |DataView|ReadableStream} input
    * @param {DecoderOptions|decodeCallback|string} [options={}] - options, the
    *   callback, or input encoding
    * @param {decodeCallback} [cb] callback
@@ -376,7 +376,7 @@ class Decoder extends BinaryParseStream {
    *
    * @static
    * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
-   *   |DataView|stream.Readable} input
+   *   |DataView|ReadableStream} input
    * @param {DecoderOptions|decodeAllCallback|string} [options={}] -
    *   Decoding options, the callback, or the input encoding.
    * @param {decodeAllCallback} [cb] callback
