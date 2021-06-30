@@ -116,7 +116,7 @@ test.cb('add_tag', t => {
   t.deepEqual(d.tags[127], newTag)
 
   d.on('error', er => {
-    t.truthy(false, er)
+    t.truthy(false, `Failed: ${er}`)
   })
   let count = 0
   d.on('data', val => {

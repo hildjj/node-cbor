@@ -62,7 +62,7 @@ async function main() {
   for (let i = 0; i < len; i++) {
     await Promise.all([
       page.waitForNavigation({waitUntil: 'load'}),
-      page.click(`li:nth-child(${i+1}) a`)
+      page.click(`li:nth-child(${i + 1}) a`)
     ])
     await page.$eval('#input-text', input => {
       input.value = 'c482382cc254056e5e99b1be81b6eefa3964490ac18c69399361'

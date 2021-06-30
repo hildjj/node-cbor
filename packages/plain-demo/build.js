@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 'use strict'
 
 const fs = require('fs')
@@ -25,12 +24,12 @@ try {
   console.warn(`Warning: could not create "${dist}"`);
 }
 
-const script = /<script\s+src="([^'"\/]+)"/g
+const script = /<script\s+src="([^'"/]+)"/g
 for (const s of fs.readdirSync(src)) {
   const srcFile = path.join(src, s)
   let copy = true
   switch (path.extname(s)) {
-    case '.html':
+    case '.html': {
       // find all of the scripts that we need
       const html = fs.readFileSync(srcFile, 'utf8')
       let match = null
@@ -40,6 +39,7 @@ for (const s of fs.readdirSync(src)) {
         transform.add(s)
       }
       break
+    }
     case '.js':
       // keep track of the ones we already have
       have.add(s)
@@ -55,12 +55,12 @@ const scripts = new Set([...needed].filter(x => !have.has(x)))
 // find the scripts we don't have yet.  Assume each one is
 // a single file.
 const scriptNames = {}
-for (const script of scripts) {
-  const scriptSrc = require.resolve(script)
+for (const s of scripts) {
+  const scriptSrc = require.resolve(s)
   const local = path.basename(scriptSrc)
-  scriptNames[script] = local
+  scriptNames[s] = local
 
-  console.log(`Resolve: ${script} (${path.relative(__dirname, scriptSrc)})`)
+  console.log(`Resolve: ${s} (${path.relative(__dirname, scriptSrc)})`)
   fs.copyFileSync(scriptSrc, path.join(dist, local))
 }
 

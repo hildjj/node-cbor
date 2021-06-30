@@ -64,7 +64,7 @@ test.cb('stream', t => {
 `)
     t.end()
   })
-  parser.on('error', er => t.fail(er))
+  parser.on('error', er => t.fail(`Failed: ${er}`))
 
   const h = new streams.DeHexStream('6161')
   h.pipe(parser)
