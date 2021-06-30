@@ -233,6 +233,20 @@ const d = new Decoder({tags: { 64000: (val) => {
 }}})
 ```
 
+You can also replace the default decoders by passing in an appropriate tag
+function.  For example:
+
+```javascript
+cbor.decodeFirstSync(input, {
+  tags: {
+    // Replace the Tag 0 (RFC3339 Date/Time string) decoder.
+    // See https://tc39.es/proposal-temporal/docs/ for the upcoming
+    // Temporal built-in, which supports nanosecond time:
+    0: x => Temporal.Instant.from(x)
+  }
+})
+```
+
 Developers
 ----------
 
