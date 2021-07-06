@@ -5,7 +5,7 @@
   "private": "true",
   "scripts": {
     "prebuild": "rm -rf dist; mkdir dist",
-    "build": "browserify --standalone cbor ../cbor/lib/cbor.js -t [ babelify  ] | terser --compress -o dist/bundle-bf.js; browserify src/index.js -t [ babelify  ] -o dist/index-bf.js; cp src/*.{css,html} dist",
+    "build": "browserify --standalone cbor ../cbor/lib/cbor.js -t [ babelify  ] | terser --compress -o dist/bundle-bf.js; browserify src/index.js -t [ babelify  ] -o dist/index-bf.js; cp src/*.css src/*.html dist",
     "deploy": "cp dist/* ../../docs/example",
     "predeploy": "npm run build"
   },
@@ -18,10 +18,10 @@
   "author": "Joe Hildebrand <joe-github@cursive.net>",
   "license": "MIT",
   "devDependencies": {
-    "@babel/core": "^7.13.14",
+    "@babel/core": "^7.14.6",
     "babelify": "^10.0.0",
     "browserify": "^17.0.0",
     "node-inspect-extracted": "*",
-    "terser": "^5.6.1"
+    "terser": "^5.7.1"
   }
 }

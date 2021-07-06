@@ -11,8 +11,8 @@
   "author": "Joe Hildebrand <joe-github@cursive.net>",
   "license": "MIT",
   "devDependencies": {
-    "chalk": "^4.1.0",
+    "chalk": "^4.1.1",
     "chrome-finder": "^1.0.7",
-    "puppeteer": "^8.0.0"
+    "puppeteer": "^10.1.0"
   }
 }

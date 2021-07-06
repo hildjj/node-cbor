@@ -12,13 +12,18 @@ try {
     force: true
   })
 } catch (ignored) {
+  console.warn(`Warning: could not delete "${dist}"`);
 }
 
 const have = new Set()
 const needed = new Set()
 const transform = new Set()
 
-fs.mkdirSync(dist)
+try {
+  fs.mkdirSync(dist)
+} catch (ignored) {
+  console.warn(`Warning: could not create "${dist}"`);
+}
 
 const script = /<script\s+src="([^'"\/]+)"/g
 for (const s of fs.readdirSync(src)) {
