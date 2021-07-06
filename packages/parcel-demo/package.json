@@ -1,6 +1,6 @@
 {
   "name": "parcel-demo",
-  "version": "7.0.5",
+  "version": "7.0.6",
   "description": "",
   "private": true,
   "scripts": {
@@ -20,7 +20,7 @@
   "devDependencies": {
     "@babel/core": "^7.14.6",
     "bignumber.js": "^9.0.1",
-    "cbor": "^7.0.5",
+    "cbor": "^7.0.6",
     "node-inspect-extracted": "*",
     "parcel": "2.0.0-beta.1",
     "regenerator-runtime": "^0.13.7"
