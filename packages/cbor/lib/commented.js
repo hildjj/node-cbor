@@ -27,8 +27,6 @@ function plural(c) {
   * @property {object} [tags] - mapping from tag number to function(v),
   *   where v is the decoded value that comes after the tag, and where the
   *   function returns the correctly-created value for that tag.
-  * @property {boolean} [bigint=true] generate JavaScript BigInt's
-  *   instead of BigNumbers, when possible.
   * @property {boolean} [preferWeb=false] if true, prefer Uint8Arrays to
   *   be generated instead of node Buffers.  This might turn on some more
   *   changes in the future, so forward-compatibility is not guaranteed yet.
@@ -39,6 +37,7 @@ function plural(c) {
   * @callback commentCallback
   * @param {Error} [error] - if one was generated
   * @param {string} [commented] - the comment string
+  * @returns {void}
   */
 /**
   * Normalize inputs to the static functions.
@@ -82,7 +81,6 @@ class Commented extends stream.Transform {
       no_summary = false,
       // decoder options
       tags = {},
-      bigint,
       preferWeb,
       encoding,
       // stream.Transform options
@@ -105,7 +103,6 @@ class Commented extends stream.Transform {
     this.parser = new Decoder({
       tags,
       max_depth,
-      bigint,
       preferWeb,
       encoding
     })

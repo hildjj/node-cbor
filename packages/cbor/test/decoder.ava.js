@@ -7,7 +7,6 @@ const pEvent = require('p-event')
 const util = require('util')
 const cases = require('./cases')
 const streams = require('./streams')
-const {BigNumber} = cbor
 const BinaryParseStream = require('../vendor/binary-parse-stream')
 const pdecodeFirst = util.promisify(cbor.decodeFirst)
 // use mangled versions
@@ -58,8 +57,8 @@ function failFirstAllCB(t, list) {
   )
 }
 
-test('good', t => testAll(t, cases.bigInts(cases.good)))
-test('decode', t => testAll(t, cases.bigInts(cases.decodeGood)))
+test('good', t => testAll(t, cases.good))
+test('decode', t => testAll(t, cases.decodeGood))
 test('edges', t => failAll(t, cases.decodeBad))
 test('bad first', t => failFirstAll(t, cases.decodeBad))
 test('bad first cb', t => failFirstAllCB(t, cases.decodeBad))
@@ -214,39 +213,6 @@ test('depth', async t => {
   await t.throwsAsync(cbor.decodeFirst('818180', {max_depth: 1}))
 })
 
-test('js BigInt', async t => {
-  await testAll(t, cases.bigInts(cases.good), {bigint: true})
-})
-
-test('bigint option', t => {
-  let d = new cbor.Decoder({
-    bigint: true,
-    tags: {}
-  })
-  t.is(typeof d.tags[2], 'function')
-  d = new cbor.Decoder({
-    bigint: true,
-    tags: {
-      2: () => 'foo',
-      3: () => 'bar'
-    }
-  })
-  t.is(d.tags[2](), 'foo')
-  t.is(d.tags[3](), 'bar')
-
-  t.deepEqual(cbor.decodeFirstSync('3b001fffffffffffff', { bigint: false}),
-    new BigNumber('-9007199254740992'))
-
-  t.deepEqual(cbor.decodeFirstSync('3b011fffffffffffff', { bigint: false}),
-    new BigNumber('-81064793292668928'))
-
-  t.deepEqual(cbor.decodeFirstSync('c34720000000000000', { bigint: false}),
-    new BigNumber('-9007199254740993'))
-
-  t.deepEqual(cbor.decodeFirstSync('c24720000000000000', { bigint: false}),
-    new BigNumber('9007199254740992'))
-})
-
 test('typed arrays', t => {
   const buf = Buffer.from('c24720000000000000', 'hex')
   t.is(cbor.decode(buf), 9007199254740992n)
@@ -311,25 +277,6 @@ test('extended results', async t => {
     bytes: Buffer.from('f6', 'hex'),
     value: null,
     unused: Buffer.from('63616263', 'hex')
-  })
-})
-
-test('no bignumber', async t => {
-  await cases.withoutBigNumber(cbor_src, newCbor => {
-    t.throws(
-      () => newCbor.decodeFirstSync('3b001fffffffffffff', {bigint: false})
-    )
-    t.throws(
-      () => newCbor.decodeFirstSync('1b7fffffffffffffff', {bigint: false})
-    )
-    let tag = newCbor.decodeFirstSync('c24a1bffffffffffffffffff',
-      {bigint: false})
-    t.truthy(tag instanceof newCbor.Tagged)
-    t.truthy(tag.err)
-    tag = newCbor.decodeFirstSync('c4820a0a')
-    t.truthy(tag.err)
-    tag = newCbor.decodeFirstSync('c5820a0a')
-    t.truthy(tag.err)
   })
 })
 

@@ -3,9 +3,8 @@
 // Data to fill out:
 // https://github.com/cbor-wg/CBORbis/wiki/Implementation-matrix
 const cbor = require(process.env.CBOR_PACKAGE || '../')
-const concordance = require('concordance')
-const {BigNumber} = cbor
 const Buffer = cbor.encode(0).constructor
+const assert = require('assert')
 
 const all = [
   ['Major type 0 (uint)', 1, '01'],
@@ -18,18 +17,18 @@ const all = [
   ['Major type 7 (simple)', new cbor.Simple(0xaa), 'f8aa'],
   ['Float16', 0.5, 'f93800', true],
   ['Float32', 3.4028234663852886e+38, 'fa7f7fffff', true],
-  ['Float64', 0.125, 'fb3fc0000000000000'],
-  ['Indefinite length array/map', [], '9fff'],
-  ['Indefinite length string', 'streaming', '7f657374726561646d696e67ff'],
+  ['Float64', 3002399751580330.5, 'fb4325555555555555'],
+  // ['Indefinite length array/map', [], '9fff'],
+  // ['Indefinite length string', 'streaming', '7f657374726561646d696e67ff'],
   ['Canonical CBOR', {b: 1, a: 2}, 'a2616102616201', true], // note: re-ordering
   ['Tag 0',
     new Date(1500000000000), // 2017-07-14T02:40:00.000Z
-    'c07818323031372d30372d31345430323a34303a30302e3030305a'],
-  ['Tag 1', new Date(1500000000000), 'c11a59682f00'],
-  ['Tag 2', new BigNumber('18446744073709551616'), 'c249010000000000000000'],
-  ['Tag 3', new BigNumber('-18446744073709551617'), 'c349010000000000000000'],
-  ['Tag 4', new BigNumber('273.15'), 'c48221196ab3'],
-  ['Tag 5', new BigNumber('1.5'), 'c5822003'],
+    'c07818323031372d30372d31345430323a34303a30302e3030305a',
+    false,
+    'string'],
+  ['Tag 1', new Date(1500000000000), 'c11a59682f00', false, 'number'],
+  ['Tag 2', 18446744073709551616n, 'c249010000000000000000'],
+  ['Tag 3', -18446744073709551617n, 'c349010000000000000000'],
   // Didn't implement because I continue to think they're not useful
   ['Tag 21', 0, ''],
   ['Tag 22', 0, ''],
@@ -47,8 +46,8 @@ const all = [
 ]
 
 function deepEqual(actual, expected) {
-  const ret = concordance.compare(actual, expected)
-  return ret.pass
+  assert.deepEqual(actual, expected)
+  return true
 }
 
 function markdownOut(title, decode, encode) {
@@ -58,11 +57,13 @@ function markdownOut(title, decode, encode) {
   )
 }
 
-function test(title, native, encoded, canonical) {
+// eslint-disable-next-line max-params
+function test(title, native, encoded, canonical, dateType) {
   if (encoded.length > 0) {
-    const e = !!canonical ?
-      cbor.Encoder.encodeCanonical(native) :
-      cbor.encode(native)
+    const e = cbor.Encoder.encodeOne(native, {
+      canonical,
+      dateType
+    })
     const d = cbor.decodeFirstSync(encoded)
     markdownOut(
       title,

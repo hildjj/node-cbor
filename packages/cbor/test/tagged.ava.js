@@ -30,7 +30,7 @@ test('edges', t => {
 
 test('convert', t => {
   const tag = new cbor.Tagged(2, Buffer.from([2]))
-  t.deepEqual(tag.convert(), new cbor.BigNumber(2))
+  t.deepEqual(tag.convert(), BigInt(2))
 })
 
 test('tag 21', t => {
@@ -124,20 +124,25 @@ test('converters', t => {
 })
 
 test('Typed Arrays', t => {
-  let tag = new cbor.Tagged(1, 'foo')
-  t.throws(() => tag._toTypedArray(tag.value))
+  let tag = new cbor.Tagged(64, 'foo')
+  tag.convert()
+  t.is(tag.err, 'val not a buffer')
   tag = new cbor.Tagged(90, 'foo')
-  t.throws(() => tag._toTypedArray(tag.value))
+
+  const {64: _toTypedArray} = cbor.Tagged.TAGS
+  t.throws(() => _toTypedArray(tag.value, tag))
   tag = new cbor.Tagged(76, 'foo')
-  t.throws(() => tag._toTypedArray(tag.value))
+  t.throws(() => _toTypedArray(tag.value, tag))
+  tag = new cbor.Tagged(90, Buffer.from('000100020003', 'hex'))
+  t.throws(() => _toTypedArray(tag.value, tag))
 
   // endian
   tag = new cbor.Tagged(65, Buffer.from('000100020003', 'hex'))
-  t.deepEqual(tag._toTypedArray(tag.value), new Uint16Array([1, 2, 3]))
+  t.deepEqual(_toTypedArray(tag.value, tag), new Uint16Array([1, 2, 3]))
 
   tag = new cbor.Tagged(68, Buffer.from('010203', 'hex'))
-  t.deepEqual(tag._toTypedArray(tag.value), new Uint8ClampedArray([1, 2, 3]))
+  t.deepEqual(_toTypedArray(tag.value, tag), new Uint8ClampedArray([1, 2, 3]))
 
   tag = new cbor.Tagged(73, Buffer.from('000100020003', 'hex'))
-  t.deepEqual(tag._toTypedArray(tag.value), new Int16Array([1, 2, 3]))
+  t.deepEqual(_toTypedArray(tag.value, tag), new Int16Array([1, 2, 3]))
 })

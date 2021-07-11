@@ -32,23 +32,6 @@ function parentBufferStream(parent, typ) {
   return b
 }
 
-/**
- * @param {Buffer} v
- * @private
- */
-function _tag_2(v) {
-  return utils.bufferToBigInt(v)
-}
-
-/**
- * @param {BigInt} v
- * @private
- */
-function _tag_3(v) {
-  // avoid syntax error on old runtimes
-  return BI.MINUS_ONE - utils.bufferToBigInt(v)
-}
-
 class UnexpectedDataError extends Error {
   constructor(byte, value) {
     super(`Unexpected data: 0x${byte.toString(16)}`)
@@ -79,8 +62,6 @@ class UnexpectedDataError extends Error {
  * @property {object} [tags] - mapping from tag number to function(v),
  *   where v is the decoded value that comes after the tag, and where the
  *   function returns the correctly-created value for that tag.
- * @property {boolean} [bigint=true] generate JavaScript BigInt's
- *   instead of BigNumbers, when possible.
  * @property {boolean} [preferWeb=false] if true, prefer Uint8Arrays to
  *   be generated instead of node Buffers.  This might turn on some more
  *   changes in the future, so forward-compatibility is not guaranteed yet.
@@ -96,6 +77,7 @@ class UnexpectedDataError extends Error {
   * @callback decodeCallback
   * @param {Error} [error] - if one was generated
   * @param {any} [value] - the decoded value
+  * @returns {void}
   */
 /**
   * @param {DecoderOptions|decodeCallback|string} opts options,
@@ -135,7 +117,6 @@ class Decoder extends BinaryParseStream {
     const {
       tags = {},
       max_depth = -1,
-      bigint = true,
       preferWeb = false,
       required = false,
       encoding = 'hex',
@@ -150,20 +131,11 @@ class Decoder extends BinaryParseStream {
     this.tags = tags
     this.preferWeb = preferWeb
     this.extendedResults = extendedResults
-    this.bigint = bigint
     this.required = required
 
     if (extendedResults) {
       this.bs.on('read', this._onRead.bind(this))
       this.valueBytes = new NoFilter()
-    }
-    if (bigint) {
-      if (this.tags[2] == null) {
-        this.tags[2] = _tag_2
-      }
-      if (this.tags[3] == null) {
-        this.tags[3] = _tag_3
-      }
     }
   }
 
@@ -460,7 +432,7 @@ class Decoder extends BinaryParseStream {
           const buf = yield numbytes
           val = (mt === MT.SIMPLE_FLOAT) ?
             buf :
-            utils.parseCBORint(ai, buf, this.bigint)
+            utils.parseCBORint(ai, buf)
           break
         }
         case 28:
@@ -486,16 +458,7 @@ class Decoder extends BinaryParseStream {
           break
         case MT.NEG_INT:
           if (val === Number.MAX_SAFE_INTEGER) {
-            if (this.bigint) {
-              val = BI.NEG_MAX
-            } else if (constants.BigNumber) {
-              val = constants.BN.NEG_MAX
-            } else {
-              throw new Error('No bigint and no bignumber.js')
-            }
-          } else if (constants.BigNumber &&
-            (val instanceof constants.BigNumber)) {
-            val = constants.BN.MINUS_ONE.minus(val)
+            val = BI.NEG_MAX
           } else {
             val = (typeof val === 'bigint') ? BI.MINUS_ONE - val : -1 - val
           }

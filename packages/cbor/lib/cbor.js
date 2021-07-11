@@ -1,6 +1,5 @@
 'use strict'
 
-exports.BigNumber = require('./constants').BigNumber
 exports.Commented = require('./commented')
 exports.Diagnose = require('./diagnose')
 exports.Decoder = require('./decoder')
@@ -81,9 +80,11 @@ exports.leveldb = {
 }
 
 /**
- * Does this library and runtime support BigInts?  Only exported for backward
- * compatibility.
- *
- * @deprecated since version 6.0
+ * Reset everything that we can predict a plugin might have altered in good
+ * faith.  For now that includes the default set of tags that decoding and
+ * encoding will use.
  */
-exports.hasBigInt = true
+exports.reset = function reset() {
+  exports.Encoder.reset()
+  exports.Tagged.reset()
+}

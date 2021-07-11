@@ -9,19 +9,30 @@ const { NUMBYTES, SHIFT32, BI, SYMS } = constants
 
 const MAX_SAFE_HIGH = 0x1fffff
 
-let util = null
-try {
-  util = require('util')
-} catch (ignored) {
-  // polyfill node-inspect-extracted in, if you're on the web
-
-  // I don't think getting here is possible in non-webpack node.  The normal
-  // methods of causing require('util') to fail don't work with
-  // internal packages.
-  /* istanbul ignore next */
-  util = require('node-inspect-extracted')
+function badInspect(o) {
+  /* half-ass inspect.  Replace with node-inspect-extracted if needed */
+  switch (typeof o) {
+    case 'string':
+      return `"${o}"`
+    case 'object':
+      if (!o) {
+        return 'null'
+      }
+      if (Array.isArray(o)) {
+        return '[' + o.map(x => badInspect(x)).join(', ') + ']'
+      }
+      return '{' + Object.entries(o)
+        .map(([k, v]) => `${k}: ${badInspect(v)}`)
+        .join(', ') + '}'
+  }
+  return String(o)
 }
-exports.inspect = util.inspect
+
+exports.inspect = exports.badInspect = badInspect
+try {
+  exports.inspect = require('util').inspect
+} catch (ignored) {
+}
 
 /**
  * Convert a UTF8-encoded Buffer to a JS string.  If possible, throw an error
@@ -61,7 +72,7 @@ exports.bufferishToBuffer = function bufferishToBuffer(b) {
   return null
 }
 
-exports.parseCBORint = function parseCBORint(ai, buf, bigInt = true) {
+exports.parseCBORint = function parseCBORint(ai, buf) {
   switch (ai) {
     case NUMBYTES.ONE:
       return buf.readUInt8(0)
@@ -73,15 +84,7 @@ exports.parseCBORint = function parseCBORint(ai, buf, bigInt = true) {
       const f = buf.readUInt32BE(0)
       const g = buf.readUInt32BE(4)
       if (f > MAX_SAFE_HIGH) {
-        if (bigInt) {
-          return (BigInt(f) * BI.SHIFT32) + BigInt(g)
-        }
-        if (!constants.BigNumber) {
-          throw new Error('No bigint and no bignumber.js')
-        }
-        return new constants.BigNumber(f)
-          .times(SHIFT32)
-          .plus(g)
+        return (BigInt(f) * BI.SHIFT32) + BigInt(g)
       }
       return (f * SHIFT32) + g
     }
@@ -216,13 +219,6 @@ exports.arrayEqual = function arrayEqual(a, b) {
   return (a.length === b.length) && a.every((elem, i) => elem === b[i])
 }
 
-exports.bufferToBignumber = function bufferToBignumber(buf) {
-  if (!constants.BigNumber) {
-    throw new Error('No bigint and no bignumber.js')
-  }
-  return new constants.BigNumber(buf.toString('hex'), 16)
-}
-
 exports.bufferToBigInt = function bufferToBigInt(buf) {
   return BigInt('0x' + buf.toString('hex'))
 }
@@ -261,22 +257,19 @@ exports.cborValueToString = function cborValueToString(val, float_bytes = -1) {
       return val.toString()
     case 'number':
       if (float_bytes > 0) {
-        return (util.inspect(val)) + '_' + float_bytes
+        return (exports.inspect(val)) + '_' + float_bytes
       }
-      return util.inspect(val)
+      return exports.inspect(val)
   }
   const buf = exports.bufferishToBuffer(val)
   if (buf) {
     const hex = buf.toString('hex')
     return (float_bytes === -Infinity) ? hex : `h'${hex}'`
   }
-  if (constants.BigNumber && constants.BigNumber.isBigNumber(val)) {
-    return val.toString()
-  }
   if (val && (typeof val.inspect === 'function')) {
     return val.inspect()
   }
-  return util.inspect(val)
+  return exports.inspect(val)
 }
 
 exports.guessEncoding = function guessEncoding(input, encoding) {

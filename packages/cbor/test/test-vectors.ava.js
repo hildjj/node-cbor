@@ -1,6 +1,5 @@
 'use strict'
 const cbor = require(process.env.CBOR_PACKAGE || '../')
-const {BigNumber} = cbor
 const test = require('ava')
 const util = require('util')
 const fs = require('fs')
@@ -41,22 +40,18 @@ use command \`git submodule update --init\` to load test-vectors`)
     if (!value) {
       return value
     }
-    switch (value['___TYPE___']) {
-      case 'number': {
-        const v = value['___VALUE___']
-        const f = Number.parseFloat(v)
-        const bn = new BigNumber(v)
-        if (bn.eq(f)) {
-          return f
+    if (value['___TYPE___'] === 'number') {
+      const v = value['___VALUE___']
+      const f = Number.parseFloat(v)
+      try {
+        const bi = BigInt(v)
+        if ((bi > Number.MAX_SAFE_INTEGER) || (bi < Number.MIN_SAFE_INTEGER)) {
+          return bi
         }
-        if (bn.isInteger()) {
-          return BigInt(bn.toString())
-        }
-        return bn
-      }
-      default:
-        return value
+      } catch (ignored) {}
+      return f
     }
+    return value
   })
 
   let failStr = null

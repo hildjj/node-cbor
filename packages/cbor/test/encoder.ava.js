@@ -5,7 +5,6 @@ const cbor = require(cbor_src)
 const test = require('ava')
 const pEvent = require('p-event')
 const cases = require('./cases')
-const {BigNumber} = cbor
 // use mangled versions
 const Buffer = cbor.encode(0).constructor
 const NoFilter = new cbor.Commented().all.constructor
@@ -95,8 +94,6 @@ test('streamNone', async t => {
 test('pushFails', t => {
   cases.EncodeFailer.tryAll(t, [1, 2, 3])
   cases.EncodeFailer.tryAll(t, new Set([1, 2, 3]))
-  cases.EncodeFailer.tryAll(t, new BigNumber(0))
-  cases.EncodeFailer.tryAll(t, new BigNumber(1.1))
   cases.EncodeFailer.tryAll(t, new Map([[1, 2], ['a', null]]))
   cases.EncodeFailer.tryAll(t, {a: 1, b: null})
   cases.EncodeFailer.tryAll(t, undefined)
@@ -230,17 +227,9 @@ test('date types', t => {
   )
 })
 
-test('js BigInt', t => testAll(t, cases.bigInts(cases.good)))
-
-test('BigNumber BigInt collapse', t => testAll(
+test('BigInt collapse', t => testAll(
   t,
   cases.collapseBigIntegers,
-  { collapseBigIntegers: true }
-))
-
-test('js BigInt collapse', t => testAll(
-  t,
-  cases.bigInts(cases.collapseBigIntegers),
   { collapseBigIntegers: true }
 ))
 
@@ -396,37 +385,6 @@ test('indefinite', t => {
     encodeCBOR: cbor.Encoder.encodeIndefinite
   }
   t.is(cbor.encodeOne(o, { detectLoops: true }).toString('hex'), 'bf6161f5ff')
-})
-
-test('outside BigNumber', t => {
-  const key = require.resolve('bignumber.js')
-  const old = require.cache[key]
-  delete require.cache[key]
-  const bn = require('bignumber.js').BigNumber
-  // should be separate
-  t.is(bn, bn)
-  t.is(BigNumber, BigNumber)
-  t.not(bn, BigNumber)
-  const a = bn(2)
-  const b = new BigNumber(2)
-  t.truthy(a instanceof bn)
-  t.truthy(b instanceof BigNumber)
-  t.falsy(a instanceof BigNumber)
-  t.falsy(b instanceof bn)
-
-  const pi3 = bn(Math.PI).pow(3)
-  // Before the fix, 'instanceof BigNumber' is false, so pi3 gets encoded
-  // as a plain old object.
-  t.is(cbor.encodeOne(pi3).toString('hex'),
-    'c482382cc254056e5e99b1be81b6eefa3964490ac18c69399361')
-  require.cache[key] = old
-})
-
-test('no bignumber', async t => {
-  await cases.withoutBigNumber(cbor_src, newCbor => {
-    const enc = new newCbor.Encoder()
-    t.falsy(enc.semanticTypes[BigNumber.name])
-  })
 })
 
 test('Buffers', t => {

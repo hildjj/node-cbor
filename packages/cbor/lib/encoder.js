@@ -23,6 +23,8 @@ const BUF_INF_NEG = Buffer.from('f9fc00', 'hex')
 const BUF_INF_POS = Buffer.from('f97c00', 'hex')
 const BUF_NEG_ZERO = Buffer.from('f98000', 'hex')
 
+const SEMANTIC_TYPES = {}
+
 /**
  * @param {string} str
  * @returns {"number"|"float"|"int"|"string"}
@@ -50,7 +52,7 @@ function parseDateType(str) {
  * @typedef EncodingOptions
  * @property {any[]|Object} [genTypes=[]] - array of pairs of
  *   `type`, `function(Encoder)` for semantic types to be encoded.  Not
- *   needed for Array, Date, Buffer, Map, RegExp, Set, URL, or BigNumber.
+ *   needed for Array, Date, Buffer, Map, RegExp, Set, or URL.
  *   If an object, the keys are the constructor names for the types.
  * @property {boolean} [canonical=false] - should the output be
  *   canonicalized
@@ -77,7 +79,7 @@ function parseDateType(str) {
  *   exception.  Note that it is impossible to get a key of undefined in a
  *   normal JS object.
  * @property {boolean} [collapseBigIntegers=false] - Should integers
- *   that come in as BigNumber integers and ECMAscript bigint's be encoded
+ *   that come in as ECMAscript bigint's be encoded
  *   as normal CBOR integers if they fit, discarding type information?
  * @property {number} [chunkSize=4096] - Number of characters or bytes
  *   for each chunk, if obj is a string or Buffer, when indefinite encoding
@@ -135,41 +137,7 @@ class Encoder extends stream.Transform {
     }
     this.omitUndefinedProperties = omitUndefinedProperties
 
-    this.semanticTypes = {
-      Array: this._pushArray,
-      Date: this._pushDate,
-      Buffer: this._pushBuffer,
-      [Buffer.name]: this._pushBuffer, // might be mangled
-      Map: this._pushMap,
-      NoFilter: this._pushNoFilter,
-      [NoFilter.name]: this._pushNoFilter, // might be mangled
-      RegExp: this._pushRegexp,
-      Set: this._pushSet,
-      ArrayBuffer: this._pushArrayBuffer,
-      Uint8ClampedArray: this._pushTypedArray,
-      Uint8Array: this._pushTypedArray,
-      Uint16Array: this._pushTypedArray,
-      Uint32Array: this._pushTypedArray,
-      Int8Array: this._pushTypedArray,
-      Int16Array: this._pushTypedArray,
-      Int32Array: this._pushTypedArray,
-      Float32Array: this._pushTypedArray,
-      Float64Array: this._pushTypedArray,
-      URL: this._pushURL,
-      Boolean: this._pushBoxed,
-      Number: this._pushBoxed,
-      String: this._pushBoxed
-    }
-    if (constants.BigNumber) {
-      this.semanticTypes[constants.BigNumber.name] = this._pushBigNumber
-    }
-    // Safari needs to get better.
-    if (typeof BigUint64Array !== 'undefined') {
-      this.semanticTypes[BigUint64Array.name] = this._pushTypedArray
-    }
-    if (typeof BigInt64Array !== 'undefined') {
-      this.semanticTypes[BigInt64Array.name] = this._pushTypedArray
-    }
+    this.semanticTypes = {...Encoder.SEMANTIC_TYPES}
 
     if (Array.isArray(genTypes)) {
       for (let i = 0, len = genTypes.length; i < len; i += 2) {
@@ -471,42 +439,6 @@ class Encoder extends stream.Transform {
   }
 
   /**
-   * @param {constants.BigNumber} obj
-   * @private
-   */
-  _pushBigint(obj) {
-    let m = MT.POS_INT
-    let tag = TAG.POS_BIGINT
-
-    if (obj.isNegative()) {
-      obj = obj.negated().minus(1)
-      m = MT.NEG_INT
-      tag = TAG.NEG_BIGINT
-    }
-
-    if (this.collapseBigIntegers &&
-        obj.lte(constants.BN.MAXINT64)) {
-      //  special handiling for 64bits
-      if (obj.lte(constants.BN.MAXINT32)) {
-        return this._pushInt(obj.toNumber(), m)
-      }
-      return this._pushUInt8((m << 5) | NUMBYTES.EIGHT) &&
-        this._pushUInt32BE(
-          obj.dividedToIntegerBy(constants.BN.SHIFT32).toNumber()
-        ) &&
-        this._pushUInt32BE(
-          obj.mod(constants.BN.SHIFT32).toNumber()
-        )
-    }
-    let str = obj.toString(16)
-    if (str.length % 2) {
-      str = '0' + str
-    }
-    const buf = Buffer.from(str, 'hex')
-    return this._pushTag(tag) && this._pushBuffer(this, buf)
-  }
-
-  /**
    * @param {bigint} obj
    * @private
    */
@@ -537,34 +469,6 @@ class Encoder extends stream.Transform {
     }
     const buf = Buffer.from(str, 'hex')
     return this._pushTag(tag) && this._pushBuffer(this, buf)
-  }
-
-  // TODO: make static
-  // eslint-disable-next-line class-methods-use-this
-  _pushBigNumber(gen, obj) {
-    if (obj.isNaN()) {
-      return gen._pushNaN()
-    }
-    if (!obj.isFinite()) {
-      return gen._pushInfinity(obj.isNegative() ? -Infinity : Infinity)
-    }
-    if (obj.isInteger()) {
-      return gen._pushBigint(obj)
-    }
-    if (!(gen._pushTag(TAG.DECIMAL_FRAC) &&
-      gen._pushInt(2, MT.ARRAY))) {
-      return false
-    }
-
-    const dec = obj.decimalPlaces()
-    const slide = obj.shiftedBy(dec)
-    if (!gen._pushIntNum(-dec)) {
-      return false
-    }
-    if (slide.abs().isLessThan(constants.BN.MAXINT)) {
-      return gen._pushIntNum(slide.toNumber())
-    }
-    return gen._pushBigint(slide)
   }
 
   // TODO: make static
@@ -952,6 +856,45 @@ Call removeLoopDetectors before resuming.`)
       enc.end()
     })
   }
+
+  static reset() {
+    Encoder.SEMANTIC_TYPES = {...SEMANTIC_TYPES}
+  }
 }
 
+Object.assign(SEMANTIC_TYPES, {
+  Array: Encoder.prototype._pushArray,
+  Date: Encoder.prototype._pushDate,
+  Buffer: Encoder.prototype._pushBuffer,
+  [Buffer.name]: Encoder.prototype._pushBuffer, // might be mangled
+  Map: Encoder.prototype._pushMap,
+  NoFilter: Encoder.prototype._pushNoFilter,
+  [NoFilter.name]: Encoder.prototype._pushNoFilter, // might be mangled
+  RegExp: Encoder.prototype._pushRegexp,
+  Set: Encoder.prototype._pushSet,
+  ArrayBuffer: Encoder.prototype._pushArrayBuffer,
+  Uint8ClampedArray: Encoder.prototype._pushTypedArray,
+  Uint8Array: Encoder.prototype._pushTypedArray,
+  Uint16Array: Encoder.prototype._pushTypedArray,
+  Uint32Array: Encoder.prototype._pushTypedArray,
+  Int8Array: Encoder.prototype._pushTypedArray,
+  Int16Array: Encoder.prototype._pushTypedArray,
+  Int32Array: Encoder.prototype._pushTypedArray,
+  Float32Array: Encoder.prototype._pushTypedArray,
+  Float64Array: Encoder.prototype._pushTypedArray,
+  URL: Encoder.prototype._pushURL,
+  Boolean: Encoder.prototype._pushBoxed,
+  Number: Encoder.prototype._pushBoxed,
+  String: Encoder.prototype._pushBoxed
+})
+
+// Safari needs to get better.
+if (typeof BigUint64Array !== 'undefined') {
+  SEMANTIC_TYPES[BigUint64Array.name] = Encoder.prototype._pushTypedArray
+}
+if (typeof BigInt64Array !== 'undefined') {
+  SEMANTIC_TYPES[BigInt64Array.name] = Encoder.prototype._pushTypedArray
+}
+
+Encoder.reset()
 module.exports = Encoder

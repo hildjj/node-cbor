@@ -46,14 +46,6 @@
     "@cto.af/textdecoder": "^0.0.0",
     "nofilter": "^2.0.3"
   },
-  "peerDependencies": {
-    "bignumber.js": "^9.0.1"
-  },
-  "peerDependenciesMeta": {
-    "bignumber.js": {
-      "optional": true
-    }
-  },
   "devDependencies": {
     "@types/node": "*",
     "bignumber.js": "^9.0.1",
