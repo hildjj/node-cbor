@@ -2,6 +2,7 @@
 
 const fs = require('fs')
 const path = require('path')
+const bresolve = require('browser-resolve')
 
 const src = path.join(__dirname, 'src')
 const dist = path.join(__dirname, 'dist')
@@ -11,7 +12,7 @@ try {
     force: true
   })
 } catch (ignored) {
-  console.warn(`Warning: could not delete "${dist}"`);
+  console.warn(`Warning: could not delete "${dist}"`)
 }
 
 const have = new Set()
@@ -21,7 +22,7 @@ const transform = new Set()
 try {
   fs.mkdirSync(dist)
 } catch (ignored) {
-  console.warn(`Warning: could not create "${dist}"`);
+  console.warn(`Warning: could not create "${dist}"`)
 }
 
 const script = /<script\s+src="([^'"/]+)"/g
@@ -56,7 +57,7 @@ const scripts = new Set([...needed].filter(x => !have.has(x)))
 // a single file.
 const scriptNames = {}
 for (const s of scripts) {
-  const scriptSrc = require.resolve(s)
+  const scriptSrc = bresolve.sync(s, { filename: __filename })
   const local = path.basename(scriptSrc)
   scriptNames[s] = local
 

@@ -17,6 +17,8 @@
   },
   "devDependencies": {
     "bignumber.js": "^9.0.1",
+    "browser-resolve": "^2.0.0",
+    "cbor-bigdecimal": "^7.0.6",
     "cbor-web": "^7.0.6",
     "node-inspect-extracted": "^1.0.8"
   }

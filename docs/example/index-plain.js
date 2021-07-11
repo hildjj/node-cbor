@@ -1,6 +1,8 @@
 /* eslint-disable no-undef */
 'use strict'
 
+cborBigDecimal(cbor)
+
 const ofmt = document.getElementById('output-fmt')
 const otxt = document.getElementById('output-text')
 const itxt = document.getElementById('input-text')

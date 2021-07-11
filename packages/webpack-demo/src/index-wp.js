@@ -3,12 +3,14 @@
 const cbor = require('cbor-web')
 const { inspect } = require('node-inspect-extracted')
 const { Buffer } = require('buffer')
+const bdec = require('cbor-bigdecimal')
 
 // eslint-disable-next-line no-unused-vars
 const process = require('process')
 // eslint-disable-next-line no-unused-vars
 const style = require('./style.css')
 
+bdec(cbor)
 const ofmt = document.getElementById('output-fmt')
 const otxt = document.getElementById('output-text')
 const itxt = document.getElementById('input-text')

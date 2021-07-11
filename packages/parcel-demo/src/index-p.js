@@ -6,6 +6,9 @@ const regeneratorRuntime = require('regenerator-runtime')
 const { inspect } = require('node-inspect-extracted')
 const { Buffer } = require('buffer')
 const cbor = require('cbor')
+const bdec = require('cbor-bigdecimal')
+
+bdec(cbor)
 
 const ofmt = document.getElementById('output-fmt')
 const otxt = document.getElementById('output-text')

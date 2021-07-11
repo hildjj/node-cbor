@@ -21,6 +21,7 @@
     "@babel/core": "^7.14.6",
     "babelify": "^10.0.0",
     "browserify": "^17.0.0",
+    "cbor-bigdecimal": "^7.0.6",
     "node-inspect-extracted": "*",
     "terser": "^5.7.1"
   }

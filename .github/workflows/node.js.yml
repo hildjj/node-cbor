@@ -36,9 +36,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.node-version }}-
       - name: Install pnpm
-        uses: pnpm/action-setup@v1.2.1
+        uses: pnpm/action-setup@v2.0.1
         with:
-          version: 5.17.2
+          version: 6.10.0
           run_install: |
             - recursive: true
               args: [--filter, '!*-demo', --filter, '!cbor-web']
