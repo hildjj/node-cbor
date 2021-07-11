@@ -15,14 +15,6 @@
     "url": "http://github.com/hildjj/node-cbor.git",
     "directory": "packages/cbor-web"
   },
-  "peerDependencies": {
-    "bignumber.js": "^9.0.1"
-  },
-  "peerDependenciesMeta": {
-    "bignumber.js": {
-      "optional": true
-    }
-  },
   "devDependencies": {
     "base64-js": "^1.5.1",
     "buffer": "^6.0.3",
