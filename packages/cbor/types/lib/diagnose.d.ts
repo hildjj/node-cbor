@@ -26,13 +26,20 @@ declare class Diagnose extends stream.Transform {
     separator: string;
     stream_errors: boolean;
     parser: Decoder;
-    _on_error(er: any): boolean;
-    _on_more(mt: any, len: any, parent_mt: any, pos: any): any;
-    _fore(parent_mt: any, pos: any): boolean;
-    _on_value(val: any, parent_mt: any, pos: any): boolean;
-    _on_start(mt: any, tag: any, parent_mt: any, pos: any): boolean;
-    _on_stop(mt: any): boolean;
-    _on_data(): boolean;
+    /** @private */
+    private _on_error;
+    /** @private */
+    private _on_more;
+    /** @private */
+    private _fore;
+    /** @private */
+    private _on_value;
+    /** @private */
+    private _on_start;
+    /** @private */
+    private _on_stop;
+    /** @private */
+    private _on_data;
 }
 declare namespace Diagnose {
     export { DiagnoseOptions, diagnoseCallback };
@@ -64,11 +71,6 @@ type DiagnoseOptions = {
      */
     tags?: object;
     /**
-     * generate JavaScript BigInt's
-     * instead of BigNumbers, when possible.
-     */
-    bigint?: boolean;
-    /**
      * - if true, prefer Uint8Arrays to
      * be generated instead of node Buffers.  This might turn on some more
      * changes in the future, so forward-compatibility is not guaranteed yet.
@@ -80,4 +82,4 @@ type DiagnoseOptions = {
      */
     encoding?: string;
 };
-type diagnoseCallback = (error?: Error, value?: string) => any;
+type diagnoseCallback = (error?: Error, value?: string) => void;

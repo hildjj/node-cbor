@@ -1,4 +1,3 @@
-/// <reference types="node" />
 export = Tagged;
 /**
  * A CBOR tagged item, where the tag does not have semantics specified at the
@@ -8,12 +7,16 @@ export = Tagged;
 declare class Tagged {
     static _tag_0(v: any): Date;
     static _tag_1(v: any): Date;
-    static _tag_2(v: any): BigNumber;
-    static _tag_3(v: any): BigNumber;
-    static _tag_4(v: any): BigNumber;
-    static _tag_5(v: any): BigNumber;
-    static _tag_32(v: any): url.UrlWithStringQuery;
+    static _tag_2(v: any): bigint;
+    static _tag_3(v: any): bigint;
+    static _tag_21(v: any): typeof Tagged;
+    static _tag_22(v: any): typeof Tagged;
+    static _tag_23(v: any): typeof Tagged;
+    static _tag_32(v: any): URL;
+    static _tag_33(v: any): typeof Tagged;
+    static _tag_34(v: any): typeof Tagged;
     static _tag_35(v: any): RegExp;
+    static _tag_258(v: any): Set<any>;
     /**
      * Creates an instance of Tagged.
      *
@@ -25,6 +28,7 @@ declare class Tagged {
     tag: number;
     value: any;
     err: Error;
+    toJSON(): any;
     /**
      * Convert to a String
      *
@@ -49,6 +53,11 @@ declare class Tagged {
      * @returns {any} - the converted item
      */
     convert(converters: any): any;
+    _toTypedArray(val: any): any;
+    [INTERNAL_JSON]: typeof hexThis;
 }
-import { BigNumber } from "./constants";
-import url = require("url");
+declare namespace Tagged {
+    export { INTERNAL_JSON };
+}
+declare const INTERNAL_JSON: unique symbol;
+declare function hexThis(): any;

@@ -1,18 +1,20 @@
+/// <reference types="node" />
 export = Encoder;
 /**
  * @typedef EncodingOptions
  * @property {any[]|Object} [genTypes=[]] - array of pairs of
  *   `type`, `function(Encoder)` for semantic types to be encoded.  Not
- *   needed for Array, Date, Buffer, Map, RegExp, Set, Url, or BigNumber.
+ *   needed for Array, Date, Buffer, Map, RegExp, Set, or URL.
  *   If an object, the keys are the constructor names for the types.
  * @property {boolean} [canonical=false] - should the output be
  *   canonicalized
- * @property {boolean|Symbol} [detectLoops=false] - should object loops
- *   be detected?  This will currently modify the encoded object graph by
- *   adding a Symbol property to each object.  If this bothers you, call
- *   `removeLoopDetectors` on the encoded object when done.  Do not encode
+ * @property {boolean|WeakSet} [detectLoops=false] - should object loops
+ *   be detected?  This will currently add memory to track every part of the
+ *   object being encoded in a WeakSet.  Do not encode
  *   the same object twice on the same encoder, without calling
- *   `removeLoopDetectors` in between.
+ *   `removeLoopDetectors` in between, which will clear the WeakSet.
+ *   You may pass in your own WeakSet to be used; this is useful in some
+ *   recursive scenarios.
  * @property {("number"|"float"|"int"|"string")} [dateType="number"] -
  *   how should dates be encoded?  "number" means float or int, if no
  *   fractional seconds.
@@ -29,7 +31,7 @@ export = Encoder;
  *   exception.  Note that it is impossible to get a key of undefined in a
  *   normal JS object.
  * @property {boolean} [collapseBigIntegers=false] - Should integers
- *   that come in as BigNumber integers and ECMAscript bigint's be encoded
+ *   that come in as ECMAscript bigint's be encoded
  *   as normal CBOR integers if they fit, discarding type information?
  * @property {number} [chunkSize=4096] - Number of characters or bytes
  *   for each chunk, if obj is a string or Buffer, when indefinite encoding
@@ -44,18 +46,6 @@ export = Encoder;
  * @extends {stream.Transform}
  */
 declare class Encoder extends stream.Transform {
-    /**
-     * Remove all of the loop detector additions to the given object.
-     * The static version is easier to call when you don't have a full
-     * encoder instance available; it uses a good heuristic to figure
-     * out the loop detector symbol.
-     *
-     * @param {Object} obj - object to clean
-     * @param {Symbol} [detector=null] - the symbol to clean, or null
-     *   to use the first detected symbol
-     * @returns {boolean} - true when the object was cleaned, else false
-     */
-    static removeLoopDetectors(obj: any, detector?: Symbol): boolean;
     /**
      * Encode the given object with indefinite length.  There are apparently
      * some (IMO) broken implementations of poorly-specified protocols that
@@ -124,8 +114,12 @@ declare class Encoder extends stream.Transform {
     disallowUndefinedKeys: boolean;
     dateType: "string" | "number" | "float" | "int";
     collapseBigIntegers: boolean;
-    detectLoops: symbol;
+    /** @type WeakSet? */
+    detectLoops: WeakSet<any> | null;
+    omitUndefinedProperties: boolean;
     semanticTypes: {
+        [x: string]: ((gen: any, obj: any, opts: any) => boolean) | ((gen: any, obj: any) => any);
+        [x: number]: (gen: any, obj: any) => any;
         Array: (gen: any, obj: any, opts: any) => boolean;
         Date: (gen: any, obj: any) => any;
         Buffer: (gen: any, obj: any) => any;
@@ -133,25 +127,26 @@ declare class Encoder extends stream.Transform {
         NoFilter: (gen: any, obj: any) => any;
         RegExp: (gen: any, obj: any) => any;
         Set: (gen: any, obj: any) => boolean;
-        BigNumber: (gen: any, obj: any) => any;
         ArrayBuffer: (gen: any, obj: any) => any;
         Uint8ClampedArray: (gen: any, obj: any) => any;
         Uint8Array: (gen: any, obj: any) => any;
-        Uint16Array: (gen: any, obj: any, opts: any) => boolean;
-        Uint32Array: (gen: any, obj: any, opts: any) => boolean;
-        Int8Array: (gen: any, obj: any, opts: any) => boolean;
-        Int16Array: (gen: any, obj: any, opts: any) => boolean;
-        Int32Array: (gen: any, obj: any, opts: any) => boolean;
-        Float32Array: (gen: any, obj: any) => boolean;
-        Float64Array: (gen: any, obj: any) => boolean;
-        Url: (gen: any, obj: any) => any;
+        Uint16Array: (gen: any, obj: any) => any;
+        Uint32Array: (gen: any, obj: any) => any;
+        Int8Array: (gen: any, obj: any) => any;
+        Int16Array: (gen: any, obj: any) => any;
+        Int32Array: (gen: any, obj: any) => any;
+        Float32Array: (gen: any, obj: any) => any;
+        Float64Array: (gen: any, obj: any) => any;
         URL: (gen: any, obj: any) => any;
+        Boolean: (gen: any, obj: any) => any;
+        Number: (gen: any, obj: any) => any;
+        String: (gen: any, obj: any) => any;
     };
     /**
      * @callback encodeFunction
      * @param {Encoder} encoder - the encoder to serialize into.  Call "write"
      *   on the encoder as needed.
-     * @return {bool} - true on success, else false
+     * @return {boolean} - true on success, else false
      */
     /**
      * Add an encoding function to the list of supported semantic types.  This is
@@ -161,7 +156,7 @@ declare class Encoder extends stream.Transform {
      * @param {any} fun
      * @returns {encodeFunction}
      */
-    addSemanticType(type: any, fun: any): (encoder: Encoder) => any;
+    addSemanticType(type: any, fun: any): (encoder: Encoder) => boolean;
     _pushUInt8(val: any): boolean;
     _pushUInt16BE(val: any): boolean;
     _pushUInt32BE(val: any): boolean;
@@ -184,30 +179,22 @@ declare class Encoder extends stream.Transform {
     _pushNoFilter(gen: any, obj: any): any;
     _pushRegexp(gen: any, obj: any): any;
     _pushSet(gen: any, obj: any): boolean;
-    _pushUrl(gen: any, obj: any): any;
     _pushURL(gen: any, obj: any): any;
-    /**
-     * @param {BigNumber} obj
-     * @private
-     */
-    private _pushBigint;
+    _pushBoxed(gen: any, obj: any): any;
     /**
      * @param {bigint} obj
      * @private
      */
     private _pushJSBigint;
-    _pushBigNumber(gen: any, obj: any): any;
     _pushMap(gen: any, obj: any, opts: any): boolean;
-    _pushUint8Array(gen: any, obj: any): any;
-    _pushFloat32Array(gen: any, obj: any): boolean;
-    _pushFloat64Array(gen: any, obj: any): boolean;
+    _pushTypedArray(gen: any, obj: any): any;
+    _pushArrayBuffer(gen: any, obj: any): any;
     /**
-     * Remove all of the loop detector additions to the given object.
+     * Remove the loop detector WeakSet for this Encoder.
      *
-     * @param {Object} obj - object to clean
-     * @returns {boolean} - true when the object was cleaned, else false
+     * @returns {boolean} - true when the Encoder was reset, else false
      */
-    removeLoopDetectors(obj: any): boolean;
+    removeLoopDetectors(): boolean;
     _pushObject(obj: any, opts: any): any;
     /**
      * Push any supported type onto the encoded stream
@@ -223,11 +210,12 @@ declare namespace Encoder {
     export { EncodingOptions };
 }
 import stream = require("stream");
+import { Buffer } from "buffer";
 type EncodingOptions = {
     /**
      * - array of pairs of
      * `type`, `function(Encoder)` for semantic types to be encoded.  Not
-     * needed for Array, Date, Buffer, Map, RegExp, Set, Url, or BigNumber.
+     * needed for Array, Date, Buffer, Map, RegExp, Set, or URL.
      * If an object, the keys are the constructor names for the types.
      */
     genTypes?: any[] | any;
@@ -238,13 +226,14 @@ type EncodingOptions = {
     canonical?: boolean;
     /**
      * - should object loops
-     * be detected?  This will currently modify the encoded object graph by
-     * adding a Symbol property to each object.  If this bothers you, call
-     * `removeLoopDetectors` on the encoded object when done.  Do not encode
+     * be detected?  This will currently add memory to track every part of the
+     * object being encoded in a WeakSet.  Do not encode
      * the same object twice on the same encoder, without calling
-     * `removeLoopDetectors` in between.
+     * `removeLoopDetectors` in between, which will clear the WeakSet.
+     * You may pass in your own WeakSet to be used; this is useful in some
+     * recursive scenarios.
      */
-    detectLoops?: boolean | Symbol;
+    detectLoops?: boolean | WeakSet<any>;
     /**
      * -
      * how should dates be encoded?  "number" means float or int, if no
@@ -271,7 +260,7 @@ type EncodingOptions = {
     disallowUndefinedKeys?: boolean;
     /**
      * - Should integers
-     * that come in as BigNumber integers and ECMAscript bigint's be encoded
+     * that come in as ECMAscript bigint's be encoded
      * as normal CBOR integers if they fit, discarding type information?
      */
     collapseBigIntegers?: boolean;
@@ -281,8 +270,9 @@ type EncodingOptions = {
      */
     chunkSize?: number;
     /**
-     *  - When encoding objects or Maps, do not include a key if its
-     *  corresponding value is `undefined`.
+     * - When encoding
+     * objects or Maps, do not include a key if its corresponding value is
+     * `undefined`.
      */
     omitUndefinedProperties?: boolean;
 };

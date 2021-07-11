@@ -1,4 +1,3 @@
-/// <reference types="node" />
 export = Simple;
 /**
  * A CBOR Simple Value that does not map onto a known constant.
@@ -49,11 +48,4 @@ declare class Simple {
      * @param {Object} gen The generator to push onto
      */
     encodeCBOR(gen: any): any;
-    /**
-     * Debug string for simple value
-     *
-     * @returns {string} simple(value)
-     */
-    [util.inspect.custom](depth: any, opts: any): string;
 }
-import util = require("util");

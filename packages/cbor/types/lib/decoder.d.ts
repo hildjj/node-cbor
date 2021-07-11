@@ -1,3 +1,4 @@
+/// <reference types="node" />
 export = Decoder;
 /**
  * Decode a stream of CBOR bytes by transforming them into equivalent
@@ -30,13 +31,13 @@ declare class Decoder extends BinaryParseStream {
      *
      * @static
      * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
-     *   |DataView|stream.Readable} input - If a Readable stream, must have
+     *   |DataView|ReadableStream} input - If a Readable stream, must have
      *   received the `readable` event already, or you will get an error
      *   claiming "Insufficient data"
      * @param {DecoderOptions|string} [options={}] Options or encoding for input
      * @returns {any} - the decoded value
      */
-    static decodeFirstSync(input: string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | stream.Readable, options?: DecoderOptions | string): any;
+    static decodeFirstSync(input: string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | ReadableStream, options?: DecoderOptions | string): any;
     /**
      * Decode all of the CBOR items in the input into an array.  This will throw
      * an exception if the input is not valid CBOR; a zero-length input will
@@ -44,12 +45,12 @@ declare class Decoder extends BinaryParseStream {
      *
      * @static
      * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
-     *   |DataView|stream.Readable} input
+     *   |DataView|ReadableStream} input
      * @param {DecoderOptions|string} [options={}] Options or encoding
      *   for input
      * @returns {Array} - Array of all found items
      */
-    static decodeAllSync(input: string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | stream.Readable, options?: DecoderOptions | string): any[];
+    static decodeAllSync(input: string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | ReadableStream, options?: DecoderOptions | string): any[];
     /**
      * Decode the first CBOR item in the input.  This will error if there are
      * more bytes left over at the end (if options.extendedResults is not true),
@@ -59,13 +60,13 @@ declare class Decoder extends BinaryParseStream {
      *
      * @static
      * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
-     *   |DataView|stream.Readable} input
+     *   |DataView|ReadableStream} input
      * @param {DecoderOptions|decodeCallback|string} [options={}] - options, the
      *   callback, or input encoding
      * @param {decodeCallback} [cb] callback
      * @returns {Promise<any>} returned even if callback is specified
      */
-    static decodeFirst(input: string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | stream.Readable, options?: DecoderOptions | decodeCallback | string, cb?: decodeCallback): Promise<any>;
+    static decodeFirst(input: string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | ReadableStream, options?: DecoderOptions | decodeCallback | string, cb?: decodeCallback): Promise<any>;
     /**
      * @callback decodeAllCallback
      * @param {Error} error - if one was generated
@@ -77,13 +78,13 @@ declare class Decoder extends BinaryParseStream {
      *
      * @static
      * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
-     *   |DataView|stream.Readable} input
+     *   |DataView|ReadableStream} input
      * @param {DecoderOptions|decodeAllCallback|string} [options={}] -
      *   Decoding options, the callback, or the input encoding.
      * @param {decodeAllCallback} [cb] callback
      * @returns {Promise<Array>} even if callback is specified
      */
-    static decodeAll(input: string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | stream.Readable, options?: string | DecoderOptions | ((error: Error, value: any[]) => any), cb?: (error: Error, value: any[]) => any): Promise<any[]>;
+    static decodeAll(input: string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | ReadableStream, options?: string | DecoderOptions | ((error: Error, value: any[]) => any), cb?: (error: Error, value: any[]) => any): Promise<any[]>;
     /**
      * Create a parsing stream.
      *
@@ -95,7 +96,7 @@ declare class Decoder extends BinaryParseStream {
     tags: any;
     preferWeb: boolean;
     extendedResults: boolean;
-    bigint: boolean;
+    required: boolean;
     valueBytes: any;
     /**
      * Stop processing
@@ -111,7 +112,7 @@ declare namespace Decoder {
     export { NOT_FOUND, ExtendedResults, DecoderOptions, decodeCallback };
 }
 import BinaryParseStream = require("../vendor/binary-parse-stream");
-import stream = require("stream");
+import { Buffer } from "buffer";
 type DecoderOptions = {
     /**
      * - the maximum depth to parse.
@@ -127,11 +128,6 @@ type DecoderOptions = {
      * function returns the correctly-created value for that tag.
      */
     tags?: object;
-    /**
-     * generate JavaScript BigInt's
-     * instead of BigNumbers, when possible.
-     */
-    bigint?: boolean;
     /**
      * if true, prefer Uint8Arrays to
      * be generated instead of node Buffers.  This might turn on some more
@@ -150,17 +146,13 @@ type DecoderOptions = {
     required?: boolean;
     /**
      * - if true, emit extended
-     * results, which will be an object with shape {@link ExtendedResults}.
+     * results, which will be an object with shape {@link ExtendedResults }.
      * The value will already have been null-checked.
      */
     extendedResults?: boolean;
 };
-type decodeCallback = (error?: Error, value?: any) => any;
+type decodeCallback = (error?: Error, value?: any) => void;
 declare const NOT_FOUND: unique symbol;
-/**
- * {@linkcode Decoder.decodeFirst} or
- *   {@linkcode Decoder.decodeFirstSync} was called.
- */
 type ExtendedResults = {
     /**
      * - the value that was found
@@ -178,7 +170,8 @@ type ExtendedResults = {
     bytes: Buffer;
     /**
      * - the bytes that were left over from the original
-     * input.  This property only exists if {
+     * input.  This property only exists if {@linkcode Decoder.decodeFirst} or
+     * {@linkcode Decoder.decodeFirstSync} was called.
      */
     unused?: Buffer;
 };
