@@ -17,12 +17,13 @@ here on out.
 
 ```bash
 $ npm install --save cbor
-# optional, if you need big floats or big decimals:
-$ npm install --save bignumber.js
 ```
 
 **NOTE**
 If you are going to use this on the web, use [cbor-web](../cbor-web) instead.
+
+If you need support for encoding and decoding BigDecimal fractions (tag 4) or
+BigFloats (tag 5), please see [cbor-bigdecimal](../cbor-bigdecimal).
 
 ## Documentation:
 
@@ -125,7 +126,6 @@ The following types are supported for encoding:
 * TypedArrays, ArrayBuffer, DataView
 * Map, Set
 * BigInt
-* [bignumber](https://github.com/MikeMcl/bignumber.js) (If you install it.  It is needed for big float and big decimal types)
 
 Decoding supports the above types, including the following CBOR tag numbers:
 
@@ -135,8 +135,6 @@ Decoding supports the above types, including the following CBOR tag numbers:
 | 1   | Date                |
 | 2   | BigInt              |
 | 3   | BigInt              |
-| 4   | bignumber           |
-| 5   | bignumber           |
 | 21  | Tagged, with toJSON |
 | 22  | Tagged, with toJSON |
 | 23  | Tagged, with toJSON |

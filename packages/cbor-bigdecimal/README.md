@@ -29,3 +29,12 @@ If you need to access the same BigNumber class that `cbor-bigdecimal` is (e.g.
 because the class has been mangled by your compressor), it is available as
 `bdec.BigNumber`.
 
+## Supported Types
+
+Decoding supports the following CBOR tag numbers:
+
+| Tag | Generated Type      |
+|-----|---------------------|
+| 4   | bignumber           |
+| 5   | bignumber           |
+
