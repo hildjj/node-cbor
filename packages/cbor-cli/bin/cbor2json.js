@@ -4,6 +4,8 @@
 const cbor = require('cbor')
 const utils = require('../lib/utils')
 const pkg = require('../package.json')
+const bdec = require('cbor-bigdecimal')
+bdec(cbor)
 
 const {program} = require('commander')
 

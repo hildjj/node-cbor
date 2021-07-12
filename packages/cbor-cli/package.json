@@ -44,13 +44,15 @@
     "marked": "^0.7.0",
     "marked-man": "^0.7.0",
     "mock-stdio": "^1.0.3",
-    "nofilter": "^2.0.3"
+    "nofilter": "^2.0.3",
+    "p-event": "^4.2.0"
   },
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {
     "bignumber.js": "^9.0.1",
     "cbor": "^7.0.6",
+    "cbor-bigdecimal": "^7.0.6",
     "commander": "^8.0.0",
     "json-text-sequence": "^0.3.0"
   },

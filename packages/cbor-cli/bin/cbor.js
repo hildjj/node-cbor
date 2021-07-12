@@ -6,8 +6,11 @@ const fs = require('fs')
 const path = require('path')
 const util = require('util')
 const cbor = require('cbor')
+const bdec = require('cbor-bigdecimal')
 const commander = require('commander')
 const pkg = require('../package.json')
+
+bdec(cbor)
 const HEX = /^\s*(?:['"`]|0x)([0-9a-f]+)\s*$/
 const OUTPUT_TYPES = {
   comment: 'comment',

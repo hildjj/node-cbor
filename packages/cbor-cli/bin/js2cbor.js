@@ -9,6 +9,8 @@ const path = require('path')
 const stream = require('stream')
 const Module = require('module')
 const { Buffer } = require('buffer') // not the mangled version
+const bdec = require('cbor-bigdecimal')
+bdec(cbor)
 
 program
   .version(pkg.version)
