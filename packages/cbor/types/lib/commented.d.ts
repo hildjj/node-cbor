@@ -27,7 +27,7 @@ declare class Commented extends stream.Transform {
     constructor(options?: CommentOptions);
     depth: number;
     max_depth: number;
-    all: any;
+    all: NoFilter;
     parser: Decoder;
     /**
      * @private
@@ -70,6 +70,7 @@ declare namespace Commented {
     export { CommentOptions, commentCallback };
 }
 import stream = require("stream");
+import NoFilter = require("nofilter");
 import Decoder = require("./decoder");
 import { Buffer } from "buffer";
 type CommentOptions = {

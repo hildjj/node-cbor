@@ -59,7 +59,7 @@ class UnexpectedDataError extends Error {
  *   positive number for un-trusted inputs.  Most standard inputs won't nest
  *   more than 100 or so levels; I've tested into the millions before
  *   running out of memory.
- * @property {object} [tags] - mapping from tag number to function(v),
+ * @property {Tagged.TagMap} [tags] - mapping from tag number to function(v),
  *   where v is the decoded value that comes after the tag, and where the
  *   function returns the correctly-created value for that tag.
  * @property {boolean} [preferWeb=false] if true, prefer Uint8Arrays to
@@ -135,6 +135,7 @@ class Decoder extends BinaryParseStream {
 
     if (extendedResults) {
       this.bs.on('read', this._onRead.bind(this))
+      /** @type {NoFilter} */
       this.valueBytes = new NoFilter()
     }
   }
@@ -602,7 +603,11 @@ class Decoder extends BinaryParseStream {
             case MT.BYTE_STRING:
               val = parent.slice()
               if (this.preferWeb) {
-                val = new Uint8Array(val.buffer, val.byteOffset, val.length)
+                val = new Uint8Array(
+                  /** @type {Buffer} */ (val).buffer,
+                  /** @type {Buffer} */ (val).byteOffset,
+                  /** @type {Buffer} */ (val).length
+                )
               }
               break
             case MT.UTF8_STRING:

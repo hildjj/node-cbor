@@ -75,6 +75,27 @@ function _toTypedArray(val, tagged) {
   return new TypedClass(ab)
 }
 
+/**
+ * Convert a tagged value to a more interesting JavaScript type.  Errors
+ * thrown in this function will be captured into the "err" property of the
+ * original Tagged instance.
+ *
+ * @callback TagFunction
+ * @param {any} value - the value inside the tag
+ * @param {Tagged} tag - the enclosing Tagged instance; useful if you want to
+ *   modify it and return it.  Also available as "this".
+ * @return {any} the transformed value
+ */
+
+/**
+ * A mapping from tag number to a tag decoding function
+ * @typedef {Object.<string, TagFunction>} TagMap
+ */
+
+/**
+  * @type {TagMap}
+  * @private
+  */
 const TAGS = {
   // Standard date/time string; see Section 3.4.1
   0: v => new Date(v),
@@ -226,7 +247,13 @@ for (const n of Object.keys(TYPED_ARRAY_TAGS)) {
   TAGS[n] = _toTypedArray
 }
 
+/**
+  * @type {TagMap}
+  * @private
+  */
+let current_TAGS = {}
 const INTERNAL_JSON = Symbol('INTERNAL_JSON')
+
 /**
  * A CBOR tagged item, where the tag does not have semantics specified at the
  * moment, or those semantics threw an error during parsing. Typically this will
@@ -316,6 +343,24 @@ class Tagged {
     }
   }
 
+  /**
+   * The current set of supported tags.  May be modified by plugins.
+   *
+   * @type {TagMap}
+   * @static
+   */
+  static get TAGS() {
+    return current_TAGS
+  }
+
+  static set TAGS(val) {
+    current_TAGS = val
+  }
+
+  /**
+   * Reset the supported tags to the original set, before any plugins modified
+   * the list.
+   */
   static reset() {
     Tagged.TAGS = { ...TAGS }
   }

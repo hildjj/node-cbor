@@ -6,37 +6,12 @@ const stream = require('stream')
 const TextDecoder = require('@cto.af/textdecoder')
 const constants = require('./constants')
 const { NUMBYTES, SHIFT32, BI, SYMS } = constants
-
 const MAX_SAFE_HIGH = 0x1fffff
-
-function badInspect(o) {
-  /* half-ass inspect.  Replace with node-inspect-extracted if needed */
-  switch (typeof o) {
-    case 'string':
-      return `"${o}"`
-    case 'object':
-      if (!o) {
-        return 'null'
-      }
-      if (Array.isArray(o)) {
-        return '[' + o.map(x => badInspect(x)).join(', ') + ']'
-      }
-      return '{' + Object.entries(o)
-        .map(([k, v]) => `${k}: ${badInspect(v)}`)
-        .join(', ') + '}'
-  }
-  return String(o)
-}
-
-exports.inspect = exports.badInspect = badInspect
-try {
-  exports.inspect = require('util').inspect
-} catch (ignored) {
-}
 
 /**
  * Convert a UTF8-encoded Buffer to a JS string.  If possible, throw an error
  * on invalid UTF8.  Byte Order Marks are not looked at or stripped.
+ * @private
  */
 const td = new TextDecoder('utf8', {fatal: true, ignoreBOM: true})
 exports.utf8 = buf => td.decode(buf)
@@ -255,21 +230,29 @@ exports.cborValueToString = function cborValueToString(val, float_bytes = -1) {
       return JSON.stringify(val)
     case 'bigint':
       return val.toString()
-    case 'number':
-      if (float_bytes > 0) {
-        return (exports.inspect(val)) + '_' + float_bytes
+    case 'number': {
+      const s = Object.is(val, -0) ? '-0' : String(val)
+      return (float_bytes > 0) ? s + '_' + float_bytes : s
+    }
+    case 'object': {
+      // null should be caught above
+      const buf = exports.bufferishToBuffer(val)
+      if (buf) {
+        const hex = buf.toString('hex')
+        return (float_bytes === -Infinity) ? hex : `h'${hex}'`
       }
-      return exports.inspect(val)
+      if (val && (typeof val.inspect === 'function')) {
+        return val.inspect()
+      }
+      // Shouldn't get non-empty arrays here
+      if (Array.isArray(val)) {
+        return '[]'
+      }
+      // This should be all that is left
+      return '{}'
+    }
   }
-  const buf = exports.bufferishToBuffer(val)
-  if (buf) {
-    const hex = buf.toString('hex')
-    return (float_bytes === -Infinity) ? hex : `h'${hex}'`
-  }
-  if (val && (typeof val.inspect === 'function')) {
-    return val.inspect()
-  }
-  return exports.inspect(val)
+  return String(val)
 }
 
 exports.guessEncoding = function guessEncoding(input, encoding) {

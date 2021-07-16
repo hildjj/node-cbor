@@ -11,7 +11,7 @@ export namespace leveldb {
     const buffer: boolean;
     const name: string;
 }
-
+export function reset(): void;
 export var comment: typeof import("./commented").comment;
 export var decodeAll: typeof import("./decoder").decodeAll;
 export var decodeAllSync: typeof import("./decoder").decodeAllSync;

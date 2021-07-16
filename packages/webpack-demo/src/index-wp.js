@@ -6,8 +6,6 @@ const { Buffer } = require('buffer')
 const bdec = require('cbor-bigdecimal')
 
 // eslint-disable-next-line no-unused-vars
-const process = require('process')
-// eslint-disable-next-line no-unused-vars
 const style = require('./style.css')
 
 bdec(cbor)

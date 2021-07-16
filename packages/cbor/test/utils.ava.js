@@ -83,13 +83,3 @@ test('cborValueToString', t => {
   t.is(utils.cborValueToString(Symbol('foo')), 'foo')
   t.is(utils.cborValueToString(Symbol('')), 'Symbol')
 })
-
-test('badInspect', t => {
-  t.is(utils.badInspect('foo'), '"foo"')
-  t.is(utils.badInspect(12), '12')
-  t.is(utils.badInspect([1, '2', false]), '[1, "2", false]')
-  t.is(
-    utils.badInspect({a: null, b: undefined, c: 12n}),
-    '{a: null, b: undefined, c: 12}'
-  )
-})

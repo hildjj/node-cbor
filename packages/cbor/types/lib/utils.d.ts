@@ -18,5 +18,4 @@ export function guessEncoding(input: any, encoding: any): any;
 export function base64url(buf: Buffer | Uint8Array | Uint8ClampedArray | ArrayBuffer | DataView): string;
 export function base64(buf: Buffer | Uint8Array | Uint8ClampedArray | ArrayBuffer | DataView): string;
 export function isBigEndian(): boolean;
-export var inspect: ((o: any) => string) | typeof import("util").inspect;
 import { Buffer } from "buffer";

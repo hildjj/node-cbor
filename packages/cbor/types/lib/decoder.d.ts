@@ -93,11 +93,14 @@ declare class Decoder extends BinaryParseStream {
     constructor(options?: DecoderOptions);
     running: boolean;
     max_depth: number;
-    tags: any;
+    tags: {
+        [x: string]: Tagged.TagFunction;
+    };
     preferWeb: boolean;
     extendedResults: boolean;
     required: boolean;
-    valueBytes: any;
+    /** @type {NoFilter} */
+    valueBytes: NoFilter;
     /**
      * Stop processing
      */
@@ -112,6 +115,8 @@ declare namespace Decoder {
     export { NOT_FOUND, ExtendedResults, DecoderOptions, decodeCallback };
 }
 import BinaryParseStream = require("../vendor/binary-parse-stream");
+import Tagged = require("./tagged");
+import NoFilter = require("nofilter");
 import { Buffer } from "buffer";
 type DecoderOptions = {
     /**
@@ -127,7 +132,7 @@ type DecoderOptions = {
      * where v is the decoded value that comes after the tag, and where the
      * function returns the correctly-created value for that tag.
      */
-    tags?: object;
+    tags?: Tagged.TagMap;
     /**
      * if true, prefer Uint8Arrays to
      * be generated instead of node Buffers.  This might turn on some more

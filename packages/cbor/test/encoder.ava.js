@@ -116,13 +116,13 @@ test('pushFails', t => {
   })
 })
 
-test('_pushAny', t => {
+test('pushAny', t => {
   // Left this in for backward-compat.  This should be the only place it's
   // called.
   const enc = new cbor.Encoder()
   const bs = new NoFilter()
   enc.pipe(bs)
-  enc._pushAny(0)
+  enc.pushAny(0)
   t.is(bs.read().toString('hex'), '00')
 })
 
