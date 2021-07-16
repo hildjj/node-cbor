@@ -12,14 +12,6 @@ module.exports = {
     globalObject: 'this'
   },
   target: 'web',
-  externals: {
-    'bignumber.js': {
-      root: 'BigNumber',
-      commonjs: 'bignumber.js',
-      commonjs2: 'bignumber.js'
-    },
-    util: true
-  },
   resolve: {
     symlinks: false,
     fallback: {

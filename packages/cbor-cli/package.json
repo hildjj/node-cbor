@@ -44,7 +44,7 @@
     "marked": "^0.7.0",
     "marked-man": "^0.7.0",
     "mock-stdio": "^1.0.3",
-    "nofilter": "^3.0.1",
+    "nofilter": "^3.0.2",
     "p-event": "^4.2.0"
   },
   "license": "MIT",

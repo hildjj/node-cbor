@@ -1,5 +1,5 @@
 /// <reference types="node" />
-export function utf8(buf: any): any;
+export function utf8(buf: any): string;
 export namespace utf8 {
     const checksUTF8: boolean;
 }

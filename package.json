@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@cto.af/textdecoder": "^0.0.0",
-    "nofilter": "^3.0.1"
+    "nofilter": "^3.0.2"
   },
   "devDependencies": {
     "@cto.af/eslint-config": "*",

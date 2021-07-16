@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "bignumber.js": "^9.0.1",
-    "webpack": "^5.44.0",
+    "webpack": "^5.45.1",
     "webpack-cli": "^4.7.2"
   }
 }
