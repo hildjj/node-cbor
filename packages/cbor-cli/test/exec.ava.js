@@ -3,6 +3,7 @@
 const test = require('ava')
 const { spawn } = require('child_process')
 const path = require('path')
+const process = require('process')
 const pkg = require('../package.json')
 const { Buffer } = require('buffer') // not the mangled version
 
@@ -19,7 +20,12 @@ function exec(bin, opts = {}) {
       ...process.env,
       ...opts.env
     }
-    const c = spawn(bin, opts.args, {
+    const args = opts.args || []
+    if (process.platform === 'win32') {
+      args.unshift(bin)
+      ;[bin] = process.argv
+    }
+    const c = spawn(bin, args, {
       stdio: 'pipe',
       env
     })

@@ -4,9 +4,9 @@
   "description": "",
   "private": "true",
   "scripts": {
-    "prebuild": "rm -rf dist; mkdir dist",
-    "build": "browserify --standalone cbor ../cbor/lib/cbor.js -t [ babelify  ] | terser --compress -o dist/bundle-bf.js; browserify src/index.js -t [ babelify  ] -o dist/index-bf.js; cp src/*.css src/*.html dist",
-    "deploy": "cp dist/* ../../docs/example",
+    "prebuild": "rimraf dist && mkdir dist",
+    "build": "browserify --standalone cbor ../cbor/lib/cbor.js -t [ babelify  ] | terser --compress -o dist/bundle-bf.js && browserify src/index.js -t [ babelify  ] -o dist/index-bf.js && copyfiles -u1 src/*.css src/*.html dist",
+    "deploy": "copyfiles -u1 dist/* ../../docs/example",
     "predeploy": "npm run build"
   },
   "repository": {
@@ -22,7 +22,9 @@
     "babelify": "^10.0.0",
     "browserify": "^17.0.0",
     "cbor-bigdecimal": "^7.0.6",
+    "copyfiles": "^2.4.1",
     "node-inspect-extracted": "*",
+    "rimraf": "^3.0.2",
     "terser": "^5.7.1"
   }
 }

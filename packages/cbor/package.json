@@ -16,7 +16,7 @@
     "fs": false
   },
   "scripts": {
-    "clean": "rm -rf coverage .nyc_output/ docs",
+    "clean": "rimraf coverage .nyc_output/ docs",
     "lint": "eslint lib/*.js test/*.js",
     "coverage": "nyc -r lcov npm test",
     "test": "ava test/*.ava.js",
@@ -49,7 +49,8 @@
     "@types/node": "*",
     "bignumber.js": "^9.0.1",
     "garbage": "~0.0.0",
-    "p-event": "^4.2.0"
+    "p-event": "^4.2.0",
+    "rimraf": "^3.0.2"
   },
   "license": "MIT",
   "readmeFilename": "README.md",

@@ -11,7 +11,7 @@
     "./packages/*"
   ],
   "scripts": {
-    "clean": "rm -rf node_modules coverage .nyc_output packages/*/node_modules packages/*/coverage pacakges/*/.nyc_output",
+    "clean": "rimraf node_modules coverage .nyc_output packages/*/node_modules packages/*/coverage pacakges/*/.nyc_output",
     "docs": "jsdoc -c .jsdoc.conf",
     "lint": "eslint . --ext cjs --ext js",
     "test": "ava packages/*/test/*.ava.js",
@@ -23,7 +23,7 @@
     "build": "pnpm -r build",
     "coverage": "nyc -r lcov npm test",
     "coverage:all": "nyc -r lcov npm run test:all",
-    "predeploy": "rm -rf docs/example/*",
+    "predeploy": "rimraf docs/example/*",
     "deploy": "pnpm -r deploy"
   },
   "dependencies": {
@@ -43,6 +43,7 @@
     "minami": "*",
     "nve": "^14.0.0",
     "nyc": "^15.1.0",
+    "rimraf": "^3.0.2",
     "typescript": "^4.3.5"
   },
   "license": "MIT"

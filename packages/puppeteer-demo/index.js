@@ -10,7 +10,7 @@ const TOP = 'file://' +
   path.resolve(__dirname, '..', '..', 'docs', 'example', 'index.html')
 
 let executablePath = process.env.PUPPETEER_EXECUTABLE_PATH
-if (!executablePath) {
+if (!executablePath && (process.platform === 'darwin')) {
   executablePath = path.resolve(
     '/',
     'Applications',
@@ -20,10 +20,14 @@ if (!executablePath) {
     'Google Chrome'
   )
 }
-if (!executablePath) {
-  throw new Error('Set PUPPETEER_EXECUTABLE_PATH environment variable')
+if (executablePath) {
+  try {
+    fs.accessSync(executablePath, fs.constants.X_OK)
+  } catch (ignored) {
+    executablePath = undefined
+    delete process.env.PUPPETEER_EXECUTABLE_PATH
+  }
 }
-fs.accessSync(executablePath, fs.constants.X_OK)
 
 async function main() {
   const browser = await puppeteer.launch({

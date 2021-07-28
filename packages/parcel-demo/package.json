@@ -4,9 +4,9 @@
   "description": "",
   "private": true,
   "scripts": {
-    "prebuild": "rm -rf dist",
+    "prebuild": "rimraf -rf dist",
     "build": "parcel build src/index-p.html --dist-dir dist --no-source-maps --public-url .",
-    "deploy": "cp dist/* ../../docs/example",
+    "deploy": "copyfiles -u1 dist/* ../../docs/example",
     "predeploy": "npm run build"
   },
   "keywords": [],
@@ -22,9 +22,11 @@
     "bignumber.js": "^9.0.1",
     "cbor": "^7.0.6",
     "cbor-bigdecimal": "^7.0.6",
+    "copyfiles": "^2.4.1",
     "node-inspect-extracted": "*",
     "parcel": "2.0.0-beta.2",
     "postcss": "^8.3.6",
-    "regenerator-runtime": "^0.13.9"
+    "regenerator-runtime": "^0.13.9",
+    "rimraf": "^3.0.2"
   }
 }

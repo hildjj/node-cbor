@@ -21,7 +21,7 @@
     "man": "man"
   },
   "scripts": {
-    "clean": "rm -rf coverage .nyc_output/ man/*",
+    "clean": "rimraf coverage .nyc_output/ man/*",
     "lint": "eslint lib/*.js bin/* test/*.js",
     "test": "ava",
     "man": "mkdir -p man; for f in man_src/*.md; do b=`basename $f`; marked-man $f -o man/${b%.md}.1; gzip -9f man/${b%.md}.1; done",
@@ -45,7 +45,8 @@
     "marked-man": "^0.7.0",
     "mock-stdio": "^1.0.3",
     "nofilter": "^3.0.2",
-    "p-event": "^4.2.0"
+    "p-event": "^4.2.0",
+    "rimraf": "^3.0.2"
   },
   "license": "MIT",
   "readmeFilename": "README.md",

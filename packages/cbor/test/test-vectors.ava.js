@@ -30,7 +30,7 @@ use command \`git submodule update --init\` to load test-vectors`)
   }
 
   // HACK: don't lose data when JSON parsing
-  vecStr = vecStr.replace(/"decoded":\s*(-?\d+(\.\d+)?(e[+-]\d+)?)\n/g,
+  vecStr = vecStr.replace(/"decoded":\s*(-?\d+(\.\d+)?(e[+-]\d+)?)\r?\n/g,
     `"decoded": {
       "___TYPE___": "number",
       "___VALUE___": "$1"
@@ -108,7 +108,7 @@ test('vectors', t => {
     }
 
     if (v.hasOwnProperty('decoded')) {
-      t.deepEqual(decoded, v.decoded)
+      t.deepEqual(decoded, v.decoded, `Hex: "${v.hex}"`)
 
       if (v.roundtrip) {
         // TODO: Don't know how to make these round-trip.  See:

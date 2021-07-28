@@ -59,9 +59,9 @@ const scriptNames = {}
 for (const s of scripts) {
   const scriptSrc = bresolve.sync(s, { filename: __filename })
   const local = path.basename(scriptSrc)
-  scriptNames[script] = local
+  scriptNames[s] = local
 
-  console.log(`Resolve: ${script} (${path.relative(__dirname, scriptSrc)})`)
+  console.log(`Resolve: ${s} (${path.relative(__dirname, scriptSrc)})`)
   fs.copyFileSync(scriptSrc, path.join(dist, local))
 }
 

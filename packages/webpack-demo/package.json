@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build": "webpack",
-    "deploy": "cp dist/* ../../docs/example",
+    "deploy": "copyfiles -u1 dist/* ../../docs/example",
     "predeploy": "npm run build"
   },
   "keywords": [],
@@ -23,6 +23,7 @@
     "buffer": "*",
     "cbor-bigdecimal": "^7.0.6",
     "cbor-web": "^7.0.6",
+    "copyfiles": "^2.4.1",
     "css-loader": "^6.2.0",
     "events": "^3.3.0",
     "html-webpack-plugin": "^5.3.2",
