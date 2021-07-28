@@ -53,7 +53,7 @@
     "bignumber.js": "^9.0.1",
     "cbor": "^7.0.6",
     "cbor-bigdecimal": "^7.0.6",
-    "commander": "^8.0.0",
+    "commander": "^8.1.0",
     "json-text-sequence": "^0.3.0"
   },
   "engines": {

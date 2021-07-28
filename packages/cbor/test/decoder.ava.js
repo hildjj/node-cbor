@@ -118,7 +118,7 @@ test('add_tag', async t => {
   t.deepEqual(d.tags[127], newTag)
 
   d.on('error', er => {
-    t.truthy(false, `Failed: ${er}`)
+    t.fail(`Stream fail: ${er}`)
   })
 
   const b = Buffer.from('d87f01c001', 'hex')

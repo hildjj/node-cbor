@@ -18,7 +18,7 @@
   "author": "Joe Hildebrand <joe-github@cursive.net>",
   "license": "MIT",
   "devDependencies": {
-    "@babel/core": "^7.14.6",
+    "@babel/core": "^7.14.8",
     "babelify": "^10.0.0",
     "browserify": "^17.0.0",
     "cbor-bigdecimal": "^7.0.6",
