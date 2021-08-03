@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "prebuild": "rimraf -rf dist",
-    "build": "parcel build src/index-p.html --dist-dir dist --no-source-maps --public-url .",
+    "build": "parcel build src/index-p.html --dist-dir dist --no-source-maps --public-url ./ --no-content-hash",
     "deploy": "copyfiles -u1 dist/* ../../docs/example",
     "predeploy": "npm run build"
   },
@@ -18,15 +18,19 @@
     "directory": "packages/parcel-demo"
   },
   "devDependencies": {
-    "@babel/core": "^7.14.8",
-    "bignumber.js": "^9.0.1",
+    "@parcel/optimizer-data-url": "^2.0.0-rc.0",
+    "@parcel/transformer-inline-string": "^2.0.0-rc.0",
     "cbor": "^7.0.6",
     "cbor-bigdecimal": "^7.0.6",
     "copyfiles": "^2.4.1",
     "node-inspect-extracted": "*",
-    "parcel": "2.0.0-beta.2",
+    "parcel": "2.0.0-rc.0",
     "postcss": "^8.3.6",
     "regenerator-runtime": "^0.13.9",
     "rimraf": "^3.0.2"
-  }
+  },
+  "browserslist": [
+    "> 0.2%",
+    "not dead"
+  ]
 }

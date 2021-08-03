@@ -2,11 +2,11 @@
 /* eslint-disable no-unused-vars */
 'use strict'
 
-const regeneratorRuntime = require('regenerator-runtime')
-const { inspect } = require('node-inspect-extracted')
-const { Buffer } = require('buffer')
-const cbor = require('cbor')
-const bdec = require('cbor-bigdecimal')
+import 'regenerator-runtime/runtime'
+import {inspect} from 'node-inspect-extracted'
+import { Buffer } from 'buffer'
+import * as cbor from 'cbor'
+import bdec from 'cbor-bigdecimal'
 
 bdec(cbor)
 
