@@ -1,4 +1,3 @@
-export var BigNumber: typeof import("bignumber.js").default;
 export var Commented: typeof import("./commented");
 export var Diagnose: typeof import("./diagnose");
 export var Decoder: typeof import("./decoder");
@@ -12,8 +11,7 @@ export namespace leveldb {
     const buffer: boolean;
     const name: string;
 }
-export var hasBigInt: boolean;
-
+export function reset(): void;
 export var comment: typeof import("./commented").comment;
 export var decodeAll: typeof import("./decoder").decodeAll;
 export var decodeAllSync: typeof import("./decoder").decodeAllSync;

@@ -32,23 +32,6 @@ function parentBufferStream(parent, typ) {
   return b
 }
 
-/**
- * @param {Buffer} v
- * @private
- */
-function _tag_2(v) {
-  return utils.bufferToBigInt(v)
-}
-
-/**
- * @param {BigInt} v
- * @private
- */
-function _tag_3(v) {
-  // avoid syntax error on old runtimes
-  return BI.MINUS_ONE - utils.bufferToBigInt(v)
-}
-
 class UnexpectedDataError extends Error {
   constructor(byte, value) {
     super(`Unexpected data: 0x${byte.toString(16)}`)
@@ -76,11 +59,9 @@ class UnexpectedDataError extends Error {
  *   positive number for un-trusted inputs.  Most standard inputs won't nest
  *   more than 100 or so levels; I've tested into the millions before
  *   running out of memory.
- * @property {object} [tags] - mapping from tag number to function(v),
+ * @property {Tagged.TagMap} [tags] - mapping from tag number to function(v),
  *   where v is the decoded value that comes after the tag, and where the
  *   function returns the correctly-created value for that tag.
- * @property {boolean} [bigint=true] generate JavaScript BigInt's
- *   instead of BigNumbers, when possible.
  * @property {boolean} [preferWeb=false] if true, prefer Uint8Arrays to
  *   be generated instead of node Buffers.  This might turn on some more
  *   changes in the future, so forward-compatibility is not guaranteed yet.
@@ -96,6 +77,7 @@ class UnexpectedDataError extends Error {
   * @callback decodeCallback
   * @param {Error} [error] - if one was generated
   * @param {any} [value] - the decoded value
+  * @returns {void}
   */
 /**
   * @param {DecoderOptions|decodeCallback|string} opts options,
@@ -135,7 +117,6 @@ class Decoder extends BinaryParseStream {
     const {
       tags = {},
       max_depth = -1,
-      bigint = true,
       preferWeb = false,
       required = false,
       encoding = 'hex',
@@ -150,20 +131,11 @@ class Decoder extends BinaryParseStream {
     this.tags = tags
     this.preferWeb = preferWeb
     this.extendedResults = extendedResults
-    this.bigint = bigint
     this.required = required
 
     if (extendedResults) {
       this.bs.on('read', this._onRead.bind(this))
-      this.valueBytes = new NoFilter()
-    }
-    if (bigint) {
-      if (this.tags[2] == null) {
-        this.tags[2] = _tag_2
-      }
-      if (this.tags[3] == null) {
-        this.tags[3] = _tag_3
-      }
+      this.valueBytes = /** @type {NoFilter} */ (new NoFilter())
     }
   }
 
@@ -205,7 +177,7 @@ class Decoder extends BinaryParseStream {
    *
    * @static
    * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
-   *   |DataView|stream.Readable} input - If a Readable stream, must have
+   *   |DataView|ReadableStream} input - If a Readable stream, must have
    *   received the `readable` event already, or you will get an error
    *   claiming "Insufficient data"
    * @param {DecoderOptions|string} [options={}] Options or encoding for input
@@ -220,7 +192,7 @@ class Decoder extends BinaryParseStream {
     const c = new Decoder(opts)
     const s = utils.guessEncoding(input, encoding)
 
-    // for/of doesn't work when you need to call next() with a value
+    // For/of doesn't work when you need to call next() with a value
     // generator created by parser will be "done" after each CBOR entity
     // parser will yield numbers of bytes that it wants
     const parser = c._parse()
@@ -239,7 +211,10 @@ class Decoder extends BinaryParseStream {
     }
 
     let val = null
-    if (!c.extendedResults) {
+    if (c.extendedResults) {
+      val = state.value
+      val.unused = s.read()
+    } else {
       val = Decoder.nullcheck(state.value)
       if (s.length > 0) {
         const nextByte = s.read(1)
@@ -247,9 +222,6 @@ class Decoder extends BinaryParseStream {
         s.unshift(nextByte)
         throw new UnexpectedDataError(nextByte[0], val)
       }
-    } else {
-      val = state.value
-      val.unused = s.read()
     }
     return val
   }
@@ -261,7 +233,7 @@ class Decoder extends BinaryParseStream {
    *
    * @static
    * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
-   *   |DataView|stream.Readable} input
+   *   |DataView|ReadableStream} input
    * @param {DecoderOptions|string} [options={}] Options or encoding
    *   for input
    * @returns {Array} - Array of all found items
@@ -305,7 +277,7 @@ class Decoder extends BinaryParseStream {
    *
    * @static
    * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
-   *   |DataView|stream.Readable} input
+   *   |DataView|ReadableStream} input
    * @param {DecoderOptions|decodeCallback|string} [options={}] - options, the
    *   callback, or input encoding
    * @param {decodeCallback} [cb] callback
@@ -319,8 +291,7 @@ class Decoder extends BinaryParseStream {
     const {encoding = 'hex', required = false, ...opts} = options
 
     const c = new Decoder(opts)
-    /** @type {any} */
-    let v = NOT_FOUND
+    let v = /** @type {any} */ (NOT_FOUND)
     const s = utils.guessEncoding(input, encoding)
     const p = new Promise((resolve, reject) => {
       c.on('data', val => {
@@ -333,6 +304,8 @@ class Decoder extends BinaryParseStream {
           return resolve(v)
         }
         if (v !== NOT_FOUND) {
+          // Typescript work-around
+          // eslint-disable-next-line dot-notation
           er['value'] = v
         }
         v = ERROR
@@ -376,7 +349,7 @@ class Decoder extends BinaryParseStream {
    *
    * @static
    * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
-   *   |DataView|stream.Readable} input
+   *   |DataView|ReadableStream} input
    * @param {DecoderOptions|decodeAllCallback|string} [options={}] -
    *   Decoding options, the callback, or the input encoding.
    * @param {decodeAllCallback} [cb] callback
@@ -433,7 +406,7 @@ class Decoder extends BinaryParseStream {
 
     while (true) {
       if ((this.max_depth >= 0) && (depth > this.max_depth)) {
-        throw new Error('Maximum depth ' + this.max_depth + ' exceeded')
+        throw new Error(`Maximum depth ${this.max_depth} exceeded`)
       }
 
       const [octet] = yield 1
@@ -443,8 +416,8 @@ class Decoder extends BinaryParseStream {
       }
       const mt = octet >> 5
       const ai = octet & 0x1f
-      const parent_major = (parent != null) ? parent[MAJOR] : undefined
-      const parent_length = (parent != null) ? parent.length : undefined
+      const parent_major = (parent == null) ? undefined : parent[MAJOR]
+      const parent_length = (parent == null) ? undefined : parent.length
 
       switch (ai) {
         case NUMBYTES.ONE:
@@ -460,14 +433,14 @@ class Decoder extends BinaryParseStream {
           const buf = yield numbytes
           val = (mt === MT.SIMPLE_FLOAT) ?
             buf :
-            utils.parseCBORint(ai, buf, this.bigint)
+            utils.parseCBORint(ai, buf)
           break
         }
         case 28:
         case 29:
         case 30:
           this.running = false
-          throw new Error('Additional info not implemented: ' + ai)
+          throw new Error(`Additional info not implemented: ${ai}`)
         case NUMBYTES.INDEFINITE:
           switch (mt) {
             case MT.POS_INT:
@@ -482,20 +455,11 @@ class Decoder extends BinaryParseStream {
       }
       switch (mt) {
         case MT.POS_INT:
-          // val already decoded
+          // Val already decoded
           break
         case MT.NEG_INT:
           if (val === Number.MAX_SAFE_INTEGER) {
-            if (this.bigint) {
-              val = BI.NEG_MAX
-            } else if (constants.BigNumber) {
-              val = constants.BN.NEG_MAX
-            } else {
-              throw new Error('No bigint and no bignumber.js')
-            }
-          } else if (constants.BigNumber &&
-            (val instanceof constants.BigNumber)) {
-            val = constants.BN.MINUS_ONE.minus(val)
+            val = BI.NEG_MAX
           } else {
             val = (typeof val === 'bigint') ? BI.MINUS_ONE - val : -1 - val
           }
@@ -603,7 +567,7 @@ class Decoder extends BinaryParseStream {
               let allstrings = true
 
               if ((parent.length % 2) !== 0) {
-                throw new Error('Invalid map length: ' + parent.length)
+                throw new Error(`Invalid map length: ${parent.length}`)
               }
               for (let i = 0, len = parent.length; i < len; i += 2) {
                 if ((typeof parent[i] !== 'string') ||
@@ -633,13 +597,17 @@ class Decoder extends BinaryParseStream {
             }
           }
         } else /* istanbul ignore else */ if (parent instanceof NoFilter) {
-          // only parent types are Array and NoFilter for (Array/Map) and
+          // Only parent types are Array and NoFilter for (Array/Map) and
           // (bytes/string) respectively.
           switch (parent[MAJOR]) {
             case MT.BYTE_STRING:
               val = parent.slice()
               if (this.preferWeb) {
-                val = new Uint8Array(val.buffer, val.byteOffset, val.length)
+                val = new Uint8Array(
+                  /** @type {Buffer} */ (val).buffer,
+                  /** @type {Buffer} */ (val).byteOffset,
+                  /** @type {Buffer} */ (val).length
+                )
               }
               break
             case MT.UTF8_STRING:
@@ -660,7 +628,7 @@ class Decoder extends BinaryParseStream {
           const ret = {
             value: Decoder.nullcheck(val),
             bytes,
-            length: bytes.length
+            length: bytes.length,
           }
 
           this.valueBytes = new NoFilter()

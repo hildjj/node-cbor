@@ -3,9 +3,9 @@
 const cbor_src = process.env.CBOR_PACKAGE || '../'
 const cbor = require(cbor_src)
 const test = require('ava')
+const pEvent = require('p-event')
 const cases = require('./cases')
-const {BigNumber} = cbor
-// use mangled versions
+// Use mangled versions
 const Buffer = cbor.encode(0).constructor
 const NoFilter = new cbor.Commented().all.constructor
 
@@ -30,29 +30,31 @@ test('undefined', t => {
 test('badFunc', t => {
   t.throws(() => cbor.encode(() => 'hi'))
   t.throws(() => cbor.encode(Symbol('foo')))
-  function foo() {}
+  function foo() {
+    return null
+  }
   foo.toString = null
   t.throws(() => cbor.encode(foo))
 })
 
 test('addSemanticType', t => {
-  // before the tag, this is an innocuous object:
+  // Before the tag, this is an innocuous object:
   // {"value": "foo"}
   const tc = new cases.TempClass('foo')
   delete (cases.TempClass.prototype.encodeCBOR)
   t.is(cbor.Encoder.encode(tc).toString('hex'), 'a16576616c756563666f6f')
   const gen = new cbor.Encoder({
-    genTypes: [cases.TempClass, cases.TempClass.toCBOR]
+    genTypes: [cases.TempClass, cases.TempClass.toCBOR],
   })
   gen.write(tc)
   t.is(gen.read().toString('hex'), 'd9fffe63666f6f')
 
   function hexPackBuffer(gen2, obj, bufs) {
-    gen2.write('0x' + obj.toString('hex'))
-  // intentionally don't return
+    gen2.write(`0x${obj.toString('hex')}`)
+  // Intentionally don't return
   }
 
-  // replace Buffer serializer with hex strings
+  // Replace Buffer serializer with hex strings
   gen.addSemanticType(Buffer, hexPackBuffer)
   gen.write(Buffer.from('010203', 'hex'))
 
@@ -62,44 +64,38 @@ test('addSemanticType', t => {
   t.is(gen.addSemanticType(Buffer), hexPackBuffer)
   t.is(gen.addSemanticType(Buffer), undefined)
 
-  // as object
+  // As object
   const gen2 = new cbor.Encoder({
     genTypes: {
-      TempClass: cases.TempClass.toCBOR
-    }
+      TempClass: cases.TempClass.toCBOR,
+    },
   })
   gen2.write(tc)
   t.is(gen2.read().toString('hex'), 'd9fffe63666f6f')
 })
 
-test.cb('stream', t => {
+test('stream', async t => {
   const bs = new NoFilter()
   const gen = new cbor.Encoder()
-  gen.on('end', () => {
-    t.deepEqual(bs.read(), Buffer.from([1, 2]))
-    t.end()
-  })
   gen.pipe(bs)
   gen.write(1)
   gen.end(2)
+  await pEvent(gen, 'end')
+  t.deepEqual(bs.read(), Buffer.from([1, 2]))
 })
 
-test.cb('streamNone', t => {
+test('streamNone', async t => {
   const bs = new NoFilter()
   const gen = new cbor.Encoder()
-  gen.on('end', () => {
-    t.is(bs.read(), null)
-    t.end()
-  })
   gen.pipe(bs)
   gen.end()
+  await pEvent(gen, 'end')
+  t.is(bs.read(), null)
 })
 
 test('pushFails', t => {
   cases.EncodeFailer.tryAll(t, [1, 2, 3])
   cases.EncodeFailer.tryAll(t, new Set([1, 2, 3]))
-  cases.EncodeFailer.tryAll(t, new BigNumber(0))
-  cases.EncodeFailer.tryAll(t, new BigNumber(1.1))
   cases.EncodeFailer.tryAll(t, new Map([[1, 2], ['a', null]]))
   cases.EncodeFailer.tryAll(t, {a: 1, b: null})
   cases.EncodeFailer.tryAll(t, undefined)
@@ -111,7 +107,7 @@ test('pushFails', t => {
     const o = {
       encodeCBOR() {
         return false
-      }
+      },
     }
     enc.on('error', e => {
       t.truthy(e instanceof Error)
@@ -122,13 +118,13 @@ test('pushFails', t => {
   })
 })
 
-test('_pushAny', t => {
+test('pushAny', t => {
   // Left this in for backward-compat.  This should be the only place it's
   // called.
   const enc = new cbor.Encoder()
   const bs = new NoFilter()
   enc.pipe(bs)
-  enc._pushAny(0)
+  enc.pushAny(0)
   t.is(bs.read().toString('hex'), '00')
 })
 
@@ -138,7 +134,7 @@ test('canonical', t => {
   enc.pipe(bs)
   enc.write(cases.goodMap)
   t.is(bs.read().toString('hex'),
-    'ad0063626172613063666f6f616101616201626161026262620263616161036362626203806b656d7074792061727261798101656172726179a069656d707479206f626aa1613102636f626af6646e756c6c') // eslint-disable-line max-len
+    'ad0063626172613063666f6f616101616201626161026262620263616161036362626203806b656d7074792061727261798101656172726179a069656d707479206f626aa1613102636f626af6646e756c6c')
   enc.write({aa: 2, b: 1})
   t.is(bs.read().toString('hex'),
     'a261620162616102')
@@ -178,7 +174,7 @@ test('detect loops', t => {
 
   const can = new cbor.Encoder({ detectLoops: true, canonical: true})
   const c = { d: null }
-  // this isn't a loop.
+  // This isn't a loop.
   const m = new Map([[c, c]])
   can.write(m)
 
@@ -233,17 +229,9 @@ test('date types', t => {
   )
 })
 
-test('js BigInt', t => testAll(t, cases.bigInts(cases.good)))
-
-test('BigNumber BigInt collapse', t => testAll(
+test('BigInt collapse', t => testAll(
   t,
   cases.collapseBigIntegers,
-  { collapseBigIntegers: true }
-))
-
-test('js BigInt collapse', t => testAll(
-  t,
-  cases.bigInts(cases.collapseBigIntegers),
   { collapseBigIntegers: true }
 ))
 
@@ -330,21 +318,21 @@ test('encoding "undefined"', t => {
   t.is(cbor.encodeOne(undefined, {encodeUndefined: null}).toString('hex'), 'f6')
   const undefStr = cbor.encode('undefined')
   t.is(cbor.encodeOne(undefined, {
-    encodeUndefined: undefStr
+    encodeUndefined: undefStr,
   }).toString('hex'), '69756e646566696e6564')
   t.throws(() => cbor.encodeOne(undefined, {encodeUndefined: () => {
     throw new Error('ha')
   }}))
   t.is(cbor.encodeOne(undefined, {
-    encodeUndefined: () => undefStr
+    encodeUndefined: () => undefStr,
   }).toString('hex'), '4a69756e646566696e6564')
   const m = new Map([[undefined, 1]])
   t.throws(() => cbor.encodeOne(m, {
-    disallowUndefinedKeys: true
+    disallowUndefinedKeys: true,
   }))
   t.throws(() => cbor.encodeOne(m, {
     disallowUndefinedKeys: true,
-    canonical: true
+    canonical: true,
   }))
 })
 
@@ -396,44 +384,13 @@ test('indefinite', t => {
 
   const o = {
     a: true,
-    encodeCBOR: cbor.Encoder.encodeIndefinite
+    encodeCBOR: cbor.Encoder.encodeIndefinite,
   }
   t.is(cbor.encodeOne(o, { detectLoops: true }).toString('hex'), 'bf6161f5ff')
 })
 
-test('outside BigNumber', t => {
-  const key = require.resolve('bignumber.js')
-  const old = require.cache[key]
-  delete require.cache[key]
-  const bn = require('bignumber.js').BigNumber
-  // should be separate
-  t.is(bn, bn)
-  t.is(BigNumber, BigNumber)
-  t.not(bn, BigNumber)
-  const a = bn(2)
-  const b = new BigNumber(2)
-  t.truthy(a instanceof bn)
-  t.truthy(b instanceof BigNumber)
-  t.falsy(a instanceof BigNumber)
-  t.falsy(b instanceof bn)
-
-  const pi3 = bn(Math.PI).pow(3)
-  // Before the fix, 'instanceof BigNumber' is false, so pi3 gets encoded
-  // as a plain old object.
-  t.is(cbor.encodeOne(pi3).toString('hex'),
-    'c482382cc254056e5e99b1be81b6eefa3964490ac18c69399361')
-  require.cache[key] = old
-})
-
-test('no bignumber', async t => {
-  await cases.withoutBigNumber(cbor_src, newCbor => {
-    const enc = new newCbor.Encoder()
-    t.falsy(enc.semanticTypes[BigNumber.name])
-  })
-})
-
 test('Buffers', t => {
-  // sanity checks for mangled library
+  // Sanity checks for mangled library
   const b = Buffer.from('0102', 'hex')
   t.is(b.toString('hex'), '0102')
   t.deepEqual(b, Buffer.from('0102', 'hex'))

@@ -1,12 +1,11 @@
 'use strict'
 
-const BigNum = require('bignumber.js').BigNumber
 const cbor = require(process.env.CBOR_PACKAGE || '../')
 const constants = require('../lib/constants')
 const utils = require('../lib/utils')
 const path = require('path')
 
-// use mangled versions
+// Use mangled versions
 const Buffer = cbor.encode(0).constructor
 const NoFilter = new cbor.Commented().all.constructor
 
@@ -23,7 +22,7 @@ async function requireWithFailedDependency(source, dependency, fn) {
   require.cache[dep] = {
     loaded: true,
     get exports() {
-      // see @node/lib/internal/modules/cjs/loader.js#tryPackage()
+      // See @node/lib/internal/modules/cjs/loader.js#tryPackage()
       const err = new Error(
         `Cannot find module '${dep}'. ` +
         'Please verify that the package.json has a valid "main" entry'
@@ -32,7 +31,7 @@ async function requireWithFailedDependency(source, dependency, fn) {
       err.path = path.resolve(dependency, 'package.json')
       err.requestPath = __filename
       throw err
-    }
+    },
   }
   delete require.cache[src]
 
@@ -45,27 +44,9 @@ async function requireWithFailedDependency(source, dependency, fn) {
 }
 exports.requireWithFailedDependency = requireWithFailedDependency
 
-function withoutBigNumber(cbor_src, fn) {
-  return requireWithFailedDependency(cbor_src, 'bignumber.js', newCbor => {
-    if (newCbor.BigNumber) {
-      // this gets the node version. requireWithFailedDependency works with
-      // webpack because it re-requires all of the dependencies
-      const {BigNumber, BN} = constants
-      constants.BigNumber = null
-      delete constants.BN
-      fn(newCbor)
-      constants.Bignumber = BigNumber
-      constants.BN = BN
-    } else {
-      fn(newCbor)
-    }
-  })
-}
-exports.withoutBigNumber = withoutBigNumber
-
 class TempClass {
   constructor(val) {
-    // render as the string tempClass with the tag 0xffff
+    // Render as the string tempClass with the tag 0xffff
     this.value = val || 'tempClass'
   }
 
@@ -78,8 +59,6 @@ class TempClass {
   }
 }
 exports.TempClass = TempClass
-
-/* eslint-disable max-len */
 
 // [Decoded, Diagnostic, Commented]
 exports.good = [
@@ -130,17 +109,17 @@ exports.good = [
   fb                -- Float, next 8 bytes
     7fefffffffffffff -- 1.7976931348623157e+308
 0xfb7fefffffffffffff`],
-  [new BigNum('-1c0000000000000001', 16), '3(h\'1c0000000000000000\')', `
+  [-0x1c0000000000000001n, '3(h\'1c0000000000000000\')', `
   c3                -- Tag #3
     49              -- Bytes, length: 9
       1c0000000000000000 -- 1c0000000000000000
 0xc3491c0000000000000000`],
-  [new BigNum('18446744073709551616'), '2(h\'010000000000000000\')', `
+  [18446744073709551616n, '2(h\'010000000000000000\')', `
   c2                -- Tag #2
     49              -- Bytes, length: 9
       010000000000000000 -- 010000000000000000
 0xc249010000000000000000`],
-  [new BigNum('-18446744073709551617'), '3(h\'010000000000000000\')', `
+  [-18446744073709551617n, '3(h\'010000000000000000\')', `
   c3                -- Tag #3
     49              -- Bytes, length: 9
       010000000000000000 -- 010000000000000000
@@ -459,62 +438,12 @@ exports.good = [
         63          -- {Val:0}, "c"
 0x826161a161626163`],
 
-  // decimal
-  [new BigNum(10.1), '4([-1, 101])', `
-  c4                -- Tag #4
-    82              -- Array, 2 items
-      20            -- [0], -1
-      18            -- Positive number, next 1 byte
-        65          -- [1], 101
-0xc482201865`],
-  [new BigNum(100.1), '4([-1, 1001])', `
-  c4                -- Tag #4
-    82              -- Array, 2 items
-      20            -- [0], -1
-      19            -- Positive number, next 2 bytes
-        03e9        -- [1], 1001
-0xc482201903e9`],
-  [new BigNum(0.1), '4([-1, 1])', `
-  c4                -- Tag #4
-    82              -- Array, 2 items
-      20            -- [0], -1
-      01            -- [1], 1
-0xc4822001`],
-  [new BigNum(-0.1), '4([-1, -1])', `
-  c4                -- Tag #4
-    82              -- Array, 2 items
-      20            -- [0], -1
-      20            -- [1], -1
-0xc4822020`],
-  [new BigNum(0), '2(h\'00\')', `
-  c2                -- Tag #2
-    41              -- Bytes, length: 1
-      00            -- 00
-0xc24100`],
-  // [new BigNum(-0), "3(h'')", '0xc34100'],
-  [new BigNum('18446744073709551615.1'), '4([-1, 2(h\'09fffffffffffffff7\')])', `
-  c4                -- Tag #4
-    82              -- Array, 2 items
-      20            -- [0], -1
-      c2            -- [1], Tag #2
-        49          -- Bytes, length: 9
-          09fffffffffffffff7 -- 09fffffffffffffff7
-0xc48220c24909fffffffffffffff7`],
-  [new BigNum(Math.PI).pow(3), '4([-45, 2(h\'056e5e99b1be81b6eefa3964490ac18c69399361\')])', `
-  c4                -- Tag #4
-    82              -- Array, 2 items
-      38            -- Negative number, next 1 byte
-        2c          -- [0], -45
-      c2            -- [1], Tag #2
-        54          -- Bytes, length: 20
-          056e5e99b1be81b6eefa3964490ac18c69399361 -- 056e5e99b1be81b6eefa3964490ac18c69399361
-0xc482382cc254056e5e99b1be81b6eefa3964490ac18c69399361`],
   [NaN, 'NaN_1', `
   f9                -- Float, next 2 bytes
     7e00            -- NaN
 0xf97e00`],
 
-  // ints
+  // Ints
   [0xff, '255', `
   18                -- Positive number, next 1 byte
     ff              -- 255
@@ -733,7 +662,7 @@ exports.good = [
       58            -- Bytes, length next 1 byte
         18          -- Bytes, length: 24
           000000000000000100000000000000020000000000000003 -- 000000000000000100000000000000020000000000000003
-0xd8435818000000000000000100000000000000020000000000000003`])
+0xd8435818000000000000000100000000000000020000000000000003`]),
 
 ]
 
@@ -744,19 +673,6 @@ exports.encodeGood = [
   [constants.SYMS.UNDEFINED, 'undefined', `
   f7                -- undefined
 0xf7`],
-  [new BigNum(Infinity), 'Infinity_1', `
-  f9                -- Float, next 2 bytes
-    7c00            -- Infinity
-0xf97c00`],
-  [new BigNum(-Infinity), '-Infinity_1', `
-  f9                -- Float, next 2 bytes
-    fc00            -- -Infinity
-0xf9fc00`],
-  [new BigNum(NaN), '-NaN', `
-  f9                -- Float, next 2 bytes
-    7e00            -- NaN
-0xf97e00`],
-
   [new Set([1, 2]), '[1, 2]', `
   d9                --  next 2 bytes
     0102            -- Tag #258
@@ -765,7 +681,7 @@ exports.encodeGood = [
         02          -- [1], 2
 0xd90102820102`],
 
-  // internal types
+  // Internal types
   [new NoFilter(Buffer.from([1, 2, 3, 4])), 'h\'01020304\'', `
   44                -- Bytes, length: 4
     01020304        -- 01020304
@@ -775,7 +691,7 @@ exports.encodeGood = [
     ffff            -- Tag #65535
       63            -- String, length: 3
         666f6f      -- "foo"
-0xd9ffff63666f6f`]
+0xd9ffff63666f6f`],
 ]
 
 exports.decodeGood = [
@@ -787,12 +703,12 @@ exports.decodeGood = [
   f9                -- Float, next 2 bytes
     7bff            -- 65504
 0xf97bff`],
-  [new cbor.Tagged(23, Buffer.from('01020304', 'hex')), '23(h\'01020304\')', `
+  [new cbor.Tagged(23, Buffer.from('01020304', 'hex')).convert(), '23(h\'01020304\')', `
   d7                -- Tag #23
     44              -- Bytes, length: 4
       01020304      -- 01020304
 0xd74401020304`],
-  [new cbor.Tagged(24, Buffer.from('6449455446', 'hex')), '24(h\'6449455446\')', `
+  [new cbor.Tagged(24, Buffer.from('6449455446', 'hex')).convert(), '24(h\'6449455446\')', `
   d8                --  next 1 byte
     18              -- Tag #24 Encoded CBOR data item
       45            -- Bytes, length: 5
@@ -820,11 +736,11 @@ exports.decodeGood = [
   f9                -- Float, next 2 bytes
     0001            -- 5.960464477539063e-8
 0xf90001`],
-  [new BigNum('9223372036854775807'), '9223372036854775807', `
+  [9223372036854775807n, '9223372036854775807', `
   1b                -- Positive number, next 8 bytes
     7fffffffffffffff -- 9223372036854775807
 0x1b7fffffffffffffff`],
-  [new BigNum('-9223372036854775808'), '-9223372036854775808', `
+  [-9223372036854775808n, '-9223372036854775808', `
   3b                -- Negative number, next 8 bytes
     7fffffffffffffff -- -9223372036854775808
 0x3b7fffffffffffffff`],
@@ -832,12 +748,6 @@ exports.decodeGood = [
   f9                -- Float, next 2 bytes
     0400            -- 0.00006103515625
 0xf90400`],
-  [new BigNum(1.5), '5([-1, 3])', `
-  c5                -- Tag #5
-    82              -- Array, 2 items
-      20            -- [0], -1
-      03            -- [1], 3
-0xc5822003`],
   [-4, '-4_1', `
   f9                -- Float, next 2 bytes
     c400            -- -4
@@ -866,7 +776,7 @@ exports.decodeGood = [
   fb                -- Float, next 8 bytes
     7ff8000000000000 -- NaN
 0xfb7ff8000000000000`],
-  [new BigNum('-9007199254740992'), '-9007199254740992', `
+  [-9007199254740992n, '-9007199254740992', `
   3b                -- Negative number, next 8 bytes
     001fffffffffffff -- -9007199254740992
 0x3b001fffffffffffff`],
@@ -1000,15 +910,7 @@ exports.decodeGood = [
         63          -- {Val:0}, "c"
       ff            -- BREAK
 0x826161bf61626163ff`],
-  [new cbor.Tagged(64, new cbor.Tagged(64, [])), '64(64([_ ]))', `
-  d8                --  next 1 byte
-    40              -- Tag #64
-      d8            --  next 1 byte
-        40          -- Tag #64
-          9f        -- Array (streaming)
-            ff      -- BREAK
-0xd840d8409fff`],
-  [new cbor.Tagged(64, Buffer.from('aabbccddeeff99', 'hex')), '64((_ h\'aabbccdd\', h\'eeff99\'))', `
+  [new Uint8Array([0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff, 0x99]), '64((_ h\'aabbccdd\', h\'eeff99\'))', `
   d8                --  next 1 byte
     40              -- Tag #64
       5f            -- Bytes (streaming)
@@ -1017,71 +919,71 @@ exports.decodeGood = [
         43          -- Bytes, length: 3
           eeff99    -- eeff99
         ff          -- BREAK
-0xd8405f44aabbccdd43eeff99ff`]
+0xd8405f44aabbccdd43eeff99ff`],
 ]
 
 exports.collapseBigIntegers = [
-  [new BigNum('0'), undefined, '0x00'],
-  [new BigNum('1'), undefined, '0x01'],
-  [new BigNum('-1'), undefined, '0x20'],
-  [new BigNum('24'), undefined, '0x1818'],
-  [new BigNum('-25'), undefined, '0x3818'],
-  [new BigNum('01ff', 16), undefined, '0x1901ff'],
-  [new BigNum('-01ff', 16), undefined, '0x3901fe'],
-  [new BigNum('1ffff', 16), undefined, '0x1a0001ffff'],
-  [new BigNum('-1ffff', 16), undefined, '0x3a0001fffe'],
-  [new BigNum('1ffffffff', 16), undefined, '0x1b00000001ffffffff'],
-  [new BigNum('-1ffffffff', 16), undefined, '0x3b00000001fffffffe'],
-  [new BigNum('ffffffffffffffff', 16), undefined, '0x1bffffffffffffffff'],
-  [new BigNum('-10000000000000000', 16), undefined, '0x3bffffffffffffffff']
+  [0n, undefined, '0x00'],
+  [1n, undefined, '0x01'],
+  [-1n, undefined, '0x20'],
+  [24n, undefined, '0x1818'],
+  [-25n, undefined, '0x3818'],
+  [0x01ffn, undefined, '0x1901ff'],
+  [-0x01ffn, undefined, '0x3901fe'],
+  [0x1ffffn, undefined, '0x1a0001ffff'],
+  [-0x1ffff, undefined, '0x3a0001fffe'],
+  [0x1ffffffffn, undefined, '0x1b00000001ffffffff'],
+  [-0x1ffffffffn, undefined, '0x3b00000001fffffffe'],
+  [0xffffffffffffffffn, undefined, '0x1bffffffffffffffff'],
+  [-0x10000000000000000n, undefined, '0x3bffffffffffffffff'],
 ]
 
 exports.decodeBad = [
-  '0x18', // missing the next byte for AI
-  '0x1c', // invalid AI
-  '0x1d', // invalid AI
-  '0x1e', // invalid AI
-  '0x44010203', // only 3 bytes, not 4, bytestring
-  '0x5f', // indeterminate bytestring with nothing
-  '0x5f01ff', // indeterminite bytestring includes a non-string chunk
-  '0x64494554', // only 3 bytes, not 4, utf8
-  '0x7432303133', // string length 20 only has 4 bytes
-  '0x7f01ff', // indeterminite string includes a non-string chunk
-  '0x7f657374726561646d696e', // no BREAK
-  '0x81', // no items in array, expected 1
-  '0x8181818181', // nested arrays with no end
+  '0x18', // Missing the next byte for AI
+  '0x1c', // Invalid AI
+  '0x1d', // Invalid AI
+  '0x1e', // Invalid AI
+  '0x44010203', // Only 3 bytes, not 4, bytestring
+  '0x5f', // Indeterminate bytestring with nothing
+  '0x5f01ff', // Indeterminite bytestring includes a non-string chunk
+  '0x64494554', // Only 3 bytes, not 4, utf8
+  '0x7432303133', // String length 20 only has 4 bytes
+  '0x7f01ff', // Indeterminite string includes a non-string chunk
+  '0x7f657374726561646d696e', // No BREAK
+  '0x81', // No items in array, expected 1
+  '0x8181818181', // Nested arrays with no end
   '0x81FE', // Array containaing invalid
   '0x8201', // 1 item in array, expected 2
-  '0x9f', // indeterminate array without end
-  '0x9f01', // indeterminate array without end
-  '0x9fFEff', // streamed array containing invalid
-  '0xa16161', // map without value
+  '0x9f', // Indeterminate array without end
+  '0x9f01', // Indeterminate array without end
+  '0x9fFEff', // Streamed array containing invalid
+  '0xa16161', // Map without value
   '0xa1FE01', // Map containing invalid
-  '0xa20102', // only 1 pair, not 2, map
-  '0xa3', // no pairs
-  '0xbf', // indeterminate map without end
-  '0xbf000103ff', // streaming map with odd number of items
-  '0xbf6161', // indeterminate map without end
-  '0xbf616101', // indeterminate map without end
-  '0xbfFE01ff', // streamed map containing invalid
-  '0xfc', // reserved AI
-  '0xfd', // reserved AI
-  '0xfe' // reserved AI
+  '0xa20102', // Only 1 pair, not 2, map
+  '0xa3', // No pairs
+  '0xbf', // Indeterminate map without end
+  '0xbf000103ff', // Streaming map with odd number of items
+  '0xbf6161', // Indeterminate map without end
+  '0xbf616101', // Indeterminate map without end
+  '0xbfFE01ff', // Streamed map containing invalid
+  '0xfc', // Reserved AI
+  '0xfd', // Reserved AI
+  '0xfe', // Reserved AI
 ]
 if (utils.utf8.checksUTF8) {
   exports.decodeBad.push(
-    '0x62c0ae' // invalid utf8
+    '0x62c0ae' // Invalid utf8
   )
 }
 
-const HEX = /0x([0-9a-f]+)$/i
+const HEX = /0x(?<hex>[0-9a-f]+)$/i
 exports.toBuffer = function toBuffer(c) {
   if (Array.isArray(c)) {
     // eslint-disable-next-line prefer-destructuring
     c = c[2]
   }
   const match = c.match(HEX)
-  return Buffer.from(match[1], 'hex')
+  return Buffer.from(match.groups.hex, 'hex')
 }
 
 exports.toString = function toString(c) {
@@ -1149,7 +1051,7 @@ exports.goodMap = new Map([
   ['aa', 2],
   ['bb', 2],
   ['b', 1],
-  ['bbb', 3]
+  ['bbb', 3],
 ])
 
 exports.canonNums = [
@@ -1160,7 +1062,7 @@ exports.canonNums = [
   [3.4028234663852886e+38, 'fa7f7fffff'],
   [0.00006103515625, 'f90400'],
   [0.2498779296875, 'f933ff'],
-  [2.9802322387695312e-8, 'fa33000000'],
+  [0.0000000298023223876953125, 'fa33000000'],
   [4.1727979294137185e-8, 'fa33333866'],
   [0.000007636845111846924, 'fa37002000'],
 
@@ -1168,11 +1070,5 @@ exports.canonNums = [
   [-Infinity, 'f9fc00'],
   [NaN, 'f97e00'],
   [0, '00'],
-  [-0, 'f98000']
+  [-0, 'f98000'],
 ]
-
-exports.bigInts = function bigInts(list) {
-  return list
-    .filter(([n]) => BigNum.isBigNumber(n) && n.isInteger())
-    .map(([n, ...others]) => [BigInt(n.toString()), ...others])
-}

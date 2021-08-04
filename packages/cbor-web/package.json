@@ -15,14 +15,6 @@
     "url": "http://github.com/hildjj/node-cbor.git",
     "directory": "packages/cbor-web"
   },
-  "peerDependencies": {
-    "bignumber.js": "^9.0.1"
-  },
-  "peerDependenciesMeta": {
-    "bignumber.js": {
-      "optional": true
-    }
-  },
   "devDependencies": {
     "base64-js": "^1.5.1",
     "buffer": "^6.0.3",
@@ -30,15 +22,17 @@
     "events": "^3.3.0",
     "ieee754": "^1.2.1",
     "inherits": "^2.0.4",
-    "node-inspect-extracted": "^1.0.8",
-    "nofilter": "^2.0.3",
+    "nofilter": "^3.0.2",
     "process": "^0.11.10",
     "readable-stream": "^3.6.0",
     "safe-buffer": "^5.2.1",
     "stream-browserify": "^3.0.0",
     "string_decoder": "^1.3.0",
     "util-deprecate": "^1.0.2",
-    "webpack": "^5.41.1",
+    "webpack": "^5.48.0",
     "webpack-cli": "^4.7.2"
+  },
+  "engines": {
+    "node": ">=12.19"
   }
 }

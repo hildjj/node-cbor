@@ -2,7 +2,7 @@
   "name": "cbor-monorepo",
   "private": true,
   "main": "./packages/cbor/lib/cbor.js",
-  "version": "7.0.5",
+  "version": "8.0.0",
   "author": {
     "name": "Joe Hildebrand",
     "email": "joe-github@cursive.net"
@@ -11,46 +11,43 @@
     "./packages/*"
   ],
   "scripts": {
-    "clean": "rm -rf node_modules coverage .nyc_output packages/*/node_modules packages/*/coverage pacakges/*/.nyc_output",
-    "install:local": "npm install --no-save $npm_package_config_devPackages",
-    "install:global": "npm install -g $npm_package_config_devPackages",
+    "clean": "rimraf node_modules coverage .nyc_output packages/*/node_modules packages/*/coverage pacakges/*/.nyc_output",
     "docs": "jsdoc -c .jsdoc.conf",
-    "lint": "eslint . --ext cjs --ext js",
+    "lint": "eslint . --ext cjs --ext mjs --ext js --ext md",
     "test": "ava packages/*/test/*.ava.js",
-    "test:all": "nve --continue --parallel 15,14,12,10 npm test",
+    "test:versions": "nve --continue --parallel 16,14,12 npm test",
     "test:bigendian": "docker run --rm -it -v ${PWD}:/root/cbor -w /root/cbor s390x/node npm test",
+    "test:spot-check": "ava test/*.ava.js && CBOR_PACKAGE=${INIT_CWD}/packages/cbor-web/dist/cbor.js npm run test",
+    "test:web": "node packages/puppeteer-demo/index.js",
+    "test:all": "npm run test:versions && npm run test:spot-check && npm run test:bigendian && npm run test:web",
     "build": "pnpm -r build",
     "coverage": "nyc -r lcov npm test",
     "coverage:all": "nyc -r lcov npm run test:all",
-    "predeploy": "rm -rf docs/example/* && pnpm -r --filter cbor-web build",
-    "deploy": "pnpm -r deploy",
-    "preweb": "npm run deploy",
-    "web": "node packages/puppeteer-demo/index.js",
-    "prune": "pnpm store prune",
-    "spot-check": "ava test/*.ava.js && CBOR_PACKAGE=${INIT_CWD}/packages/cbor-web/dist/cbor.js npm test"
-  },
-  "config": {
-    "devPackages": "pnpm lerna eslint jsdoc light-server typescript parcel-bundler nve"
+    "predeploy": "rimraf docs/example/*",
+    "deploy": "pnpm -r deploy"
   },
   "dependencies": {
-    "@cto.af/textdecoder": "^0.0.0",
-    "nofilter": "^2.0.3"
-  },
-  "peerDependencies": {
-    "bignumber.js": "^9.0.1"
-  },
-  "peerDependenciesMeta": {
-    "bignumber.js": {
-      "optional": true
-    }
+    "nofilter": "^3.0.2"
   },
   "devDependencies": {
-    "@cto.af/eslint-config": "*",
-    "ava": "^3.15.0",
+    "@cto.af/eslint-config": "0.0.6",
+    "ava": "^4.0.0-alpha.2",
+    "bignumber.js": "^9.0.1",
+    "eslint": "^7.32.0",
     "eslint-plugin-ava": "^12.0.0",
+    "eslint-plugin-markdown": "^2.2.0",
     "eslint-plugin-node": "^11.1.0",
+    "jsdoc": "^3.6.7",
+    "lerna": "^4.0.0",
+    "light-server": "^2.9.1",
     "minami": "*",
-    "nyc": "^15.1.0"
+    "nve": "^14.0.0",
+    "nyc": "^15.1.0",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.3.5"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "engines": {
+    "node": ">=12.19"
+  }
 }

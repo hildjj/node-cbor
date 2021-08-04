@@ -13,10 +13,10 @@ class Simple {
    */
   constructor(value) {
     if (typeof value !== 'number') {
-      throw new Error('Invalid Simple type: ' + (typeof value))
+      throw new Error(`Invalid Simple type: ${typeof value}`)
     }
     if ((value < 0) || (value > 255) || ((value | 0) !== value)) {
-      throw new Error('value must be a small positive integer: ' + value)
+      throw new Error(`value must be a small positive integer: ${value}`)
     }
     this.value = value
   }
@@ -27,7 +27,7 @@ class Simple {
    * @returns {string} simple(value)
    */
   toString() {
-    return 'simple(' + this.value + ')'
+    return `simple(${this.value})`
   }
 
   /**
@@ -36,7 +36,7 @@ class Simple {
    * @returns {string} simple(value)
    */
   inspect(depth, opts) {
-    return 'simple(' + this.value + ')'
+    return `simple(${this.value})`
   }
 
   /**

@@ -25,8 +25,11 @@ const TransformStream = Stream.Transform
 class BinaryParseStream extends TransformStream {
   constructor(options) {
     super(options)
-    // doesn't work to pass these in as opts, for some reason
+    // Doesn't work to pass these in as opts, for some reason
+    // also, work around typescript not knowing TransformStream internals
+    // eslint-disable-next-line dot-notation
     this['_writableState'].objectMode = false
+    // eslint-disable-next-line dot-notation
     this['_readableState'].objectMode = true
 
     this.bs = new NoFilter()
@@ -52,11 +55,11 @@ class BinaryParseStream extends TransformStream {
         this.__fresh = false
       }
 
-      if (!ret.done) {
-        this.__needed = ret.value || Infinity
-      } else {
+      if (ret.done) {
         this.push(ret.value)
         this.__restart()
+      } else {
+        this.__needed = ret.value || Infinity
       }
     }
 

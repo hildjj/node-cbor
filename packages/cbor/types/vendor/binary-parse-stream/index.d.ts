@@ -11,7 +11,7 @@ export = BinaryParseStream;
  */
 declare class BinaryParseStream extends Stream.Transform {
     constructor(options: any);
-    bs: any;
+    bs: NoFilter;
     __fresh: boolean;
     __needed: number;
     /**
@@ -24,3 +24,4 @@ declare class BinaryParseStream extends Stream.Transform {
     __parser: Generator<number, undefined, Buffer>;
 }
 import Stream = require("stream");
+import NoFilter = require("nofilter");

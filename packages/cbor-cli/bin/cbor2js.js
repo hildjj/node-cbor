@@ -5,6 +5,8 @@ const cbor = require('cbor')
 const utils = require('../lib/utils')
 const pkg = require('../package.json')
 const util = require('util')
+const bdec = require('cbor-bigdecimal')
+bdec(cbor)
 
 const {program} = require('commander')
 
@@ -39,8 +41,8 @@ utils.streamFiles(argv, () => {
       showProxy: opts.hidden,
       depth: Infinity,
       sorted: true,
-      breakLength: process.env.COLS || 80
+      breakLength: process.env.COLS || 80,
     }))
   })
   return d
-}, utils.printError)
+}).catch(utils.printError)

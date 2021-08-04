@@ -11,11 +11,12 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-20.04
-
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x, 15.x]
+        node-version: [12.x, 14.x, 16.x]
+        platform: [ubuntu-20.04, windows-latest]
+
+    runs-on: ${{ matrix.platform }}
 
     steps:
       - uses: actions/checkout@v2
@@ -36,9 +37,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.node-version }}-
       - name: Install pnpm
-        uses: pnpm/action-setup@v1.2.1
+        uses: pnpm/action-setup@v2.0.1
         with:
-          version: 5.17.2
+          version: 6.10.0
           run_install: |
             - recursive: true
               args: [--filter, '!*-demo', --filter, '!cbor-web']

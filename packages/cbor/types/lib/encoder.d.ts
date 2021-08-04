@@ -1,18 +1,20 @@
+/// <reference types="node" />
 export = Encoder;
 /**
  * @typedef EncodingOptions
  * @property {any[]|Object} [genTypes=[]] - array of pairs of
  *   `type`, `function(Encoder)` for semantic types to be encoded.  Not
- *   needed for Array, Date, Buffer, Map, RegExp, Set, Url, or BigNumber.
+ *   needed for Array, Date, Buffer, Map, RegExp, Set, or URL.
  *   If an object, the keys are the constructor names for the types.
  * @property {boolean} [canonical=false] - should the output be
  *   canonicalized
- * @property {boolean|Symbol} [detectLoops=false] - should object loops
- *   be detected?  This will currently modify the encoded object graph by
- *   adding a Symbol property to each object.  If this bothers you, call
- *   `removeLoopDetectors` on the encoded object when done.  Do not encode
+ * @property {boolean|WeakSet} [detectLoops=false] - should object loops
+ *   be detected?  This will currently add memory to track every part of the
+ *   object being encoded in a WeakSet.  Do not encode
  *   the same object twice on the same encoder, without calling
- *   `removeLoopDetectors` in between.
+ *   `removeLoopDetectors` in between, which will clear the WeakSet.
+ *   You may pass in your own WeakSet to be used; this is useful in some
+ *   recursive scenarios.
  * @property {("number"|"float"|"int"|"string")} [dateType="number"] -
  *   how should dates be encoded?  "number" means float or int, if no
  *   fractional seconds.
@@ -29,7 +31,7 @@ export = Encoder;
  *   exception.  Note that it is impossible to get a key of undefined in a
  *   normal JS object.
  * @property {boolean} [collapseBigIntegers=false] - Should integers
- *   that come in as BigNumber integers and ECMAscript bigint's be encoded
+ *   that come in as ECMAscript bigint's be encoded
  *   as normal CBOR integers if they fit, discarding type information?
  * @property {number} [chunkSize=4096] - Number of characters or bytes
  *   for each chunk, if obj is a string or Buffer, when indefinite encoding
@@ -45,17 +47,90 @@ export = Encoder;
  */
 declare class Encoder extends stream.Transform {
     /**
-     * Remove all of the loop detector additions to the given object.
-     * The static version is easier to call when you don't have a full
-     * encoder instance available; it uses a good heuristic to figure
-     * out the loop detector symbol.
+     * Encode an array and all of its elements.
      *
-     * @param {Object} obj - object to clean
-     * @param {Symbol} [detector=null] - the symbol to clean, or null
-     *   to use the first detected symbol
-     * @returns {boolean} - true when the object was cleaned, else false
+     * @param {Encoder} gen - Encoder to use
+     * @param {any[]} obj - Array to encode
+     * @param {Object} [opts] - options
+     * @param {boolean} [opts.indefinite=false] - Use indefinite encoding?
+     * @returns {boolean} true on success
      */
-    static removeLoopDetectors(obj: any, detector?: Symbol): boolean;
+    static pushArray(gen: Encoder, obj: any[], opts?: {
+        indefinite?: boolean;
+    }): boolean;
+    /**
+     * @param {Encoder} gen - Encoder
+     * @param {Date} obj - Date to encode
+     * @returns {boolean} True on success
+     * @ignore
+     */
+    static _pushDate(gen: Encoder, obj: Date): boolean;
+    /**
+     * @param {Encoder} gen - Encoder
+     * @param {Buffer} obj - Buffer to encode
+     * @returns {boolean} True on success
+     * @ignore
+     */
+    static _pushBuffer(gen: Encoder, obj: Buffer): boolean;
+    /**
+     * @param {Encoder} gen - Encoder
+     * @param {NoFilter} obj - Buffer to encode
+     * @returns {boolean} True on success
+     * @ignore
+     */
+    static _pushNoFilter(gen: Encoder, obj: NoFilter): boolean;
+    /**
+     * @param {Encoder} gen - Encoder
+     * @param {RegExp} obj - RegExp to encode
+     * @returns {boolean} True on success
+     * @ignore
+     */
+    static _pushRegexp(gen: Encoder, obj: RegExp): boolean;
+    /**
+     * @param {Encoder} gen - Encoder
+     * @param {Set} obj - Set to encode
+     * @returns {boolean} True on success
+     * @ignore
+     */
+    static _pushSet(gen: Encoder, obj: Set<any>): boolean;
+    /**
+     * @param {Encoder} gen - Encoder
+     * @param {URL} obj - URL to encode
+     * @returns {boolean} True on success
+     * @ignore
+     */
+    static _pushURL(gen: Encoder, obj: URL): boolean;
+    /**
+     * @param {Encoder} gen - Encoder
+     * @param {object} obj - Boxed String, Number, or Boolean object to encode
+     * @returns {boolean} True on success
+     * @ignore
+     */
+    static _pushBoxed(gen: Encoder, obj: object): boolean;
+    /**
+     * @param {Encoder} gen - Encoder
+     * @param {Map} obj - Map to encode
+     * @returns {boolean} True on success
+     * @ignore
+     */
+    static _pushMap(gen: Encoder, obj: Map<any, any>, opts: any): boolean;
+    /**
+     * @param {Encoder} gen - Encoder
+     * @param { Uint8Array|Uint16Array|Uint32Array|
+     *          Int8Array|Int16Array|Int32Array|
+     *          Float32Array|Float64Array|
+     *          BigUint64Array|BigInt64Array } obj - Array to encode
+     * @returns {boolean} True on success
+     * @ignore
+     */
+    static _pushTypedArray(gen: Encoder, obj: Uint8Array | Uint16Array | Uint32Array | Int8Array | Int16Array | Int32Array | Float32Array | Float64Array | BigUint64Array | BigInt64Array): boolean;
+    /**
+     * @param {Encoder} gen - Encoder
+     * @param { ArrayBuffer } obj - Array to encode
+     * @returns {boolean} True on success
+     * @ignore
+     */
+    static _pushArrayBuffer(gen: Encoder, obj: ArrayBuffer): boolean;
     /**
      * Encode the given object with indefinite length.  There are apparently
      * some (IMO) broken implementations of poorly-specified protocols that
@@ -113,6 +188,21 @@ declare class Encoder extends stream.Transform {
      * @param {EncodingOptions} [options={}] - passed to the Encoder constructor
      */
     static encodeAsync(obj: any, options?: EncodingOptions): Promise<any>;
+    static set SEMANTIC_TYPES(arg: {
+        [x: string]: EncodeFunction;
+    });
+    /**
+     * The currently supported set of semantic types.  May be modified by plugins.
+     * @type {SemanticMap}
+     */
+    static get SEMANTIC_TYPES(): {
+        [x: string]: EncodeFunction;
+    };
+    /**
+     * Reset the supported semantic types to the original set, before any
+     * plugins modified the list.
+     */
+    static reset(): void;
     /**
      * Creates an instance of Encoder.
      *
@@ -124,91 +214,152 @@ declare class Encoder extends stream.Transform {
     disallowUndefinedKeys: boolean;
     dateType: "string" | "number" | "float" | "int";
     collapseBigIntegers: boolean;
-    detectLoops: symbol;
+    /** @type WeakSet<any>? */
+    detectLoops: WeakSet<any> | null;
+    omitUndefinedProperties: boolean;
     semanticTypes: {
-        Array: (gen: any, obj: any, opts: any) => boolean;
-        Date: (gen: any, obj: any) => any;
-        Buffer: (gen: any, obj: any) => any;
-        Map: (gen: any, obj: any, opts: any) => boolean;
-        NoFilter: (gen: any, obj: any) => any;
-        RegExp: (gen: any, obj: any) => any;
-        Set: (gen: any, obj: any) => boolean;
-        BigNumber: (gen: any, obj: any) => any;
-        ArrayBuffer: (gen: any, obj: any) => any;
-        Uint8ClampedArray: (gen: any, obj: any) => any;
-        Uint8Array: (gen: any, obj: any) => any;
-        Uint16Array: (gen: any, obj: any, opts: any) => boolean;
-        Uint32Array: (gen: any, obj: any, opts: any) => boolean;
-        Int8Array: (gen: any, obj: any, opts: any) => boolean;
-        Int16Array: (gen: any, obj: any, opts: any) => boolean;
-        Int32Array: (gen: any, obj: any, opts: any) => boolean;
-        Float32Array: (gen: any, obj: any) => boolean;
-        Float64Array: (gen: any, obj: any) => boolean;
-        Url: (gen: any, obj: any) => any;
-        URL: (gen: any, obj: any) => any;
+        [x: string]: EncodeFunction;
     };
     /**
-     * @callback encodeFunction
-     * @param {Encoder} encoder - the encoder to serialize into.  Call "write"
-     *   on the encoder as needed.
-     * @return {bool} - true on success, else false
+     * @param {number} val - Number(0-255) to encode
+     * @returns {boolean} true on success
+     * @ignore
      */
+    _pushUInt8(val: number): boolean;
     /**
-     * Add an encoding function to the list of supported semantic types.  This is
-     * useful for objects for which you can't add an encodeCBOR method
-     *
-     * @param {any} type
-     * @param {any} fun
-     * @returns {encodeFunction}
+     * @param {number} val - Number(0-65535) to encode
+     * @returns {boolean} true on success
+     * @ignore
      */
-    addSemanticType(type: any, fun: any): (encoder: Encoder) => any;
-    _pushUInt8(val: any): boolean;
-    _pushUInt16BE(val: any): boolean;
-    _pushUInt32BE(val: any): boolean;
-    _pushFloatBE(val: any): boolean;
-    _pushDoubleBE(val: any): boolean;
+    _pushUInt16BE(val: number): boolean;
+    /**
+     * @param {number} val - Number(0..2**32-1) to encode
+     * @returns {boolean} true on success
+     * @ignore
+     */
+    _pushUInt32BE(val: number): boolean;
+    /**
+     * @param {number} val - Number to encode as 4-byte float
+     * @returns {boolean} true on success
+     * @ignore
+     */
+    _pushFloatBE(val: number): boolean;
+    /**
+     * @param {number} val - Number to encode as 8-byte double
+     * @returns {boolean} true on success
+     * @ignore
+     */
+    _pushDoubleBE(val: number): boolean;
+    /**
+     * @returns {boolean} true on success
+     * @ignore
+     */
     _pushNaN(): boolean;
-    _pushInfinity(obj: any): boolean;
-    _pushFloat(obj: any): boolean;
-    _pushInt(obj: any, mt: any, orig: any): boolean;
-    _pushIntNum(obj: any): boolean;
-    _pushNumber(obj: any): boolean;
-    _pushString(obj: any): boolean;
-    _pushBoolean(obj: any): boolean;
-    _pushUndefined(obj: any): boolean;
-    _pushNull(obj: any): boolean;
-    _pushArray(gen: any, obj: any, opts: any): boolean;
-    _pushTag(tag: any): boolean;
-    _pushDate(gen: any, obj: any): any;
-    _pushBuffer(gen: any, obj: any): any;
-    _pushNoFilter(gen: any, obj: any): any;
-    _pushRegexp(gen: any, obj: any): any;
-    _pushSet(gen: any, obj: any): boolean;
-    _pushUrl(gen: any, obj: any): any;
-    _pushURL(gen: any, obj: any): any;
     /**
-     * @param {BigNumber} obj
-     * @private
+     * @param {number} obj - Positive or negative infinity
+     * @returns {boolean} true on success
+     * @ignore
      */
-    private _pushBigint;
+    _pushInfinity(obj: number): boolean;
     /**
-     * @param {bigint} obj
-     * @private
-     */
-    private _pushJSBigint;
-    _pushBigNumber(gen: any, obj: any): any;
-    _pushMap(gen: any, obj: any, opts: any): boolean;
-    _pushUint8Array(gen: any, obj: any): any;
-    _pushFloat32Array(gen: any, obj: any): boolean;
-    _pushFloat64Array(gen: any, obj: any): boolean;
-    /**
-     * Remove all of the loop detector additions to the given object.
+     * Choose the best float representation for a number and encode it.
      *
-     * @param {Object} obj - object to clean
-     * @returns {boolean} - true when the object was cleaned, else false
+     * @param {number} obj - A number that is known to be not-integer, but not
+     *    how many bytes of precision it needs
+     * @returns {boolean} true on success
+     * @ignore
      */
-    removeLoopDetectors(obj: any): boolean;
-    _pushObject(obj: any, opts: any): any;
+    _pushFloat(obj: number): boolean;
+    /**
+     * Choose the best integer representation for a postive number and encode
+     * it.  If the number is over MAX_SAFE_INTEGER, fall back on float (but I
+     * don't remember why).
+     *
+     * @param {number} obj - A positive number that is known to be an integer,
+     *    but not how many bytes of precision it needs
+     * @param {number} mt - The Major Type number to combine with the integer.
+     *    Not yet shifted.
+     * @param {number} [orig] - The number before it was transformed to positive.
+     *    If the mt is NEG_INT, and the positive number is over MAX_SAFE_INT,
+     *    then we'll encode this as a float rather than making the number
+     *    negative again and losing precision.
+     * @returns {boolean} true on success
+     * @ignore
+     */
+    _pushInt(obj: number, mt: number, orig?: number): boolean;
+    /**
+     * Choose the best integer representation for a number and encode it.
+     *
+     * @param {number} obj - A number that is known to be an integer,
+     *    but not how many bytes of precision it needs
+     * @returns {boolean} true on success
+     * @ignore
+     */
+    _pushIntNum(obj: number): boolean;
+    /**
+     * @param {number} obj - plain JS number to encode
+     * @returns {boolean} true on success
+     * @ignore
+     */
+    _pushNumber(obj: number): boolean;
+    /**
+     * @param {string} obj - string to encode
+     * @returns {boolean} true on success
+     * @ignore
+     */
+    _pushString(obj: string): boolean;
+    /**
+     * @param {boolean} obj - bool to encode
+     * @returns {boolean} true on success
+     * @ignore
+     */
+    _pushBoolean(obj: boolean): boolean;
+    /**
+     * @param {undefined} obj - ignored
+     * @returns {boolean} true on success
+     * @ignore
+     */
+    _pushUndefined(obj: undefined): boolean;
+    /**
+     * @param {null} obj - ignored
+     * @returns {boolean} true on success
+     * @ignore
+     */
+    _pushNull(obj: null): boolean;
+    /**
+     * @param {number} tag - Tag number to encode
+     * @returns {boolean} true on success
+     * @ignore
+     */
+    _pushTag(tag: number): boolean;
+    /**
+     * @param {bigint} obj - BigInt to encode
+     * @returns {boolean} true on success
+     * @ignore
+     */
+    _pushJSBigint(obj: bigint): boolean;
+    /**
+     * @param {object} obj - object to encode
+     * @returns {boolean} true on success
+     * @ignore
+     */
+    _pushObject(obj: object, opts: any): boolean;
+    /**
+     * @param {any[]} objs - Array of supported things
+     * @returns {Buffer} Concatenation of encodings for the supported things
+     * @ignore
+     */
+    _encodeAll(objs: any[]): Buffer;
+    /**
+     * Add an encoding function to the list of supported semantic types.  This
+     * is useful for objects for which you can't add an encodeCBOR method
+     *
+     * @param {string|function} type - The type to encode
+     * @param {EncodeFunction} fun - The encoder to use
+     * @returns {EncodeFunction?} The previous encoder or undefined if there
+     *   wasn't one.
+     */
+    addSemanticType(type: string | Function, fun: EncodeFunction): EncodeFunction | null;
     /**
      * Push any supported type onto the encoded stream
      *
@@ -216,18 +367,30 @@ declare class Encoder extends stream.Transform {
      * @returns {boolean} true on success
      */
     pushAny(obj: any): boolean;
-    _pushAny(obj: any): boolean;
-    _encodeAll(objs: any): any;
+    /**
+     * Remove the loop detector WeakSet for this Encoder.
+     *
+     * @returns {boolean} - true when the Encoder was reset, else false
+     */
+    removeLoopDetectors(): boolean;
 }
 declare namespace Encoder {
-    export { EncodingOptions };
+    export { EncodeFunction, SemanticMap, EncodingOptions };
 }
 import stream = require("stream");
+/**
+ * Generate the CBOR for a value.  If you are using this, you'll either need
+ * to call {@link Encoder.write } with a Buffer, or look into the internals of
+ * Encoder to reuse existing non-documented behavior.
+ */
+type EncodeFunction = (enc: Encoder, val: any) => boolean;
+import { Buffer } from "buffer";
+import NoFilter = require("nofilter");
 type EncodingOptions = {
     /**
      * - array of pairs of
      * `type`, `function(Encoder)` for semantic types to be encoded.  Not
-     * needed for Array, Date, Buffer, Map, RegExp, Set, Url, or BigNumber.
+     * needed for Array, Date, Buffer, Map, RegExp, Set, or URL.
      * If an object, the keys are the constructor names for the types.
      */
     genTypes?: any[] | any;
@@ -238,13 +401,14 @@ type EncodingOptions = {
     canonical?: boolean;
     /**
      * - should object loops
-     * be detected?  This will currently modify the encoded object graph by
-     * adding a Symbol property to each object.  If this bothers you, call
-     * `removeLoopDetectors` on the encoded object when done.  Do not encode
+     * be detected?  This will currently add memory to track every part of the
+     * object being encoded in a WeakSet.  Do not encode
      * the same object twice on the same encoder, without calling
-     * `removeLoopDetectors` in between.
+     * `removeLoopDetectors` in between, which will clear the WeakSet.
+     * You may pass in your own WeakSet to be used; this is useful in some
+     * recursive scenarios.
      */
-    detectLoops?: boolean | Symbol;
+    detectLoops?: boolean | WeakSet<any>;
     /**
      * -
      * how should dates be encoded?  "number" means float or int, if no
@@ -271,7 +435,7 @@ type EncodingOptions = {
     disallowUndefinedKeys?: boolean;
     /**
      * - Should integers
-     * that come in as BigNumber integers and ECMAscript bigint's be encoded
+     * that come in as ECMAscript bigint's be encoded
      * as normal CBOR integers if they fit, discarding type information?
      */
     collapseBigIntegers?: boolean;
@@ -281,8 +445,15 @@ type EncodingOptions = {
      */
     chunkSize?: number;
     /**
-     *  - When encoding objects or Maps, do not include a key if its
-     *  corresponding value is `undefined`.
+     * - When encoding
+     * objects or Maps, do not include a key if its corresponding value is
+     * `undefined`.
      */
     omitUndefinedProperties?: boolean;
+};
+/**
+ * A mapping from tag number to a tag decoding function
+ */
+type SemanticMap = {
+    [x: string]: EncodeFunction;
 };

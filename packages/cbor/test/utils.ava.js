@@ -1,7 +1,6 @@
 'use strict'
 
 const test = require('ava')
-const constants = require('../lib/constants')
 const utils = require('../lib/utils')
 const { lbe } = require('./cases')
 const { hex, bin } = utils
@@ -30,7 +29,9 @@ test('parseCBORfloat', t => {
   t.is(utils.parseCBORfloat(bin('0 00000 0000000000')), 0)
   t.is(utils.parseCBORfloat(bin('0 00000000 00000000000000000000000')),
     0)
-  t.is(utils.parseCBORfloat(bin('0 00000000000 0000000000000000000000000000000000000000000000000000')), 0) // eslint-disable-line max-len
+  t.is(utils.parseCBORfloat(bin(
+    '0 00000000000 0000000000000000000000000000000000000000000000000000'
+  )), 0)
   t.throws(() => {
     utils.parseCBORfloat(hex('ff'))
   })
@@ -59,16 +60,7 @@ test('arrayEqual', t => {
   t.is(utils.arrayEqual([1, 2, 3], [1, 2, 4]), false)
 })
 
-test('bufferToBignumber', t => {
-  const num = new constants.BigNumber(0x12345678).toString(16)
-  const numbuf = Buffer.from(num, 'hex')
-  t.deepEqual(
-    utils.bufferToBignumber(numbuf),
-    new constants.BigNumber(0x12345678)
-  )
-})
-
-test.cb('guessEncoding', t => {
+test('guessEncoding', t => {
   const buf = Buffer.from('0102', 'hex')
   const nof = utils.guessEncoding(
     buf.buffer.slice(buf.offset, buf.offset + buf.length)
@@ -81,11 +73,7 @@ test.cb('guessEncoding', t => {
   u16[2] = 1
   const nof2 = utils.guessEncoding(u16)
   t.is(nof2.read().toString('hex'), lbe('000200010100', '020001000001'))
-  try {
-    utils.guessEncoding()
-  } catch (ignored) {
-    t.end()
-  }
+  t.throws(() => utils.guessEncoding())
 })
 
 test('cborValueToString', t => {
@@ -96,5 +84,4 @@ test('cborValueToString', t => {
   t.is(utils.cborValueToString(Symbol('(()')), '(()')
   t.is(utils.cborValueToString(Symbol('foo')), 'foo')
   t.is(utils.cborValueToString(Symbol('')), 'Symbol')
-  t.is(utils.cborValueToString(new constants.BigNumber(-4)), '-4')
 })

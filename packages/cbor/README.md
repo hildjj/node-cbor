@@ -17,12 +17,13 @@ here on out.
 
 ```bash
 $ npm install --save cbor
-# optional, if you need big floats or big decimals:
-$ npm install --save bignumber.js
 ```
 
 **NOTE**
 If you are going to use this on the web, use [cbor-web](../cbor-web) instead.
+
+If you need support for encoding and decoding BigDecimal fractions (tag 4) or
+BigFloats (tag 5), please see [cbor-bigdecimal](../cbor-bigdecimal).
 
 ## Documentation:
 
@@ -31,51 +32,51 @@ See the full API [documentation](http://hildjj.github.io/node-cbor/).
 For a command-line interface, see [cbor-cli](../cbor-cli).
 
 Example:
-```javascript
-var cbor = require('cbor');
-var assert = require('assert');
+```js
+const cbor = require('cbor')
+const assert = require('assert')
 
-var encoded = cbor.encode(true); // returns <Buffer f5>
-cbor.decodeFirst(encoded, function(error, obj) {
-  // error != null if there was an error
+let encoded = cbor.encode(true) // Returns <Buffer f5>
+cbor.decodeFirst(encoded, (error, obj) => {
+  // If there was an error, error != null
   // obj is the unpacked object
-  assert.ok(obj === true);
-});
+  assert.ok(obj === true)
+})
 
 // Use integers as keys?
-var m = new Map();
-m.set(1, 2);
-encoded = cbor.encode(m); // <Buffer a1 01 02>
+const m = new Map()
+m.set(1, 2)
+encoded = cbor.encode(m) // <Buffer a1 01 02>
 ```
 
 Allows streaming as well:
 
-```javascript
-var cbor = require('cbor');
-var fs = require('fs');
+```js
+const cbor = require('cbor')
+const fs = require('fs')
 
-var d = new cbor.Decoder();
-d.on('data', function(obj){
-  console.log(obj);
-});
+const d = new cbor.Decoder()
+d.on('data', obj => {
+  console.log(obj)
+})
 
-var s = fs.createReadStream('foo');
-s.pipe(d);
+const s = fs.createReadStream('foo')
+s.pipe(d)
 
-var d2 = new cbor.Decoder({input: '00', encoding: 'hex'});
-d.on('data', function(obj){
-  console.log(obj);
-});
+const d2 = new cbor.Decoder({input: '00', encoding: 'hex'})
+d.on('data', obj => {
+  console.log(obj)
+})
 ```
 
 There is also support for synchronous decodes:
 
-```javascript
+```js
 try {
-  console.log(cbor.decodeFirstSync('02')); // 2
-  console.log(cbor.decodeAllSync('0202')); // [2, 2]
+  console.log(cbor.decodeFirstSync('02')) // 2
+  console.log(cbor.decodeAllSync('0202')) // [2, 2]
 } catch (e) {
-  // throws on invalid input
+  // Throws on invalid input
 }
 ```
 
@@ -91,13 +92,13 @@ streams.  There are a few ways to fix this:
 
 1) pass in a `highWaterMark` option with the value of the largest buffer size you think you will need:
 
-```javascript
+``js
 cbor.encodeOne(Buffer.alloc(40000), {highWaterMark: 65535})
 ```
 
 2) use stream mode.  Catch the `data`, `finish`, and `error` events.  Make sure to call `end()` when you're done.
 
-```javascript
+```js
 const enc = new cbor.Encoder()
 enc.on('data', buf => /* send the data somewhere */)
 enc.on('error', console.error)
@@ -125,7 +126,6 @@ The following types are supported for encoding:
 * TypedArrays, ArrayBuffer, DataView
 * Map, Set
 * BigInt
-* [bignumber](https://github.com/MikeMcl/bignumber.js) (If you install it.  It is needed for big float and big decimal types)
 
 Decoding supports the above types, including the following CBOR tag numbers:
 
@@ -135,8 +135,6 @@ Decoding supports the above types, including the following CBOR tag numbers:
 | 1   | Date                |
 | 2   | BigInt              |
 | 3   | BigInt              |
-| 4   | bignumber           |
-| 5   | bignumber           |
 | 21  | Tagged, with toJSON |
 | 22  | Tagged, with toJSON |
 | 23  | Tagged, with toJSON |
@@ -178,13 +176,14 @@ Your method may call `encoder.push(buffer)` or `encoder.pushAny(any)` as needed.
 
 For example:
 
-```javascript
+```js
 class Foo {
-  constructor () {
+  constructor() {
     this.one = 1
     this.two = 2
   }
-  encodeCBOR (encoder) {
+
+  encodeCBOR(encoder) {
     const tagged = new Tagged(64000, [this.one, this.two])
     return encoder.pushAny(tagged)
   }
@@ -201,9 +200,9 @@ type.  In this case, call `addSemanticType(type, encodeFunction)` on an existing
 `Encoder` instance. The `encodeFunction` takes an encoder and an object to
 encode, for example:
 
-```javascript
+```js
 class Bar {
-  constructor () {
+  constructor() {
     this.three = 3
   }
 }
@@ -223,27 +222,30 @@ of an object with tag number keys and function values.  The function will be
 passed the decoded value associated with the tag, and should return the decoded
 value.  For the `Foo` example above, this might look like:
 
-```javascript
-const d = new Decoder({tags: { 64000: (val) => {
-  // check val to make sure it's an Array as expected, etc.
-  const foo = new Foo()
-  foo.one = val[0]
-  foo.two = val[1]
-  return foo
-}}})
+```js
+const d = new Decoder({
+  tags: {
+    64000: val => {
+      // Check val to make sure it's an Array as expected, etc.
+      const foo = new Foo()
+      ;[foo.one, foo.two] = val
+      return foo
+    },
+  },
+})
 ```
 
 You can also replace the default decoders by passing in an appropriate tag
 function.  For example:
 
-```javascript
+```js
 cbor.decodeFirstSync(input, {
   tags: {
     // Replace the Tag 0 (RFC3339 Date/Time string) decoder.
     // See https://tc39.es/proposal-temporal/docs/ for the upcoming
     // Temporal built-in, which supports nanosecond time:
-    0: x => Temporal.Instant.from(x)
-  }
+    0: x => Temporal.Instant.from(x),
+  },
 })
 ```
 

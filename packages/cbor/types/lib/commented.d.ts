@@ -1,3 +1,4 @@
+/// <reference types="node" />
 export = Commented;
 /**
  * Generate the expanded format of RFC 7049, section 2.2.1
@@ -26,7 +27,7 @@ declare class Commented extends stream.Transform {
     constructor(options?: CommentOptions);
     depth: number;
     max_depth: number;
-    all: any;
+    all: NoFilter;
     parser: Decoder;
     /**
      * @private
@@ -69,7 +70,9 @@ declare namespace Commented {
     export { CommentOptions, commentCallback };
 }
 import stream = require("stream");
+import NoFilter = require("nofilter");
 import Decoder = require("./decoder");
+import { Buffer } from "buffer";
 type CommentOptions = {
     /**
      * - how many times to indent
@@ -92,11 +95,6 @@ type CommentOptions = {
      */
     tags?: object;
     /**
-     * generate JavaScript BigInt's
-     * instead of BigNumbers, when possible.
-     */
-    bigint?: boolean;
-    /**
      * if true, prefer Uint8Arrays to
      * be generated instead of node Buffers.  This might turn on some more
      * changes in the future, so forward-compatibility is not guaranteed yet.
@@ -108,4 +106,4 @@ type CommentOptions = {
      */
     encoding?: string;
 };
-type commentCallback = (error?: Error, commented?: string) => any;
+type commentCallback = (error?: Error, commented?: string) => void;

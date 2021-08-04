@@ -1,8 +1,14 @@
 module.exports = {
   parserOptions: {
-    sourceType: 'module'
+    sourceType: 'module',
   },
   rules: {
-    'node/no-unsupported-features/es-syntax': 'off'
-  }
+    'node/no-unsupported-features/es-syntax': [
+      'error',
+      {
+        version: '>=12.19',
+        ignores: ['modules'],
+      },
+    ],
+  },
 }

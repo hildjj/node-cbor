@@ -1,6 +1,5 @@
 'use strict'
 
-exports.BigNumber = require('./constants').BigNumber
 exports.Commented = require('./commented')
 exports.Diagnose = require('./diagnose')
 exports.Decoder = require('./decoder')
@@ -13,42 +12,52 @@ exports.Map = require('./map')
   * Convenience name for {@linkcode Commented.comment}
   */
 exports.comment = exports.Commented.comment
+
 /**
   * Convenience name for {@linkcode Decoder.decodeAll}
   */
 exports.decodeAll = exports.Decoder.decodeAll
+
 /**
   * Convenience name for {@linkcode Decoder.decodeFirst}
   */
 exports.decodeFirst = exports.Decoder.decodeFirst
+
 /**
   * Convenience name for {@linkcode Decoder.decodeAllSync}
   */
 exports.decodeAllSync = exports.Decoder.decodeAllSync
+
 /**
   * Convenience name for {@linkcode Decoder.decodeFirstSync}
   */
 exports.decodeFirstSync = exports.Decoder.decodeFirstSync
+
 /**
   * Convenience name for {@linkcode Diagnose.diagnose}
   */
 exports.diagnose = exports.Diagnose.diagnose
+
 /**
   * Convenience name for {@linkcode Encoder.encode}
   */
 exports.encode = exports.Encoder.encode
+
 /**
   * Convenience name for {@linkcode Encoder.encodeCanonical}
   */
 exports.encodeCanonical = exports.Encoder.encodeCanonical
+
 /**
   * Convenience name for {@linkcode Encoder.encodeOne}
   */
 exports.encodeOne = exports.Encoder.encodeOne
+
 /**
   * Convenience name for {@linkcode Encoder.encodeAsync}
   */
 exports.encodeAsync = exports.Encoder.encodeAsync
+
 /**
   * Convenience name for {@linkcode Decoder.decodeFirstSync}
   */
@@ -77,13 +86,15 @@ exports.leveldb = {
   decode: exports.Decoder.decodeFirstSync,
   encode: exports.Encoder.encode,
   buffer: true,
-  name: 'cbor'
+  name: 'cbor',
 }
 
 /**
- * Does this library and runtime support BigInts?  Only exported for backward
- * compatibility.
- *
- * @deprecated since version 6.0
+ * Reset everything that we can predict a plugin might have altered in good
+ * faith.  For now that includes the default set of tags that decoding and
+ * encoding will use.
  */
-exports.hasBigInt = true
+exports.reset = function reset() {
+  exports.Encoder.reset()
+  exports.Tagged.reset()
+}

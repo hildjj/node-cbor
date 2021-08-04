@@ -1,0 +1,38 @@
+{
+  "name": "cbor-bigdecimal",
+  "version": "7.0.6",
+  "description": "Plugin for node-cbor to add BigDecimal and BigFloat support.  Requires bignumber.js",
+  "browser": "dist/cbor-bigdecimal.js",
+  "main": "./bigdecimal.js",
+  "scripts": {
+    "build": "webpack",
+    "coverage": "nyc -r lcov npm test",
+    "test": "ava test/*.ava.js",
+    "dev": "light-server -q -s. -w 'lib/*.js,test/*.js # npm run coverage' -o /coverage/lcov-report/index.html"
+  },
+  "keywords": [
+    "CBOR",
+    "BigNumber",
+    "BigDecimal",
+    "BigFloat",
+    "tag"
+  ],
+  "author": "Joe Hildebrand <joe-github@cursive.net>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/hildjj/node-cbor.git",
+    "directory": "packages/cbor-bigdecimal"
+  },
+  "engines": {
+    "node": ">=12.19"
+  },
+  "peerDependencies": {
+    "bignumber.js": "^9.0.1"
+  },
+  "devDependencies": {
+    "bignumber.js": "^9.0.1",
+    "webpack": "^5.48.0",
+    "webpack-cli": "^4.7.2"
+  }
+}

@@ -5,7 +5,7 @@ const NoFilter = require('nofilter')
 const utils = require('./utils')
 const constants = require('./constants')
 const {
-  MT, NUMBYTES, SHIFT32, SIMPLE, SYMS, TAG, BI
+  MT, NUMBYTES, SHIFT32, SIMPLE, SYMS, TAG, BI,
 } = constants
 const { Buffer } = require('buffer')
 
@@ -24,6 +24,34 @@ const BUF_INF_POS = Buffer.from('f97c00', 'hex')
 const BUF_NEG_ZERO = Buffer.from('f98000', 'hex')
 
 /**
+ * Generate the CBOR for a value.  If you are using this, you'll either need
+ * to call {@link Encoder.write} with a Buffer, or look into the internals of
+ * Encoder to reuse existing non-documented behavior.
+ *
+ * @callback EncodeFunction
+ * @param {Encoder} enc - the encoder to use
+ * @param {any} val - the value to encode
+ * @return {boolean} - true on success
+ */
+
+/**
+ * A mapping from tag number to a tag decoding function
+ * @typedef {Object.<string, EncodeFunction>} SemanticMap
+ */
+
+/**
+  * @type {SemanticMap}
+  * @private
+  */
+const SEMANTIC_TYPES = {}
+
+/**
+  * @type {SemanticMap}
+  * @private
+  */
+let current_SEMANTIC_TYPES = {}
+
+/**
  * @param {string} str
  * @returns {"number"|"float"|"int"|"string"}
  * @private
@@ -33,12 +61,12 @@ function parseDateType(str) {
     return 'number'
   }
   switch (str.toLowerCase()) {
-    // yes, return str would have made more sense, but tsc is pedantic
     case 'number':
       return 'number'
     case 'float':
       return 'float'
     case 'int':
+    case 'integer':
       return 'int'
     case 'string':
       return 'string'
@@ -50,7 +78,7 @@ function parseDateType(str) {
  * @typedef EncodingOptions
  * @property {any[]|Object} [genTypes=[]] - array of pairs of
  *   `type`, `function(Encoder)` for semantic types to be encoded.  Not
- *   needed for Array, Date, Buffer, Map, RegExp, Set, URL, or BigNumber.
+ *   needed for Array, Date, Buffer, Map, RegExp, Set, or URL.
  *   If an object, the keys are the constructor names for the types.
  * @property {boolean} [canonical=false] - should the output be
  *   canonicalized
@@ -77,7 +105,7 @@ function parseDateType(str) {
  *   exception.  Note that it is impossible to get a key of undefined in a
  *   normal JS object.
  * @property {boolean} [collapseBigIntegers=false] - Should integers
- *   that come in as BigNumber integers and ECMAscript bigint's be encoded
+ *   that come in as ECMAscript bigint's be encoded
  *   as normal CBOR integers if they fit, discarding type information?
  * @property {number} [chunkSize=4096] - Number of characters or bytes
  *   for each chunk, if obj is a string or Buffer, when indefinite encoding
@@ -114,7 +142,7 @@ class Encoder extends stream.Transform {
     super({
       ...superOpts,
       readableObjectMode: false,
-      writableObjectMode: true
+      writableObjectMode: true,
     })
 
     this.canonical = canonical
@@ -122,51 +150,21 @@ class Encoder extends stream.Transform {
     this.disallowUndefinedKeys = disallowUndefinedKeys
     this.dateType = parseDateType(dateType)
     this.collapseBigIntegers = this.canonical ? true : collapseBigIntegers
-    this.detectLoops = detectLoops
+
+    /** @type WeakSet<any>? */
+    this.detectLoops = undefined
     if (typeof detectLoops === 'boolean') {
       if (detectLoops) {
         this.detectLoops = new WeakSet()
       }
-    } else if (!(detectLoops instanceof WeakSet)) {
+    } else if (detectLoops instanceof WeakSet) {
+      this.detectLoops = detectLoops
+    } else {
       throw new TypeError('detectLoops must be boolean or WeakSet')
     }
     this.omitUndefinedProperties = omitUndefinedProperties
 
-    this.semanticTypes = {
-      Array: this._pushArray,
-      Date: this._pushDate,
-      Buffer: this._pushBuffer,
-      [Buffer.name]: this._pushBuffer, // might be mangled
-      Map: this._pushMap,
-      NoFilter: this._pushNoFilter,
-      [NoFilter.name]: this._pushNoFilter, // might be mangled
-      RegExp: this._pushRegexp,
-      Set: this._pushSet,
-      ArrayBuffer: this._pushArrayBuffer,
-      Uint8ClampedArray: this._pushTypedArray,
-      Uint8Array: this._pushTypedArray,
-      Uint16Array: this._pushTypedArray,
-      Uint32Array: this._pushTypedArray,
-      Int8Array: this._pushTypedArray,
-      Int16Array: this._pushTypedArray,
-      Int32Array: this._pushTypedArray,
-      Float32Array: this._pushTypedArray,
-      Float64Array: this._pushTypedArray,
-      URL: this._pushURL,
-      Boolean: this._pushBoxed,
-      Number: this._pushBoxed,
-      String: this._pushBoxed
-    }
-    if (constants.BigNumber) {
-      this.semanticTypes[constants.BigNumber.name] = this._pushBigNumber
-    }
-    // Safari needs to get better.
-    if (typeof BigUint64Array !== 'undefined') {
-      this.semanticTypes[BigUint64Array.name] = this._pushTypedArray
-    }
-    if (typeof BigInt64Array !== 'undefined') {
-      this.semanticTypes[BigInt64Array.name] = this._pushTypedArray
-    }
+    this.semanticTypes = {...Encoder.SEMANTIC_TYPES}
 
     if (Array.isArray(genTypes)) {
       for (let i = 0, len = genTypes.length; i < len; i += 2) {
@@ -185,81 +183,92 @@ class Encoder extends stream.Transform {
     return cb((ret === false) ? new Error('Push Error') : undefined)
   }
 
-  // TODO: make static?
   // eslint-disable-next-line class-methods-use-this
   _flush(cb) {
     return cb()
   }
 
   /**
-   * @callback encodeFunction
-   * @param {Encoder} encoder - the encoder to serialize into.  Call "write"
-   *   on the encoder as needed.
-   * @return {bool} - true on success, else false
+   * @param {number} val - Number(0-255) to encode
+   * @returns {boolean} true on success
+   * @ignore
    */
-
-  /**
-   * Add an encoding function to the list of supported semantic types.  This is
-   * useful for objects for which you can't add an encodeCBOR method
-   *
-   * @param {any} type
-   * @param {any} fun
-   * @returns {encodeFunction}
-   */
-  addSemanticType(type, fun) {
-    const typeName = (typeof type === 'string') ? type : type.name
-    const old = this.semanticTypes[typeName]
-
-    if (fun) {
-      if (typeof fun !== 'function') {
-        throw new TypeError('fun must be of type function')
-      }
-      this.semanticTypes[typeName] = fun
-    } else if (old) {
-      delete this.semanticTypes[typeName]
-    }
-    return old
-  }
-
   _pushUInt8(val) {
     const b = Buffer.allocUnsafe(1)
     b.writeUInt8(val, 0)
     return this.push(b)
   }
 
+  /**
+   * @param {number} val - Number(0-65535) to encode
+   * @returns {boolean} true on success
+   * @ignore
+   */
   _pushUInt16BE(val) {
     const b = Buffer.allocUnsafe(2)
     b.writeUInt16BE(val, 0)
     return this.push(b)
   }
 
+  /**
+   * @param {number} val - Number(0..2**32-1) to encode
+   * @returns {boolean} true on success
+   * @ignore
+   */
   _pushUInt32BE(val) {
     const b = Buffer.allocUnsafe(4)
     b.writeUInt32BE(val, 0)
     return this.push(b)
   }
 
+  /**
+   * @param {number} val - Number to encode as 4-byte float
+   * @returns {boolean} true on success
+   * @ignore
+   */
   _pushFloatBE(val) {
     const b = Buffer.allocUnsafe(4)
     b.writeFloatBE(val, 0)
     return this.push(b)
   }
 
+  /**
+   * @param {number} val - Number to encode as 8-byte double
+   * @returns {boolean} true on success
+   * @ignore
+   */
   _pushDoubleBE(val) {
     const b = Buffer.allocUnsafe(8)
     b.writeDoubleBE(val, 0)
     return this.push(b)
   }
 
+  /**
+   * @returns {boolean} true on success
+   * @ignore
+   */
   _pushNaN() {
     return this.push(BUF_NAN)
   }
 
+  /**
+   * @param {number} obj - Positive or negative infinity
+   * @returns {boolean} true on success
+   * @ignore
+   */
   _pushInfinity(obj) {
     const half = (obj < 0) ? BUF_INF_NEG : BUF_INF_POS
     return this.push(half)
   }
 
+  /**
+   * Choose the best float representation for a number and encode it.
+   *
+   * @param {number} obj - A number that is known to be not-integer, but not
+   *    how many bytes of precision it needs
+   * @returns {boolean} true on success
+   * @ignore
+   */
   _pushFloat(obj) {
     if (this.canonical) {
       // TODO: is this enough slower to hide behind canonical?
@@ -288,6 +297,22 @@ class Encoder extends stream.Transform {
     return this._pushUInt8(DOUBLE) && this._pushDoubleBE(obj)
   }
 
+  /**
+   * Choose the best integer representation for a postive number and encode
+   * it.  If the number is over MAX_SAFE_INTEGER, fall back on float (but I
+   * don't remember why).
+   *
+   * @param {number} obj - A positive number that is known to be an integer,
+   *    but not how many bytes of precision it needs
+   * @param {number} mt - The Major Type number to combine with the integer.
+   *    Not yet shifted.
+   * @param {number} [orig] - The number before it was transformed to positive.
+   *    If the mt is NEG_INT, and the positive number is over MAX_SAFE_INT,
+   *    then we'll encode this as a float rather than making the number
+   *    negative again and losing precision.
+   * @returns {boolean} true on success
+   * @ignore
+   */
   _pushInt(obj, mt, orig) {
     const m = mt << 5
     switch (false) {
@@ -311,6 +336,14 @@ class Encoder extends stream.Transform {
     }
   }
 
+  /**
+   * Choose the best integer representation for a number and encode it.
+   *
+   * @param {number} obj - A number that is known to be an integer,
+   *    but not how many bytes of precision it needs
+   * @returns {boolean} true on success
+   * @ignore
+   */
   _pushIntNum(obj) {
     if (Object.is(obj, -0)) {
       return this.push(BUF_NEG_ZERO)
@@ -322,6 +355,11 @@ class Encoder extends stream.Transform {
     return this._pushInt(obj, MT.POS_INT)
   }
 
+  /**
+   * @param {number} obj - plain JS number to encode
+   * @returns {boolean} true on success
+   * @ignore
+   */
   _pushNumber(obj) {
     switch (false) {
       case !isNaN(obj):
@@ -335,21 +373,36 @@ class Encoder extends stream.Transform {
     }
   }
 
+  /**
+   * @param {string} obj - string to encode
+   * @returns {boolean} true on success
+   * @ignore
+   */
   _pushString(obj) {
     const len = Buffer.byteLength(obj, 'utf8')
     return this._pushInt(len, MT.UTF8_STRING) && this.push(obj, 'utf8')
   }
 
+  /**
+   * @param {boolean} obj - bool to encode
+   * @returns {boolean} true on success
+   * @ignore
+   */
   _pushBoolean(obj) {
     return this._pushUInt8(obj ? TRUE : FALSE)
   }
 
+  /**
+   * @param {undefined} obj - ignored
+   * @returns {boolean} true on success
+   * @ignore
+   */
   _pushUndefined(obj) {
     switch (typeof this.encodeUndefined) {
       case 'undefined':
         return this._pushUInt8(UNDEFINED)
       case 'function':
-        return this.pushAny(this.encodeUndefined.call(this, obj))
+        return this.pushAny(this.encodeUndefined(obj))
       case 'object': {
         const buf = utils.bufferishToBuffer(this.encodeUndefined)
         if (buf) {
@@ -360,16 +413,233 @@ class Encoder extends stream.Transform {
     return this.pushAny(this.encodeUndefined)
   }
 
+  /**
+   * @param {null} obj - ignored
+   * @returns {boolean} true on success
+   * @ignore
+   */
   _pushNull(obj) {
     return this._pushUInt8(NULL)
   }
 
-  // TODO: make this static, and not-private
-  // eslint-disable-next-line class-methods-use-this
-  _pushArray(gen, obj, opts) {
+  /**
+   * @param {number} tag - Tag number to encode
+   * @returns {boolean} true on success
+   * @ignore
+   */
+  _pushTag(tag) {
+    return this._pushInt(tag, MT.TAG)
+  }
+
+  /**
+   * @param {bigint} obj - BigInt to encode
+   * @returns {boolean} true on success
+   * @ignore
+   */
+  _pushJSBigint(obj) {
+    let m = MT.POS_INT
+    let tag = TAG.POS_BIGINT
+    // BigInt doesn't have -0
+    if (obj < 0) {
+      obj = -obj + BI.MINUS_ONE
+      m = MT.NEG_INT
+      tag = TAG.NEG_BIGINT
+    }
+
+    if (this.collapseBigIntegers &&
+        (obj <= BI.MAXINT64)) {
+      // Special handiling for 64bits
+      if (obj <= 0xffffffff) {
+        return this._pushInt(Number(obj), m)
+      }
+      return this._pushUInt8((m << 5) | NUMBYTES.EIGHT) &&
+        this._pushUInt32BE(Number(obj / BI.SHIFT32)) &&
+        this._pushUInt32BE(Number(obj % BI.SHIFT32))
+    }
+
+    let str = obj.toString(16)
+    if (str.length % 2) {
+      str = `0${str}`
+    }
+    const buf = Buffer.from(str, 'hex')
+    return this._pushTag(tag) && Encoder._pushBuffer(this, buf)
+  }
+
+  /**
+   * @param {object} obj - object to encode
+   * @returns {boolean} true on success
+   * @ignore
+   */
+  _pushObject(obj, opts) {
+    if (!obj) {
+      return this._pushNull(obj)
+    }
     opts = {
       indefinite: false,
-      ...opts
+      skipTypes: false,
+      ...opts,
+    }
+    if (!opts.indefinite) {
+      // This will only happen the first time through for indefinite encoding
+      if (this.detectLoops) {
+        if (this.detectLoops.has(obj)) {
+          throw new Error(`\
+Loop detected while CBOR encoding.
+Call removeLoopDetectors before resuming.`)
+        } else {
+          this.detectLoops.add(obj)
+        }
+      }
+    }
+    if (!opts.skipTypes) {
+      const f = obj.encodeCBOR
+      if (typeof f === 'function') {
+        return f.call(obj, this)
+      }
+      const converter = this.semanticTypes[obj.constructor.name]
+      if (converter) {
+        return converter.call(obj, this, obj)
+      }
+    }
+    const keys = Object.keys(obj).filter(k => {
+      const tv = typeof obj[k]
+      return (tv !== 'function') &&
+        (!this.omitUndefinedProperties || (tv !== 'undefined'))
+    })
+    const cbor_keys = {}
+    if (this.canonical) {
+      // Note: this can't be a normal sort, because 'b' needs to sort before
+      // 'aa'
+      keys.sort((a, b) => {
+        // Always strings, so don't bother to pass options.
+        // hold on to the cbor versions, since there's no need
+        // to encode more than once
+        const a_cbor = cbor_keys[a] || (cbor_keys[a] = Encoder.encode(a))
+        const b_cbor = cbor_keys[b] || (cbor_keys[b] = Encoder.encode(b))
+
+        return a_cbor.compare(b_cbor)
+      })
+    }
+    if (opts.indefinite) {
+      if (!this._pushUInt8((MT.MAP << 5) | NUMBYTES.INDEFINITE)) {
+        return false
+      }
+    } else if (!this._pushInt(keys.length, MT.MAP)) {
+      return false
+    }
+    let ck = null
+    for (let j = 0, len2 = keys.length; j < len2; j++) {
+      const k = keys[j]
+      if (this.canonical && ((ck = cbor_keys[k]))) {
+        if (!this.push(ck)) { // Already a Buffer
+          return false
+        }
+      } else if (!this._pushString(k)) {
+        return false
+      }
+      if (!this.pushAny(obj[k])) {
+        return false
+      }
+    }
+    if (opts.indefinite) {
+      if (!this.push(BREAK)) {
+        return false
+      }
+    } else if (this.detectLoops) {
+      this.detectLoops.delete(obj)
+    }
+    return true
+  }
+
+  /**
+   * @param {any[]} objs - Array of supported things
+   * @returns {Buffer} Concatenation of encodings for the supported things
+   * @ignore
+   */
+  _encodeAll(objs) {
+    const bs = new NoFilter({ highWaterMark: this.readableHighWaterMark })
+    this.pipe(bs)
+    for (const o of objs) {
+      this.pushAny(o)
+    }
+    this.end()
+    return bs.read()
+  }
+
+  /**
+   * Add an encoding function to the list of supported semantic types.  This
+   * is useful for objects for which you can't add an encodeCBOR method
+   *
+   * @param {string|function} type - The type to encode
+   * @param {EncodeFunction} fun - The encoder to use
+   * @returns {EncodeFunction?} The previous encoder or undefined if there
+   *   wasn't one.
+   */
+  addSemanticType(type, fun) {
+    const typeName = (typeof type === 'string') ? type : type.name
+    const old = this.semanticTypes[typeName]
+
+    if (fun) {
+      if (typeof fun !== 'function') {
+        throw new TypeError('fun must be of type function')
+      }
+      this.semanticTypes[typeName] = fun
+    } else if (old) {
+      delete this.semanticTypes[typeName]
+    }
+    return old
+  }
+
+  /**
+   * Push any supported type onto the encoded stream
+   *
+   * @param {any} obj
+   * @returns {boolean} true on success
+   */
+  pushAny(obj) {
+    switch (typeof obj) {
+      case 'number':
+        return this._pushNumber(obj)
+      case 'bigint':
+        return this._pushJSBigint(obj)
+      case 'string':
+        return this._pushString(obj)
+      case 'boolean':
+        return this._pushBoolean(obj)
+      case 'undefined':
+        return this._pushUndefined(obj)
+      case 'object':
+        return this._pushObject(obj)
+      case 'symbol':
+        switch (obj) {
+          case SYMS.NULL:
+            return this._pushNull(null)
+          case SYMS.UNDEFINED:
+            return this._pushUndefined(undefined)
+          // TODO: Add pluggable support for other symbols
+          default:
+            throw new Error(`Unknown symbol: ${obj.toString()}`)
+        }
+      default:
+        throw new Error(
+          `Unknown type: ${typeof obj}, ${(typeof obj.toString === 'function') ? obj.toString() : ''}`
+        )
+    }
+  }
+
+  /**
+   * Encode an array and all of its elements.
+   *
+   * @param {Encoder} gen - Encoder to use
+   * @param {any[]} obj - Array to encode
+   * @param {Object} [opts] - options
+   * @param {boolean} [opts.indefinite=false] - Use indefinite encoding?
+   * @returns {boolean} true on success
+   */
+  static pushArray(gen, obj, opts) {
+    opts = {
+      indefinite: false,
+      ...opts,
     }
     const len = obj.length
     if (opts.indefinite) {
@@ -392,55 +662,83 @@ class Encoder extends stream.Transform {
     return true
   }
 
-  _pushTag(tag) {
-    return this._pushInt(tag, MT.TAG)
+  /**
+   * Remove the loop detector WeakSet for this Encoder.
+   *
+   * @returns {boolean} - true when the Encoder was reset, else false
+   */
+  removeLoopDetectors() {
+    if (!this.detectLoops) {
+      return false
+    }
+    this.detectLoops = new WeakSet()
+    return true
   }
 
-  // TODO: make this static, and consider not-private
-  // eslint-disable-next-line class-methods-use-this
-  _pushDate(gen, obj) {
+  /**
+   * @param {Encoder} gen - Encoder
+   * @param {Date} obj - Date to encode
+   * @returns {boolean} True on success
+   * @ignore
+   */
+  static _pushDate(gen, obj) {
     switch (gen.dateType) {
       case 'string':
         return gen._pushTag(TAG.DATE_STRING) &&
           gen._pushString(obj.toISOString())
       case 'int':
-      case 'integer':
         return gen._pushTag(TAG.DATE_EPOCH) &&
-          gen._pushIntNum(Math.round(obj / 1000))
+          gen._pushIntNum(Math.round(obj.getTime() / 1000))
       case 'float':
-        // force float
+        // Force float
         return gen._pushTag(TAG.DATE_EPOCH) &&
-          gen._pushFloat(obj / 1000)
+          gen._pushFloat(obj.getTime() / 1000)
       case 'number':
       default:
-        // if we happen to have an integral number of seconds,
+        // If we happen to have an integral number of seconds,
         // use integer.  Otherwise, use float.
         return gen._pushTag(TAG.DATE_EPOCH) &&
-          gen.pushAny(obj / 1000)
+          gen.pushAny(obj.getTime() / 1000)
     }
   }
 
-  // TODO: make static?
-  // eslint-disable-next-line class-methods-use-this
-  _pushBuffer(gen, obj) {
+  /**
+   * @param {Encoder} gen - Encoder
+   * @param {Buffer} obj - Buffer to encode
+   * @returns {boolean} True on success
+   * @ignore
+   */
+  static _pushBuffer(gen, obj) {
     return gen._pushInt(obj.length, MT.BYTE_STRING) && gen.push(obj)
   }
 
-  // TODO: make static?
-  // eslint-disable-next-line class-methods-use-this
-  _pushNoFilter(gen, obj) {
-    return gen._pushBuffer(gen, obj.slice())
+  /**
+   * @param {Encoder} gen - Encoder
+   * @param {NoFilter} obj - Buffer to encode
+   * @returns {boolean} True on success
+   * @ignore
+   */
+  static _pushNoFilter(gen, obj) {
+    return Encoder._pushBuffer(gen, /** @type {Buffer} */ (obj.slice()))
   }
 
-  // TODO: make static?
-  // eslint-disable-next-line class-methods-use-this
-  _pushRegexp(gen, obj) {
+  /**
+   * @param {Encoder} gen - Encoder
+   * @param {RegExp} obj - RegExp to encode
+   * @returns {boolean} True on success
+   * @ignore
+   */
+  static _pushRegexp(gen, obj) {
     return gen._pushTag(TAG.REGEXP) && gen.pushAny(obj.source)
   }
 
-  // TODO: make static?
-  // eslint-disable-next-line class-methods-use-this
-  _pushSet(gen, obj) {
+  /**
+   * @param {Encoder} gen - Encoder
+   * @param {Set} obj - Set to encode
+   * @returns {boolean} True on success
+   * @ignore
+   */
+  static _pushSet(gen, obj) {
     if (!gen._pushTag(TAG.SET)) {
       return false
     }
@@ -455,121 +753,36 @@ class Encoder extends stream.Transform {
     return true
   }
 
-  // TODO: make static?
-  // eslint-disable-next-line class-methods-use-this
-  _pushURL(gen, obj) {
+  /**
+   * @param {Encoder} gen - Encoder
+   * @param {URL} obj - URL to encode
+   * @returns {boolean} True on success
+   * @ignore
+   */
+  static _pushURL(gen, obj) {
     return gen._pushTag(TAG.URI) && gen.pushAny(obj.toString())
   }
 
-  // TODO: make static?
-  // eslint-disable-next-line class-methods-use-this
-  _pushBoxed(gen, obj) {
-    return gen._pushAny(obj.valueOf())
+  /**
+   * @param {Encoder} gen - Encoder
+   * @param {object} obj - Boxed String, Number, or Boolean object to encode
+   * @returns {boolean} True on success
+   * @ignore
+   */
+  static _pushBoxed(gen, obj) {
+    return gen.pushAny(obj.valueOf())
   }
 
   /**
-   * @param {constants.BigNumber} obj
-   * @private
+   * @param {Encoder} gen - Encoder
+   * @param {Map} obj - Map to encode
+   * @returns {boolean} True on success
+   * @ignore
    */
-  _pushBigint(obj) {
-    let m = MT.POS_INT
-    let tag = TAG.POS_BIGINT
-
-    if (obj.isNegative()) {
-      obj = obj.negated().minus(1)
-      m = MT.NEG_INT
-      tag = TAG.NEG_BIGINT
-    }
-
-    if (this.collapseBigIntegers &&
-        obj.lte(constants.BN.MAXINT64)) {
-      //  special handiling for 64bits
-      if (obj.lte(constants.BN.MAXINT32)) {
-        return this._pushInt(obj.toNumber(), m)
-      }
-      return this._pushUInt8((m << 5) | NUMBYTES.EIGHT) &&
-        this._pushUInt32BE(
-          obj.dividedToIntegerBy(constants.BN.SHIFT32).toNumber()
-        ) &&
-        this._pushUInt32BE(
-          obj.mod(constants.BN.SHIFT32).toNumber()
-        )
-    }
-    let str = obj.toString(16)
-    if (str.length % 2) {
-      str = '0' + str
-    }
-    const buf = Buffer.from(str, 'hex')
-    return this._pushTag(tag) && this._pushBuffer(this, buf)
-  }
-
-  /**
-   * @param {bigint} obj
-   * @private
-   */
-  _pushJSBigint(obj) {
-    let m = MT.POS_INT
-    let tag = TAG.POS_BIGINT
-    // BigInt doesn't have -0
-    if (obj < 0) {
-      obj = -obj + BI.MINUS_ONE
-      m = MT.NEG_INT
-      tag = TAG.NEG_BIGINT
-    }
-
-    if (this.collapseBigIntegers &&
-        (obj <= BI.MAXINT64)) {
-      //  special handiling for 64bits
-      if (obj <= 0xffffffff) {
-        return this._pushInt(Number(obj), m)
-      }
-      return this._pushUInt8((m << 5) | NUMBYTES.EIGHT) &&
-        this._pushUInt32BE(Number(obj / BI.SHIFT32)) &&
-        this._pushUInt32BE(Number(obj % BI.SHIFT32))
-    }
-
-    let str = obj.toString(16)
-    if (str.length % 2) {
-      str = '0' + str
-    }
-    const buf = Buffer.from(str, 'hex')
-    return this._pushTag(tag) && this._pushBuffer(this, buf)
-  }
-
-  // TODO: make static
-  // eslint-disable-next-line class-methods-use-this
-  _pushBigNumber(gen, obj) {
-    if (obj.isNaN()) {
-      return gen._pushNaN()
-    }
-    if (!obj.isFinite()) {
-      return gen._pushInfinity(obj.isNegative() ? -Infinity : Infinity)
-    }
-    if (obj.isInteger()) {
-      return gen._pushBigint(obj)
-    }
-    if (!(gen._pushTag(TAG.DECIMAL_FRAC) &&
-      gen._pushInt(2, MT.ARRAY))) {
-      return false
-    }
-
-    const dec = obj.decimalPlaces()
-    const slide = obj.shiftedBy(dec)
-    if (!gen._pushIntNum(-dec)) {
-      return false
-    }
-    if (slide.abs().isLessThan(constants.BN.MAXINT)) {
-      return gen._pushIntNum(slide.toNumber())
-    }
-    return gen._pushBigint(slide)
-  }
-
-  // TODO: make static
-  // eslint-disable-next-line class-methods-use-this
-  _pushMap(gen, obj, opts) {
+  static _pushMap(gen, obj, opts) {
     opts = {
       indefinite: false,
-      ...opts
+      ...opts,
     }
     let entries = [...obj.entries()]
     if (gen.omitUndefinedProperties) {
@@ -582,23 +795,23 @@ class Encoder extends stream.Transform {
     } else if (!gen._pushInt(entries.length, MT.MAP)) {
       return false
     }
-    // memoizing the cbor only helps in certain cases, and hurts in most
+    // Memoizing the cbor only helps in certain cases, and hurts in most
     // others.  Just avoid it.
     if (gen.canonical) {
-      // keep the key/value pairs together, so we don't have to do odd
+      // Keep the key/value pairs together, so we don't have to do odd
       // gets with object keys later
       const enc = new Encoder({
         genTypes: gen.semanticTypes,
         canonical: gen.canonical,
-        detectLoops: !!gen.detectLoops, // give enc its own loop detector
+        detectLoops: Boolean(gen.detectLoops), // Give enc its own loop detector
         dateType: gen.dateType,
         disallowUndefinedKeys: gen.disallowUndefinedKeys,
-        collapseBigIntegers: gen.collapseBigIntegers
+        collapseBigIntegers: gen.collapseBigIntegers,
       })
       const bs = new NoFilter({highWaterMark: gen.readableHighWaterMark})
       enc.pipe(bs)
       entries.sort(([a], [b]) => {
-        // a, b are the keys
+        // Both a and b are the keys
         enc.pushAny(a)
         const a_cbor = bs.read()
         enc.pushAny(b)
@@ -631,10 +844,17 @@ class Encoder extends stream.Transform {
     return true
   }
 
-  // TODO: make static
-  // eslint-disable-next-line class-methods-use-this
-  _pushTypedArray(gen, obj) {
-    // see https://tools.ietf.org/html/rfc8746
+  /**
+   * @param {Encoder} gen - Encoder
+   * @param { Uint8Array|Uint16Array|Uint32Array|
+   *          Int8Array|Int16Array|Int32Array|
+   *          Float32Array|Float64Array|
+   *          BigUint64Array|BigInt64Array } obj - Array to encode
+   * @returns {boolean} True on success
+   * @ignore
+   */
+  static _pushTypedArray(gen, obj) {
+    // See https://tools.ietf.org/html/rfc8746
 
     let typ = 0b01000000
     let sz = obj.BYTES_PER_ELEMENT
@@ -653,169 +873,25 @@ class Encoder extends stream.Transform {
       1: 0b00,
       2: 0b01,
       4: 0b10,
-      8: 0b11
+      8: 0b11,
     }[sz]
     if (!gen._pushTag(typ)) {
       return false
     }
-    return gen._pushBuffer(
+    return Encoder._pushBuffer(
       gen,
       Buffer.from(obj.buffer, obj.byteOffset, obj.byteLength)
     )
   }
 
-  // TODO: make static
-  // eslint-disable-next-line class-methods-use-this
-  _pushArrayBuffer(gen, obj) {
-    return gen._pushBuffer(gen, Buffer.from(obj))
-  }
-
   /**
-   * Remove the loop detector WeakSet for this Encoder.
-   *
-   * @returns {boolean} - true when the Encoder was reset, else false
+   * @param {Encoder} gen - Encoder
+   * @param { ArrayBuffer } obj - Array to encode
+   * @returns {boolean} True on success
+   * @ignore
    */
-  removeLoopDetectors() {
-    if (!this.detectLoops) {
-      return false
-    }
-    this.detectLoops = new WeakSet()
-    return true
-  }
-
-  _pushObject(obj, opts) {
-    if (!obj) {
-      return this._pushNull(obj)
-    }
-    opts = {
-      indefinite: false,
-      skipTypes: false,
-      ...opts
-    }
-    if (!opts.indefinite) {
-      // this will only happen the first time through for indefinite encoding
-      if (this.detectLoops) {
-        if (this.detectLoops.has(obj)) {
-          throw new Error(`\
-Loop detected while CBOR encoding.
-Call removeLoopDetectors before resuming.`)
-        } else {
-          this.detectLoops.add(obj)
-        }
-      }
-    }
-    if (!opts.skipTypes) {
-      const f = obj.encodeCBOR
-      if (typeof f === 'function') {
-        return f.call(obj, this)
-      }
-      const converter = this.semanticTypes[obj.constructor.name]
-      if (converter) {
-        return converter.call(obj, this, obj)
-      }
-    }
-    const keys = Object.keys(obj).filter(k => {
-      const tv = typeof obj[k]
-      return (tv !== 'function') &&
-        (!this.omitUndefinedProperties || (tv !== 'undefined'))
-    })
-    const cbor_keys = {}
-    if (this.canonical) {
-      // note: this can't be a normal sort, because 'b' needs to sort before
-      // 'aa'
-      keys.sort((a, b) => {
-        // Always strings, so don't bother to pass options.
-        // hold on to the cbor versions, since there's no need
-        // to encode more than once
-        const a_cbor = cbor_keys[a] || (cbor_keys[a] = Encoder.encode(a))
-        const b_cbor = cbor_keys[b] || (cbor_keys[b] = Encoder.encode(b))
-
-        return a_cbor.compare(b_cbor)
-      })
-    }
-    if (opts.indefinite) {
-      if (!this._pushUInt8((MT.MAP << 5) | NUMBYTES.INDEFINITE)) {
-        return false
-      }
-    } else if (!this._pushInt(keys.length, MT.MAP)) {
-      return false
-    }
-    let ck = null
-    for (let j = 0, len2 = keys.length; j < len2; j++) {
-      const k = keys[j]
-      if (this.canonical && ((ck = cbor_keys[k]))) {
-        if (!this.push(ck)) { // already a Buffer
-          return false
-        }
-      } else if (!this._pushString(k)) {
-        return false
-      }
-      if (!this.pushAny(obj[k])) {
-        return false
-      }
-    }
-    if (opts.indefinite) {
-      if (!this.push(BREAK)) {
-        return false
-      }
-    } else if (this.detectLoops) {
-      this.detectLoops.delete(obj)
-    }
-    return true
-  }
-
-  /**
-   * Push any supported type onto the encoded stream
-   *
-   * @param {any} obj
-   * @returns {boolean} true on success
-   */
-  pushAny(obj) {
-    switch (typeof obj) {
-      case 'number':
-        return this._pushNumber(obj)
-      case 'bigint':
-        return this._pushJSBigint(obj)
-      case 'string':
-        return this._pushString(obj)
-      case 'boolean':
-        return this._pushBoolean(obj)
-      case 'undefined':
-        return this._pushUndefined(obj)
-      case 'object':
-        return this._pushObject(obj)
-      case 'symbol':
-        switch (obj) {
-          case SYMS.NULL:
-            return this._pushNull(null)
-          case SYMS.UNDEFINED:
-            return this._pushUndefined(undefined)
-          // TODO: Add pluggable support for other symbols
-          default:
-            throw new Error('Unknown symbol: ' + obj.toString())
-        }
-      default:
-        throw new Error(
-          'Unknown type: ' + typeof obj + ', ' +
-          (!!obj.toString ? obj.toString() : '')
-        )
-    }
-  }
-
-  /* backwards-compat wrapper */
-  _pushAny(obj) {
-    // TODO: write deprecation warning
-    return this.pushAny(obj)
-  }
-
-  _encodeAll(objs) {
-    const bs = new NoFilter({ highWaterMark: this.readableHighWaterMark })
-    this.pipe(bs)
-    for (const o of objs) {
-      this.pushAny(o)
-    }
-    this.end()
-    return bs.read()
+  static _pushArrayBuffer(gen, obj) {
+    return Encoder._pushBuffer(gen, Buffer.from(obj))
   }
 
   /**
@@ -863,22 +939,22 @@ Call removeLoopDetectors before resuming.`)
         offset = endIndex
       }
       ret = ret && gen.push(BREAK)
-    } else if (buf = utils.bufferishToBuffer(obj)) {
+    } else if ((buf = utils.bufferishToBuffer(obj))) {
       ret = ret && gen._pushUInt8((MT.BYTE_STRING << 5) | NUMBYTES.INDEFINITE)
       let offset = 0
       while (offset < buf.length) {
         const endIndex = offset + chunkSize
-        ret = ret && gen._pushBuffer(gen, buf.slice(offset, endIndex))
+        ret = ret && Encoder._pushBuffer(gen, buf.slice(offset, endIndex))
         offset = endIndex
       }
       ret = ret && gen.push(BREAK)
     } else if (Array.isArray(obj)) {
-      ret = ret && gen._pushArray(gen, obj, {
-        indefinite: true
+      ret = ret && Encoder.pushArray(gen, obj, {
+        indefinite: true,
       })
     } else if (obj instanceof Map) {
-      ret = ret && gen._pushMap(gen, obj, {
-        indefinite: true
+      ret = ret && Encoder._pushMap(gen, obj, {
+        indefinite: true,
       })
     } else {
       if (objType !== 'object') {
@@ -886,7 +962,7 @@ Call removeLoopDetectors before resuming.`)
       }
       ret = ret && gen._pushObject(obj, {
         indefinite: true,
-        skipTypes: true
+        skipTypes: true,
       })
     }
     return ret
@@ -912,7 +988,7 @@ Call removeLoopDetectors before resuming.`)
    */
   static encodeCanonical(...objs) {
     return new Encoder({
-      canonical: true
+      canonical: true,
     })._encodeAll(objs)
   }
 
@@ -949,6 +1025,61 @@ Call removeLoopDetectors before resuming.`)
       enc.end()
     })
   }
+
+  /**
+   * The currently supported set of semantic types.  May be modified by plugins.
+   * @type {SemanticMap}
+   */
+  static get SEMANTIC_TYPES() {
+    return current_SEMANTIC_TYPES
+  }
+
+  static set SEMANTIC_TYPES(val) {
+    current_SEMANTIC_TYPES = val
+  }
+
+  /**
+   * Reset the supported semantic types to the original set, before any
+   * plugins modified the list.
+   */
+  static reset() {
+    Encoder.SEMANTIC_TYPES = {...SEMANTIC_TYPES}
+  }
 }
 
+Object.assign(SEMANTIC_TYPES, {
+  Array: Encoder.pushArray,
+  Date: Encoder._pushDate,
+  Buffer: Encoder._pushBuffer,
+  [Buffer.name]: Encoder._pushBuffer, // Might be mangled
+  Map: Encoder._pushMap,
+  NoFilter: Encoder._pushNoFilter,
+  [NoFilter.name]: Encoder._pushNoFilter, // Mßight be mangled
+  RegExp: Encoder._pushRegexp,
+  Set: Encoder._pushSet,
+  ArrayBuffer: Encoder._pushArrayBuffer,
+  Uint8ClampedArray: Encoder._pushTypedArray,
+  Uint8Array: Encoder._pushTypedArray,
+  Uint16Array: Encoder._pushTypedArray,
+  Uint32Array: Encoder._pushTypedArray,
+  Int8Array: Encoder._pushTypedArray,
+  Int16Array: Encoder._pushTypedArray,
+  Int32Array: Encoder._pushTypedArray,
+  Float32Array: Encoder._pushTypedArray,
+  Float64Array: Encoder._pushTypedArray,
+  URL: Encoder._pushURL,
+  Boolean: Encoder._pushBoxed,
+  Number: Encoder._pushBoxed,
+  String: Encoder._pushBoxed,
+})
+
+// Safari needs to get better.
+if (typeof BigUint64Array !== 'undefined') {
+  SEMANTIC_TYPES[BigUint64Array.name] = Encoder._pushTypedArray
+}
+if (typeof BigInt64Array !== 'undefined') {
+  SEMANTIC_TYPES[BigInt64Array.name] = Encoder._pushTypedArray
+}
+
+Encoder.reset()
 module.exports = Encoder

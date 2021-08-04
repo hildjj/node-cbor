@@ -2,6 +2,7 @@
 
 const constants = require('./constants')
 const utils = require('./utils')
+const INTERNAL_JSON = Symbol('INTERNAL_JSON')
 
 function setBuffersToJSON(obj, fn) {
   // The data item tagged can be a byte string or any other data item.  In the
@@ -15,7 +16,10 @@ function setBuffersToJSON(obj, fn) {
       setBuffersToJSON(v, fn)
     }
   } else if (obj && (typeof obj === 'object')) {
-    // ffs, complexity in the protocol.
+    // FFS, complexity in the protocol.
+
+    // There's some circular dependency in here.
+    // eslint-disable-next-line no-use-before-define
     if (!(obj instanceof Tagged) || (obj.tag < 21) || (obj.tag > 23)) {
       for (const v of Object.values(obj)) {
         setBuffersToJSON(v, fn)
@@ -24,18 +28,164 @@ function setBuffersToJSON(obj, fn) {
   }
 }
 
+function b64this() {
+  // eslint-disable-next-line no-invalid-this
+  return utils.base64(this)
+}
+
+function b64urlThis() {
+  // eslint-disable-next-line no-invalid-this
+  return utils.base64url(this)
+}
+
+function hexThis() {
+  // eslint-disable-next-line no-invalid-this
+  return this.toString('hex')
+}
+
 function swapEndian(ab, size, byteOffset, byteLength) {
   const dv = new DataView(ab)
   const [getter, setter] = {
     2: [dv.getUint16, dv.setUint16],
     4: [dv.getUint32, dv.setUint32],
-    8: [dv.getBigUint64, dv.setBigUint64]
+    8: [dv.getBigUint64, dv.setBigUint64],
   }[size]
 
   const end = byteOffset + byteLength
   for (let offset = byteOffset; offset < end; offset += size) {
     setter.call(dv, offset, getter.call(dv, offset, true))
   }
+}
+
+/**
+ * Convert a tagged value to a more interesting JavaScript type.  Errors
+ * thrown in this function will be captured into the "err" property of the
+ * original Tagged instance.
+ *
+ * @callback TagFunction
+ * @param {any} value - the value inside the tag
+ * @param {Tagged} tag - the enclosing Tagged instance; useful if you want to
+ *   modify it and return it.  Also available as "this".
+ * @return {any} the transformed value
+ */
+
+/**
+ * A mapping from tag number to a tag decoding function
+ * @typedef {Object.<string, TagFunction>} TagMap
+ */
+
+/**
+  * @type {TagMap}
+  * @private
+  */
+const TAGS = {
+  // Standard date/time string; see Section 3.4.1
+  0: v => new Date(v),
+  // Epoch-based date/time; see Section 3.4.2
+  1: v => new Date(v * 1000),
+  // Positive bignum; see Section 3.4.3
+  2: v => utils.bufferToBigInt(v),
+  // Negative bignum; see Section 3.4.3
+  3: v => constants.BI.MINUS_ONE - utils.bufferToBigInt(v),
+  // Expected conversion to base64url encoding; see Section 3.4.5.2
+  21: (v, tag) => {
+    if (utils.isBufferish(v)) {
+      tag[INTERNAL_JSON] = b64urlThis
+    } else {
+      setBuffersToJSON(v, b64urlThis)
+    }
+    return tag
+  },
+  // Expected conversion to base64 encoding; see Section 3.4.5.2
+  22: (v, tag) => {
+    if (utils.isBufferish(v)) {
+      tag[INTERNAL_JSON] = b64this
+    } else {
+      setBuffersToJSON(v, b64this)
+    }
+    return tag
+  },
+  // Expected conversion to base16 encoding; see Section Section 3.4.5.2
+  23: (v, tag) => {
+    if (utils.isBufferish(v)) {
+      tag[INTERNAL_JSON] = hexThis
+    } else {
+      setBuffersToJSON(v, hexThis)
+    }
+    return tag
+  },
+  // URI; see Section 3.4.5.3
+  32: v => new URL(v),
+  // Base64url; see Section 3.4.5.3
+  33: (v, tag) => {
+    // If any of the following apply:
+    // -  the encoded text string contains non-alphabet characters or
+    //    only 1 alphabet character in the last block of 4 (where
+    //    alphabet is defined by Section 5 of [RFC4648] for tag number 33
+    //    and Section 4 of [RFC4648] for tag number 34), or
+    if (!v.match(/^[a-zA-Z0-9_-]+$/)) {
+      throw new Error('Invalid base64url characters')
+    }
+    const last = v.length % 4
+    if (last === 1) {
+      throw new Error('Invalid base64url length')
+    }
+    // -  the padding bits in a 2- or 3-character block are not 0, or
+    if (last === 2) {
+      // The last 4 bits of the last character need to be zero.
+      if ('AQgw'.indexOf(v[v.length - 1]) === -1) {
+        throw new Error('Invalid base64 padding')
+      }
+    } else if (last === 3) {
+      // The last 2 bits of the last character need to be zero.
+      if ('AEIMQUYcgkosw048'.indexOf(v[v.length - 1]) === -1) {
+        throw new Error('Invalid base64 padding')
+      }
+    }
+
+    //    Or
+    // -  the base64url encoding has padding characters,
+    // (caught above)
+
+    // the string is invalid.
+    return tag
+  },
+  // Base64; see Section 3.4.5.3
+  34: (v, tag) => {
+    // If any of the following apply:
+    // -  the encoded text string contains non-alphabet characters or
+    //    only 1 alphabet character in the last block of 4 (where
+    //    alphabet is defined by Section 5 of [RFC4648] for tag number 33
+    //    and Section 4 of [RFC4648] for tag number 34), or
+    const m = v.match(/^[a-zA-Z0-9+/]+(?<padding>={0,2})$/)
+    if (!m) {
+      throw new Error('Invalid base64 characters')
+    }
+    if ((v.length % 4) !== 0) {
+      throw new Error('Invalid base64 length')
+    }
+    // -  the padding bits in a 2- or 3-character block are not 0, or
+    if (m.groups.padding === '=') {
+      // The last 4 bits of the last character need to be zero.
+      if ('AQgw'.indexOf(v[v.length - 2]) === -1) {
+        throw new Error('Invalid base64 padding')
+      }
+    } else if (m.groups.padding === '==') {
+      // The last 2 bits of the last character need to be zero.
+      if ('AEIMQUYcgkosw048'.indexOf(v[v.length - 3]) === -1) {
+        throw new Error('Invalid base64 padding')
+      }
+    }
+
+    // -  the base64 encoding has the wrong number of padding characters,
+    // (caught above)
+    // the string is invalid.
+    return tag
+  },
+  // Regular expression; see Section 2.4.4.3
+  35: v => new RegExp(v),
+  // https://github.com/input-output-hk/cbor-sets-spec/blob/master/CBOR_SETS.md
+  258: v => new Set(v),
 }
 
 const TYPED_ARRAY_TAGS = {
@@ -61,7 +211,7 @@ const TYPED_ARRAY_TAGS = {
   // 83: not implemented, float128 array
   // 84: not implemented, float16 array
   85: Float32Array,
-  86: Float64Array
+  86: Float64Array,
   // 87: not implemented, float128 array
 }
 
@@ -75,7 +225,38 @@ if (typeof BigInt64Array !== 'undefined') {
   TYPED_ARRAY_TAGS[79] = BigInt64Array
 }
 
-const INTERNAL_JSON = Symbol('INTERNAL_JSON')
+function _toTypedArray(val, tagged) {
+  if (!utils.isBufferish(val)) {
+    throw new TypeError('val not a buffer')
+  }
+  const {tag} = tagged
+  // See https://tools.ietf.org/html/rfc8746
+  const TypedClass = TYPED_ARRAY_TAGS[tag]
+  if (!TypedClass) {
+    throw new Error(`Invalid typed array tag: ${tag}`)
+  }
+  const little = tag & 0b00000100
+  const float = (tag & 0b00010000) >> 4
+  const sz = 2 ** (float + (tag & 0b00000011))
+
+  if ((!little !== utils.isBigEndian()) && (sz > 1)) {
+    swapEndian(val.buffer, sz, val.byteOffset, val.byteLength)
+  }
+
+  const ab = val.buffer.slice(val.byteOffset, val.byteOffset + val.byteLength)
+  return new TypedClass(ab)
+}
+
+for (const n of Object.keys(TYPED_ARRAY_TAGS)) {
+  TAGS[n] = _toTypedArray
+}
+
+/**
+  * @type {TagMap}
+  * @private
+  */
+let current_TAGS = {}
+
 /**
  * A CBOR tagged item, where the tag does not have semantics specified at the
  * moment, or those semantics threw an error during parsing. Typically this will
@@ -94,20 +275,20 @@ class Tagged {
     this.value = value
     this.err = err
     if (typeof this.tag !== 'number') {
-      throw new Error('Invalid tag type (' + (typeof this.tag) + ')')
+      throw new Error(`Invalid tag type (${typeof this.tag})`)
     }
     if ((this.tag < 0) || ((this.tag | 0) !== this.tag)) {
-      throw new Error('Tag must be a positive integer: ' + this.tag)
+      throw new Error(`Tag must be a positive integer: ${this.tag}`)
     }
   }
 
   toJSON() {
     if (this[INTERNAL_JSON]) {
-      return this[INTERNAL_JSON]()
+      return this[INTERNAL_JSON].call(this.value)
     }
     const ret = {
       tag: this.tag,
-      value: this.value
+      value: this.value,
     }
     if (this.err) {
       ret.err = this.err
@@ -146,20 +327,15 @@ class Tagged {
    * @returns {any} - the converted item
    */
   convert(converters) {
-    let f = converters != null ? converters[this.tag] : undefined
+    let f = (converters == null) ? undefined : converters[this.tag]
     if (typeof f !== 'function') {
-      f = Tagged['_tag_' + this.tag]
+      f = Tagged.TAGS[this.tag]
       if (typeof f !== 'function') {
-        f = TYPED_ARRAY_TAGS[this.tag]
-        if (typeof f === 'function') {
-          f = this._toTypedArray
-        } else {
-          return this
-        }
+        return this
       }
     }
     try {
-      return f.call(this, this.value)
+      return f.call(this, this.value, this)
     } catch (error) {
       if (error && error.message && (error.message.length > 0)) {
         this.err = error.message
@@ -170,185 +346,28 @@ class Tagged {
     }
   }
 
-  _toTypedArray(val) {
-    const {tag} = this
-    // see https://tools.ietf.org/html/rfc8746
-    const TypedClass = TYPED_ARRAY_TAGS[tag]
-    if (!TypedClass) {
-      throw new Error(`Invalid typed array tag: ${tag}`)
-    }
-    const little = tag & 0b00000100
-    const float = (tag & 0b00010000) >> 4
-    const sz = 2 ** (float + (tag & 0b00000011))
-
-    if ((!little !== utils.isBigEndian()) && (sz > 1)) {
-      swapEndian(val.buffer, sz, val.byteOffset, val.byteLength)
-    }
-
-    const ab = val.buffer.slice(val.byteOffset, val.byteOffset + val.byteLength)
-    return new TypedClass(ab)
+  /**
+   * The current set of supported tags.  May be modified by plugins.
+   *
+   * @type {TagMap}
+   * @static
+   */
+  static get TAGS() {
+    return current_TAGS
   }
 
-  // Standard date/time string; see Section 3.4.1
-  static _tag_0(v) {
-    return new Date(v)
+  static set TAGS(val) {
+    current_TAGS = val
   }
 
-  // Epoch-based date/time; see Section 3.4.2
-  static _tag_1(v) {
-    return new Date(v * 1000)
-  }
-
-  // Positive bignum; see Section 3.4.3
-  static _tag_2(v) {
-    // (note: replaced by bigint version in decoder.js when bigint on)
-    return utils.bufferToBignumber(v) // throws if no BigNumber
-  }
-
-  // Negative bignum; see Section 3.4.3
-  static _tag_3(v) {
-    // (note: replaced by bigint version in decoder.js when bigint on)
-    const pos = utils.bufferToBignumber(v) // throws if no BigNumber
-    return constants.BN.MINUS_ONE.minus(pos)
-  }
-
-  // Decimal fraction; see Section 3.4.4
-  static _tag_4(v) {
-    if (!constants.BigNumber) {
-      throw new Error('No bignumber.js')
-    }
-    return new constants.BigNumber(v[1]).shiftedBy(v[0])
-  }
-
-  // Bigfloat; see Section 3.4.4
-  static _tag_5(v) {
-    if (!constants.BigNumber) {
-      throw new Error('No bignumber.js')
-    }
-    return constants.BN.TWO.pow(v[0]).times(v[1])
-  }
-
-  // Expected conversion to base64url encoding; see Section 3.4.5.2
-  static _tag_21(v) {
-    if (utils.isBufferish(v)) {
-      this[INTERNAL_JSON] = () => utils.base64url(v)
-    } else {
-      setBuffersToJSON(v, function b64urlThis() { // no =>, honor `this`
-        // eslint-disable-next-line no-invalid-this
-        return utils.base64url(this)
-      })
-    }
-    return this
-  }
-
-  // Expected conversion to base64 encoding; see Section 3.4.5.2
-  static _tag_22(v) {
-    if (utils.isBufferish(v)) {
-      this[INTERNAL_JSON] = () => utils.base64(v)
-    } else {
-      setBuffersToJSON(v, function b64this() { // no =>, honor `this`
-        // eslint-disable-next-line no-invalid-this
-        return utils.base64(this)
-      })
-    }
-    return this
-  }
-
-  // Expected conversion to base16 encoding; see Section Section 3.4.5.2
-  static _tag_23(v) {
-    if (utils.isBufferish(v)) {
-      this[INTERNAL_JSON] = () => v.toString('hex')
-    } else {
-      setBuffersToJSON(v, function hexThis() { // no =>, honor `this`
-      // eslint-disable-next-line no-invalid-this
-        return this.toString('hex')
-      })
-    }
-    return this
-  }
-
-  // URI; see Section 3.4.5.3
-  static _tag_32(v) {
-    return new URL(v)
-  }
-
-  // base64url; see Section 3.4.5.3
-  static _tag_33(v) {
-    // If any of the following apply:
-    // -  the encoded text string contains non-alphabet characters or
-    //    only 1 alphabet character in the last block of 4 (where
-    //    alphabet is defined by Section 5 of [RFC4648] for tag number 33
-    //    and Section 4 of [RFC4648] for tag number 34), or
-    if (!v.match(/^[a-zA-Z0-9_-]+$/)) {
-      throw new Error('Invalid base64url characters')
-    }
-    const last = v.length % 4
-    if (last === 1) {
-      throw new Error('Invalid base64url length')
-    }
-    // -  the padding bits in a 2- or 3-character block are not 0, or
-    if (last === 2) {
-      // The last 4 bits of the last character need to be zero.
-      if ('AQgw'.indexOf(v[v.length - 1]) === -1) {
-        throw new Error('Invalid base64 padding')
-      }
-    } else if (last === 3) {
-      // The last 2 bits of the last character need to be zero.
-      if ('AEIMQUYcgkosw048'.indexOf(v[v.length - 1]) === -1) {
-        throw new Error('Invalid base64 padding')
-      }
-    }
-
-    //    or
-    // -  the base64url encoding has padding characters,
-    // (caught above)
-
-    // the string is invalid.
-    return this
-  }
-
-  // base64; see Section 3.4.5.3
-  static _tag_34(v) {
-    // If any of the following apply:
-    // -  the encoded text string contains non-alphabet characters or
-    //    only 1 alphabet character in the last block of 4 (where
-    //    alphabet is defined by Section 5 of [RFC4648] for tag number 33
-    //    and Section 4 of [RFC4648] for tag number 34), or
-    const m = v.match(/^[a-zA-Z0-9+/]+(={0,2})$/)
-    if (!m) {
-      throw new Error('Invalid base64url characters')
-    }
-    if ((v.length % 4) !== 0) {
-      throw new Error('Invalid base64url length')
-    }
-    // -  the padding bits in a 2- or 3-character block are not 0, or
-    if (m[1] === '=') {
-      // The last 4 bits of the last character need to be zero.
-      if ('AQgw'.indexOf(v[v.length - 2]) === -1) {
-        throw new Error('Invalid base64 padding')
-      }
-    } else if (m[1] === '==') {
-      // The last 2 bits of the last character need to be zero.
-      if ('AEIMQUYcgkosw048'.indexOf(v[v.length - 3]) === -1) {
-        throw new Error('Invalid base64 padding')
-      }
-    }
-
-    // -  the base64 encoding has the wrong number of padding characters,
-    // (caught above)
-    // the string is invalid.
-    return this
-  }
-
-  // Regular expression; see Section 2.4.4.3
-  static _tag_35(v) {
-    return new RegExp(v)
-  }
-
-  // https://github.com/input-output-hk/cbor-sets-spec/blob/master/CBOR_SETS.md
-  static _tag_258(v) {
-    return new Set(v)
+  /**
+   * Reset the supported tags to the original set, before any plugins modified
+   * the list.
+   */
+  static reset() {
+    Tagged.TAGS = { ...TAGS }
   }
 }
 Tagged.INTERNAL_JSON = INTERNAL_JSON
+Tagged.reset()
 module.exports = Tagged

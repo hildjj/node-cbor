@@ -1,4 +1,3 @@
-/// <reference types="node" />
 export = Tagged;
 /**
  * A CBOR tagged item, where the tag does not have semantics specified at the
@@ -6,14 +5,23 @@ export = Tagged;
  * be an extension point you're not yet expecting.
  */
 declare class Tagged {
-    static _tag_0(v: any): Date;
-    static _tag_1(v: any): Date;
-    static _tag_2(v: any): BigNumber;
-    static _tag_3(v: any): BigNumber;
-    static _tag_4(v: any): BigNumber;
-    static _tag_5(v: any): BigNumber;
-    static _tag_32(v: any): url.UrlWithStringQuery;
-    static _tag_35(v: any): RegExp;
+    static set TAGS(arg: {
+        [x: string]: TagFunction;
+    });
+    /**
+     * The current set of supported tags.  May be modified by plugins.
+     *
+     * @type {TagMap}
+     * @static
+     */
+    static get TAGS(): {
+        [x: string]: TagFunction;
+    };
+    /**
+     * Reset the supported tags to the original set, before any plugins modified
+     * the list.
+     */
+    static reset(): void;
     /**
      * Creates an instance of Tagged.
      *
@@ -25,6 +33,7 @@ declare class Tagged {
     tag: number;
     value: any;
     err: Error;
+    toJSON(): any;
     /**
      * Convert to a String
      *
@@ -50,5 +59,19 @@ declare class Tagged {
      */
     convert(converters: any): any;
 }
-import { BigNumber } from "./constants";
-import url = require("url");
+declare namespace Tagged {
+    export { INTERNAL_JSON, TagFunction, TagMap };
+}
+/**
+ * Convert a tagged value to a more interesting JavaScript type.  Errors
+ * thrown in this function will be captured into the "err" property of the
+ * original Tagged instance.
+ */
+type TagFunction = (value: any, tag: Tagged) => any;
+declare const INTERNAL_JSON: unique symbol;
+/**
+ * A mapping from tag number to a tag decoding function
+ */
+type TagMap = {
+    [x: string]: TagFunction;
+};

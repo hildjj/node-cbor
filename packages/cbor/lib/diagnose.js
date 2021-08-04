@@ -22,8 +22,6 @@ const {MT, SYMS} = require('./constants')
   * @property {object} [tags] - mapping from tag number to function(v),
   *   where v is the decoded value that comes after the tag, and where the
   *   function returns the correctly-created value for that tag.
-  * @property {boolean} [bigint=true] generate JavaScript BigInt's
-  *   instead of BigNumbers, when possible.
   * @property {boolean} [preferWeb=false] - if true, prefer Uint8Arrays to
   *   be generated instead of node Buffers.  This might turn on some more
   *   changes in the future, so forward-compatibility is not guaranteed yet.
@@ -34,6 +32,7 @@ const {MT, SYMS} = require('./constants')
   * @callback diagnoseCallback
   * @param {Error} [error] - if one was generated
   * @param {string} [value] - the diagnostic value
+  * @returns {void}
   */
 /**
   * @param {DiagnoseOptions|diagnoseCallback|string} opts options,
@@ -70,19 +69,18 @@ class Diagnose extends stream.Transform {
     const {
       separator = '\n',
       stream_errors = false,
-      // decoder options
+      // Decoder options
       tags,
       max_depth,
-      bigint,
       preferWeb,
       encoding,
-      // stream.Transform options
+      // Stream.Transform options
       ...superOpts
     } = options
     super({
       ...superOpts,
       readableObjectMode: false,
-      writableObjectMode: false
+      writableObjectMode: false,
     })
 
     this.float_bytes = -1
@@ -91,9 +89,8 @@ class Diagnose extends stream.Transform {
     this.parser = new Decoder({
       tags,
       max_depth,
-      bigint,
       preferWeb,
-      encoding
+      encoding,
     })
     this.parser.on('more-bytes', this._on_more.bind(this))
     this.parser.on('value', this._on_value.bind(this))
@@ -153,6 +150,7 @@ class Diagnose extends stream.Transform {
     return p
   }
 
+  /** @private */
   _on_error(er) {
     if (this.stream_errors) {
       return this.push(er.toString())
@@ -160,16 +158,18 @@ class Diagnose extends stream.Transform {
     return this.emit('error', er)
   }
 
+  /** @private */
   _on_more(mt, len, parent_mt, pos) {
     if (mt === MT.SIMPLE_FLOAT) {
       this.float_bytes = {
         2: 1,
         4: 2,
-        8: 3
+        8: 3,
       }[len]
     }
   }
 
+  /** @private */
   _fore(parent_mt, pos) {
     switch (parent_mt) {
       case MT.BYTE_STRING:
@@ -190,6 +190,7 @@ class Diagnose extends stream.Transform {
     }
   }
 
+  /** @private */
   _on_value(val, parent_mt, pos) {
     if (val === SYMS.BREAK) {
       return
@@ -200,6 +201,7 @@ class Diagnose extends stream.Transform {
     this.push(utils.cborValueToString(val, fb))
   }
 
+  /** @private */
   _on_start(mt, tag, parent_mt, pos) {
     this._fore(parent_mt, pos)
     switch (mt) {
@@ -222,6 +224,7 @@ class Diagnose extends stream.Transform {
     }
   }
 
+  /** @private */
   _on_stop(mt) {
     switch (mt) {
       case MT.TAG:
@@ -240,6 +243,7 @@ class Diagnose extends stream.Transform {
     }
   }
 
+  /** @private */
   _on_data() {
     this.push(this.separator)
   }

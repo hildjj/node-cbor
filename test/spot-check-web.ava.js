@@ -1,34 +1,28 @@
 'use strict'
 
-const path = require('path')
 const test = require('ava')
-const cbor_modules = path.resolve(
-  __dirname, '..', 'packages', 'cbor', 'node_modules'
-)
-const cbor_web = '../packages/cbor-web/dist/cbor'
-let cbor = require(cbor_web)
+const cbor = require('../packages/cbor-web/dist/cbor')
+const bdec = require('../packages/cbor-bigdecimal/dist/cbor-bigdecimal')
 
 test('exists', t => {
-  // Loaded once with no BigNumber
   t.truthy(cbor)
-  t.truthy(cbor.encode)
-  t.truthy(cbor.decode)
-  t.falsy(cbor.BigNumber)
-
-  // Loaded again, with BigNumber hacked into the path.
-  const src = require.resolve(cbor_web)
-  delete require.cache[src]
-  process.env.NODE_PATH = process.env.NODE_PATH ?
-    process.env.NODE_PATH + path.delimiter + cbor_modules :
-    cbor_modules
-  require('module').Module._initPaths()
-  t.truthy(require('bignumber.js'))
-  cbor = require(cbor_web)
-  t.truthy(cbor.BigNumber)
-  t.is(new cbor.BigNumber(10).toString(16), 'a')
+  t.is(typeof cbor.encode, 'function')
+  t.is(typeof cbor.decode, 'function')
 })
 
 test('spot check', t => {
   t.is(cbor.encode({a: 1}).toString('hex'), 'a1616101')
   t.deepEqual(cbor.decode('a1616101'), {a: 1})
+})
+
+test('bigdecimal', t => {
+  bdec(cbor)
+  const pi3 = new bdec.BigNumber(Math.PI).pow(3)
+  const pi3cbor = cbor.encode(pi3).toString('hex')
+  t.is(
+    pi3cbor,
+    'c482382cc254056e5e99b1be81b6eefa3964490ac18c69399361'
+  )
+  t.deepEqual(cbor.decodeFirstSync(pi3cbor), pi3)
+  cbor.reset()
 })

@@ -1,6 +1,8 @@
 /* eslint-disable no-undef */
 'use strict'
 
+cborBigDecimal(cbor)
+
 const ofmt = document.getElementById('output-fmt')
 const otxt = document.getElementById('output-text')
 const itxt = document.getElementById('input-text')
@@ -12,7 +14,7 @@ function error(e) {
   otxt.value = e.toString()
 }
 
-// convert any input to a buffer
+// Convert any input to a buffer
 function input() {
   const inp = ifmt.selectedOptions[0].label
   const txt = itxt.value
@@ -33,7 +35,7 @@ function input() {
   }
 }
 
-// convert a buffer to the desired output format
+// Convert a buffer to the desired output format
 function output(buf, typ) {
   const outp = ofmt.selectedOptions[0].label
   switch (outp) {
@@ -41,7 +43,7 @@ function output(buf, typ) {
       copy.disabled = false
       otxt.value = Array.prototype.map.call(
         buf,
-        x => ('00' + x.toString(16)).slice(-2)
+        x => (`00${x.toString(16)}`).slice(-2)
       ).join('')
       break
     case 'base64':
@@ -69,7 +71,7 @@ function output(buf, typ) {
           depth: Infinity,
           compact: 1,
           maxArrayLength: Infinity,
-          breakLength: otxt.cols - 1
+          breakLength: otxt.cols - 1,
         })
       }, error)
       break
@@ -96,7 +98,7 @@ function convert() {
 ofmt.oninput = convert
 ifmt.oninput = convert
 copy.onclick = () => {
-  // copy output to input, and guess the new input format
+  // Copy output to input, and guess the new input format
   itxt.value = otxt.value
   const sel = ofmt.selectedOptions[0].label
   for (const o of ifmt.options) {
@@ -107,7 +109,7 @@ copy.onclick = () => {
   }
 }
 
-// debounce
+// Debounce
 let timeout = null
 itxt.oninput = () => {
   clearTimeout(timeout)
@@ -117,5 +119,5 @@ itxt.oninput = () => {
   }, 300)
 }
 
-// make sure that initial output is set
+// Make sure that initial output is set
 convert()

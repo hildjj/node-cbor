@@ -6,7 +6,7 @@
   "scripts": {
     "build": "node build.js",
     "predeploy": "npm run build",
-    "deploy": "ls dist/* | xargs -I {} cp {} ../../docs/example"
+    "deploy": "copyfiles -u1 dist/* ../../docs/example"
   },
   "author": "Joe Hildebrand <joe-github@cursive.net>",
   "license": "MIT",
@@ -17,7 +17,13 @@
   },
   "devDependencies": {
     "bignumber.js": "^9.0.1",
+    "browser-resolve": "^2.0.0",
+    "cbor-bigdecimal": "^7.0.6",
     "cbor-web": "^7.0.6",
+    "copyfiles": "^2.4.1",
     "node-inspect-extracted": "^1.0.8"
+  },
+  "engines": {
+    "node": ">=12.19"
   }
 }

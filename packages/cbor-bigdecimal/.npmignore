@@ -1,0 +1,4 @@
+.nyc_output/
+coverage/
+test/
+webpack.config.js

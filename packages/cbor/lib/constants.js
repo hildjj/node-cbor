@@ -1,16 +1,5 @@
 'use strict'
 
-// Let's get consistent first, then we can think about feature testing
-// for BigNumber support
-let bn = null
-try {
-  bn = require('bignumber.js').BigNumber
-} catch (ignored) {
-  // bignumber.js isn't available
-}
-/** @type {typeof import('bignumber.js').BigNumber?} */
-exports.BigNumber = bn
-
 /**
  * @enum {number}
  */
@@ -22,7 +11,7 @@ exports.MT = {
   ARRAY: 4,
   MAP: 5,
   TAG: 6,
-  SIMPLE_FLOAT: 7
+  SIMPLE_FLOAT: 7,
 }
 
 /**
@@ -45,7 +34,7 @@ exports.TAG = {
   REGEXP: 35,
   MIME: 36,
   // https://github.com/input-output-hk/cbor-sets-spec/blob/master/CBOR_SETS.md
-  SET: 258
+  SET: 258,
 }
 
 /**
@@ -57,7 +46,7 @@ exports.NUMBYTES = {
   TWO: 25,
   FOUR: 26,
   EIGHT: 27,
-  INDEFINITE: 31
+  INDEFINITE: 31,
 }
 
 /**
@@ -67,7 +56,7 @@ exports.SIMPLE = {
   FALSE: 20,
   TRUE: 21,
   NULL: 22,
-  UNDEFINED: 23
+  UNDEFINED: 23,
 }
 
 exports.SYMS = {
@@ -75,7 +64,7 @@ exports.SYMS = {
   UNDEFINED: Symbol.for('github.com/hildjj/node-cbor/undef'),
   PARENT: Symbol.for('github.com/hildjj/node-cbor/parent'),
   BREAK: Symbol.for('github.com/hildjj/node-cbor/break'),
-  STREAM: Symbol.for('github.com/hildjj/node-cbor/stream')
+  STREAM: Symbol.for('github.com/hildjj/node-cbor/stream'),
 }
 
 exports.SHIFT32 = 0x100000000
@@ -85,20 +74,6 @@ exports.BI = {
   NEG_MAX: BigInt(-1) - BigInt(Number.MAX_SAFE_INTEGER),
   MAXINT32: BigInt('0xffffffff'),
   MAXINT64: BigInt('0xffffffffffffffff'),
-  SHIFT32: BigInt(exports.SHIFT32)
+  SHIFT32: BigInt(exports.SHIFT32),
 }
 
-if (exports.BigNumber) {
-  const MINUS_ONE = new exports.BigNumber(-1)
-  exports.BN = {
-    MINUS_ONE,
-    NEG_MAX: MINUS_ONE.minus(
-      new exports.BigNumber(Number.MAX_SAFE_INTEGER.toString(16), 16)
-    ),
-    TWO: new exports.BigNumber(2),
-    MAXINT: new exports.BigNumber('0x20000000000000'),
-    MAXINT32: new exports.BigNumber(0xffffffff),
-    MAXINT64: new exports.BigNumber('0xffffffffffffffff'),
-    SHIFT32: new exports.BigNumber(exports.SHIFT32)
-  }
-}

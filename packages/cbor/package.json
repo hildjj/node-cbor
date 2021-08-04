@@ -16,7 +16,7 @@
     "fs": false
   },
   "scripts": {
-    "clean": "rm -rf coverage .nyc_output/ docs",
+    "clean": "rimraf coverage .nyc_output/ docs",
     "lint": "eslint lib/*.js test/*.js",
     "coverage": "nyc -r lcov npm test",
     "test": "ava test/*.ava.js",
@@ -43,25 +43,18 @@
   ],
   "types": "./types/lib/cbor.d.ts",
   "dependencies": {
-    "@cto.af/textdecoder": "^0.0.0",
-    "nofilter": "^2.0.3"
-  },
-  "peerDependencies": {
-    "bignumber.js": "^9.0.1"
-  },
-  "peerDependenciesMeta": {
-    "bignumber.js": {
-      "optional": true
-    }
+    "nofilter": "^3.0.2"
   },
   "devDependencies": {
     "@types/node": "*",
     "bignumber.js": "^9.0.1",
-    "garbage": "~0.0.0"
+    "garbage": "~0.0.0",
+    "p-event": "^4.2.0",
+    "rimraf": "^3.0.2"
   },
   "license": "MIT",
   "readmeFilename": "README.md",
   "engines": {
-    "node": ">=10.18.0"
+    "node": ">=12.19"
   }
 }

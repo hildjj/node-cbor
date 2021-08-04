@@ -1,4 +1,3 @@
-export { BigNumber };
 export namespace MT {
     const POS_INT: number;
     const NEG_INT: number;
@@ -26,6 +25,7 @@ export namespace TAG {
     const BASE64: number;
     const REGEXP: number;
     const MIME: number;
+    const SET: number;
 }
 export type TAG = number;
 export namespace NUMBYTES {
@@ -61,19 +61,3 @@ export namespace BI {
     const MAXINT64: bigint;
     const SHIFT32: bigint;
 }
-export namespace BN {
-    export { MINUS_ONE_1 as MINUS_ONE };
-    const NEG_MAX_1: BigNumber;
-    export { NEG_MAX_1 as NEG_MAX };
-    const TWO_1: BigNumber;
-    export { TWO_1 as TWO };
-    export const MAXINT: BigNumber;
-    const MAXINT32_1: BigNumber;
-    export { MAXINT32_1 as MAXINT32 };
-    const MAXINT64_1: BigNumber;
-    export { MAXINT64_1 as MAXINT64 };
-    const SHIFT32_1: BigNumber;
-    export { SHIFT32_1 as SHIFT32 };
-}
-import { BigNumber } from "bignumber.js";
-declare const MINUS_ONE_1: BigNumber;

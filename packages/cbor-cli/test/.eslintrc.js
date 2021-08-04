@@ -1,5 +1,5 @@
 'use strict'
 
 module.exports = {
-  extends: '@cto.af/eslint-config/ava'
+  extends: '@cto.af/eslint-config/ava',
 }
