@@ -11,7 +11,7 @@
     "./packages/*"
   ],
   "scripts": {
-    "clean": "rimraf node_modules coverage .nyc_output packages/*/node_modules packages/*/coverage pacakges/*/.nyc_output",
+    "clean": "rimraf node_modules coverage .nyc_output packages/*/node_modules packages/*/coverage packages/*/.nyc_output",
     "docs": "jsdoc -c .jsdoc.conf",
     "lint": "eslint . --ext cjs --ext mjs --ext js --ext md",
     "test": "ava packages/*/test/*.ava.js",
