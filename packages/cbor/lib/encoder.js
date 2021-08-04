@@ -5,7 +5,7 @@ const NoFilter = require('nofilter')
 const utils = require('./utils')
 const constants = require('./constants')
 const {
-  MT, NUMBYTES, SHIFT32, SIMPLE, SYMS, TAG, BI
+  MT, NUMBYTES, SHIFT32, SIMPLE, SYMS, TAG, BI,
 } = constants
 const { Buffer } = require('buffer')
 
@@ -142,7 +142,7 @@ class Encoder extends stream.Transform {
     super({
       ...superOpts,
       readableObjectMode: false,
-      writableObjectMode: true
+      writableObjectMode: true,
     })
 
     this.canonical = canonical
@@ -150,7 +150,8 @@ class Encoder extends stream.Transform {
     this.disallowUndefinedKeys = disallowUndefinedKeys
     this.dateType = parseDateType(dateType)
     this.collapseBigIntegers = this.canonical ? true : collapseBigIntegers
-    /** @type WeakSet? */
+
+    /** @type WeakSet<any>? */
     this.detectLoops = undefined
     if (typeof detectLoops === 'boolean') {
       if (detectLoops) {
@@ -401,7 +402,7 @@ class Encoder extends stream.Transform {
       case 'undefined':
         return this._pushUInt8(UNDEFINED)
       case 'function':
-        return this.pushAny(this.encodeUndefined.call(this, obj))
+        return this.pushAny(this.encodeUndefined(obj))
       case 'object': {
         const buf = utils.bufferishToBuffer(this.encodeUndefined)
         if (buf) {
@@ -447,7 +448,7 @@ class Encoder extends stream.Transform {
 
     if (this.collapseBigIntegers &&
         (obj <= BI.MAXINT64)) {
-      //  special handiling for 64bits
+      // Special handiling for 64bits
       if (obj <= 0xffffffff) {
         return this._pushInt(Number(obj), m)
       }
@@ -458,7 +459,7 @@ class Encoder extends stream.Transform {
 
     let str = obj.toString(16)
     if (str.length % 2) {
-      str = '0' + str
+      str = `0${str}`
     }
     const buf = Buffer.from(str, 'hex')
     return this._pushTag(tag) && Encoder._pushBuffer(this, buf)
@@ -476,10 +477,10 @@ class Encoder extends stream.Transform {
     opts = {
       indefinite: false,
       skipTypes: false,
-      ...opts
+      ...opts,
     }
     if (!opts.indefinite) {
-      // this will only happen the first time through for indefinite encoding
+      // This will only happen the first time through for indefinite encoding
       if (this.detectLoops) {
         if (this.detectLoops.has(obj)) {
           throw new Error(`\
@@ -507,7 +508,7 @@ Call removeLoopDetectors before resuming.`)
     })
     const cbor_keys = {}
     if (this.canonical) {
-      // note: this can't be a normal sort, because 'b' needs to sort before
+      // Note: this can't be a normal sort, because 'b' needs to sort before
       // 'aa'
       keys.sort((a, b) => {
         // Always strings, so don't bother to pass options.
@@ -530,7 +531,7 @@ Call removeLoopDetectors before resuming.`)
     for (let j = 0, len2 = keys.length; j < len2; j++) {
       const k = keys[j]
       if (this.canonical && ((ck = cbor_keys[k]))) {
-        if (!this.push(ck)) { // already a Buffer
+        if (!this.push(ck)) { // Already a Buffer
           return false
         }
       } else if (!this._pushString(k)) {
@@ -617,12 +618,11 @@ Call removeLoopDetectors before resuming.`)
             return this._pushUndefined(undefined)
           // TODO: Add pluggable support for other symbols
           default:
-            throw new Error('Unknown symbol: ' + obj.toString())
+            throw new Error(`Unknown symbol: ${obj.toString()}`)
         }
       default:
         throw new Error(
-          'Unknown type: ' + typeof obj + ', ' +
-          (!!obj.toString ? obj.toString() : '')
+          `Unknown type: ${typeof obj}, ${(typeof obj.toString === 'function') ? obj.toString() : ''}`
         )
     }
   }
@@ -639,7 +639,7 @@ Call removeLoopDetectors before resuming.`)
   static pushArray(gen, obj, opts) {
     opts = {
       indefinite: false,
-      ...opts
+      ...opts,
     }
     const len = obj.length
     if (opts.indefinite) {
@@ -690,12 +690,12 @@ Call removeLoopDetectors before resuming.`)
         return gen._pushTag(TAG.DATE_EPOCH) &&
           gen._pushIntNum(Math.round(obj.getTime() / 1000))
       case 'float':
-        // force float
+        // Force float
         return gen._pushTag(TAG.DATE_EPOCH) &&
           gen._pushFloat(obj.getTime() / 1000)
       case 'number':
       default:
-        // if we happen to have an integral number of seconds,
+        // If we happen to have an integral number of seconds,
         // use integer.  Otherwise, use float.
         return gen._pushTag(TAG.DATE_EPOCH) &&
           gen.pushAny(obj.getTime() / 1000)
@@ -782,7 +782,7 @@ Call removeLoopDetectors before resuming.`)
   static _pushMap(gen, obj, opts) {
     opts = {
       indefinite: false,
-      ...opts
+      ...opts,
     }
     let entries = [...obj.entries()]
     if (gen.omitUndefinedProperties) {
@@ -795,23 +795,23 @@ Call removeLoopDetectors before resuming.`)
     } else if (!gen._pushInt(entries.length, MT.MAP)) {
       return false
     }
-    // memoizing the cbor only helps in certain cases, and hurts in most
+    // Memoizing the cbor only helps in certain cases, and hurts in most
     // others.  Just avoid it.
     if (gen.canonical) {
-      // keep the key/value pairs together, so we don't have to do odd
+      // Keep the key/value pairs together, so we don't have to do odd
       // gets with object keys later
       const enc = new Encoder({
         genTypes: gen.semanticTypes,
         canonical: gen.canonical,
-        detectLoops: !!gen.detectLoops, // give enc its own loop detector
+        detectLoops: Boolean(gen.detectLoops), // Give enc its own loop detector
         dateType: gen.dateType,
         disallowUndefinedKeys: gen.disallowUndefinedKeys,
-        collapseBigIntegers: gen.collapseBigIntegers
+        collapseBigIntegers: gen.collapseBigIntegers,
       })
       const bs = new NoFilter({highWaterMark: gen.readableHighWaterMark})
       enc.pipe(bs)
       entries.sort(([a], [b]) => {
-        // a, b are the keys
+        // Both a and b are the keys
         enc.pushAny(a)
         const a_cbor = bs.read()
         enc.pushAny(b)
@@ -854,7 +854,7 @@ Call removeLoopDetectors before resuming.`)
    * @ignore
    */
   static _pushTypedArray(gen, obj) {
-    // see https://tools.ietf.org/html/rfc8746
+    // See https://tools.ietf.org/html/rfc8746
 
     let typ = 0b01000000
     let sz = obj.BYTES_PER_ELEMENT
@@ -873,7 +873,7 @@ Call removeLoopDetectors before resuming.`)
       1: 0b00,
       2: 0b01,
       4: 0b10,
-      8: 0b11
+      8: 0b11,
     }[sz]
     if (!gen._pushTag(typ)) {
       return false
@@ -939,7 +939,7 @@ Call removeLoopDetectors before resuming.`)
         offset = endIndex
       }
       ret = ret && gen.push(BREAK)
-    } else if (buf = utils.bufferishToBuffer(obj)) {
+    } else if ((buf = utils.bufferishToBuffer(obj))) {
       ret = ret && gen._pushUInt8((MT.BYTE_STRING << 5) | NUMBYTES.INDEFINITE)
       let offset = 0
       while (offset < buf.length) {
@@ -950,11 +950,11 @@ Call removeLoopDetectors before resuming.`)
       ret = ret && gen.push(BREAK)
     } else if (Array.isArray(obj)) {
       ret = ret && Encoder.pushArray(gen, obj, {
-        indefinite: true
+        indefinite: true,
       })
     } else if (obj instanceof Map) {
       ret = ret && Encoder._pushMap(gen, obj, {
-        indefinite: true
+        indefinite: true,
       })
     } else {
       if (objType !== 'object') {
@@ -962,7 +962,7 @@ Call removeLoopDetectors before resuming.`)
       }
       ret = ret && gen._pushObject(obj, {
         indefinite: true,
-        skipTypes: true
+        skipTypes: true,
       })
     }
     return ret
@@ -988,7 +988,7 @@ Call removeLoopDetectors before resuming.`)
    */
   static encodeCanonical(...objs) {
     return new Encoder({
-      canonical: true
+      canonical: true,
     })._encodeAll(objs)
   }
 
@@ -1051,10 +1051,10 @@ Object.assign(SEMANTIC_TYPES, {
   Array: Encoder.pushArray,
   Date: Encoder._pushDate,
   Buffer: Encoder._pushBuffer,
-  [Buffer.name]: Encoder._pushBuffer, // might be mangled
+  [Buffer.name]: Encoder._pushBuffer, // Might be mangled
   Map: Encoder._pushMap,
   NoFilter: Encoder._pushNoFilter,
-  [NoFilter.name]: Encoder._pushNoFilter, // might be mangled
+  [NoFilter.name]: Encoder._pushNoFilter, // Mßight be mangled
   RegExp: Encoder._pushRegexp,
   Set: Encoder._pushSet,
   ArrayBuffer: Encoder._pushArrayBuffer,
@@ -1070,7 +1070,7 @@ Object.assign(SEMANTIC_TYPES, {
   URL: Encoder._pushURL,
   Boolean: Encoder._pushBoxed,
   Number: Encoder._pushBoxed,
-  String: Encoder._pushBoxed
+  String: Encoder._pushBoxed,
 })
 
 // Safari needs to get better.

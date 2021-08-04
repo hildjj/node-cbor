@@ -11,7 +11,7 @@ const commander = require('commander')
 const pkg = require('../package.json')
 
 bdec(cbor)
-const HEX = /^\s*(?:['"`]|0x)([0-9a-f]+)\s*$/
+const HEX = /^\s*(?:['"`]|0x)(?<hex>[0-9a-f]+)\s*$/
 const OUTPUT_TYPES = {
   comment: 'comment',
   c: 'comment',
@@ -20,13 +20,13 @@ const OUTPUT_TYPES = {
   diag: 'diagnose',
   javascript: 'javascript',
   js: 'javascript',
-  j: 'javascript'
+  j: 'javascript',
 }
 function outputType(val) {
   const norm = OUTPUT_TYPES[val]
   if (!norm) {
     throw new commander.InvalidOptionArgumentError(
-      'Not one of: ' + Object.keys(OUTPUT_TYPES).join(', ')
+      `Not one of: ${Object.keys(OUTPUT_TYPES).join(', ')}`
     )
   }
   return norm
@@ -56,30 +56,31 @@ const cborPkg = JSON.parse(
 )
 let branch = ''
 try {
-  // too hard to test both branches.
+  // Too hard to test both branches.
   /* istanbul ignore next */
   if (fs.statSync(path.resolve(cborPath, '..', '..', '.git')).isDirectory()) {
     try {
+      // eslint-disable-next-line prefer-template
       branch = '#' + child_process.execSync(
         'git branch --show-current', {
           cwd: cborPath,
           encoding: 'utf8',
-          stdio: 'pipe'
+          stdio: 'pipe',
         }
       ).trimEnd()
     } catch (ignored) {
-      // any failures with git, we throw up our hands
+      // Any failures with git, we throw up our hands
     }
   }
 } catch (ignored) {
-  // no git repo
+  // No git repo
 }
 
 console.log(
   `cbor v${cborPkg.version}${branch} (${opts.type} output from typing 0x00)`
 )
 
-// extracted from node source
+// Extracted from node source
 function stylizeWithColor(str, styleType) {
   if (COLOR) {
     const style = util.inspect.styles[styleType]
@@ -89,7 +90,7 @@ function stylizeWithColor(str, styleType) {
   return str
 }
 
-// wrapper that removes quotes and colorizes from the results of certain
+// Wrapper that removes quotes and colorizes from the results of certain
 // operations
 class PlainResults {
   constructor(str) {
@@ -98,9 +99,9 @@ class PlainResults {
 
   [util.inspect.custom](depth, options) {
     if (typeof this.str === 'string') {
-      const m = this.str.match(/(.*)(0x[0-9a-f]+)\n$/msi)
+      const m = this.str.match(/(?<pre>.*)(?<hex>0x[0-9a-f]+)\n$/msi)
       if (m) {
-        return `${m[1]}${options.stylize(m[2], 'special')}`
+        return `${m.groups.pre}${options.stylize(m.groups.hex, 'special')}`
       }
     }
     return this.str
@@ -110,11 +111,11 @@ class PlainResults {
 util.inspect.defaultOptions.compact = false
 const repl = require('repl')
 const cborRepl = repl.start({
-  prompt: stylizeWithColor('cbor', 'string') + '> ',
-  ignoreUndefined: true
+  prompt: `${stylizeWithColor('cbor', 'string')}> `,
+  ignoreUndefined: true,
 })
 
-// import everything from the cbor package into the top level,
+// Import everything from the cbor package into the top level,
 // and gussy up a few of them
 for (const [k, v] of Object.entries(cbor)) {
   cborRepl.context[k] = v
@@ -140,7 +141,7 @@ cborRepl.eval = (cmd, context, filename, callback) => {
   if (m) {
     switch (opts.type) {
       case 'diagnose':
-        cbor.diagnose(m[1], (er, txt) => {
+        cbor.diagnose(m.groups.hex, (er, txt) => {
           if (er) {
             callback(er)
           } else {
@@ -149,7 +150,7 @@ cborRepl.eval = (cmd, context, filename, callback) => {
         })
         return
       case 'comment':
-        cbor.comment(m[1], (er, txt) => {
+        cbor.comment(m.groups.hex, (er, txt) => {
           if (er) {
             callback(er)
           } else {
@@ -158,7 +159,7 @@ cborRepl.eval = (cmd, context, filename, callback) => {
         })
         return
       case 'javascript':
-        cbor.decodeFirst(m[1], (er, o) => {
+        cbor.decodeFirst(m.groups.hex, (er, o) => {
           if (er) {
             callback(er)
           } else {
@@ -169,7 +170,7 @@ cborRepl.eval = (cmd, context, filename, callback) => {
     }
   }
   originalEval(cmd, context, filename, (er, output) => {
-    // all bare promises just delay the results.  This probably
+    // All bare promises just delay the results.  This probably
     // would be bad if this was a system where Promises might last a
     // long time; the command line would lock up while waiting.
     if (!er && (output instanceof Promise)) {
@@ -189,7 +190,7 @@ cborRepl.writer = output => {
       // Hey!  Let's encode all results as CBOR for fun.
       const buf = cbor.encodeCanonical(output)
       str += stylizeWithColor(
-        '\n0x' + buf.toString('hex'),
+        `\n0x${buf.toString('hex')}`,
         'special'
       )
     } catch (ignored) {

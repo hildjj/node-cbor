@@ -79,18 +79,18 @@ class Commented extends stream.Transform {
       depth = 1,
       max_depth = 10,
       no_summary = false,
-      // decoder options
+      // Decoder options
       tags = {},
       preferWeb,
       encoding,
-      // stream.Transform options
+      // Stream.Transform options
       ...superOpts
     } = options
 
     super({
       ...superOpts,
       readableObjectMode: false,
-      writableObjectMode: false
+      writableObjectMode: false,
     })
 
     this.depth = depth
@@ -104,7 +104,7 @@ class Commented extends stream.Transform {
       tags,
       max_depth,
       preferWeb,
-      encoding
+      encoding,
     })
     this.parser.on('value', this._on_value.bind(this))
     this.parser.on('start', this._on_start.bind(this))
@@ -239,7 +239,7 @@ class Commented extends stream.Transform {
         }
         break
     }
-    return this.push(desc + ' next ' + len + ' byte' + (plural(len)) + '\n')
+    return this.push(`${desc} next ${len} byte${plural(len)}\n`)
   }
 
   /**
@@ -251,13 +251,13 @@ class Commented extends stream.Transform {
     this.depth++
     switch (mt) {
       case MT.BYTE_STRING:
-        desc = 'Bytes, length: ' + tag
+        desc = `Bytes, length: ${tag}`
         break
       case MT.UTF8_STRING:
-        desc = 'String, length: ' + (tag.toString())
+        desc = `String, length: ${tag.toString()}`
         break
     }
-    return this.push(desc + '\n')
+    return this.push(`${desc}\n`)
   }
 
   /**

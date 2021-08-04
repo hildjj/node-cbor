@@ -5,7 +5,7 @@ const cbor = require(cbor_src)
 const test = require('ava')
 
 test('reset', t => {
-  cbor.Encoder.SEMANTIC_TYPES['UNKNOWN_TYPE'] = () => {}
+  cbor.Encoder.SEMANTIC_TYPES.UNKNOWN_TYPE = () => null
   cbor.reset()
-  t.is(cbor.Encoder.SEMANTIC_TYPES['UNKNOWN_TYPE'], undefined)
+  t.is(cbor.Encoder.SEMANTIC_TYPES.UNKNOWN_TYPE, undefined)
 })

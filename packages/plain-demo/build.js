@@ -9,7 +9,7 @@ const dist = path.join(__dirname, 'dist')
 try {
   fs.rmSync(dist, {
     recursive: true,
-    force: true
+    force: true,
   })
 } catch (ignored) {
   console.warn(`Warning: could not delete "${dist}"`)
@@ -25,16 +25,17 @@ try {
   console.warn(`Warning: could not create "${dist}"`)
 }
 
+// eslint-disable-next-line prefer-named-capture-group
 const script = /<script\s+src="([^'"/]+)"/g
 for (const s of fs.readdirSync(src)) {
   const srcFile = path.join(src, s)
   let copy = true
   switch (path.extname(s)) {
     case '.html': {
-      // find all of the scripts that we need
+      // Find all of the scripts that we need
       const html = fs.readFileSync(srcFile, 'utf8')
       let match = null
-      while (match = script.exec(html)) {
+      while ((match = script.exec(html))) {
         needed.add(match[1])
         copy = false
         transform.add(s)
@@ -42,7 +43,7 @@ for (const s of fs.readdirSync(src)) {
       break
     }
     case '.js':
-      // keep track of the ones we already have
+      // Keep track of the ones we already have
       have.add(s)
       break
   }
@@ -53,7 +54,7 @@ for (const s of fs.readdirSync(src)) {
 }
 
 const scripts = new Set([...needed].filter(x => !have.has(x)))
-// find the scripts we don't have yet.  Assume each one is
+// Find the scripts we don't have yet.  Assume each one is
 // a single file.
 const scriptNames = {}
 for (const s of scripts) {

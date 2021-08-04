@@ -6,8 +6,9 @@ const path = require('path')
 const assert = require('assert')
 const fs = require('fs')
 
-const TOP = 'file://' +
-  path.resolve(__dirname, '..', '..', 'docs', 'example', 'index.html')
+const TOP = `file://${path.resolve(
+  __dirname, '..', '..', 'docs', 'example', 'index.html'
+)}`
 
 let executablePath = process.env.PUPPETEER_EXECUTABLE_PATH
 if (!executablePath && (process.platform === 'darwin')) {
@@ -34,7 +35,7 @@ async function main() {
     executablePath,
     slowMo: 100,
     headless: false,
-    defaultViewport: null
+    defaultViewport: null,
   })
   const pages = await browser.pages()
   const page = (pages.length > 0) ? pages[0] : await browser.newPage()
@@ -49,7 +50,7 @@ async function main() {
         LOG: text => text,
         ERR: chalk.red,
         WAR: chalk.yellow,
-        INF: chalk.cyan
+        INF: chalk.cyan,
       }
       const color = colors[type] || chalk.blue
       console.log(color(`${type} ${txt}`))
@@ -66,7 +67,7 @@ async function main() {
   for (let i = 0; i < len; i++) {
     await Promise.all([
       page.waitForNavigation({waitUntil: 'load'}),
-      page.click(`li:nth-child(${i + 1}) a`)
+      page.click(`li:nth-child(${i + 1}) a`),
     ])
     await page.$eval('#input-text', input => {
       input.value = 'c482382cc254056e5e99b1be81b6eefa3964490ac18c69399361'

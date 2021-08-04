@@ -29,7 +29,9 @@ test('parseCBORfloat', t => {
   t.is(utils.parseCBORfloat(bin('0 00000 0000000000')), 0)
   t.is(utils.parseCBORfloat(bin('0 00000000 00000000000000000000000')),
     0)
-  t.is(utils.parseCBORfloat(bin('0 00000000000 0000000000000000000000000000000000000000000000000000')), 0) // eslint-disable-line max-len
+  t.is(utils.parseCBORfloat(bin(
+    '0 00000000000 0000000000000000000000000000000000000000000000000000'
+  )), 0)
   t.throws(() => {
     utils.parseCBORfloat(hex('ff'))
   })

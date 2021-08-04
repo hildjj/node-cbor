@@ -64,14 +64,14 @@ test('encode', t => {
     [0, 'hi'],
     [-1, 'neg'],
     [[0, 1], 'array'],
-    [{a: 1, b: 2}, 'map']
+    [{a: 1, b: 2}, 'map'],
   ])
   const buf = cbor.encode(m)
   t.is(buf.toString('hex'),
-    'a6f4f501636f6e650062686920636e6567820001656172726179a2616101616202636d6170') // eslint-disable-line max-len
+    'a6f4f501636f6e650062686920636e6567820001656172726179a2616101616202636d6170')
   const bufCanon = cbor.encodeCanonical(m)
   t.is(bufCanon.toString('hex'),
-    'a60062686901636f6e6520636e6567820001656172726179a2616101616202636d6170f4f5') // eslint-disable-line max-len
+    'a60062686901636f6e6520636e6567820001656172726179a2616101616202636d6170f4f5')
 })
 
 test('encodefail', t => {
@@ -81,7 +81,7 @@ test('encodefail', t => {
     [0, 'hi'],
     [-1, 'neg'],
     [[0, 1], 'array'],
-    [{a: 1, b: 2}, 'map']
+    [{a: 1, b: 2}, 'map'],
   ])
   cases.EncodeFailer.tryAll(t, m)
   cases.EncodeFailer.tryAll(t, m, true)

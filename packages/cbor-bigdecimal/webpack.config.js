@@ -9,14 +9,14 @@ module.exports = {
     filename: 'cbor-bigdecimal.js',
     library: 'cborBigDecimal',
     libraryTarget: 'umd',
-    globalObject: 'this'
+    globalObject: 'this',
   },
   externals: {
     'bignumber.js': {
       root: 'BigNumber',
       commonjs: 'bignumber.js',
-      commonjs2: 'bignumber.js'
-    }
+      commonjs2: 'bignumber.js',
+    },
   },
-  target: 'web'
+  target: 'web',
 }

@@ -5,7 +5,7 @@ const cbor = require(cbor_src)
 const test = require('ava')
 const pEvent = require('p-event')
 const cases = require('./cases')
-// use mangled versions
+// Use mangled versions
 const Buffer = cbor.encode(0).constructor
 const NoFilter = new cbor.Commented().all.constructor
 
@@ -30,29 +30,31 @@ test('undefined', t => {
 test('badFunc', t => {
   t.throws(() => cbor.encode(() => 'hi'))
   t.throws(() => cbor.encode(Symbol('foo')))
-  function foo() {}
+  function foo() {
+    return null
+  }
   foo.toString = null
   t.throws(() => cbor.encode(foo))
 })
 
 test('addSemanticType', t => {
-  // before the tag, this is an innocuous object:
+  // Before the tag, this is an innocuous object:
   // {"value": "foo"}
   const tc = new cases.TempClass('foo')
   delete (cases.TempClass.prototype.encodeCBOR)
   t.is(cbor.Encoder.encode(tc).toString('hex'), 'a16576616c756563666f6f')
   const gen = new cbor.Encoder({
-    genTypes: [cases.TempClass, cases.TempClass.toCBOR]
+    genTypes: [cases.TempClass, cases.TempClass.toCBOR],
   })
   gen.write(tc)
   t.is(gen.read().toString('hex'), 'd9fffe63666f6f')
 
   function hexPackBuffer(gen2, obj, bufs) {
-    gen2.write('0x' + obj.toString('hex'))
-  // intentionally don't return
+    gen2.write(`0x${obj.toString('hex')}`)
+  // Intentionally don't return
   }
 
-  // replace Buffer serializer with hex strings
+  // Replace Buffer serializer with hex strings
   gen.addSemanticType(Buffer, hexPackBuffer)
   gen.write(Buffer.from('010203', 'hex'))
 
@@ -62,11 +64,11 @@ test('addSemanticType', t => {
   t.is(gen.addSemanticType(Buffer), hexPackBuffer)
   t.is(gen.addSemanticType(Buffer), undefined)
 
-  // as object
+  // As object
   const gen2 = new cbor.Encoder({
     genTypes: {
-      TempClass: cases.TempClass.toCBOR
-    }
+      TempClass: cases.TempClass.toCBOR,
+    },
   })
   gen2.write(tc)
   t.is(gen2.read().toString('hex'), 'd9fffe63666f6f')
@@ -105,7 +107,7 @@ test('pushFails', t => {
     const o = {
       encodeCBOR() {
         return false
-      }
+      },
     }
     enc.on('error', e => {
       t.truthy(e instanceof Error)
@@ -132,7 +134,7 @@ test('canonical', t => {
   enc.pipe(bs)
   enc.write(cases.goodMap)
   t.is(bs.read().toString('hex'),
-    'ad0063626172613063666f6f616101616201626161026262620263616161036362626203806b656d7074792061727261798101656172726179a069656d707479206f626aa1613102636f626af6646e756c6c') // eslint-disable-line max-len
+    'ad0063626172613063666f6f616101616201626161026262620263616161036362626203806b656d7074792061727261798101656172726179a069656d707479206f626aa1613102636f626af6646e756c6c')
   enc.write({aa: 2, b: 1})
   t.is(bs.read().toString('hex'),
     'a261620162616102')
@@ -172,7 +174,7 @@ test('detect loops', t => {
 
   const can = new cbor.Encoder({ detectLoops: true, canonical: true})
   const c = { d: null }
-  // this isn't a loop.
+  // This isn't a loop.
   const m = new Map([[c, c]])
   can.write(m)
 
@@ -316,21 +318,21 @@ test('encoding "undefined"', t => {
   t.is(cbor.encodeOne(undefined, {encodeUndefined: null}).toString('hex'), 'f6')
   const undefStr = cbor.encode('undefined')
   t.is(cbor.encodeOne(undefined, {
-    encodeUndefined: undefStr
+    encodeUndefined: undefStr,
   }).toString('hex'), '69756e646566696e6564')
   t.throws(() => cbor.encodeOne(undefined, {encodeUndefined: () => {
     throw new Error('ha')
   }}))
   t.is(cbor.encodeOne(undefined, {
-    encodeUndefined: () => undefStr
+    encodeUndefined: () => undefStr,
   }).toString('hex'), '4a69756e646566696e6564')
   const m = new Map([[undefined, 1]])
   t.throws(() => cbor.encodeOne(m, {
-    disallowUndefinedKeys: true
+    disallowUndefinedKeys: true,
   }))
   t.throws(() => cbor.encodeOne(m, {
     disallowUndefinedKeys: true,
-    canonical: true
+    canonical: true,
   }))
 })
 
@@ -382,13 +384,13 @@ test('indefinite', t => {
 
   const o = {
     a: true,
-    encodeCBOR: cbor.Encoder.encodeIndefinite
+    encodeCBOR: cbor.Encoder.encodeIndefinite,
   }
   t.is(cbor.encodeOne(o, { detectLoops: true }).toString('hex'), 'bf6161f5ff')
 })
 
 test('Buffers', t => {
-  // sanity checks for mangled library
+  // Sanity checks for mangled library
   const b = Buffer.from('0102', 'hex')
   t.is(b.toString('hex'), '0102')
   t.deepEqual(b, Buffer.from('0102', 'hex'))

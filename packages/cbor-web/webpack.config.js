@@ -9,19 +9,19 @@ module.exports = {
     filename: 'cbor.js',
     library: 'cbor',
     libraryTarget: 'umd',
-    globalObject: 'this'
+    globalObject: 'this',
   },
   target: 'web',
   resolve: {
     symlinks: false,
     fallback: {
-      stream: 'stream-browserify'
-    }
+      stream: 'stream-browserify',
+    },
   },
   plugins: [
     new webpack.ProvidePlugin({
-      process: 'process/browser'
-    })
-  ]
+      process: 'process/browser',
+    }),
+  ],
 
 }

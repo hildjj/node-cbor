@@ -6,7 +6,7 @@ const pEvent = require('p-event')
 const util = require('util')
 const cases = require('./cases')
 const pdiagnose = util.promisify(cbor.diagnose)
-// use mangled versions
+// Use mangled versions
 const Buffer = cbor.encode(0).constructor
 const NoFilter = new cbor.Commented().all.constructor
 
@@ -14,7 +14,7 @@ function testAll(t, list) {
   t.plan(list.length)
   return Promise.all(
     list.map(
-      c => cbor.diagnose(cases.toBuffer(c)).then(d => t.is(d, c[1] + '\n'))
+      c => cbor.diagnose(cases.toBuffer(c)).then(d => t.is(d, `${c[1]}\n`))
     )
   )
 }
@@ -43,7 +43,7 @@ test('construct', async t => {
 
 test('stream', async t => {
   const dt = new cbor.Diagnose({
-    separator: '-'
+    separator: '-',
   })
   const bs = new NoFilter()
   dt.pipe(bs)
@@ -74,7 +74,7 @@ test('async', async t => {
 test('stream errors', async t => {
   const d = await cbor.diagnose('01', {
     encoding: 'hex',
-    stream_errors: true
+    stream_errors: true,
   })
   t.is(d, '1\n')
 })

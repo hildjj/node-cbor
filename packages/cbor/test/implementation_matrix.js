@@ -20,7 +20,7 @@ const all = [
   ['Float64', 3002399751580330.5, 'fb4325555555555555'],
   // ['Indefinite length array/map', [], '9fff'],
   // ['Indefinite length string', 'streaming', '7f657374726561646d696e67ff'],
-  ['Canonical CBOR', {b: 1, a: 2}, 'a2616102616201', true], // note: re-ordering
+  ['Canonical CBOR', {b: 1, a: 2}, 'a2616102616201', true], // Note: re-ordering
   ['Tag 0',
     new Date(1500000000000), // 2017-07-14T02:40:00.000Z
     'c07818323031372d30372d31345430323a34303a30302e3030305a',
@@ -33,7 +33,7 @@ const all = [
   ['Tag 21', 0, ''],
   ['Tag 22', 0, ''],
   ['Tag 23', 0, ''],
-  // this one is only useful in certain circumstances
+  // This one is only useful in certain circumstances
   ['Tag 24', 0, ''],
   ['Tag 32',
     new URL('https://mozilla.com/'),
@@ -42,7 +42,7 @@ const all = [
   ['Tag 34', 0, ''],
   ['Tag 35', /foo/, 'd82363666f6f'],
   ['Tag 36', 0, ''],
-  ['Tag 55799', 0, '']
+  ['Tag 55799', 0, ''],
 ]
 
 function deepEqual(actual, expected) {
@@ -62,7 +62,7 @@ function test(title, native, encoded, canonical, dateType) {
   if (encoded.length > 0) {
     const e = cbor.Encoder.encodeOne(native, {
       canonical,
-      dateType
+      dateType,
     })
     const d = cbor.decodeFirstSync(encoded)
     markdownOut(

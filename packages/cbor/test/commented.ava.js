@@ -6,7 +6,7 @@ const pEvent = require('p-event')
 const util = require('util')
 const cases = require('./cases')
 const streams = require('./streams')
-// use mangled version
+// Use mangled version
 const NoFilter = new cbor.Commented().all.constructor
 const pcomment = util.promisify(cbor.comment)
 
@@ -15,7 +15,7 @@ function testAll(t, list) {
   return Promise.all(
     list.map(
       c => cbor.comment(cases.toBuffer(c))
-        .then(d => t.is('\n' + d, c[2] + '\n'))
+        .then(d => t.is(`\n${d}`, `${c[2]}\n`))
     )
   )
 }
@@ -61,7 +61,7 @@ test('stream', async t => {
   h.pipe(parser)
 
   await pEvent(parser, 'end')
-  t.is('\n' + bs.toString('utf8'), `
+  t.is(bs.toString('utf8'), `\
   61                -- String, length: 1
     61              -- "a"
 0x6161
@@ -81,7 +81,7 @@ test('inputs', async t => {
     'mB4AAQIDBAUGBwgJAAECAwQFBgcICQABAgMEBQYHCAk=',
     'base64'
   )
-  t.is('\n' + c, `
+  t.is(c, `\
   98                -- Array, length next 1 byte
     1e              -- Array, 30 items
       00            -- [0], 0
@@ -118,15 +118,14 @@ test('inputs', async t => {
 `)
   c = await cbor.comment('x\u001e012345678901234567890123456789',
     {encoding: 'utf8'})
-  /* eslint-disable max-len */
-  t.is('\n' + c, `
+  t.is(c, `\
   78                -- String, length next 1 byte
     1e              -- String, length: 30
       303132333435363738393031323334353637383930313233343536373839 -- "012345678901234567890123456789"
 0x781e303132333435363738393031323334353637383930313233343536373839
 `)
   c = await cbor.comment('381d', {max_depth: 12})
-  t.is('\n' + c, `
+  t.is(c, `\
   38                    -- Negative number, next 1 byte
     1d                  -- -30
 0x381d
@@ -134,11 +133,13 @@ test('inputs', async t => {
 })
 
 test('options', t => {
-  function newTag24() {}
+  function newTag24() {
+    return null
+  }
   const c = new cbor.Commented({
     tags: {
-      24: newTag24
-    }
+      24: newTag24,
+    },
   })
   t.is(c.parser.tags[24], newTag24)
 })

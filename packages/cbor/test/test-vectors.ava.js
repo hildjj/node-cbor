@@ -30,18 +30,19 @@ use command \`git submodule update --init\` to load test-vectors`)
   }
 
   // HACK: don't lose data when JSON parsing
-  vecStr = vecStr.replace(/"decoded":\s*(-?\d+(\.\d+)?(e[+-]\d+)?)\r?\n/g,
+  vecStr = vecStr.replace(
+    /"decoded":\s*(?<num>-?\d+(?:\.\d+)?(?:e[+-]\d+)?)\r?\n/g,
     `"decoded": {
       "___TYPE___": "number",
-      "___VALUE___": "$1"
-    }
-`)
+      "___VALUE___": "$<num>"
+    }`
+  )
   vectors = JSON.parse(vecStr, (key, value) => {
     if (!value) {
       return value
     }
-    if (value['___TYPE___'] === 'number') {
-      const v = value['___VALUE___']
+    if (value.___TYPE___ === 'number') {
+      const v = value.___VALUE___
       const f = Number.parseFloat(v)
       try {
         const bi = BigInt(v)
@@ -82,7 +83,7 @@ test('vectors', t => {
     const encoded = cbor.encodeCanonical(decoded)
     const redecoded = cbor.decode(encoded)
 
-    t.truthy(v.hasOwnProperty('cbor'))
+    t.truthy(Object.prototype.hasOwnProperty.call(v, 'cbor'))
     t.deepEqual(
       Buffer.from(v.cbor, 'base64'),
       buffer,
@@ -99,15 +100,15 @@ test('vectors', t => {
       `round trip error: ${v.hex} -> ${encoded.toString('hex')}`
     )
 
-    if (v.hasOwnProperty('diagnostic')) {
+    if (Object.prototype.hasOwnProperty.call(v, 'diagnostic')) {
       cbor.diagnose(buffer)
         .then(d => t.deepEqual(
-          d.trim().replace(/_\d+($|\))/, '$1'),
+          d.trim().replace(/_\d+(?<end>$|\))/, '$<end>'),
           v.diagnostic
         ))
     }
 
-    if (v.hasOwnProperty('decoded')) {
+    if (Object.prototype.hasOwnProperty.call(v, 'decoded')) {
       t.deepEqual(decoded, v.decoded, `Hex: "${v.hex}"`)
 
       if (v.roundtrip) {
@@ -118,7 +119,7 @@ test('vectors', t => {
           'f93c00',
           'f97bff',
           'fa47c35000',
-          'f9c400'
+          'f9c400',
         ].indexOf(v.hex) === -1) {
           t.deepEqual(encoded.toString('hex'), v.hex)
         } else {

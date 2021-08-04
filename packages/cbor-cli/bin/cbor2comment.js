@@ -26,8 +26,8 @@ if (argv.length === 0) {
 
 utils.streamFiles(argv, () => {
   const c = new cbor.Commented({
-    // backwards-compat
-    max_depth: numTabs
+    // Backwards-compat
+    max_depth: numTabs,
   })
   c.pipe(process.stdout)
   return c

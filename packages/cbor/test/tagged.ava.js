@@ -15,17 +15,9 @@ test('create', t => {
 })
 
 test('edges', t => {
-  t.throws(() => {
-    new cbor.Tagged(-11, 'one')
-  })
-
-  t.throws(() => {
-    new cbor.Tagged(1.1, 'one')
-  })
-
-  t.throws(() => {
-    new cbor.Tagged('zero', 'one')
-  })
+  t.throws(() => new cbor.Tagged(-11, 'one'))
+  t.throws(() => new cbor.Tagged(1.1, 'one'))
+  t.throws(() => new cbor.Tagged('zero', 'one'))
 })
 
 test('convert', t => {
@@ -42,7 +34,7 @@ test('tag 21', t => {
   t.is(JSON.stringify(tag), '{"tag":21,"value":[{"a":"Zg"}]}')
 
   tag = new cbor.Tagged(21, [
-    {a: new cbor.Tagged(22, Buffer.from('f')).convert()}
+    {a: new cbor.Tagged(22, Buffer.from('f')).convert()},
   ]).convert()
   t.is(JSON.stringify(tag), '{"tag":21,"value":[{"a":"Zg=="}]}')
   tag = new cbor.Tagged(21, 12).convert()
@@ -110,7 +102,7 @@ test('converters', t => {
   let res = new cbor.Tagged(1, 1).convert({
     1() {
       throw new Error()
-    }
+    },
   })
   t.truthy(res.err instanceof Error)
   res = new cbor.Tagged(1, 1).convert({
@@ -118,7 +110,7 @@ test('converters', t => {
       const e = new Error()
       delete e.message
       throw e
-    }
+    },
   })
   t.truthy(res.err instanceof Error)
 })
@@ -136,7 +128,7 @@ test('Typed Arrays', t => {
   tag = new cbor.Tagged(90, Buffer.from('000100020003', 'hex'))
   t.throws(() => _toTypedArray(tag.value, tag))
 
-  // endian
+  // Endian
   tag = new cbor.Tagged(65, Buffer.from('000100020003', 'hex'))
   t.deepEqual(_toTypedArray(tag.value, tag), new Uint16Array([1, 2, 3]))
 

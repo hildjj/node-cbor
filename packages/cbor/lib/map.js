@@ -135,7 +135,7 @@ class CborMap extends Map {
    * @param {any} thisArg Value to use as this when executing callback
    */
   forEach(fun, thisArg) {
-    if (typeof(fun) !== 'function') {
+    if (typeof fun !== 'function') {
       throw new TypeError('Must be function')
     }
     for (const kv of super.entries()) {

@@ -25,6 +25,7 @@ export namespace TAG {
     const BASE64: number;
     const REGEXP: number;
     const MIME: number;
+    const SET: number;
 }
 export type TAG = number;
 export namespace NUMBYTES {

@@ -17,7 +17,7 @@ exports.utf8 = buf => td.decode(buf)
 exports.utf8.checksUTF8 = true
 
 function isReadable(s) {
-  // is this a readable stream?  In the webpack version, instanceof isn't
+  // Is this a readable stream?  In the webpack version, instanceof isn't
   // working correctly.
   if (s instanceof stream.Readable) {
     return true
@@ -63,12 +63,12 @@ exports.parseCBORint = function parseCBORint(ai, buf) {
       return (f * SHIFT32) + g
     }
     default:
-      throw new Error('Invalid additional info for int: ' + ai)
+      throw new Error(`Invalid additional info for int: ${ai}`)
   }
 }
 
 exports.writeHalf = function writeHalf(buf, half) {
-  // assume 0, -0, NaN, Infinity, and -Infinity have already been caught
+  // Assume 0, -0, NaN, Infinity, and -Infinity have already been caught
 
   // HACK: everyone settle in.  This isn't going to be pretty.
   // Translate cn-cbor's C code (from Carsten Borman):
@@ -85,7 +85,7 @@ exports.writeHalf = function writeHalf(buf, half) {
   u32.writeFloatBE(half, 0)
   const u = u32.readUInt32BE(0)
 
-  // if ((u32.u & 0x1FFF) == 0) { /* worth trying half */
+  // If ((u32.u & 0x1FFF) == 0) { /* worth trying half */
 
   // hildjj: If the lower 13 bits aren't 0,
   // we will lose precision in the conversion.
@@ -94,18 +94,18 @@ exports.writeHalf = function writeHalf(buf, half) {
     return false
   }
 
+  // Sign, exponent, mantissa
   //   int s16 = (u32.u >> 16) & 0x8000;
   //   int exp = (u32.u >> 23) & 0xff;
   //   int mant = u32.u & 0x7fffff;
 
-  let s16 = (u >> 16) & 0x8000 // top bit is sign
-  const exp = (u >> 23) & 0xff // then 5 bits of exponent
+  let s16 = (u >> 16) & 0x8000 // Top bit is sign
+  const exp = (u >> 23) & 0xff // Then 5 bits of exponent
   const mant = u & 0x7fffff
 
+  // Hildjj: zeros already handled.  Assert if you don't believe me.
   //   if (exp == 0 && mant == 0)
   //     ;              /* 0.0, -0.0 */
-
-  // hildjj: zeros already handled.  Assert if you don't believe me.
 
   //   else if (exp >= 113 && exp <= 142) /* normalized */
   //     s16 += ((exp - 112) << 10) + (mant >> 13);
@@ -113,6 +113,7 @@ exports.writeHalf = function writeHalf(buf, half) {
   if ((exp >= 113) && (exp <= 142)) {
     s16 += ((exp - 112) << 10) + (mant >> 13)
   } else if ((exp >= 103) && (exp < 113)) {
+    // Denormalized numbers
     //   else if (exp >= 103 && exp < 113) { /* denorm, exp16 = 0 */
     //     if (mant & ((1 << (126 - exp)) - 1))
     //       goto float32;         /* loss of precision */
@@ -134,6 +135,7 @@ exports.writeHalf = function writeHalf(buf, half) {
     return false
   }
 
+  // Done
   //   ensure_writable(3);
   //   u16 = s16;
   //   be16 = hton16p((const uint8_t*)&u16);
@@ -148,9 +150,9 @@ exports.parseHalf = function parseHalf(buf) {
   if (!exp) {
     return sign * 5.9604644775390625e-8 * mant
   } else if (exp === 0x1f) {
-    return sign * (mant ? 0 / 0 : 2e308)
+    return sign * (mant ? NaN : Infinity)
   }
-  return sign * Math.pow(2, exp - 25) * (1024 + mant)
+  return sign * (2 ** (exp - 25)) * (1024 + mant)
 }
 
 exports.parseCBORfloat = function parseCBORfloat(buf) {
@@ -162,7 +164,7 @@ exports.parseCBORfloat = function parseCBORfloat(buf) {
     case 8:
       return buf.readDoubleBE(0)
     default:
-      throw new Error('Invalid float size: ' + buf.length)
+      throw new Error(`Invalid float size: ${buf.length}`)
   }
 }
 
@@ -194,7 +196,7 @@ exports.arrayEqual = function arrayEqual(a, b) {
 }
 
 exports.bufferToBigInt = function bufferToBigInt(buf) {
-  return BigInt('0x' + buf.toString('hex'))
+  return BigInt(`0x${buf.toString('hex')}`)
 }
 
 exports.cborValueToString = function cborValueToString(val, float_bytes = -1) {
@@ -208,20 +210,20 @@ exports.cborValueToString = function cborValueToString(val, float_bytes = -1) {
         case SYMS.BREAK:
           return 'BREAK'
       }
-      // impossible in node 10
+      // Impossible in node 10
       /* istanbul ignore if */
       if (val.description) {
         return val.description
       }
-      // on node10, Symbol doesn't have description.  Parse it out of the
+      // On node10, Symbol doesn't have description.  Parse it out of the
       // toString value, which looks like `Symbol(foo)`.
       const s = val.toString()
-      const m = s.match(/^Symbol\((.*)\)/)
+      const m = s.match(/^Symbol\((?<name>.*)\)/)
       /* istanbul ignore if */
-      if (m && m[1]) {
-        // impossible in node 12+
+      if (m && m.groups.name) {
+        // Impossible in node 12+
         /* istanbul ignore next */
-        return m[1]
+        return m.groups.name
       }
       return 'Symbol'
     }
@@ -231,10 +233,10 @@ exports.cborValueToString = function cborValueToString(val, float_bytes = -1) {
       return val.toString()
     case 'number': {
       const s = Object.is(val, -0) ? '-0' : String(val)
-      return (float_bytes > 0) ? s + '_' + float_bytes : s
+      return (float_bytes > 0) ? `${s}_${float_bytes}` : s
     }
     case 'object': {
-      // null should be caught above
+      // A null should be caught above
       const buf = exports.bufferishToBuffer(val)
       if (buf) {
         const hex = buf.toString('hex')
@@ -256,7 +258,7 @@ exports.cborValueToString = function cborValueToString(val, float_bytes = -1) {
 
 exports.guessEncoding = function guessEncoding(input, encoding) {
   if (typeof input === 'string') {
-    return new NoFilter(input, (encoding != null) ? encoding : 'hex')
+    return new NoFilter(input, (encoding == null) ? 'hex' : encoding)
   }
   const buf = exports.bufferishToBuffer(input)
   if (buf) {
@@ -271,7 +273,7 @@ exports.guessEncoding = function guessEncoding(input, encoding) {
 const B64URL_SWAPS = {
   '=': '',
   '+': '-',
-  '/': '_'
+  '/': '_',
 }
 
 /**

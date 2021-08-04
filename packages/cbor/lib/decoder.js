@@ -135,8 +135,7 @@ class Decoder extends BinaryParseStream {
 
     if (extendedResults) {
       this.bs.on('read', this._onRead.bind(this))
-      /** @type {NoFilter} */
-      this.valueBytes = new NoFilter()
+      this.valueBytes = /** @type {NoFilter} */ (new NoFilter())
     }
   }
 
@@ -193,7 +192,7 @@ class Decoder extends BinaryParseStream {
     const c = new Decoder(opts)
     const s = utils.guessEncoding(input, encoding)
 
-    // for/of doesn't work when you need to call next() with a value
+    // For/of doesn't work when you need to call next() with a value
     // generator created by parser will be "done" after each CBOR entity
     // parser will yield numbers of bytes that it wants
     const parser = c._parse()
@@ -212,7 +211,10 @@ class Decoder extends BinaryParseStream {
     }
 
     let val = null
-    if (!c.extendedResults) {
+    if (c.extendedResults) {
+      val = state.value
+      val.unused = s.read()
+    } else {
       val = Decoder.nullcheck(state.value)
       if (s.length > 0) {
         const nextByte = s.read(1)
@@ -220,9 +222,6 @@ class Decoder extends BinaryParseStream {
         s.unshift(nextByte)
         throw new UnexpectedDataError(nextByte[0], val)
       }
-    } else {
-      val = state.value
-      val.unused = s.read()
     }
     return val
   }
@@ -292,8 +291,7 @@ class Decoder extends BinaryParseStream {
     const {encoding = 'hex', required = false, ...opts} = options
 
     const c = new Decoder(opts)
-    /** @type {any} */
-    let v = NOT_FOUND
+    let v = /** @type {any} */ (NOT_FOUND)
     const s = utils.guessEncoding(input, encoding)
     const p = new Promise((resolve, reject) => {
       c.on('data', val => {
@@ -306,6 +304,8 @@ class Decoder extends BinaryParseStream {
           return resolve(v)
         }
         if (v !== NOT_FOUND) {
+          // Typescript work-around
+          // eslint-disable-next-line dot-notation
           er['value'] = v
         }
         v = ERROR
@@ -406,7 +406,7 @@ class Decoder extends BinaryParseStream {
 
     while (true) {
       if ((this.max_depth >= 0) && (depth > this.max_depth)) {
-        throw new Error('Maximum depth ' + this.max_depth + ' exceeded')
+        throw new Error(`Maximum depth ${this.max_depth} exceeded`)
       }
 
       const [octet] = yield 1
@@ -416,8 +416,8 @@ class Decoder extends BinaryParseStream {
       }
       const mt = octet >> 5
       const ai = octet & 0x1f
-      const parent_major = (parent != null) ? parent[MAJOR] : undefined
-      const parent_length = (parent != null) ? parent.length : undefined
+      const parent_major = (parent == null) ? undefined : parent[MAJOR]
+      const parent_length = (parent == null) ? undefined : parent.length
 
       switch (ai) {
         case NUMBYTES.ONE:
@@ -440,7 +440,7 @@ class Decoder extends BinaryParseStream {
         case 29:
         case 30:
           this.running = false
-          throw new Error('Additional info not implemented: ' + ai)
+          throw new Error(`Additional info not implemented: ${ai}`)
         case NUMBYTES.INDEFINITE:
           switch (mt) {
             case MT.POS_INT:
@@ -455,7 +455,7 @@ class Decoder extends BinaryParseStream {
       }
       switch (mt) {
         case MT.POS_INT:
-          // val already decoded
+          // Val already decoded
           break
         case MT.NEG_INT:
           if (val === Number.MAX_SAFE_INTEGER) {
@@ -567,7 +567,7 @@ class Decoder extends BinaryParseStream {
               let allstrings = true
 
               if ((parent.length % 2) !== 0) {
-                throw new Error('Invalid map length: ' + parent.length)
+                throw new Error(`Invalid map length: ${parent.length}`)
               }
               for (let i = 0, len = parent.length; i < len; i += 2) {
                 if ((typeof parent[i] !== 'string') ||
@@ -597,7 +597,7 @@ class Decoder extends BinaryParseStream {
             }
           }
         } else /* istanbul ignore else */ if (parent instanceof NoFilter) {
-          // only parent types are Array and NoFilter for (Array/Map) and
+          // Only parent types are Array and NoFilter for (Array/Map) and
           // (bytes/string) respectively.
           switch (parent[MAJOR]) {
             case MT.BYTE_STRING:
@@ -628,7 +628,7 @@ class Decoder extends BinaryParseStream {
           const ret = {
             value: Decoder.nullcheck(val),
             bytes,
-            length: bytes.length
+            length: bytes.length,
           }
 
           this.valueBytes = new NoFilter()

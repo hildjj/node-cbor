@@ -28,7 +28,7 @@ utils.streamFiles(argv, () => {
     try {
       d.write(JSON.parse(b))
     } catch (e) {
-      e.message += ' for input ' + b.inspect()
+      e.message += ` for input ${b.inspect()}`
       throw e
     }
   })

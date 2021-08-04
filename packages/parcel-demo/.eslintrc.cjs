@@ -1,7 +1,8 @@
 module.exports = {
-  parserOptions: {
-    sourceType: 'module',
+  env: {
+    browser: true,
   },
+  parserOptions: { sourceType: 'module' },
   rules: {
     'node/no-unsupported-features/es-syntax': [
       'error',

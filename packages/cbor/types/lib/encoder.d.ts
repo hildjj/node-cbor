@@ -214,7 +214,7 @@ declare class Encoder extends stream.Transform {
     disallowUndefinedKeys: boolean;
     dateType: "string" | "number" | "float" | "int";
     collapseBigIntegers: boolean;
-    /** @type WeakSet? */
+    /** @type WeakSet<any>? */
     detectLoops: WeakSet<any> | null;
     omitUndefinedProperties: boolean;
     semanticTypes: {

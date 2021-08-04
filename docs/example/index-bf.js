@@ -2044,7 +2044,7 @@ const copy = document.getElementById('copy');
 function error(e) {
   copy.disabled = true;
   otxt.value = e.toString();
-} // convert any input to a buffer
+} // Convert any input to a buffer
 
 
 function input() {
@@ -2064,7 +2064,7 @@ function input() {
     default:
       throw new Error(`Unknown input: "${inp}"`);
   }
-} // convert a buffer to the desired output format
+} // Convert a buffer to the desired output format
 
 
 function output(buf, typ) {
@@ -2130,7 +2130,7 @@ ofmt.oninput = convert;
 ifmt.oninput = convert;
 
 copy.onclick = () => {
-  // copy output to input, and guess the new input format
+  // Copy output to input, and guess the new input format
   itxt.value = otxt.value;
   const sel = ofmt.selectedOptions[0].label;
 
@@ -2140,7 +2140,7 @@ copy.onclick = () => {
       break;
     }
   }
-}; // debounce
+}; // Debounce
 
 
 let timeout = null;
@@ -2151,7 +2151,7 @@ itxt.oninput = () => {
     timeout = null;
     convert();
   }, 300);
-}; // make sure that initial output is set
+}; // Make sure that initial output is set
 
 
 convert();

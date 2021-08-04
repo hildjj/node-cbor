@@ -110,18 +110,18 @@ class Diagnose extends stream.Transform {
     const {
       separator = '\n',
       stream_errors = false,
-      // decoder options
+      // Decoder options
       tags,
       max_depth,
       preferWeb,
       encoding,
-      // stream.Transform options
+      // Stream.Transform options
       ...superOpts
     } = options
     super({
       ...superOpts,
       readableObjectMode: false,
-      writableObjectMode: false
+      writableObjectMode: false,
     })
 
     this.float_bytes = -1
@@ -131,7 +131,7 @@ class Diagnose extends stream.Transform {
       tags,
       max_depth,
       preferWeb,
-      encoding
+      encoding,
     })
     this.parser.on('more-bytes', this._on_more.bind(this))
     this.parser.on('value', this._on_value.bind(this))
@@ -205,7 +205,7 @@ class Diagnose extends stream.Transform {
       this.float_bytes = {
         2: 1,
         4: 2,
-        8: 3
+        8: 3,
       }[len]
     }
   }

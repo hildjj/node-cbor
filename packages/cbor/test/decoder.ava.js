@@ -9,7 +9,7 @@ const cases = require('./cases')
 const streams = require('./streams')
 const BinaryParseStream = require('../vendor/binary-parse-stream')
 const pdecodeFirst = util.promisify(cbor.decodeFirst)
-// use mangled versions
+// Use mangled versions
 const Buffer = cbor.encode(0).constructor
 const NoFilter = new cbor.Commented().all.constructor
 
@@ -19,7 +19,7 @@ function testAll(t, list, opts) {
     list.map(
       c => cbor.decodeFirst(cases.toBuffer(c), opts)
         .then(d => {
-          if ((typeof(c[0]) === 'number') && isNaN(c[0])) {
+          if ((typeof c[0] === 'number') && isNaN(c[0])) {
             t.truthy(isNaN(d))
           } else {
             t.deepEqual(d, c[0], cases.toString(c))
@@ -72,12 +72,12 @@ test('decodeFirstSync', t => {
   t.throws(() => cbor.decode())
   t.throws(() => cbor.decode(''))
   t.throws(() => cbor.decode('63666f'))
-  t.throws(() => cbor.decodeFirstSync('0203')) // fixed #111
+  t.throws(() => cbor.decodeFirstSync('0203')) // Fixed #111
   t.throws(() => cbor.decode('01', 12))
 
   t.is(cbor.decode('01', null), 1)
 
-  // decodeFirstSync can take a ReadableStream as well.
+  // Decodefirstsync can take a ReadableStream as well.
   const nf = new NoFilter('010203', 'hex')
   try {
     cbor.decodeFirstSync(nf)
@@ -112,7 +112,7 @@ test('add_tag', async t => {
     throw new Error('Invalid tag')
   }
   const d = new cbor.Decoder({
-    tags: {0: replaceTag, 127: newTag}
+    tags: {0: replaceTag, 127: newTag},
   })
   t.deepEqual(d.tags[0], replaceTag)
   t.deepEqual(d.tags[127], newTag)
@@ -125,7 +125,7 @@ test('add_tag', async t => {
   d.end(b)
 
   const ait = pEvent.iterator(d, 'data', {
-    resolutionEvents: ['finish']
+    resolutionEvents: ['finish'],
   })
 
   let count = 0
@@ -158,7 +158,7 @@ test('stream', async t => {
   d.pipe(dt)
 
   const ait = pEvent.iterator(dt, 'data', {
-    resolutionEvents: ['end']
+    resolutionEvents: ['end'],
   })
 
   for await (const v of ait) {
@@ -170,7 +170,7 @@ test('decodeFirst', async t => {
   t.plan(9)
   t.is(await cbor.decodeFirst('01'), 1)
   t.is(await cbor.decodeFirst('AQ==', {
-    encoding: 'base64'
+    encoding: 'base64',
   }), 1)
   t.is(cbor.Decoder.NOT_FOUND, await cbor.decodeFirst(''))
   t.throws(() => cbor.decodeFirst())
@@ -221,7 +221,7 @@ test('typed arrays', t => {
   t.is(cbor.decode(new Uint8Array(ab)), 9007199254740992n)
   t.is(cbor.decode(new Uint8ClampedArray(ab)), 9007199254740992n)
 
-  // beware endian-ness
+  // Beware endian-ness
   const u8b = new Uint8ClampedArray([0x61, 0x62])
   t.is(cbor.decode(new Uint16Array(u8b.buffer)), 'b')
   const u8abc = new Uint8ClampedArray([0x63, 0x61, 0x62, 0x63])
@@ -258,30 +258,30 @@ test('extended results', async t => {
     length: 1,
     bytes: Buffer.from('f6', 'hex'),
     value: null,
-    unused: Buffer.from('63616263', 'hex')
+    unused: Buffer.from('63616263', 'hex'),
   })
   t.deepEqual(cbor.decodeAllSync('f663616263', {extendedResults: true}), [
     {
       length: 1,
       bytes: Buffer.from('f6', 'hex'),
-      value: null
+      value: null,
     },
     {
       length: 4,
       bytes: Buffer.from('63616263', 'hex'),
-      value: 'abc'
-    }
+      value: 'abc',
+    },
   ])
   t.deepEqual(await cbor.decodeFirst('f663616263', {extendedResults: true}), {
     length: 1,
     bytes: Buffer.from('f6', 'hex'),
     value: null,
-    unused: Buffer.from('63616263', 'hex')
+    unused: Buffer.from('63616263', 'hex'),
   })
 })
 
 test('Buffers', t => {
-  // sanity checks for mangled library
+  // Sanity checks for mangled library
   const b = Buffer.from('0102', 'hex')
   t.is(b.toString('hex'), '0102')
   t.deepEqual(b, Buffer.from('0102', 'hex'))
@@ -292,9 +292,9 @@ test('Buffers', t => {
     value: [
       [
         [
-          Buffer.from('0102', 'hex')
-        ]
-      ]
-    ]
+          Buffer.from('0102', 'hex'),
+        ],
+      ],
+    ],
   })
 })

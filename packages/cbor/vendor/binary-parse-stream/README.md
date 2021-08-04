@@ -29,19 +29,19 @@ const {One} = BinaryParseStream // -1
   It outputs `{type, buf}` objects.
 
 ```js
-const BinaryParseStream = require('binary-parse-stream')
-const {inherits} = require('util')
+class SillyProtocolParseStream extends BinaryParseStream {
+  constructor(options) {
+    super(options)
+    this.count = 0
+  }
 
-module.exports = SillyProtocolParseStream
-inherits(SillyProtocolParseStream, BinaryParseStream)
-function SillyProtocolParseStream(options) {
-  BinaryParseStream.call(this, options)
-}
-SillyProtocolParseStream.prototype._parse = function *_parse() {
-  const type = (yield 4).readUInt32BE(0, true)
-  const length = yield -1
-  const buf = yield length
-  return { type, buf }
+  *_parse() {
+    const type = (yield 4).readUInt32BE(0, true)
+    const length = yield -1
+    const buf = yield length
+    this.count++
+    return { type, buf }
+  }
 }
 ```
 

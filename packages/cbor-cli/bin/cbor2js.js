@@ -41,7 +41,7 @@ utils.streamFiles(argv, () => {
       showProxy: opts.hidden,
       depth: Infinity,
       sorted: true,
-      breakLength: process.env.COLS || 80
+      breakLength: process.env.COLS || 80,
     }))
   })
   return d

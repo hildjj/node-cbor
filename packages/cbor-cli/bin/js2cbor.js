@@ -8,7 +8,7 @@ const {program} = require('commander')
 const path = require('path')
 const stream = require('stream')
 const Module = require('module')
-const { Buffer } = require('buffer') // not the mangled version
+const { Buffer } = require('buffer') // Not the mangled version
 const bdec = require('cbor-bigdecimal')
 bdec(cbor)
 
@@ -25,13 +25,13 @@ if (argv.length === 0) {
   argv.push('-')
 }
 
-// overly-fancy `require`, so we can take modules on stdin.
+// Overly-fancy `require`, so we can take modules on stdin.
 // reads stream until it's done, then eval's the code and returns
 // module.exports.
 class ModuleStream extends stream.Transform {
   constructor(filename) {
     super({
-      readableObjectMode: true
+      readableObjectMode: true,
     })
     this.bufs = []
     this.filename = filename
@@ -56,7 +56,7 @@ utils.streamFiles(argv, f => {
   const d = new cbor.Encoder({canonical: opts.canonical})
   m.on('data', mod => {
     if (typeof mod === 'function') {
-      mod = mod.call(null, f)
+      mod = mod(f)
     }
     d.end(mod)
   })

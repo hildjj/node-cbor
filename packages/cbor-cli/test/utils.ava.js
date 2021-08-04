@@ -5,21 +5,21 @@ const NoFilter = require('nofilter')
 const pEvent = require('p-event')
 const mockIo = require('mock-stdio')
 const utils = require('../lib/utils')
-const { Buffer } = require('buffer') // not the mangled version
+const { Buffer } = require('buffer') // Not the mangled version
 
 const BAD_FILE = '/tmp/hopefully-does-not-exist'
 
 test('DeHexStream', t => {
-  ;[
+  [
     ['6161', 'aa'],
-    ['0x00', '\x00']
+    ['0x00', '\x00'],
   ].forEach(hd => {
     const d = new utils.DeHexStream(hd[0])
     t.deepEqual(d.read().toString(), hd[1])
   })
   ;[
     ['', null],
-    ['0x', null]
+    ['0x', null],
   ].forEach(hd => {
     const d = new utils.DeHexStream(hd[0])
     t.deepEqual(d.read(), hd[1])
@@ -36,7 +36,7 @@ test('HexStream', async t => {
 })
 
 test('streamFilesNone', async t => {
-  await utils.streamFiles([], () => {})
+  await utils.streamFiles([], () => null)
   await t.throwsAsync(() => utils.streamFiles(
     [BAD_FILE], () => new utils.HexStream()
   ))
@@ -57,7 +57,7 @@ test('streamFilesInputs', async t => {
   u.pipe(bs)
 
   await utils.streamFiles([
-    new utils.DeHexStream('48656c6c6f2c20576f726c64210a')
+    new utils.DeHexStream('48656c6c6f2c20576f726c64210a'),
   ], () => u)
   t.is(bs.read().toString(), '48656c6c6f2c20576f726c64210a')
 })

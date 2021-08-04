@@ -99,7 +99,6 @@ declare class Decoder extends BinaryParseStream {
     preferWeb: boolean;
     extendedResults: boolean;
     required: boolean;
-    /** @type {NoFilter} */
     valueBytes: NoFilter;
     /**
      * Stop processing

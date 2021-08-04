@@ -5,7 +5,7 @@ const constants = require('../lib/constants')
 const utils = require('../lib/utils')
 const path = require('path')
 
-// use mangled versions
+// Use mangled versions
 const Buffer = cbor.encode(0).constructor
 const NoFilter = new cbor.Commented().all.constructor
 
@@ -22,7 +22,7 @@ async function requireWithFailedDependency(source, dependency, fn) {
   require.cache[dep] = {
     loaded: true,
     get exports() {
-      // see @node/lib/internal/modules/cjs/loader.js#tryPackage()
+      // See @node/lib/internal/modules/cjs/loader.js#tryPackage()
       const err = new Error(
         `Cannot find module '${dep}'. ` +
         'Please verify that the package.json has a valid "main" entry'
@@ -31,7 +31,7 @@ async function requireWithFailedDependency(source, dependency, fn) {
       err.path = path.resolve(dependency, 'package.json')
       err.requestPath = __filename
       throw err
-    }
+    },
   }
   delete require.cache[src]
 
@@ -46,7 +46,7 @@ exports.requireWithFailedDependency = requireWithFailedDependency
 
 class TempClass {
   constructor(val) {
-    // render as the string tempClass with the tag 0xffff
+    // Render as the string tempClass with the tag 0xffff
     this.value = val || 'tempClass'
   }
 
@@ -59,8 +59,6 @@ class TempClass {
   }
 }
 exports.TempClass = TempClass
-
-/* eslint-disable max-len */
 
 // [Decoded, Diagnostic, Commented]
 exports.good = [
@@ -445,7 +443,7 @@ exports.good = [
     7e00            -- NaN
 0xf97e00`],
 
-  // ints
+  // Ints
   [0xff, '255', `
   18                -- Positive number, next 1 byte
     ff              -- 255
@@ -664,7 +662,7 @@ exports.good = [
       58            -- Bytes, length next 1 byte
         18          -- Bytes, length: 24
           000000000000000100000000000000020000000000000003 -- 000000000000000100000000000000020000000000000003
-0xd8435818000000000000000100000000000000020000000000000003`])
+0xd8435818000000000000000100000000000000020000000000000003`]),
 
 ]
 
@@ -683,7 +681,7 @@ exports.encodeGood = [
         02          -- [1], 2
 0xd90102820102`],
 
-  // internal types
+  // Internal types
   [new NoFilter(Buffer.from([1, 2, 3, 4])), 'h\'01020304\'', `
   44                -- Bytes, length: 4
     01020304        -- 01020304
@@ -693,7 +691,7 @@ exports.encodeGood = [
     ffff            -- Tag #65535
       63            -- String, length: 3
         666f6f      -- "foo"
-0xd9ffff63666f6f`]
+0xd9ffff63666f6f`],
 ]
 
 exports.decodeGood = [
@@ -921,7 +919,7 @@ exports.decodeGood = [
         43          -- Bytes, length: 3
           eeff99    -- eeff99
         ff          -- BREAK
-0xd8405f44aabbccdd43eeff99ff`]
+0xd8405f44aabbccdd43eeff99ff`],
 ]
 
 exports.collapseBigIntegers = [
@@ -937,55 +935,55 @@ exports.collapseBigIntegers = [
   [0x1ffffffffn, undefined, '0x1b00000001ffffffff'],
   [-0x1ffffffffn, undefined, '0x3b00000001fffffffe'],
   [0xffffffffffffffffn, undefined, '0x1bffffffffffffffff'],
-  [-0x10000000000000000n, undefined, '0x3bffffffffffffffff']
+  [-0x10000000000000000n, undefined, '0x3bffffffffffffffff'],
 ]
 
 exports.decodeBad = [
-  '0x18', // missing the next byte for AI
-  '0x1c', // invalid AI
-  '0x1d', // invalid AI
-  '0x1e', // invalid AI
-  '0x44010203', // only 3 bytes, not 4, bytestring
-  '0x5f', // indeterminate bytestring with nothing
-  '0x5f01ff', // indeterminite bytestring includes a non-string chunk
-  '0x64494554', // only 3 bytes, not 4, utf8
-  '0x7432303133', // string length 20 only has 4 bytes
-  '0x7f01ff', // indeterminite string includes a non-string chunk
-  '0x7f657374726561646d696e', // no BREAK
-  '0x81', // no items in array, expected 1
-  '0x8181818181', // nested arrays with no end
+  '0x18', // Missing the next byte for AI
+  '0x1c', // Invalid AI
+  '0x1d', // Invalid AI
+  '0x1e', // Invalid AI
+  '0x44010203', // Only 3 bytes, not 4, bytestring
+  '0x5f', // Indeterminate bytestring with nothing
+  '0x5f01ff', // Indeterminite bytestring includes a non-string chunk
+  '0x64494554', // Only 3 bytes, not 4, utf8
+  '0x7432303133', // String length 20 only has 4 bytes
+  '0x7f01ff', // Indeterminite string includes a non-string chunk
+  '0x7f657374726561646d696e', // No BREAK
+  '0x81', // No items in array, expected 1
+  '0x8181818181', // Nested arrays with no end
   '0x81FE', // Array containaing invalid
   '0x8201', // 1 item in array, expected 2
-  '0x9f', // indeterminate array without end
-  '0x9f01', // indeterminate array without end
-  '0x9fFEff', // streamed array containing invalid
-  '0xa16161', // map without value
+  '0x9f', // Indeterminate array without end
+  '0x9f01', // Indeterminate array without end
+  '0x9fFEff', // Streamed array containing invalid
+  '0xa16161', // Map without value
   '0xa1FE01', // Map containing invalid
-  '0xa20102', // only 1 pair, not 2, map
-  '0xa3', // no pairs
-  '0xbf', // indeterminate map without end
-  '0xbf000103ff', // streaming map with odd number of items
-  '0xbf6161', // indeterminate map without end
-  '0xbf616101', // indeterminate map without end
-  '0xbfFE01ff', // streamed map containing invalid
-  '0xfc', // reserved AI
-  '0xfd', // reserved AI
-  '0xfe' // reserved AI
+  '0xa20102', // Only 1 pair, not 2, map
+  '0xa3', // No pairs
+  '0xbf', // Indeterminate map without end
+  '0xbf000103ff', // Streaming map with odd number of items
+  '0xbf6161', // Indeterminate map without end
+  '0xbf616101', // Indeterminate map without end
+  '0xbfFE01ff', // Streamed map containing invalid
+  '0xfc', // Reserved AI
+  '0xfd', // Reserved AI
+  '0xfe', // Reserved AI
 ]
 if (utils.utf8.checksUTF8) {
   exports.decodeBad.push(
-    '0x62c0ae' // invalid utf8
+    '0x62c0ae' // Invalid utf8
   )
 }
 
-const HEX = /0x([0-9a-f]+)$/i
+const HEX = /0x(?<hex>[0-9a-f]+)$/i
 exports.toBuffer = function toBuffer(c) {
   if (Array.isArray(c)) {
     // eslint-disable-next-line prefer-destructuring
     c = c[2]
   }
   const match = c.match(HEX)
-  return Buffer.from(match[1], 'hex')
+  return Buffer.from(match.groups.hex, 'hex')
 }
 
 exports.toString = function toString(c) {
@@ -1053,7 +1051,7 @@ exports.goodMap = new Map([
   ['aa', 2],
   ['bb', 2],
   ['b', 1],
-  ['bbb', 3]
+  ['bbb', 3],
 ])
 
 exports.canonNums = [
@@ -1064,7 +1062,7 @@ exports.canonNums = [
   [3.4028234663852886e+38, 'fa7f7fffff'],
   [0.00006103515625, 'f90400'],
   [0.2498779296875, 'f933ff'],
-  [2.9802322387695312e-8, 'fa33000000'],
+  [0.0000000298023223876953125, 'fa33000000'],
   [4.1727979294137185e-8, 'fa33333866'],
   [0.000007636845111846924, 'fa37002000'],
 
@@ -1072,5 +1070,5 @@ exports.canonNums = [
   [-Infinity, 'f9fc00'],
   [NaN, 'f97e00'],
   [0, '00'],
-  [-0, 'f98000']
+  [-0, 'f98000'],
 ]

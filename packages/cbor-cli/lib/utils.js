@@ -2,7 +2,7 @@
 
 const fs = require('fs')
 const stream = require('stream')
-const { Buffer } = require('buffer') // not the mangled version
+const { Buffer } = require('buffer') // Not the mangled version
 
 exports.DeHexStream = class DeHexStream extends stream.Readable {
   constructor(hex) {
@@ -39,9 +39,10 @@ exports.streamFiles = async function streamFiles(files, streamFunc) {
       sf.on('end', resolve)
       sf.on('error', reject)
 
-      const s = (f === '-') ?
-        process.stdin :
-        (f instanceof stream.Stream) ? f : fs.createReadStream(f)
+      let s = (f === '-') ? process.stdin : f
+      if (!(s instanceof stream.Stream)) {
+        s = fs.createReadStream(s)
+      }
       s.on('error', reject)
       s.pipe(sf)
     })

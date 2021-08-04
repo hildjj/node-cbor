@@ -7,9 +7,9 @@ module.exports = {
     'node_modules/',
     'dist/',
     'example/',
-    'docs/scripts/'
+    'docs/scripts/',
   ],
   rules: {
-    'no-empty': ['error', { allowEmptyCatch: true }]
-  }
+    'no-empty': ['error', { allowEmptyCatch: true }],
+  },
 }

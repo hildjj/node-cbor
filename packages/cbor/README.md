@@ -36,9 +36,9 @@ Example:
 const cbor = require('cbor')
 const assert = require('assert')
 
-let encoded = cbor.encode(true) // returns <Buffer f5>
+let encoded = cbor.encode(true) // Returns <Buffer f5>
 cbor.decodeFirst(encoded, (error, obj) => {
-  // error != null if there was an error
+  // If there was an error, error != null
   // obj is the unpacked object
   assert.ok(obj === true)
 })
@@ -76,7 +76,7 @@ try {
   console.log(cbor.decodeFirstSync('02')) // 2
   console.log(cbor.decodeAllSync('0202')) // [2, 2]
 } catch (e) {
-  // throws on invalid input
+  // Throws on invalid input
 }
 ```
 
@@ -226,12 +226,12 @@ value.  For the `Foo` example above, this might look like:
 const d = new Decoder({
   tags: {
     64000: val => {
-      // check val to make sure it's an Array as expected, etc.
+      // Check val to make sure it's an Array as expected, etc.
       const foo = new Foo()
       ;[foo.one, foo.two] = val
       return foo
-    }
-  }
+    },
+  },
 })
 ```
 
@@ -244,8 +244,8 @@ cbor.decodeFirstSync(input, {
     // Replace the Tag 0 (RFC3339 Date/Time string) decoder.
     // See https://tc39.es/proposal-temporal/docs/ for the upcoming
     // Temporal built-in, which supports nanosecond time:
-    0: x => Temporal.Instant.from(x)
-  }
+    0: x => Temporal.Instant.from(x),
+  },
 })
 ```
 
