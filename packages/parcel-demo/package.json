@@ -3,6 +3,7 @@
   "version": "7.0.6",
   "description": "",
   "private": true,
+  "type": "module",
   "scripts": {
     "prebuild": "rimraf -rf dist",
     "build": "parcel build src/index-p.html --dist-dir dist --no-source-maps --public-url ./ --no-content-hash",
@@ -18,6 +19,7 @@
     "directory": "packages/parcel-demo"
   },
   "devDependencies": {
+    "@parcel/core": "^2.0.0-rc.0",
     "@parcel/optimizer-data-url": "^2.0.0-rc.0",
     "@parcel/transformer-inline-string": "^2.0.0-rc.0",
     "cbor": "^7.0.6",
@@ -28,6 +30,9 @@
     "postcss": "^8.3.6",
     "regenerator-runtime": "^0.13.9",
     "rimraf": "^3.0.2"
+  },
+  "engines": {
+    "node": ">= 12.19"
   },
   "browserslist": [
     "> 0.2%",

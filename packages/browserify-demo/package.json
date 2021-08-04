@@ -26,5 +26,8 @@
     "node-inspect-extracted": "*",
     "rimraf": "^3.0.2",
     "terser": "^5.7.1"
+  },
+  "engines": {
+    "node": ">=12.19"
   }
 }
