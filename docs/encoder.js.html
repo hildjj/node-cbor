@@ -191,7 +191,9 @@ class Encoder extends stream.Transform {
     this.disallowUndefinedKeys = disallowUndefinedKeys
     this.dateType = parseDateType(dateType)
     this.collapseBigIntegers = this.canonical ? true : collapseBigIntegers
-    this.detectLoops = /** @type WeakSet? */ (undefined)
+
+    /** @type WeakSet&lt;any>? */
+    this.detectLoops = undefined
     if (typeof detectLoops === 'boolean') {
       if (detectLoops) {
         this.detectLoops = new WeakSet()
