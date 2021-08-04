@@ -120,16 +120,15 @@ streams.  There are a few ways to fix this:</p>
 <ol>
 <li>pass in a <code>highWaterMark</code> option with the value of the largest buffer size you think you will need:</li>
 </ol>
-<p>``js
-cbor.encodeOne(Buffer.alloc(40000), {highWaterMark: 65535})</p>
-<pre class="prettyprint source"><code>
-2) use stream mode.  Catch the `data`, `finish`, and `error` events.  Make sure to call `end()` when you're done.
-
-```js
-const enc = new cbor.Encoder()
-enc.on('data', buf => /* send the data somewhere */)
+<pre class="prettyprint source lang-js"><code>cbor.encodeOne(new ArrayBuffer(40000), {highWaterMark: 65535})
+</code></pre>
+<ol start="2">
+<li>use stream mode.  Catch the <code>data</code>, <code>finish</code>, and <code>error</code> events.  Make sure to call <code>end()</code> when you're done.</li>
+</ol>
+<pre class="prettyprint source lang-js"><code>const enc = new cbor.Encoder()
+enc.on('data', buf => /* Send the data somewhere */ null)
 enc.on('error', console.error)
-enc.on('finish', () => /* tell the consumer we are finished */)
+enc.on('finish', () => /* Tell the consumer we are finished */ null)
 
 enc.end(['foo', 1, false])
 </code></pre>

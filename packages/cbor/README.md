@@ -92,17 +92,17 @@ streams.  There are a few ways to fix this:
 
 1) pass in a `highWaterMark` option with the value of the largest buffer size you think you will need:
 
-``js
-cbor.encodeOne(Buffer.alloc(40000), {highWaterMark: 65535})
+```js
+cbor.encodeOne(new ArrayBuffer(40000), {highWaterMark: 65535})
 ```
 
 2) use stream mode.  Catch the `data`, `finish`, and `error` events.  Make sure to call `end()` when you're done.
 
 ```js
 const enc = new cbor.Encoder()
-enc.on('data', buf => /* send the data somewhere */)
+enc.on('data', buf => /* Send the data somewhere */ null)
 enc.on('error', console.error)
-enc.on('finish', () => /* tell the consumer we are finished */)
+enc.on('finish', () => /* Tell the consumer we are finished */ null)
 
 enc.end(['foo', 1, false])
 ```
