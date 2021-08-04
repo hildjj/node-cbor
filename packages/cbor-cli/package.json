@@ -51,7 +51,6 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {
-    "ava": "4.0.0-alpha.2",
     "bignumber.js": "^9.0.1",
     "cbor": "^7.0.6",
     "cbor-bigdecimal": "^7.0.6",

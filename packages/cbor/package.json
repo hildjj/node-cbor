@@ -46,7 +46,6 @@
     "nofilter": "^3.0.2"
   },
   "devDependencies": {
-    "ava": "4.0.0-alpha.2",
     "@types/node": "*",
     "bignumber.js": "^9.0.1",
     "garbage": "~0.0.0",

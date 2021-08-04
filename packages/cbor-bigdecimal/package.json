@@ -31,7 +31,6 @@
     "bignumber.js": "^9.0.1"
   },
   "devDependencies": {
-    "ava": "4.0.0-alpha.2",
     "bignumber.js": "^9.0.1",
     "webpack": "^5.48.0",
     "webpack-cli": "^4.7.2"
