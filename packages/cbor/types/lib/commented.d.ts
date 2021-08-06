@@ -1,9 +1,9 @@
 /// <reference types="node" />
 export = Commented;
 /**
- * Generate the expanded format of RFC 7049, section 2.2.1
+ * Generate the expanded format of RFC 7049, section 2.2.1.
  *
- * @extends {stream.Transform}
+ * @extends stream.Transform
  */
 declare class Commented extends stream.Transform {
     /**
@@ -12,17 +12,18 @@ declare class Commented extends stream.Transform {
      *
      * @static
      * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
-     *   |DataView|stream.Readable} input
+     *   |DataView|stream.Readable} input Something to parse.
      * @param {CommentOptions|commentCallback|string|number} [options={}]
-     *   encoding, max_depth, or callback
-     * @param {commentCallback} [cb] - called on completion
-     * @returns {Promise} if cb not specified
+     *   Encoding, max_depth, or callback.
+     * @param {commentCallback} [cb] If specified, called on completion.
+     * @returns {Promise} If cb not specified.
+     * @throws {Error} Input required.
      */
     static comment(input: string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | stream.Readable, options?: CommentOptions | commentCallback | string | number, cb?: commentCallback): Promise<any>;
     /**
      * Create a CBOR commenter.
      *
-     * @param {CommentOptions} [options={}] - Stream options
+     * @param {CommentOptions} [options={}] Stream options.
      */
     constructor(options?: CommentOptions);
     depth: number;
@@ -30,41 +31,42 @@ declare class Commented extends stream.Transform {
     all: NoFilter;
     parser: Decoder;
     /**
+     * @param {Buffer} v Descend into embedded CBOR.
      * @private
      */
     private _tag_24;
     /**
-     * @private
+     * @ignore
      */
-    private _on_error;
+    _on_error(er: any): void;
     /**
-     * @private
+     * @ignore
      */
-    private _on_read;
+    _on_read(buf: any): void;
     /**
-     * @private
+     * @ignore
      */
-    private _on_more;
+    _on_more(mt: any, len: any, parent_mt: any, pos: any): void;
     /**
-     * @private
+     * @ignore
      */
-    private _on_start_string;
+    _on_start_string(mt: any, len: any, parent_mt: any, pos: any): void;
     /**
-     * @private
+     * @ignore
      */
-    private _on_start;
+    _on_start(mt: any, tag: any, parent_mt: any, pos: any): void;
     /**
-     * @private
+     * @ignore
      */
-    private _on_stop;
+    _on_stop(mt: any): void;
     /**
      * @private
      */
     private _on_value;
     /**
-     * @private
+     * @ignore
      */
-    private _on_data;
+    _on_data(): void;
 }
 declare namespace Commented {
     export { CommentOptions, commentCallback };
@@ -75,35 +77,35 @@ import Decoder = require("./decoder");
 import { Buffer } from "buffer";
 type CommentOptions = {
     /**
-     * - how many times to indent
-     * the dashes
+     * How many times to indent
+     * the dashes.
      */
     max_depth?: number;
     /**
-     * - initial indentation depth
+     * Initial indentation depth.
      */
     depth?: number;
     /**
-     * - if true, omit the summary
-     * of the full bytes read at the end
+     * If true, omit the summary
+     * of the full bytes read at the end.
      */
     no_summary?: boolean;
     /**
-     * - mapping from tag number to function(v),
+     * Mapping from tag number to function(v),
      * where v is the decoded value that comes after the tag, and where the
      * function returns the correctly-created value for that tag.
      */
     tags?: object;
     /**
-     * if true, prefer Uint8Arrays to
+     * If true, prefer Uint8Arrays to
      * be generated instead of node Buffers.  This might turn on some more
      * changes in the future, so forward-compatibility is not guaranteed yet.
      */
     preferWeb?: boolean;
     /**
-     * - Encoding to use for input, if it
-     * is a string
+     * Encoding to use for input, if it
+     * is a string.
      */
-    encoding?: string;
+    encoding?: BufferEncoding;
 };
 type commentCallback = (error?: Error, commented?: string) => void;

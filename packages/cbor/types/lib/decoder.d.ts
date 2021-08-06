@@ -6,7 +6,7 @@ export = Decoder;
  * special symbols are emitted instead of NULL or UNDEFINED.  Fix those
  * up by calling {@link Decoder.nullcheck}.
  *
- * @extends {BinaryParseStream}
+ * @extends BinaryParseStream
  */
 declare class Decoder extends BinaryParseStream {
     /**
@@ -14,14 +14,14 @@ declare class Decoder extends BinaryParseStream {
      * the CBOR stream.
      *
      * @static
-     * @param {any} val - the value to check
-     * @returns {any} the corrected value
-     *
+     * @param {any} val The value to check.
+     * @returns {any} The corrected value.
+     * @throws {Error} Nothing was found.
      * @example
-     * myDecoder.on('data', function(val) {
-     *   val = Decoder.nullcheck(val);
-     *   ...
-     * });
+     * myDecoder.on('data', val => {
+     *   val = Decoder.nullcheck(val)
+     *   // ...
+     * })
      */
     static nullcheck(val: any): any;
     /**
@@ -30,27 +30,29 @@ declare class Decoder extends BinaryParseStream {
      * left over at the end (if options.extendedResults is not true).
      *
      * @static
-     * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
-     *   |DataView|ReadableStream} input - If a Readable stream, must have
+     * @param {BufferLike} input If a Readable stream, must have
      *   received the `readable` event already, or you will get an error
-     *   claiming "Insufficient data"
-     * @param {DecoderOptions|string} [options={}] Options or encoding for input
-     * @returns {any} - the decoded value
+     *   claiming "Insufficient data".
+     * @param {DecoderOptions|string} [options={}] Options or encoding for input.
+     * @returns {any} The decoded value.
+     * @throws {UnexpectedDataError} Data is left over after decoding.
+     * @throws {Error} Insufficient data.
      */
-    static decodeFirstSync(input: string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | ReadableStream, options?: DecoderOptions | string): any;
+    static decodeFirstSync(input: BufferLike, options?: DecoderOptions | string): any;
     /**
      * Decode all of the CBOR items in the input into an array.  This will throw
      * an exception if the input is not valid CBOR; a zero-length input will
      * return an empty array.
      *
      * @static
-     * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
-     *   |DataView|ReadableStream} input
+     * @param {BufferLike} input What to parse?
      * @param {DecoderOptions|string} [options={}] Options or encoding
-     *   for input
-     * @returns {Array} - Array of all found items
+     *   for input.
+     * @returns {Array} Array of all found items.
+     * @throws {TypeError} No input provided.
+     * @throws {Error} Insufficient data provided.
      */
-    static decodeAllSync(input: string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | ReadableStream, options?: DecoderOptions | string): any[];
+    static decodeAllSync(input: BufferLike, options?: DecoderOptions | string): any[];
     /**
      * Decode the first CBOR item in the input.  This will error if there are
      * more bytes left over at the end (if options.extendedResults is not true),
@@ -59,36 +61,36 @@ declare class Decoder extends BinaryParseStream {
      * `required` option is false.
      *
      * @static
-     * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
-     *   |DataView|ReadableStream} input
-     * @param {DecoderOptions|decodeCallback|string} [options={}] - options, the
-     *   callback, or input encoding
-     * @param {decodeCallback} [cb] callback
-     * @returns {Promise<any>} returned even if callback is specified
+     * @param {BufferLike} input What to parse?
+     * @param {DecoderOptions|decodeCallback|string} [options={}] Options, the
+     *   callback, or input encoding.
+     * @param {decodeCallback} [cb] Callback.
+     * @returns {Promise<any>} Returned even if callback is specified.
+     * @throws {TypeError} No input provided.
      */
-    static decodeFirst(input: string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | ReadableStream, options?: DecoderOptions | decodeCallback | string, cb?: decodeCallback): Promise<any>;
+    static decodeFirst(input: BufferLike, options?: DecoderOptions | decodeCallback | string, cb?: decodeCallback): Promise<any>;
     /**
      * @callback decodeAllCallback
-     * @param {Error} error - if one was generated
-     * @param {Array} value - all of the decoded values, wrapped in an Array
+     * @param {Error} error If one was generated.
+     * @param {Array} value All of the decoded values, wrapped in an Array.
      */
     /**
      * Decode all of the CBOR items in the input.  This will error if there are
      * more bytes left over at the end.
      *
      * @static
-     * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
-     *   |DataView|ReadableStream} input
-     * @param {DecoderOptions|decodeAllCallback|string} [options={}] -
+     * @param {BufferLike} input What to parse?
+     * @param {DecoderOptions|decodeAllCallback|string} [options={}]
      *   Decoding options, the callback, or the input encoding.
-     * @param {decodeAllCallback} [cb] callback
-     * @returns {Promise<Array>} even if callback is specified
+     * @param {decodeAllCallback} [cb] Callback.
+     * @returns {Promise<Array>} Even if callback is specified.
+     * @throws {TypeError} No input specified.
      */
-    static decodeAll(input: string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | ReadableStream, options?: string | DecoderOptions | ((error: Error, value: any[]) => any), cb?: (error: Error, value: any[]) => any): Promise<any[]>;
+    static decodeAll(input: BufferLike, options?: string | DecoderOptions | ((error: Error, value: any[]) => any), cb?: (error: Error, value: any[]) => any): Promise<any[]>;
     /**
      * Create a parsing stream.
      *
-     * @param {DecoderOptions} [options={}]
+     * @param {DecoderOptions} [options={}] Options.
      */
     constructor(options?: DecoderOptions);
     running: boolean;
@@ -101,25 +103,29 @@ declare class Decoder extends BinaryParseStream {
     required: boolean;
     valueBytes: NoFilter;
     /**
-     * Stop processing
+     * Stop processing.
      */
     close(): void;
     /**
-     * Only called if extendedResults is true
+     * Only called if extendedResults is true.
+     *
      * @ignore
      */
     _onRead(data: any): void;
 }
 declare namespace Decoder {
-    export { NOT_FOUND, ExtendedResults, DecoderOptions, decodeCallback };
+    export { NOT_FOUND, BufferLike, ExtendedResults, DecoderOptions, decodeCallback };
 }
 import BinaryParseStream = require("../vendor/binary-parse-stream");
 import Tagged = require("./tagged");
 import NoFilter = require("nofilter");
-import { Buffer } from "buffer";
+/**
+ * Things that can act as inputs, from which a NoFilter can be created.
+ */
+type BufferLike = string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | stream.Readable;
 type DecoderOptions = {
     /**
-     * - the maximum depth to parse.
+     * The maximum depth to parse.
      * Use -1 for "until you run out of memory".  Set this to a finite
      * positive number for un-trusted inputs.  Most standard inputs won't nest
      * more than 100 or so levels; I've tested into the millions before
@@ -127,29 +133,29 @@ type DecoderOptions = {
      */
     max_depth?: number;
     /**
-     * - mapping from tag number to function(v),
+     * Mapping from tag number to function(v),
      * where v is the decoded value that comes after the tag, and where the
      * function returns the correctly-created value for that tag.
      */
     tags?: Tagged.TagMap;
     /**
-     * if true, prefer Uint8Arrays to
+     * If true, prefer Uint8Arrays to
      * be generated instead of node Buffers.  This might turn on some more
      * changes in the future, so forward-compatibility is not guaranteed yet.
      */
     preferWeb?: boolean;
     /**
-     * - The encoding of the input.
+     * The encoding of the input.
      * Ignored if input is a Buffer.
      */
-    encoding?: string;
+    encoding?: BufferEncoding;
     /**
-     * - Should an error be thrown when no
+     * Should an error be thrown when no
      * data is in the input?
      */
     required?: boolean;
     /**
-     * - if true, emit extended
+     * If true, emit extended
      * results, which will be an object with shape {@link ExtendedResults }.
      * The value will already have been null-checked.
      */
@@ -159,23 +165,25 @@ type decodeCallback = (error?: Error, value?: any) => void;
 declare const NOT_FOUND: unique symbol;
 type ExtendedResults = {
     /**
-     * - the value that was found
+     * The value that was found.
      */
     value: any;
     /**
-     * - the number of bytes of the original input that
-     * were read
+     * The number of bytes of the original input that
+     * were read.
      */
     length: number;
     /**
-     * - the bytes of the original input that were used
-     * to produce the value
+     * The bytes of the original input that were used
+     * to produce the value.
      */
     bytes: Buffer;
     /**
-     * - the bytes that were left over from the original
+     * The bytes that were left over from the original
      * input.  This property only exists if {@linkcode Decoder.decodeFirst} or
      * {@linkcode Decoder.decodeFirstSync} was called.
      */
     unused?: Buffer;
 };
+import { Buffer } from "buffer";
+import stream = require("stream");

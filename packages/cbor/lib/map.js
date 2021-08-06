@@ -14,12 +14,12 @@ const { MT } = require('./constants')
  * This is not a subclass of Object, because it would be tough to get
  * the semantics to be an exact match.
  *
- * @class CborMap
- * @extends {Map}
+ * @extends Map
  */
 class CborMap extends Map {
   /**
    * Creates an instance of CborMap.
+   *
    * @param {Iterable<any>} [iterable] An Array or other iterable
    *   object whose elements are key-value pairs (arrays with two elements, e.g.
    *   <code>[[ 1, 'one' ],[ 2, 'two' ]]</code>). Each key-value pair is added
@@ -30,14 +30,14 @@ class CborMap extends Map {
   }
 
   /**
-   * @private
+   * @ignore
    */
   static _encode(key) {
     return encoder.encodeCanonical(key).toString('base64')
   }
 
   /**
-   * @private
+   * @ignore
    */
   static _decode(key) {
     return decoder.decodeFirstSync(key, 'base64')
@@ -61,7 +61,8 @@ class CborMap extends Map {
    * @param {any} key The key identifying the element to store.
    *   Can be any type, which will be serialized into CBOR and compared by
    *   value.
-   * @param {any} val The element to store
+   * @param {any} val The element to store.
+   * @returns {this} This object.
    */
   set(key, val) {
     return super.set(CborMap._encode(key), val)
@@ -70,10 +71,10 @@ class CborMap extends Map {
   /**
    * Removes the specified element.
    *
-   * @param {any} key The key identifying the element to delete.
-   *   Can be any type, which will be serialized into CBOR and compared by
-   *   value.
-   * @returns {boolean}
+   * @param {any} key The key identifying the element to delete. Can be any
+   *   type, which will be serialized into CBOR and compared by value.
+   * @returns {boolean} True if an element in the Map object existed and has
+   *   been removed, or false if the element does not exist.
    */
   delete(key) {
     return super.delete(CborMap._encode(key))
@@ -85,7 +86,8 @@ class CborMap extends Map {
    * @param {any} key The key identifying the element to check.
    *   Can be any type, which will be serialized into CBOR and compared by
    *   value.
-   * @returns {boolean}
+   * @returns {boolean} True if an element with the specified key exists in
+   *   the Map object; otherwise false.
    */
   has(key) {
     return super.has(CborMap._encode(key))
@@ -96,7 +98,7 @@ class CborMap extends Map {
    * in the Map object in insertion order.  The keys are decoded into their
    * original format.
    *
-   * @returns {IterableIterator<any>}
+   * @yields {any} The keys of the map.
    */
   *keys() {
     for (const k of super.keys()) {
@@ -104,23 +106,26 @@ class CborMap extends Map {
     }
   }
 
+  /* eslint-disable jsdoc/require-returns-check */
   /**
    * Returns a new Iterator object that contains the [key, value] pairs for
    * each element in the Map object in insertion order.
    *
-   * @returns {IterableIterator}
+   * @yields {any[]} Key value pairs.
+   * @returns {IterableIterator<any, any>} Key value pairs.
    */
   *entries() {
     for (const kv of super.entries()) {
       yield [CborMap._decode(kv[0]), kv[1]]
     }
   }
+  /* eslint-enable jsdoc/require-returns-check */
 
   /**
    * Returns a new Iterator object that contains the [key, value] pairs for
    * each element in the Map object in insertion order.
    *
-   * @returns {IterableIterator}
+   * @returns {IterableIterator} Key value pairs.
    */
   [Symbol.iterator]() {
     return this.entries()
@@ -132,7 +137,8 @@ class CborMap extends Map {
    *
    * @param {function(any, any, Map): undefined} fun Function to execute for
    *  each element, which takes a value, a key, and the Map being traversed.
-   * @param {any} thisArg Value to use as this when executing callback
+   * @param {any} thisArg Value to use as this when executing callback.
+   * @throws {TypeError} Invalid function.
    */
   forEach(fun, thisArg) {
     if (typeof fun !== 'function') {
@@ -144,10 +150,10 @@ class CborMap extends Map {
   }
 
   /**
-   * Push the simple value onto the CBOR stream
+   * Push the simple value onto the CBOR stream.
    *
-   * @param {Object} gen The generator to push onto
-   * @returns {boolean} true on success
+   * @param {object} gen The generator to push onto.
+   * @returns {boolean} True on success.
    */
   encodeCBOR(gen) {
     if (!gen._pushInt(this.size, MT.MAP)) {

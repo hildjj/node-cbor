@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Commented - Documentation</title>
+    <title>BinaryParseStream - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Commented</h1>
+    <h1 class="page-title">BinaryParseStream</h1>
     
 
     
@@ -42,10 +42,14 @@
 <header>
     
         <h2>
-        Commented
+        BinaryParseStream
         </h2>
         
-            <div class="class-description">Generate the expanded format of RFC 7049, section 2.2.1.</div>
+            <div class="class-description">BinaryParseStream is a TransformStream that consumes buffers and outputs
+objects on the other end.  It expects your subclass to implement a `_parse`
+method that is a generator.  When your generator yields a number, it'll be
+fed a buffer of that length from the input.  When your generator returns,
+the return value will be pushed to the output side.</div>
         
     
 </header>
@@ -60,14 +64,14 @@
     <h2>Constructor</h2>
     
 
-    <h4 class="name" id="Commented"><span class="type-signature"></span>new Commented<span class="signature">(options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="BinaryParseStream"><span class="type-signature"></span>new BinaryParseStream<span class="signature">(options)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    Create a CBOR commenter.
+    Creates an instance of BinaryParseStream.
 </div>
 
 
@@ -103,7 +107,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_commented.js.html">lib/commented.js</a>, <a href="lib_commented.js.html#line69">line 69</a>
+        <a href="vendor_binary-parse-stream_index.js.html">vendor/binary-parse-stream/index.js</a>, <a href="vendor_binary-parse-stream_index.js.html#line23">line 23</a>
     </li></ul></dd>
     
 
@@ -135,11 +139,7 @@
         <th>Type</th>
 
         
-        <th>Attributes</th>
-        
 
-        
-        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -157,30 +157,14 @@
             <td class="type">
             
                 
-<span class="param-type"><code><a href="global.html#CommentOptions">CommentOptions</a></code></span>
+<span class="param-type"><code>stream.TransformOptions</code></span>
 
 
             
             </td>
 
             
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
 
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    {}
-                
-                </td>
             
 
             <td class="description last">
@@ -228,6 +212,13 @@
     
 
     
+        <h3 class="subsection-title">Classes</h3>
+
+        <dl>
+            <dt><a href="BinaryParseStream.html">BinaryParseStream</a></dt>
+            <dd></dd>
+        </dl>
+    
 
      
 
@@ -235,330 +226,6 @@
 
     
 
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id=".comment"><span class="type-signature">(static) </span>comment<span class="signature">(input, options<span class="signature-attributes">opt</span>, cb<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Comment on an input Buffer or string, creating a string passed to the
-callback.  If callback not specified, a promise is returned.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_commented.js.html">lib/commented.js</a>, <a href="lib_commented.js.html#line153">line 153</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-        <th>Default</th>
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>input</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>string</code></span>
-|
-
-<span class="param-type"><code>Buffer</code></span>
-|
-
-<span class="param-type"><code>ArrayBuffer</code></span>
-|
-
-<span class="param-type"><code>Uint8Array</code></span>
-|
-
-<span class="param-type"><code>Uint8ClampedArray</code></span>
-|
-
-<span class="param-type"><code>DataView</code></span>
-|
-
-<span class="param-type"><code>stream.Readable</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">
-                Something to parse.
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="global.html#CommentOptions">CommentOptions</a></code></span>
-|
-
-<span class="param-type"><code><a href="global.html#commentCallback">commentCallback</a></code></span>
-|
-
-<span class="param-type"><code>string</code></span>
-|
-
-<span class="param-type"><code>number</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    {}
-                
-                </td>
-            
-
-            <td class="description last">
-                Encoding, max_depth, or callback.
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>cb</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="global.html#commentCallback">commentCallback</a></code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    null
-                
-                </td>
-            
-
-            <td class="description last">
-                If specified, called on completion.
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-throws">
-<h5>Throws:</h5>
-
-        
-
-<dl>
-    <dt>
-        <div class="param-desc">
-        Input required.
-        </div>
-    </dt>
-    <dd></dd>
-    <dt>
-        <dl>
-            <dt>
-                Type
-            </dt>
-            <dd>
-                
-<span class="param-type"><code>Error</code></span>
-
-
-            </dd>
-        </dl>
-    </dt>
-    <dd></dd>
-</dl>
-
-
-    
-</div>
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>Promise</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    If cb not specified.
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
     
 
     

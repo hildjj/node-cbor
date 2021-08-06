@@ -6,8 +6,8 @@ declare class Simple {
     /**
      * Is the given object a Simple?
      *
-     * @param {any} obj - object to test
-     * @returns {boolean} - is it Simple?
+     * @param {any} obj Object to test.
+     * @returns {boolean} Is it Simple?
      */
     static isSimple(obj: any): boolean;
     /**
@@ -16,36 +16,32 @@ declare class Simple {
      * `null` or `undefined`, so that the value can be passed through a
      * stream in object mode.
      *
-     * @param {number} val - the CBOR additional info to convert
-     * @param {boolean} [has_parent=true] - Does the CBOR item have a parent?
-     * @param {boolean} [parent_indefinite=false] - Is the parent element
+     * @param {number} val The CBOR additional info to convert.
+     * @param {boolean} [has_parent=true] Does the CBOR item have a parent?
+     * @param {boolean} [parent_indefinite=false] Is the parent element
      *   indefinitely encoded?
-     * @returns {(null|undefined|boolean|Symbol|Simple)} - the decoded value
+     * @returns {(null|undefined|boolean|symbol|Simple)} The decoded value.
+     * @throws {Error} Invalid BREAK.
      */
-    static decode(val: number, has_parent?: boolean, parent_indefinite?: boolean): (null | undefined | boolean | Symbol | Simple);
+    static decode(val: number, has_parent?: boolean, parent_indefinite?: boolean): (null | undefined | boolean | symbol | Simple);
     /**
      * Creates an instance of Simple.
      *
-     * @param {number} value - the simple value's integer value
+     * @param {number} value The simple value's integer value.
      */
     constructor(value: number);
     value: number;
     /**
-     * Debug string for simple value
+     * Debug string for simple value.
      *
-     * @returns {string} simple(value)
+     * @returns {string} Formated string of `simple(value)`.
      */
     toString(): string;
     /**
-     * Debug string for simple value (backward-compatibility version)
+     * Push the simple value onto the CBOR stream.
      *
-     * @returns {string} simple(value)
+     * @param {object} gen The generator to push onto.
+     * @returns {boolean} True on success.
      */
-    inspect(depth: any, opts: any): string;
-    /**
-     * Push the simple value onto the CBOR stream
-     *
-     * @param {Object} gen The generator to push onto
-     */
-    encodeCBOR(gen: any): any;
+    encodeCBOR(gen: object): boolean;
 }

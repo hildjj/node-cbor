@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Commented - Documentation</title>
+    <title>lib/map.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,544 +29,201 @@
 
 <div id="main">
     
-    <h1 class="page-title">Commented</h1>
-    
-
-    
-
-
-
-
-<section>
-
-<header>
-    
-        <h2>
-        Commented
-        </h2>
-        
-            <div class="class-description">Generate the expanded format of RFC 7049, section 2.2.1.</div>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-<div class="section-method">
-
-    
-    <h2>Constructor</h2>
-    
-
-    <h4 class="name" id="Commented"><span class="type-signature"></span>new Commented<span class="signature">(options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Create a CBOR commenter.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_commented.js.html">lib/commented.js</a>, <a href="lib_commented.js.html#line69">line 69</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-        <th>Default</th>
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="global.html#CommentOptions">CommentOptions</a></code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    {}
-                
-                </td>
-            
-
-            <td class="description last">
-                Stream options.
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-    
-    </div>
-
-    
-        <h3 class="subsection-title">Extends</h3>
-
-        
-
-
-    <ul>
-        <li>stream.Transform</li>
-    </ul>
-
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id=".comment"><span class="type-signature">(static) </span>comment<span class="signature">(input, options<span class="signature-attributes">opt</span>, cb<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Comment on an input Buffer or string, creating a string passed to the
-callback.  If callback not specified, a promise is returned.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_commented.js.html">lib/commented.js</a>, <a href="lib_commented.js.html#line153">line 153</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-        <th>Default</th>
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>input</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>string</code></span>
-|
-
-<span class="param-type"><code>Buffer</code></span>
-|
-
-<span class="param-type"><code>ArrayBuffer</code></span>
-|
-
-<span class="param-type"><code>Uint8Array</code></span>
-|
-
-<span class="param-type"><code>Uint8ClampedArray</code></span>
-|
-
-<span class="param-type"><code>DataView</code></span>
-|
-
-<span class="param-type"><code>stream.Readable</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">
-                Something to parse.
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="global.html#CommentOptions">CommentOptions</a></code></span>
-|
-
-<span class="param-type"><code><a href="global.html#commentCallback">commentCallback</a></code></span>
-|
-
-<span class="param-type"><code>string</code></span>
-|
-
-<span class="param-type"><code>number</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    {}
-                
-                </td>
-            
-
-            <td class="description last">
-                Encoding, max_depth, or callback.
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>cb</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="global.html#commentCallback">commentCallback</a></code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    null
-                
-                </td>
-            
-
-            <td class="description last">
-                If specified, called on completion.
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-throws">
-<h5>Throws:</h5>
-
-        
-
-<dl>
-    <dt>
-        <div class="param-desc">
-        Input required.
-        </div>
-    </dt>
-    <dd></dd>
-    <dt>
-        <dl>
-            <dt>
-                Type
-            </dt>
-            <dd>
-                
-<span class="param-type"><code>Error</code></span>
-
-
-            </dd>
-        </dl>
-    </dt>
-    <dd></dd>
-</dl>
-
-
-    
-</div>
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>Promise</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    If cb not specified.
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-    
-
-    
-
-    
-</article>
-
-</section>
+    <h1 class="page-title">lib/map.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict'
+
+const { Buffer } = require('buffer')
+const encoder = require('./encoder')
+const decoder = require('./decoder')
+const { MT } = require('./constants')
+
+/**
+ * Wrapper around a JavaScript Map object that allows the keys to be
+ * any complex type.  The base Map object allows this, but will only
+ * compare the keys by identity, not by value.  CborMap translates keys
+ * to CBOR first (and base64's them to ensure by-value comparison).
+ *
+ * This is not a subclass of Object, because it would be tough to get
+ * the semantics to be an exact match.
+ *
+ * @extends Map
+ */
+class CborMap extends Map {
+  /**
+   * Creates an instance of CborMap.
+   *
+   * @param {Iterable&lt;any>} [iterable] An Array or other iterable
+   *   object whose elements are key-value pairs (arrays with two elements, e.g.
+   *   &lt;code>[[ 1, 'one' ],[ 2, 'two' ]]&lt;/code>). Each key-value pair is added
+   *   to the new CborMap; null values are treated as undefined.
+   */
+  constructor(iterable) {
+    super(iterable)
+  }
+
+  /**
+   * @ignore
+   */
+  static _encode(key) {
+    return encoder.encodeCanonical(key).toString('base64')
+  }
+
+  /**
+   * @ignore
+   */
+  static _decode(key) {
+    return decoder.decodeFirstSync(key, 'base64')
+  }
+
+  /**
+   * Retrieve a specified element.
+   *
+   * @param {any} key The key identifying the element to retrieve.
+   *   Can be any type, which will be serialized into CBOR and compared by
+   *   value.
+   * @returns {any} The element if it exists, or &lt;code>undefined&lt;/code>.
+   */
+  get(key) {
+    return super.get(CborMap._encode(key))
+  }
+
+  /**
+   * Adds or updates an element with a specified key and value.
+   *
+   * @param {any} key The key identifying the element to store.
+   *   Can be any type, which will be serialized into CBOR and compared by
+   *   value.
+   * @param {any} val The element to store.
+   * @returns {this} This object.
+   */
+  set(key, val) {
+    return super.set(CborMap._encode(key), val)
+  }
+
+  /**
+   * Removes the specified element.
+   *
+   * @param {any} key The key identifying the element to delete. Can be any
+   *   type, which will be serialized into CBOR and compared by value.
+   * @returns {boolean} True if an element in the Map object existed and has
+   *   been removed, or false if the element does not exist.
+   */
+  delete(key) {
+    return super.delete(CborMap._encode(key))
+  }
+
+  /**
+   * Does an element with the specified key exist?
+   *
+   * @param {any} key The key identifying the element to check.
+   *   Can be any type, which will be serialized into CBOR and compared by
+   *   value.
+   * @returns {boolean} True if an element with the specified key exists in
+   *   the Map object; otherwise false.
+   */
+  has(key) {
+    return super.has(CborMap._encode(key))
+  }
+
+  /**
+   * Returns a new Iterator object that contains the keys for each element
+   * in the Map object in insertion order.  The keys are decoded into their
+   * original format.
+   *
+   * @yields {any} The keys of the map.
+   */
+  *keys() {
+    for (const k of super.keys()) {
+      yield CborMap._decode(k)
+    }
+  }
+
+  /* eslint-disable jsdoc/require-returns-check */
+  /**
+   * Returns a new Iterator object that contains the [key, value] pairs for
+   * each element in the Map object in insertion order.
+   *
+   * @yields {any[]} Key value pairs.
+   * @returns {IterableIterator&lt;any, any>} Key value pairs.
+   */
+  *entries() {
+    for (const kv of super.entries()) {
+      yield [CborMap._decode(kv[0]), kv[1]]
+    }
+  }
+  /* eslint-enable jsdoc/require-returns-check */
+
+  /**
+   * Returns a new Iterator object that contains the [key, value] pairs for
+   * each element in the Map object in insertion order.
+   *
+   * @returns {IterableIterator} Key value pairs.
+   */
+  [Symbol.iterator]() {
+    return this.entries()
+  }
+
+  /**
+   * Executes a provided function once per each key/value pair in the Map
+   * object, in insertion order.
+   *
+   * @param {function(any, any, Map): undefined} fun Function to execute for
+   *  each element, which takes a value, a key, and the Map being traversed.
+   * @param {any} thisArg Value to use as this when executing callback.
+   * @throws {TypeError} Invalid function.
+   */
+  forEach(fun, thisArg) {
+    if (typeof fun !== 'function') {
+      throw new TypeError('Must be function')
+    }
+    for (const kv of super.entries()) {
+      fun.call(this, kv[1], CborMap._decode(kv[0]), this)
+    }
+  }
+
+  /**
+   * Push the simple value onto the CBOR stream.
+   *
+   * @param {object} gen The generator to push onto.
+   * @returns {boolean} True on success.
+   */
+  encodeCBOR(gen) {
+    if (!gen._pushInt(this.size, MT.MAP)) {
+      return false
+    }
+    if (gen.canonical) {
+      const entries = Array.from(super.entries())
+        .map(kv => [Buffer.from(kv[0], 'base64'), kv[1]])
+      entries.sort((a, b) => a[0].compare(b[0]))
+      for (const kv of entries) {
+        if (!(gen.push(kv[0]) &amp;&amp; gen.pushAny(kv[1]))) {
+          return false
+        }
+      }
+    } else {
+      for (const kv of super.entries()) {
+        if (!(gen.push(Buffer.from(kv[0], 'base64')) &amp;&amp; gen.pushAny(kv[1]))) {
+          return false
+        }
+      }
+    }
+    return true
+  }
+}
+
+module.exports = CborMap
+</code></pre>
+        </article>
+    </section>
 
 
 

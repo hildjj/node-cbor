@@ -10,6 +10,7 @@ const MAX_SAFE_HIGH = 0x1fffff
 /**
  * Convert a UTF8-encoded Buffer to a JS string.  If possible, throw an error
  * on invalid UTF8.  Byte Order Marks are not looked at or stripped.
+ *
  * @private
  */
 const td = new TextDecoder('utf8', {fatal: true, ignoreBOM: true})
@@ -242,8 +243,8 @@ exports.cborValueToString = function cborValueToString(val, float_bytes = -1) {
         const hex = buf.toString('hex')
         return (float_bytes === -Infinity) ? hex : `h'${hex}'`
       }
-      if (val && (typeof val.inspect === 'function')) {
-        return val.inspect()
+      if (typeof val[Symbol.for('nodejs.util.inspect.custom')] === 'function') {
+        return val[Symbol.for('nodejs.util.inspect.custom')]()
       }
       // Shouldn't get non-empty arrays here
       if (Array.isArray(val)) {
@@ -277,8 +278,9 @@ const B64URL_SWAPS = {
 }
 
 /**
- * @param {Buffer|Uint8Array|Uint8ClampedArray|ArrayBuffer|DataView} buf -
- *   Buffer to convert
+ * @param {Buffer|Uint8Array|Uint8ClampedArray|ArrayBuffer|DataView} buf
+ *   Buffer to convert.
+ * @returns {string} Base64url string.
  * @private
  */
 exports.base64url = function base64url(buf) {
@@ -288,8 +290,9 @@ exports.base64url = function base64url(buf) {
 }
 
 /**
- * @param {Buffer|Uint8Array|Uint8ClampedArray|ArrayBuffer|DataView} buf -
- *   Buffer to convert
+ * @param {Buffer|Uint8Array|Uint8ClampedArray|ArrayBuffer|DataView} buf
+ *   Buffer to convert.
+ * @returns {string} Base64 string.
  * @private
  */
 exports.base64 = function base64(buf) {
