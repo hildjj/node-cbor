@@ -1,7 +1,7 @@
 {
   "name": "cbor",
   "version": "8.0.0",
-  "description": "Encode and parse data in the Concise Binary Object Representation (CBOR) data format (RFC7049).",
+  "description": "Encode and parse data in the Concise Binary Object Representation (CBOR) data format (RFC8949).",
   "main": "./lib/cbor.js",
   "repository": {
     "type": "git",
@@ -28,7 +28,9 @@
   "keywords": [
     "coap",
     "cbor",
-    "json"
+    "json",
+    "rfc7049",
+    "rfc8949"
   ],
   "author": {
     "name": "Joe Hildebrand",

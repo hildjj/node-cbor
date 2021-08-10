@@ -41,4 +41,4 @@ SEE ALSO
 --------
 
 * [node-cbor](https://github.com/hildjj/node-cbor)
-* [RFC 7049](http://tools.ietf.org/html/rfc7049)
+* [RFC 8949](https://www.rfc-editor.org/rfc/rfc8949.html)

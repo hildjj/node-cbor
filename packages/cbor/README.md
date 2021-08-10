@@ -1,6 +1,6 @@
 # cbor
 
-Encode and parse data in the Concise Binary Object Representation (CBOR) data format ([RFC7049](http://tools.ietf.org/html/rfc7049)).
+Encode and parse data in the Concise Binary Object Representation (CBOR) data format ([RFC8949](https://www.rfc-editor.org/rfc/rfc8949.html)).
 
 ## Supported Node.js versions
 
@@ -252,7 +252,7 @@ cbor.decodeFirstSync(input, {
 Developers
 ----------
 
-The tests for this package use a set of test vectors from RFC 7049 appendix A
+The tests for this package use a set of test vectors from RFC 8949 appendix A
 by importing a machine readable version of them from
 https://github.com/cbor/test-vectors. For these tests to work, you will need
 to use the command `git submodule update --init` after cloning or pulling this
