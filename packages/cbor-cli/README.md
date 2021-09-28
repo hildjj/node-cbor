@@ -2,7 +2,7 @@
 
 A command-line interface for encoding and parse data in the Concise Binary
 Object Representation (CBOR) data format
-([RFC7049](http://tools.ietf.org/html/rfc7049)).
+([RFC8949](https://www.rfc-editor.org/rfc/rfc8949.html)).
 
 ## Supported Node.js versions
 

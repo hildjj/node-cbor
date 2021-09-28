@@ -25,9 +25,9 @@ declare class Tagged {
     /**
      * Creates an instance of Tagged.
      *
-     * @param {number} tag - the number of the tag
-     * @param {any} value - the value inside the tag
-     * @param {Error} [err] - the error that was thrown parsing the tag, or null
+     * @param {number} tag The number of the tag.
+     * @param {any} value The value inside the tag.
+     * @param {Error} [err] The error that was thrown parsing the tag, or null.
      */
     constructor(tag: number, value: any, err?: Error);
     tag: number;
@@ -35,29 +35,30 @@ declare class Tagged {
     err: Error;
     toJSON(): any;
     /**
-     * Convert to a String
+     * Convert to a String.
      *
-     * @returns {string} string of the form '1(2)'
+     * @returns {string} String of the form '1(2)'.
      */
     toString(): string;
     /**
-     * Push the simple value onto the CBOR stream
+     * Push the simple value onto the CBOR stream.
      *
-     * @param {Object} gen The generator to push onto
+     * @param {object} gen The generator to push onto.
+     * @returns {boolean} True on success.
      */
-    encodeCBOR(gen: any): any;
+    encodeCBOR(gen: object): boolean;
     /**
      * If we have a converter for this type, do the conversion.  Some converters
      * are built-in.  Additional ones can be passed in.  If you want to remove
      * a built-in converter, pass a converter in whose value is 'null' instead
      * of a function.
      *
-     * @param {Object} converters - keys in the object are a tag number, the value
+     * @param {object} converters Keys in the object are a tag number, the value
      *   is a function that takes the decoded CBOR and returns a JavaScript value
      *   of the appropriate type.  Throw an exception in the function on errors.
-     * @returns {any} - the converted item
+     * @returns {any} The converted item.
      */
-    convert(converters: any): any;
+    convert(converters: object): any;
 }
 declare namespace Tagged {
     export { INTERNAL_JSON, TagFunction, TagMap };
@@ -70,7 +71,7 @@ declare namespace Tagged {
 type TagFunction = (value: any, tag: Tagged) => any;
 declare const INTERNAL_JSON: unique symbol;
 /**
- * A mapping from tag number to a tag decoding function
+ * A mapping from tag number to a tag decoding function.
  */
 type TagMap = {
     [x: string]: TagFunction;

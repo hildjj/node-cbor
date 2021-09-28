@@ -13,7 +13,7 @@ DESCRIPTION
 
 `json2cbor` output a CBOR data stream for an input set of files.  The files
 can either consist of a single JSON item, or an
-[RFC 7464](https://tools.ietf.org/html/rfc7464) encoded JSON text series.  
+[RFC 7464](https://tools.ietf.org/html/rfc7464) encoded JSON text series.
 In the latter case, each JSON item starts with the byte "1e" (hex), "30" (dec),
 otherwise known as "Record Separator" (RS), and finishes with a newline.
 
@@ -61,4 +61,4 @@ SEE ALSO
 --------
 
 * [node-cbor](https://github.com/hildjj/node-cbor)
-* [RFC 7049](http://tools.ietf.org/html/rfc7049)
+* [RFC 8949](https://www.rfc-editor.org/rfc/rfc8949.html)

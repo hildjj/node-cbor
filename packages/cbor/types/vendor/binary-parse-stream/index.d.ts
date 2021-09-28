@@ -6,22 +6,29 @@ export = BinaryParseStream;
  * fed a buffer of that length from the input.  When your generator returns,
  * the return value will be pushed to the output side.
  *
- * @class BinaryParseStream
- * @extends {TransformStream}
+ * @extends stream.Transform
  */
-declare class BinaryParseStream extends Stream.Transform {
-    constructor(options: any);
+declare class BinaryParseStream extends stream.Transform {
+    /**
+     * Creates an instance of BinaryParseStream.
+     *
+     * @param {stream.TransformOptions} options Stream options.
+     * @memberof BinaryParseStream
+     */
+    constructor(options: stream.TransformOptions);
     bs: NoFilter;
     __fresh: boolean;
     __needed: number;
     /**
+     * Subclasses must override this to set their parsing behavior.  Yield a
+     * number to receive a Buffer of that many bytes.
+     *
      * @abstract
-     * @protected
      * @returns {Generator<number, undefined, Buffer>}
      */
-    protected _parse(): Generator<number, undefined, Buffer>;
+    _parse(): Generator<number, undefined, Buffer>;
     __restart(): void;
     __parser: Generator<number, undefined, Buffer>;
 }
-import Stream = require("stream");
+import stream = require("stream");
 import NoFilter = require("nofilter");

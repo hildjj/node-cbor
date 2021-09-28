@@ -15,45 +15,43 @@ function plural(c) {
 }
 
 /**
-  * @typedef CommentOptions
-  * @property {number} [max_depth=10] - how many times to indent
-  *   the dashes
-  * @property {number} [depth=1] - initial indentation depth
-  * @property {boolean} [no_summary=false] - if true, omit the summary
-  *   of the full bytes read at the end
-  * @property {object} [tags] - mapping from tag number to function(v),
-  *   where v is the decoded value that comes after the tag, and where the
-  *   function returns the correctly-created value for that tag.
-  * @property {object} [tags] - mapping from tag number to function(v),
-  *   where v is the decoded value that comes after the tag, and where the
-  *   function returns the correctly-created value for that tag.
-  * @property {boolean} [preferWeb=false] if true, prefer Uint8Arrays to
-  *   be generated instead of node Buffers.  This might turn on some more
-  *   changes in the future, so forward-compatibility is not guaranteed yet.
-  * @property {string} [encoding='hex'] - Encoding to use for input, if it
-  *   is a string
-  */
+ * @typedef CommentOptions
+ * @property {number} [max_depth=10] How many times to indent
+ *   the dashes.
+ * @property {number} [depth=1] Initial indentation depth.
+ * @property {boolean} [no_summary=false] If true, omit the summary
+ *   of the full bytes read at the end.
+ * @property {object} [tags] Mapping from tag number to function(v),
+ *   where v is the decoded value that comes after the tag, and where the
+ *   function returns the correctly-created value for that tag.
+ * @property {boolean} [preferWeb=false] If true, prefer Uint8Arrays to
+ *   be generated instead of node Buffers.  This might turn on some more
+ *   changes in the future, so forward-compatibility is not guaranteed yet.
+ * @property {BufferEncoding} [encoding='hex'] Encoding to use for input, if it
+ *   is a string.
+ */
 /**
-  * @callback commentCallback
-  * @param {Error} [error] - if one was generated
-  * @param {string} [commented] - the comment string
-  * @returns {void}
-  */
+ * @callback commentCallback
+ * @param {Error} [error] If one was generated.
+ * @param {string} [commented] The comment string.
+ * @returns {void}
+ */
 /**
-  * Normalize inputs to the static functions.
-  *
-  * @param {CommentOptions|commentCallback|string|number} opts encoding,
-  *   max_depth, or callback
-  * @param {commentCallback} [cb] - called on completion
-  * @returns {{options: CommentOptions, cb: commentCallback}}
-  * @private
-  */
+ * Normalize inputs to the static functions.
+ *
+ * @param {CommentOptions|commentCallback|string|number} opts Encoding,
+ *   max_depth, or callback.
+ * @param {commentCallback} [cb] Called on completion.
+ * @returns {{options: CommentOptions, cb: commentCallback}} Normalized value.
+ * @throws {TypeError} Unknown option type.
+ * @private
+ */
 function normalizeOptions(opts, cb) {
   switch (typeof opts) {
     case 'function':
       return { options: {}, cb: /** @type {commentCallback} */ (opts) }
     case 'string':
-      return { options: {encoding: opts}, cb }
+      return { options: {encoding: /** @type {BufferEncoding} */ (opts)}, cb }
     case 'number':
       return { options: { max_depth: opts }, cb }
     case 'object':
@@ -64,15 +62,15 @@ function normalizeOptions(opts, cb) {
 }
 
 /**
- * Generate the expanded format of RFC 7049, section 2.2.1
+ * Generate the expanded format of RFC 8949, section 3.2.2.
  *
- * @extends {stream.Transform}
+ * @extends stream.Transform
  */
 class Commented extends stream.Transform {
   /**
    * Create a CBOR commenter.
    *
-   * @param {CommentOptions} [options={}] - Stream options
+   * @param {CommentOptions} [options={}] Stream options.
    */
   constructor(options = {}) {
     const {
@@ -119,6 +117,7 @@ class Commented extends stream.Transform {
   }
 
   /**
+   * @param {Buffer} v Descend into embedded CBOR.
    * @private
    */
   _tag_24(v) {
@@ -144,11 +143,12 @@ class Commented extends stream.Transform {
    *
    * @static
    * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
-   *   |DataView|stream.Readable} input
+   *   |DataView|stream.Readable} input Something to parse.
    * @param {CommentOptions|commentCallback|string|number} [options={}]
-   *   encoding, max_depth, or callback
-   * @param {commentCallback} [cb] - called on completion
-   * @returns {Promise} if cb not specified
+   *   Encoding, max_depth, or callback.
+   * @param {commentCallback} [cb] If specified, called on completion.
+   * @returns {Promise} If cb not specified.
+   * @throws {Error} Input required.
    */
   static comment(input, options = {}, cb = null) {
     if (input == null) {
@@ -179,7 +179,7 @@ class Commented extends stream.Transform {
   }
 
   /**
-   * @private
+   * @ignore
    */
   _on_error(er) {
     this.push('ERROR: ')
@@ -188,7 +188,7 @@ class Commented extends stream.Transform {
   }
 
   /**
-   * @private
+   * @ignore
    */
   _on_read(buf) {
     this.all.write(buf)
@@ -202,11 +202,11 @@ class Commented extends stream.Transform {
       ind = 1
     }
     this.push(new Array(ind + 1).join(' '))
-    return this.push('-- ')
+    this.push('-- ')
   }
 
   /**
-   * @private
+   * @ignore
    */
   _on_more(mt, len, parent_mt, pos) {
     let desc = ''
@@ -239,29 +239,29 @@ class Commented extends stream.Transform {
         }
         break
     }
-    return this.push(`${desc} next ${len} byte${plural(len)}\n`)
+    this.push(`${desc} next ${len} byte${plural(len)}\n`)
   }
 
   /**
-   * @private
+   * @ignore
    */
-  _on_start_string(mt, tag, parent_mt, pos) {
+  _on_start_string(mt, len, parent_mt, pos) {
     let desc = ''
 
     this.depth++
     switch (mt) {
       case MT.BYTE_STRING:
-        desc = `Bytes, length: ${tag}`
+        desc = `Bytes, length: ${len}`
         break
       case MT.UTF8_STRING:
-        desc = `String, length: ${tag.toString()}`
+        desc = `String, length: ${len.toString()}`
         break
     }
-    return this.push(`${desc}\n`)
+    this.push(`${desc}\n`)
   }
 
   /**
-   * @private
+   * @ignore
    */
   _on_start(mt, tag, parent_mt, pos) {
     this.depth++
@@ -305,14 +305,14 @@ class Commented extends stream.Transform {
         this.push('String (streaming)')
         break
     }
-    return this.push('\n')
+    this.push('\n')
   }
 
   /**
-   * @private
+   * @ignore
    */
   _on_stop(mt) {
-    return this.depth--
+    this.depth--
   }
 
   /**
@@ -357,12 +357,12 @@ class Commented extends stream.Transform {
   }
 
   /**
-   * @private
+   * @ignore
    */
   _on_data() {
     this.push('0x')
     this.push(this.all.read().toString('hex'))
-    return this.push('\n')
+    this.push('\n')
   }
 }
 

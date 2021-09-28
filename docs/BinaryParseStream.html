@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Tagged - Documentation</title>
+    <title>BinaryParseStream - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Tagged</h1>
+    <h1 class="page-title">BinaryParseStream</h1>
     
 
     
@@ -42,12 +42,14 @@
 <header>
     
         <h2>
-        Tagged
+        BinaryParseStream
         </h2>
         
-            <div class="class-description">A CBOR tagged item, where the tag does not have semantics specified at the
-moment, or those semantics threw an error during parsing. Typically this will
-be an extension point you're not yet expecting.</div>
+            <div class="class-description">BinaryParseStream is a TransformStream that consumes buffers and outputs
+objects on the other end.  It expects your subclass to implement a `_parse`
+method that is a generator.  When your generator yields a number, it'll be
+fed a buffer of that length from the input.  When your generator returns,
+the return value will be pushed to the output side.</div>
         
     
 </header>
@@ -62,14 +64,14 @@ be an extension point you're not yet expecting.</div>
     <h2>Constructor</h2>
     
 
-    <h4 class="name" id="Tagged"><span class="type-signature"></span>new Tagged<span class="signature">(tag, value, err<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="BinaryParseStream"><span class="type-signature"></span>new BinaryParseStream<span class="signature">(options)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    Creates an instance of Tagged.
+    Creates an instance of BinaryParseStream.
 </div>
 
 
@@ -105,7 +107,7 @@ be an extension point you're not yet expecting.</div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_tagged.js.html">lib/tagged.js</a>, <a href="lib_tagged.js.html#line268">line 268</a>
+        <a href="vendor_binary-parse-stream_index.js.html">vendor/binary-parse-stream/index.js</a>, <a href="vendor_binary-parse-stream_index.js.html#line23">line 23</a>
     </li></ul></dd>
     
 
@@ -137,8 +139,6 @@ be an extension point you're not yet expecting.</div>
         <th>Type</th>
 
         
-        <th>Attributes</th>
-        
 
         
 
@@ -151,102 +151,24 @@ be an extension point you're not yet expecting.</div>
 
         <tr>
             
-                <td class="name"><code>tag</code></td>
+                <td class="name"><code>options</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><code>number</code></span>
+<span class="param-type"><code>stream.TransformOptions</code></span>
 
 
             
             </td>
 
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
             
 
             
 
             <td class="description last">
-                The number of the tag.
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>value</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>any</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">
-                The value inside the tag.
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>err</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>Error</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">
-                The error that was thrown parsing the tag, or null.
+                Stream options.
                 
             </td>
         </tr>
@@ -275,9 +197,27 @@ be an extension point you're not yet expecting.</div>
     </div>
 
     
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li>stream.Transform</li>
+    </ul>
+
 
     
 
+    
+
+    
+        <h3 class="subsection-title">Classes</h3>
+
+        <dl>
+            <dt><a href="BinaryParseStream.html">BinaryParseStream</a></dt>
+            <dd></dd>
+        </dl>
     
 
      
@@ -285,606 +225,7 @@ be an extension point you're not yet expecting.</div>
     
 
     
-        <h3 class="subsection-title">Members</h3>
 
-        
-            
-<div class="section-members">
-<h4 class="name" id=".TAGS"><span class="type-signature">(static) </span>TAGS<span class="type-signature"> :<a href="global.html#TagMap">TagMap</a></span></h4>
-
-
-
-
-<div class="description">
-    The current set of supported tags.  May be modified by plugins.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_tagged.js.html">lib/tagged.js</a>, <a href="lib_tagged.js.html#line359">line 359</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><code><a href="global.html#TagMap">TagMap</a></code></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-</div>
-
-        
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id=".reset"><span class="type-signature">(static) </span>reset<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Reset the supported tags to the original set, before any plugins modified
-the list.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_tagged.js.html">lib/tagged.js</a>, <a href="lib_tagged.js.html#line371">line 371</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="convert"><span class="type-signature"></span>convert<span class="signature">(converters)</span><span class="type-signature"> &rarr; {any}</span></h4>
-
-    
-
-
-
-<div class="description">
-    If we have a converter for this type, do the conversion.  Some converters
-are built-in.  Additional ones can be passed in.  If you want to remove
-a built-in converter, pass a converter in whose value is 'null' instead
-of a function.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_tagged.js.html">lib/tagged.js</a>, <a href="lib_tagged.js.html#line333">line 333</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>converters</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>object</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                Keys in the object are a tag number, the value
-  is a function that takes the decoded CBOR and returns a JavaScript value
-  of the appropriate type.  Throw an exception in the function on errors.
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>any</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    The converted item.
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="encodeCBOR"><span class="type-signature"></span>encodeCBOR<span class="signature">(gen)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Push the simple value onto the CBOR stream.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_tagged.js.html">lib/tagged.js</a>, <a href="lib_tagged.js.html#line317">line 317</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>gen</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>object</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                The generator to push onto.
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>boolean</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    True on success.
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="toString"><span class="type-signature"></span>toString<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Convert to a String.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_tagged.js.html">lib/tagged.js</a>, <a href="lib_tagged.js.html#line307">line 307</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>string</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    String of the form '1(2)'.
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
     
 
     

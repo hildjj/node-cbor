@@ -26,5 +26,5 @@ test('decode', t => {
 
 test('inspect', t => {
   const u = new cbor.Simple(0)
-  t.is(u.inspect(), 'simple(0)')
+  t.is(u[Symbol.for('nodejs.util.inspect.custom')](), 'simple(0)')
 })

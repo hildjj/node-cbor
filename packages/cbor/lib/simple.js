@@ -9,7 +9,7 @@ class Simple {
   /**
    * Creates an instance of Simple.
    *
-   * @param {number} value - the simple value's integer value
+   * @param {number} value The simple value's integer value.
    */
   constructor(value) {
     if (typeof value !== 'number') {
@@ -22,27 +22,30 @@ class Simple {
   }
 
   /**
-   * Debug string for simple value
+   * Debug string for simple value.
    *
-   * @returns {string} simple(value)
+   * @returns {string} Formated string of `simple(value)`.
    */
   toString() {
     return `simple(${this.value})`
   }
 
   /**
-   * Debug string for simple value (backward-compatibility version)
+   * Debug string for simple value.
    *
-   * @returns {string} simple(value)
+   * @param {number} depth How deep are we?
+   * @param {object} opts Options.
+   * @returns {string} Formatted string of `simple(value)`.
    */
-  inspect(depth, opts) {
+  [Symbol.for('nodejs.util.inspect.custom')](depth, opts) {
     return `simple(${this.value})`
   }
 
   /**
-   * Push the simple value onto the CBOR stream
+   * Push the simple value onto the CBOR stream.
    *
-   * @param {Object} gen The generator to push onto
+   * @param {object} gen The generator to push onto.
+   * @returns {boolean} True on success.
    */
   encodeCBOR(gen) {
     return gen._pushInt(this.value, MT.SIMPLE_FLOAT)
@@ -51,8 +54,8 @@ class Simple {
   /**
    * Is the given object a Simple?
    *
-   * @param {any} obj - object to test
-   * @returns {boolean} - is it Simple?
+   * @param {any} obj Object to test.
+   * @returns {boolean} Is it Simple?
    */
   static isSimple(obj) {
     return obj instanceof Simple
@@ -64,11 +67,12 @@ class Simple {
    * `null` or `undefined`, so that the value can be passed through a
    * stream in object mode.
    *
-   * @param {number} val - the CBOR additional info to convert
-   * @param {boolean} [has_parent=true] - Does the CBOR item have a parent?
-   * @param {boolean} [parent_indefinite=false] - Is the parent element
+   * @param {number} val The CBOR additional info to convert.
+   * @param {boolean} [has_parent=true] Does the CBOR item have a parent?
+   * @param {boolean} [parent_indefinite=false] Is the parent element
    *   indefinitely encoded?
-   * @returns {(null|undefined|boolean|Symbol|Simple)} - the decoded value
+   * @returns {(null|undefined|boolean|symbol|Simple)} The decoded value.
+   * @throws {Error} Invalid BREAK.
    */
   static decode(val, has_parent = true, parent_indefinite = false) {
     switch (val) {

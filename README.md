@@ -1,6 +1,6 @@
 # CBOR
 
-Encode and parse data in the Concise Binary Object Representation (CBOR) data format ([RFC7049](http://tools.ietf.org/html/rfc7049)).
+Encode and parse data in the Concise Binary Object Representation (CBOR) data format ([RFC8949](https://www.rfc-editor.org/rfc/rfc8949.html)).
 
 ## Pointers
 

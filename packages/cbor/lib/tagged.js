@@ -63,21 +63,24 @@ function swapEndian(ab, size, byteOffset, byteLength) {
  * original Tagged instance.
  *
  * @callback TagFunction
- * @param {any} value - the value inside the tag
- * @param {Tagged} tag - the enclosing Tagged instance; useful if you want to
+ * @param {any} value The value inside the tag.
+ * @param {Tagged} tag The enclosing Tagged instance; useful if you want to
  *   modify it and return it.  Also available as "this".
- * @return {any} the transformed value
+ * @returns {any} The transformed value.
  */
 
+/* eslint-disable jsdoc/check-types */
 /**
- * A mapping from tag number to a tag decoding function
+ * A mapping from tag number to a tag decoding function.
+ *
  * @typedef {Object.<string, TagFunction>} TagMap
  */
+/* eslint-enable jsdoc/check-types */
 
 /**
-  * @type {TagMap}
-  * @private
-  */
+ * @type {TagMap}
+ * @private
+ */
 const TAGS = {
   // Standard date/time string; see Section 3.4.1
   0: v => new Date(v),
@@ -252,9 +255,9 @@ for (const n of Object.keys(TYPED_ARRAY_TAGS)) {
 }
 
 /**
-  * @type {TagMap}
-  * @private
-  */
+ * @type {TagMap}
+ * @private
+ */
 let current_TAGS = {}
 
 /**
@@ -266,9 +269,9 @@ class Tagged {
   /**
    * Creates an instance of Tagged.
    *
-   * @param {number} tag - the number of the tag
-   * @param {any} value - the value inside the tag
-   * @param {Error} [err] - the error that was thrown parsing the tag, or null
+   * @param {number} tag The number of the tag.
+   * @param {any} value The value inside the tag.
+   * @param {Error} [err] The error that was thrown parsing the tag, or null.
    */
   constructor(tag, value, err) {
     this.tag = tag
@@ -297,18 +300,19 @@ class Tagged {
   }
 
   /**
-   * Convert to a String
+   * Convert to a String.
    *
-   * @returns {string} string of the form '1(2)'
+   * @returns {string} String of the form '1(2)'.
    */
   toString() {
     return `${this.tag}(${JSON.stringify(this.value)})`
   }
 
   /**
-   * Push the simple value onto the CBOR stream
+   * Push the simple value onto the CBOR stream.
    *
-   * @param {Object} gen The generator to push onto
+   * @param {object} gen The generator to push onto.
+   * @returns {boolean} True on success.
    */
   encodeCBOR(gen) {
     gen._pushTag(this.tag)
@@ -321,10 +325,10 @@ class Tagged {
    * a built-in converter, pass a converter in whose value is 'null' instead
    * of a function.
    *
-   * @param {Object} converters - keys in the object are a tag number, the value
+   * @param {object} converters Keys in the object are a tag number, the value
    *   is a function that takes the decoded CBOR and returns a JavaScript value
    *   of the appropriate type.  Throw an exception in the function on errors.
-   * @returns {any} - the converted item
+   * @returns {any} The converted item.
    */
   convert(converters) {
     let f = (converters == null) ? undefined : converters[this.tag]

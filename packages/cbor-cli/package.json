@@ -1,7 +1,7 @@
 {
   "name": "cbor-cli",
   "version": "8.0.0",
-  "description": "Command line tools to encode and parse data in the Concise Binary Object Representation (CBOR) data format (RFC7049).",
+  "description": "Command line tools to encode and parse data in the Concise Binary Object Representation (CBOR) data format (RFC8949).",
   "repository": {
     "type": "git",
     "url": "http://github.com/hildjj/node-cbor.git",
@@ -44,7 +44,7 @@
     "marked": "^0.7.0",
     "marked-man": "^0.7.0",
     "mock-stdio": "^1.0.3",
-    "nofilter": "^3.0.2",
+    "nofilter": "^3.0.3",
     "p-event": "^4.2.0",
     "rimraf": "^3.0.2"
   },

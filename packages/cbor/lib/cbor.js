@@ -9,58 +9,58 @@ exports.Tagged = require('./tagged')
 exports.Map = require('./map')
 
 /**
-  * Convenience name for {@linkcode Commented.comment}
-  */
+ * Convenience name for {@linkcode Commented.comment}.
+ */
 exports.comment = exports.Commented.comment
 
 /**
-  * Convenience name for {@linkcode Decoder.decodeAll}
-  */
+ * Convenience name for {@linkcode Decoder.decodeAll}.
+ */
 exports.decodeAll = exports.Decoder.decodeAll
 
 /**
-  * Convenience name for {@linkcode Decoder.decodeFirst}
-  */
+ * Convenience name for {@linkcode Decoder.decodeFirst}.
+ */
 exports.decodeFirst = exports.Decoder.decodeFirst
 
 /**
-  * Convenience name for {@linkcode Decoder.decodeAllSync}
-  */
+ * Convenience name for {@linkcode Decoder.decodeAllSync}.
+ */
 exports.decodeAllSync = exports.Decoder.decodeAllSync
 
 /**
-  * Convenience name for {@linkcode Decoder.decodeFirstSync}
-  */
+ * Convenience name for {@linkcode Decoder.decodeFirstSync}.
+ */
 exports.decodeFirstSync = exports.Decoder.decodeFirstSync
 
 /**
-  * Convenience name for {@linkcode Diagnose.diagnose}
-  */
+ * Convenience name for {@linkcode Diagnose.diagnose}.
+ */
 exports.diagnose = exports.Diagnose.diagnose
 
 /**
-  * Convenience name for {@linkcode Encoder.encode}
-  */
+ * Convenience name for {@linkcode Encoder.encode}.
+ */
 exports.encode = exports.Encoder.encode
 
 /**
-  * Convenience name for {@linkcode Encoder.encodeCanonical}
-  */
+ * Convenience name for {@linkcode Encoder.encodeCanonical}.
+ */
 exports.encodeCanonical = exports.Encoder.encodeCanonical
 
 /**
-  * Convenience name for {@linkcode Encoder.encodeOne}
-  */
+ * Convenience name for {@linkcode Encoder.encodeOne}.
+ */
 exports.encodeOne = exports.Encoder.encodeOne
 
 /**
-  * Convenience name for {@linkcode Encoder.encodeAsync}
-  */
+ * Convenience name for {@linkcode Encoder.encodeAsync}.
+ */
 exports.encodeAsync = exports.Encoder.encodeAsync
 
 /**
-  * Convenience name for {@linkcode Decoder.decodeFirstSync}
-  */
+ * Convenience name for {@linkcode Decoder.decodeFirstSync}.
+ */
 exports.decode = exports.Decoder.decodeFirstSync
 
 /**
@@ -74,13 +74,15 @@ exports.decode = exports.Decoder.decodeFirstSync
  * const level = require('level')
  * const cbor = require('cbor')
  *
- * const db = level('./db', {
- *   keyEncoding: cbor.leveldb,
- *   valueEncoding: cbor.leveldb
- * })
+ * async function putget() {
+ *   const db = level('./db', {
+ *     keyEncoding: cbor.leveldb,
+ *     valueEncoding: cbor.leveldb,
+ *   })
  *
- * await db.put({a:1}, 9857298342094820394820394820398234092834n)
- * const val = await db.get({a:1})) // 9857298342094820394820394820398234092834n
+ *   await db.put({a: 1}, 9857298342094820394820394820398234092834n)
+ *   const val = await db.get({a: 1})
+ * }
  */
 exports.leveldb = {
   decode: exports.Decoder.decodeFirstSync,

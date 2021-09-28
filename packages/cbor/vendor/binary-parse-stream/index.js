@@ -8,9 +8,8 @@
 // more modern JS so I can get tsc to help check types.
 
 'use strict'
-const Stream = require('stream')
+const stream = require('stream')
 const NoFilter = require('nofilter')
-const TransformStream = Stream.Transform
 
 /**
  * BinaryParseStream is a TransformStream that consumes buffers and outputs
@@ -19,10 +18,15 @@ const TransformStream = Stream.Transform
  * fed a buffer of that length from the input.  When your generator returns,
  * the return value will be pushed to the output side.
  *
- * @class BinaryParseStream
- * @extends {TransformStream}
+ * @extends stream.Transform
  */
-class BinaryParseStream extends TransformStream {
+class BinaryParseStream extends stream.Transform {
+  /**
+   * Creates an instance of BinaryParseStream.
+   *
+   * @param {stream.TransformOptions} options Stream options.
+   * @memberof BinaryParseStream
+   */
   constructor(options) {
     super(options)
     // Doesn't work to pass these in as opts, for some reason
@@ -67,8 +71,10 @@ class BinaryParseStream extends TransformStream {
   }
 
   /**
+   * Subclasses must override this to set their parsing behavior.  Yield a
+   * number to receive a Buffer of that many bytes.
+   *
    * @abstract
-   * @protected
    * @returns {Generator<number, undefined, Buffer>}
    */
   /* istanbul ignore next */

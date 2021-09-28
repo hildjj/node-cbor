@@ -8,20 +8,20 @@ export = CborMap;
  * This is not a subclass of Object, because it would be tough to get
  * the semantics to be an exact match.
  *
- * @class CborMap
- * @extends {Map}
+ * @extends Map
  */
 declare class CborMap extends Map<any, any> {
     /**
-     * @private
+     * @ignore
      */
-    private static _encode;
+    static _encode(key: any): string;
     /**
-     * @private
+     * @ignore
      */
-    private static _decode;
+    static _decode(key: any): any;
     /**
      * Creates an instance of CborMap.
+     *
      * @param {Iterable<any>} [iterable] An Array or other iterable
      *   object whose elements are key-value pairs (arrays with two elements, e.g.
      *   <code>[[ 1, 'one' ],[ 2, 'two' ]]</code>). Each key-value pair is added
@@ -29,10 +29,10 @@ declare class CborMap extends Map<any, any> {
      */
     constructor(iterable?: Iterable<any>);
     /**
-     * Push the simple value onto the CBOR stream
+     * Push the simple value onto the CBOR stream.
      *
-     * @param {Object} gen The generator to push onto
-     * @returns {boolean} true on success
+     * @param {object} gen The generator to push onto.
+     * @returns {boolean} True on success.
      */
-    encodeCBOR(gen: any): boolean;
+    encodeCBOR(gen: object): boolean;
 }

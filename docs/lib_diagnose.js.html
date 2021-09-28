@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Tagged - Documentation</title>
+    <title>lib/diagnose.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,870 +29,279 @@
 
 <div id="main">
     
-    <h1 class="page-title">Tagged</h1>
-    
-
-    
-
-
-
-
-<section>
-
-<header>
-    
-        <h2>
-        Tagged
-        </h2>
-        
-            <div class="class-description">A CBOR tagged item, where the tag does not have semantics specified at the
-moment, or those semantics threw an error during parsing. Typically this will
-be an extension point you're not yet expecting.</div>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-<div class="section-method">
-
-    
-    <h2>Constructor</h2>
-    
-
-    <h4 class="name" id="Tagged"><span class="type-signature"></span>new Tagged<span class="signature">(tag, value, err<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Creates an instance of Tagged.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_tagged.js.html">lib/tagged.js</a>, <a href="lib_tagged.js.html#line268">line 268</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>tag</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>number</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">
-                The number of the tag.
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>value</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>any</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">
-                The value inside the tag.
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>err</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>Error</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">
-                The error that was thrown parsing the tag, or null.
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-        <h3 class="subsection-title">Members</h3>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id=".TAGS"><span class="type-signature">(static) </span>TAGS<span class="type-signature"> :<a href="global.html#TagMap">TagMap</a></span></h4>
-
-
-
-
-<div class="description">
-    The current set of supported tags.  May be modified by plugins.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_tagged.js.html">lib/tagged.js</a>, <a href="lib_tagged.js.html#line359">line 359</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><code><a href="global.html#TagMap">TagMap</a></code></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-</div>
-
-        
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id=".reset"><span class="type-signature">(static) </span>reset<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Reset the supported tags to the original set, before any plugins modified
-the list.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_tagged.js.html">lib/tagged.js</a>, <a href="lib_tagged.js.html#line371">line 371</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="convert"><span class="type-signature"></span>convert<span class="signature">(converters)</span><span class="type-signature"> &rarr; {any}</span></h4>
-
-    
-
-
-
-<div class="description">
-    If we have a converter for this type, do the conversion.  Some converters
-are built-in.  Additional ones can be passed in.  If you want to remove
-a built-in converter, pass a converter in whose value is 'null' instead
-of a function.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_tagged.js.html">lib/tagged.js</a>, <a href="lib_tagged.js.html#line333">line 333</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>converters</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>object</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                Keys in the object are a tag number, the value
-  is a function that takes the decoded CBOR and returns a JavaScript value
-  of the appropriate type.  Throw an exception in the function on errors.
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>any</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    The converted item.
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="encodeCBOR"><span class="type-signature"></span>encodeCBOR<span class="signature">(gen)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Push the simple value onto the CBOR stream.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_tagged.js.html">lib/tagged.js</a>, <a href="lib_tagged.js.html#line317">line 317</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>gen</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>object</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                The generator to push onto.
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>boolean</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    True on success.
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="toString"><span class="type-signature"></span>toString<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Convert to a String.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_tagged.js.html">lib/tagged.js</a>, <a href="lib_tagged.js.html#line307">line 307</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>string</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    String of the form '1(2)'.
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-    
-
-    
-
-    
-</article>
-
-</section>
+    <h1 class="page-title">lib/diagnose.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict'
+
+const stream = require('stream')
+const Decoder = require('./decoder')
+const utils = require('./utils')
+const NoFilter = require('nofilter')
+const {MT, SYMS} = require('./constants')
+
+/**
+ * Things that can act as inputs, from which a NoFilter can be created.
+ *
+ * @typedef {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
+ *   |DataView|stream.Readable} BufferLike
+ */
+
+/**
+ * @typedef DiagnoseOptions
+ * @property {string} [separator='\n'] Output between detected objects.
+ * @property {boolean} [stream_errors=false] Put error info into the
+ *   output stream.
+ * @property {number} [max_depth=-1] The maximum depth to parse.
+ *   Use -1 for "until you run out of memory".  Set this to a finite
+ *   positive number for un-trusted inputs.  Most standard inputs won't nest
+ *   more than 100 or so levels; I've tested into the millions before
+ *   running out of memory.
+ * @property {object} [tags] Mapping from tag number to function(v),
+ *   where v is the decoded value that comes after the tag, and where the
+ *   function returns the correctly-created value for that tag.
+ * @property {boolean} [preferWeb=false] If true, prefer Uint8Arrays to
+ *   be generated instead of node Buffers.  This might turn on some more
+ *   changes in the future, so forward-compatibility is not guaranteed yet.
+ * @property {BufferEncoding} [encoding='hex'] The encoding of input, ignored if
+ *   input is not string.
+ */
+/**
+ * @callback diagnoseCallback
+ * @param {Error} [error] If one was generated.
+ * @param {string} [value] The diagnostic value.
+ * @returns {void}
+ */
+/**
+ * @param {DiagnoseOptions|diagnoseCallback|string} opts Options,
+ *   the callback, or input incoding.
+ * @param {diagnoseCallback} [cb] Called on completion.
+ * @returns {{options: DiagnoseOptions, cb: diagnoseCallback}} Normalized.
+ * @throws {TypeError} Unknown option type.
+ * @private
+ */
+function normalizeOptions(opts, cb) {
+  switch (typeof opts) {
+    case 'function':
+      return { options: {}, cb: /** @type {diagnoseCallback} */ (opts) }
+    case 'string':
+      return { options: { encoding: /** @type {BufferEncoding} */ (opts) }, cb }
+    case 'object':
+      return { options: opts || {}, cb }
+    default:
+      throw new TypeError('Unknown option type')
+  }
+}
+
+/**
+ * Output the diagnostic format from a stream of CBOR bytes.
+ *
+ * @extends stream.Transform
+ */
+class Diagnose extends stream.Transform {
+  /**
+   * Creates an instance of Diagnose.
+   *
+   * @param {DiagnoseOptions} [options={}] Options for creation.
+   */
+  constructor(options = {}) {
+    const {
+      separator = '\n',
+      stream_errors = false,
+      // Decoder options
+      tags,
+      max_depth,
+      preferWeb,
+      encoding,
+      // Stream.Transform options
+      ...superOpts
+    } = options
+    super({
+      ...superOpts,
+      readableObjectMode: false,
+      writableObjectMode: false,
+    })
+
+    this.float_bytes = -1
+    this.separator = separator
+    this.stream_errors = stream_errors
+    this.parser = new Decoder({
+      tags,
+      max_depth,
+      preferWeb,
+      encoding,
+    })
+    this.parser.on('more-bytes', this._on_more.bind(this))
+    this.parser.on('value', this._on_value.bind(this))
+    this.parser.on('start', this._on_start.bind(this))
+    this.parser.on('stop', this._on_stop.bind(this))
+    this.parser.on('data', this._on_data.bind(this))
+    this.parser.on('error', this._on_error.bind(this))
+  }
+
+  _transform(fresh, encoding, cb) {
+    return this.parser.write(fresh, encoding, cb)
+  }
+
+  _flush(cb) {
+    return this.parser._flush(er => {
+      if (this.stream_errors) {
+        if (er) {
+          this._on_error(er)
+        }
+        return cb()
+      }
+      return cb(er)
+    })
+  }
+
+  /**
+   * Convenience function to return a string in diagnostic format.
+   *
+   * @param {BufferLike} input The CBOR bytes to format.
+   * @param {DiagnoseOptions |diagnoseCallback|string} [options={}]
+   *   Options, the callback, or the input encoding.
+   * @param {diagnoseCallback} [cb] Callback.
+   * @throws {TypeError} Input not provided.
+   * @returns {Promise} If callback not specified.
+   */
+  static diagnose(input, options = {}, cb = null) {
+    if (input == null) {
+      throw new TypeError('input required')
+    }
+    ({options, cb} = normalizeOptions(options, cb))
+    const {encoding = 'hex', ...opts} = options
+
+    const bs = new NoFilter()
+    const d = new Diagnose(opts)
+    let p = null
+    if (typeof cb === 'function') {
+      d.on('end', () => cb(null, bs.toString('utf8')))
+      d.on('error', cb)
+    } else {
+      p = new Promise((resolve, reject) => {
+        d.on('end', () => resolve(bs.toString('utf8')))
+        d.on('error', reject)
+      })
+    }
+    d.pipe(bs)
+    utils.guessEncoding(input, encoding).pipe(d)
+    return p
+  }
+
+  /**
+   * @ignore
+   */
+  _on_error(er) {
+    if (this.stream_errors) {
+      this.push(er.toString())
+    } else {
+      this.emit('error', er)
+    }
+  }
+
+  /** @private */
+  _on_more(mt, len, parent_mt, pos) {
+    if (mt === MT.SIMPLE_FLOAT) {
+      this.float_bytes = {
+        2: 1,
+        4: 2,
+        8: 3,
+      }[len]
+    }
+  }
+
+  /** @private */
+  _fore(parent_mt, pos) {
+    switch (parent_mt) {
+      case MT.BYTE_STRING:
+      case MT.UTF8_STRING:
+      case MT.ARRAY:
+        if (pos > 0) {
+          this.push(', ')
+        }
+        break
+      case MT.MAP:
+        if (pos > 0) {
+          if (pos % 2) {
+            this.push(': ')
+          } else {
+            this.push(', ')
+          }
+        }
+    }
+  }
+
+  /** @private */
+  _on_value(val, parent_mt, pos) {
+    if (val === SYMS.BREAK) {
+      return
+    }
+    this._fore(parent_mt, pos)
+    const fb = this.float_bytes
+    this.float_bytes = -1
+    this.push(utils.cborValueToString(val, fb))
+  }
+
+  /** @private */
+  _on_start(mt, tag, parent_mt, pos) {
+    this._fore(parent_mt, pos)
+    switch (mt) {
+      case MT.TAG:
+        this.push(`${tag}(`)
+        break
+      case MT.ARRAY:
+        this.push('[')
+        break
+      case MT.MAP:
+        this.push('{')
+        break
+      case MT.BYTE_STRING:
+      case MT.UTF8_STRING:
+        this.push('(')
+        break
+    }
+    if (tag === SYMS.STREAM) {
+      this.push('_ ')
+    }
+  }
+
+  /** @private */
+  _on_stop(mt) {
+    switch (mt) {
+      case MT.TAG:
+        this.push(')')
+        break
+      case MT.ARRAY:
+        this.push(']')
+        break
+      case MT.MAP:
+        this.push('}')
+        break
+      case MT.BYTE_STRING:
+      case MT.UTF8_STRING:
+        this.push(')')
+        break
+    }
+  }
+
+  /** @private */
+  _on_data() {
+    this.push(this.separator)
+  }
+}
+
+module.exports = Diagnose
+</code></pre>
+        </article>
+    </section>
 
 
 
