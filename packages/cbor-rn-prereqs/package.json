@@ -1,0 +1,26 @@
+{
+  "name": "cbor-rn-prereqs",
+  "version": "8.0.0",
+  "description": "React Native pre-requisites for cbor",
+  "main": "index.js",
+  "scripts": {
+    "test": "ava test/*.ava.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/hildjj/node-cbor.git",
+    "directory": "packages/cbor-rn-prereqs"
+  },
+  "homepage": "https://github.com/hildjj/node-cbor/tree/main/packages/cbor-rn-prereqs",
+  "keywords": ["react native", "react-native", "cbor"],
+  "author": "Joe Hildebrand <joe-github@cursive.net>",
+  "license": "MIT",
+  "dependencies": {
+    "@cto.af/textdecoder": "^0.0.0",
+    "big-integer": "^1.6.49",
+    "buffer": "^6.0.3",
+    "events": "^3.3.0",
+    "process": "^0.11.10",
+    "stream-browserify": "^3.0.0"
+  }
+}
