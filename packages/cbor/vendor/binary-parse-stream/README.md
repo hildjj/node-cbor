@@ -40,7 +40,7 @@ class SillyProtocolParseStream extends BinaryParseStream {
     const length = yield -1
     const buf = yield length
     this.count++
-    return { type, buf }
+    return {type, buf}
   }
 }
 ```

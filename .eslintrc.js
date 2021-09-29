@@ -10,6 +10,6 @@ module.exports = {
     'docs/scripts/',
   ],
   rules: {
-    'no-empty': ['error', { allowEmptyCatch: true }],
+    'no-empty': ['error', {allowEmptyCatch: true}],
   },
 }

@@ -58,7 +58,7 @@ const scripts = new Set([...needed].filter(x => !have.has(x)))
 // a single file.
 const scriptNames = {}
 for (const s of scripts) {
-  const scriptSrc = bresolve.sync(s, { filename: __filename })
+  const scriptSrc = bresolve.sync(s, {filename: __filename})
   const local = path.basename(scriptSrc)
   scriptNames[s] = local
 

@@ -1,10 +1,10 @@
 'use strict'
 
-const { Buffer } = require('buffer')
+const {Buffer} = require('buffer')
 const NoFilter = require('nofilter')
 const stream = require('stream')
 const constants = require('./constants')
-const { NUMBYTES, SHIFT32, BI, SYMS } = constants
+const {NUMBYTES, SHIFT32, BI, SYMS} = constants
 const MAX_SAFE_HIGH = 0x1fffff
 
 /**

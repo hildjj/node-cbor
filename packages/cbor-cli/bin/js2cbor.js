@@ -8,7 +8,7 @@ const {program} = require('commander')
 const path = require('path')
 const stream = require('stream')
 const Module = require('module')
-const { Buffer } = require('buffer') // Not the mangled version
+const {Buffer} = require('buffer') // Not the mangled version
 const bdec = require('cbor-bigdecimal')
 bdec(cbor)
 

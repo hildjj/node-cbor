@@ -45,8 +45,8 @@ const stream = require('stream')
 const utils = require('./utils')
 const Decoder = require('./decoder')
 const NoFilter = require('nofilter')
-const { MT, NUMBYTES, SYMS } = require('./constants')
-const { Buffer } = require('buffer')
+const {MT, NUMBYTES, SYMS} = require('./constants')
+const {Buffer} = require('buffer')
 
 function plural(c) {
   if (c > 1) {
@@ -90,13 +90,13 @@ function plural(c) {
 function normalizeOptions(opts, cb) {
   switch (typeof opts) {
     case 'function':
-      return { options: {}, cb: /** @type {commentCallback} */ (opts) }
+      return {options: {}, cb: /** @type {commentCallback} */ (opts)}
     case 'string':
-      return { options: {encoding: /** @type {BufferEncoding} */ (opts)}, cb }
+      return {options: {encoding: /** @type {BufferEncoding} */ (opts)}, cb}
     case 'number':
-      return { options: { max_depth: opts }, cb }
+      return {options: {max_depth: opts}, cb}
     case 'object':
-      return { options: opts || {}, cb }
+      return {options: opts || {}, cb}
     default:
       throw new TypeError('Unknown option type')
   }

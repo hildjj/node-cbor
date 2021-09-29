@@ -1,8 +1,8 @@
 import 'regenerator-runtime/runtime'
 import * as cbor from 'cbor'
-import { Buffer } from 'buffer'
+import {Buffer} from 'buffer'
 import bdec from 'cbor-bigdecimal'
-import { inspect } from 'node-inspect-extracted'
+import {inspect} from 'node-inspect-extracted'
 
 bdec(cbor)
 

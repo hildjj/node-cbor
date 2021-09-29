@@ -55,7 +55,7 @@ async function main() {
       const color = colors[type] || chalk.blue
       console.log(color(`${type} ${txt}`))
     })
-    .on('pageerror', ({ message }) => console.log(chalk.red(message)))
+    .on('pageerror', ({message}) => console.log(chalk.red(message)))
     // .on('response', response =>
     //   console.log(chalk.green(`${response.status()} ${response.url()}`)))
     .on('requestfailed', request => console.log(

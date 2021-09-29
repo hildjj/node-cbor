@@ -19,8 +19,12 @@ function testAll(t, list, opts = undefined) {
   })
 }
 
-test('good', t => testAll(t, cases.good))
-test('encode', t => testAll(t, cases.encodeGood))
+test('good', t => {
+  testAll(t, cases.good)
+})
+test('encode', t => {
+  testAll(t, cases.encodeGood)
+})
 
 test('undefined', t => {
   t.is(cbor.Encoder.encode(), null)
@@ -172,8 +176,8 @@ test('detect loops', t => {
   a.a = a
   t.throws(() => enc.write(b))
 
-  const can = new cbor.Encoder({ detectLoops: true, canonical: true})
-  const c = { d: null }
+  const can = new cbor.Encoder({detectLoops: true, canonical: true})
+  const c = {d: null}
   // This isn't a loop.
   const m = new Map([[c, c]])
   can.write(m)
@@ -201,7 +205,7 @@ test('date types', t => {
 
   t.throws(() => {
     cbor.encodeOne(d, {dateType: 'blorfff'})
-  }, { instanceOf: TypeError })
+  }, {instanceOf: TypeError})
 
   t.is(
     cbor.encodeOne(d, {dateType: 'number'}).toString('hex'),
@@ -229,11 +233,13 @@ test('date types', t => {
   )
 })
 
-test('BigInt collapse', t => testAll(
-  t,
-  cases.collapseBigIntegers,
-  { collapseBigIntegers: true }
-))
+test('BigInt collapse', t => {
+  testAll(
+    t,
+    cases.collapseBigIntegers,
+    {collapseBigIntegers: true}
+  )
+})
 
 test('arraybuffer types', t => {
   t.is(
@@ -353,8 +359,8 @@ class IndefiniteClass {
   encodeCBOR(gen) {
     const b = Buffer.from('1234567890')
     const buf = new Uint8Array(b.buffer, b.byteOffset, b.byteLength)
-    return cbor.Encoder.encodeIndefinite(gen, '1234567890', { chunkSize: 3 }) &&
-      cbor.Encoder.encodeIndefinite(gen, buf, { chunkSize: 3 }) &&
+    return cbor.Encoder.encodeIndefinite(gen, '1234567890', {chunkSize: 3}) &&
+      cbor.Encoder.encodeIndefinite(gen, buf, {chunkSize: 3}) &&
       cbor.Encoder.encodeIndefinite(gen, this)
   }
 }
@@ -386,7 +392,7 @@ test('indefinite', t => {
     a: true,
     encodeCBOR: cbor.Encoder.encodeIndefinite,
   }
-  t.is(cbor.encodeOne(o, { detectLoops: true }).toString('hex'), 'bf6161f5ff')
+  t.is(cbor.encodeOne(o, {detectLoops: true}).toString('hex'), 'bf6161f5ff')
 })
 
 test('Buffers', t => {

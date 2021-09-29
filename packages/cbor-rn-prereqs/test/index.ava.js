@@ -11,7 +11,7 @@ test('some potential broken environments', t => {
   const fakeGlobal = {}
   const fakeFixes = patchGlobal(fakeGlobal)
   t.deepEqual(fakeFixes, ['BigInt', 'process', 'TextDecoder'])
-  const fakeGlobal2 = { process: {} }
+  const fakeGlobal2 = {process: {}}
   const fakeFixes2 = patchGlobal(fakeGlobal2)
   t.deepEqual(fakeFixes2, ['BigInt', 'nextTick', 'TextDecoder'])
 })

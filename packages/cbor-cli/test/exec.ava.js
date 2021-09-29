@@ -1,11 +1,11 @@
 'use strict'
 
 const test = require('ava')
-const { spawn } = require('child_process')
+const {spawn} = require('child_process')
 const path = require('path')
 const process = require('process')
 const pkg = require('../package.json')
-const { Buffer } = require('buffer') // Not the mangled version
+const {Buffer} = require('buffer') // Not the mangled version
 
 function exec(bin, opts = {}) {
   opts = {
@@ -73,13 +73,13 @@ test('json2cbor', async t => {
   })
   t.truthy(buf.length > 0)
 
-  const ver = await exec('json2cbor', { args: ['-V'] })
+  const ver = await exec('json2cbor', {args: ['-V']})
   t.is(ver, `${pkg.version}\n`)
 
-  const help = await exec('json2cbor', { args: ['-h'] })
+  const help = await exec('json2cbor', {args: ['-h']})
   t.truthy(help.startsWith('Usage: '))
 
-  const er = await t.throwsAsync(() => exec('json2cbor', { args: ['-Q'] }))
+  const er = await t.throwsAsync(() => exec('json2cbor', {args: ['-Q']}))
   t.is(er.buf.toString('utf8'), 'error: unknown option \'-Q\'\n')
   t.is(er.str, 'error: unknown option \'-Q\'\n')
 

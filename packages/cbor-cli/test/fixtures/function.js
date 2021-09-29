@@ -1,7 +1,7 @@
 'use strict'
 
 const path = require('path')
-const { Buffer } = require('buffer')
+const {Buffer} = require('buffer')
 
 module.exports = f => ({
   foo: new Date(1612908664662),

@@ -2,9 +2,9 @@
 
 const test = require('ava')
 const utils = require('../lib/utils')
-const { lbe } = require('./cases')
-const { hex, bin } = utils
-const { Buffer } = require('buffer') // NOT the mangled version
+const {lbe} = require('./cases')
+const {hex, bin} = utils
+const {Buffer} = require('buffer') // NOT the mangled version
 
 test('bin', t => {
   t.deepEqual(utils.bin('1'), hex('01'))

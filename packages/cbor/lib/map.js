@@ -1,9 +1,9 @@
 'use strict'
 
-const { Buffer } = require('buffer')
+const {Buffer} = require('buffer')
 const encoder = require('./encoder')
 const decoder = require('./decoder')
-const { MT } = require('./constants')
+const {MT} = require('./constants')
 
 /**
  * Wrapper around a JavaScript Map object that allows the keys to be

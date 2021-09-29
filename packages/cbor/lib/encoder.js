@@ -7,7 +7,7 @@ const constants = require('./constants')
 const {
   MT, NUMBYTES, SHIFT32, SIMPLE, SYMS, TAG, BI,
 } = constants
-const { Buffer } = require('buffer')
+const {Buffer} = require('buffer')
 
 const HALF = (MT.SIMPLE_FLOAT << 5) | NUMBYTES.TWO
 const FLOAT = (MT.SIMPLE_FLOAT << 5) | NUMBYTES.FOUR
@@ -562,7 +562,7 @@ Call removeLoopDetectors before resuming.`)
    * @ignore
    */
   _encodeAll(objs) {
-    const bs = new NoFilter({ highWaterMark: this.readableHighWaterMark })
+    const bs = new NoFilter({highWaterMark: this.readableHighWaterMark})
     this.pipe(bs)
     for (const o of objs) {
       this.pushAny(o)
@@ -929,7 +929,7 @@ Call removeLoopDetectors before resuming.`)
     }
 
     // TODO: consider other options
-    const { chunkSize = 4096 } = options
+    const {chunkSize = 4096} = options
 
     let ret = true
     const objType = typeof obj

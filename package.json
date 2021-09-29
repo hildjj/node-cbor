@@ -30,13 +30,13 @@
     "nofilter": "^3.0.3"
   },
   "devDependencies": {
-    "@cto.af/eslint-config": "^0.0.8",
+    "@cto.af/eslint-config": "^0.0.10",
     "ava": "^4.0.0-alpha.2",
     "bignumber.js": "^9.0.1",
     "eslint": "^7.32.0",
-    "eslint-plugin-ava": "^12.0.0",
-    "eslint-plugin-jsdoc": "^36.0.6",
-    "eslint-plugin-markdown": "^2.2.0",
+    "eslint-plugin-ava": "^13.0.0",
+    "eslint-plugin-jsdoc": "^36.1.0",
+    "eslint-plugin-markdown": "^2.2.1",
     "eslint-plugin-node": "^11.1.0",
     "jsdoc": "^3.6.7",
     "lerna": "^4.0.0",
@@ -45,7 +45,7 @@
     "nve": "^14.0.0",
     "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
-    "typescript": "^4.3.5"
+    "typescript": "^4.4.3"
   },
   "license": "MIT",
   "engines": {

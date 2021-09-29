@@ -49,11 +49,11 @@ const {MT, SYMS} = require('./constants')
 function normalizeOptions(opts, cb) {
   switch (typeof opts) {
     case 'function':
-      return { options: {}, cb: /** @type {diagnoseCallback} */ (opts) }
+      return {options: {}, cb: /** @type {diagnoseCallback} */ (opts)}
     case 'string':
-      return { options: { encoding: /** @type {BufferEncoding} */ (opts) }, cb }
+      return {options: {encoding: /** @type {BufferEncoding} */ (opts)}, cb}
     case 'object':
-      return { options: opts || {}, cb }
+      return {options: opts || {}, cb}
     default:
       throw new TypeError('Unknown option type')
   }

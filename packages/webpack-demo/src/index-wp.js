@@ -1,8 +1,8 @@
 /* eslint-disable no-undef */
 'use strict'
 const cbor = require('cbor-web')
-const { inspect } = require('node-inspect-extracted')
-const { Buffer } = require('buffer')
+const {inspect} = require('node-inspect-extracted')
+const {Buffer} = require('buffer')
 const bdec = require('cbor-bigdecimal')
 
 // eslint-disable-next-line no-unused-vars
