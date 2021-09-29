@@ -7,8 +7,8 @@ const utils = require('./utils')
 const NoFilter = require('nofilter')
 const stream = require('stream')
 const constants = require('./constants')
-const { MT, NUMBYTES, SYMS, BI } = constants
-const { Buffer } = require('buffer')
+const {MT, NUMBYTES, SYMS, BI} = constants
+const {Buffer} = require('buffer')
 
 const COUNT = Symbol('count')
 const MAJOR = Symbol('major type')
@@ -97,11 +97,11 @@ class UnexpectedDataError extends Error {
 function normalizeOptions(opts, cb) {
   switch (typeof opts) {
     case 'function':
-      return { options: {}, cb: /** @type {decodeCallback} */ (opts) }
+      return {options: {}, cb: /** @type {decodeCallback} */ (opts)}
     case 'string':
-      return { options: { encoding: /** @type {BufferEncoding} */ (opts) }, cb }
+      return {options: {encoding: /** @type {BufferEncoding} */ (opts)}, cb}
     case 'object':
-      return { options: opts || {}, cb }
+      return {options: opts || {}, cb}
     default:
       throw new TypeError('Unknown option type')
   }
@@ -188,7 +188,7 @@ class Decoder extends BinaryParseStream {
    *   received the `readable` event already, or you will get an error
    *   claiming "Insufficient data".
    * @param {DecoderOptions|string} [options={}] Options or encoding for input.
-   * @returns {any} The decoded value.
+   * @returns {ExtendedResults|any} The decoded value.
    * @throws {UnexpectedDataError} Data is left over after decoding.
    * @throws {Error} Insufficient data.
    */
@@ -244,7 +244,7 @@ class Decoder extends BinaryParseStream {
    * @param {BufferLike} input What to parse?
    * @param {DecoderOptions|string} [options={}] Options or encoding
    *   for input.
-   * @returns {Array} Array of all found items.
+   * @returns {Array<ExtendedResults>|Array<any>} Array of all found items.
    * @throws {TypeError} No input provided.
    * @throws {Error} Insufficient data provided.
    */
@@ -290,7 +290,8 @@ class Decoder extends BinaryParseStream {
    * @param {DecoderOptions|decodeCallback|string} [options={}] Options, the
    *   callback, or input encoding.
    * @param {decodeCallback} [cb] Callback.
-   * @returns {Promise<any>} Returned even if callback is specified.
+   * @returns {Promise<ExtendedResults|any>} Returned even if callback is
+   *   specified.
    * @throws {TypeError} No input provided.
    */
   static decodeFirst(input, options = {}, cb = null) {
@@ -350,7 +351,8 @@ class Decoder extends BinaryParseStream {
   /**
    * @callback decodeAllCallback
    * @param {Error} error If one was generated.
-   * @param {Array} value All of the decoded values, wrapped in an Array.
+   * @param {Array<ExtendedResults>|Array<any>} value All of the decoded
+   *   values, wrapped in an Array.
    */
 
   /**
@@ -362,7 +364,8 @@ class Decoder extends BinaryParseStream {
    * @param {DecoderOptions|decodeAllCallback|string} [options={}]
    *   Decoding options, the callback, or the input encoding.
    * @param {decodeAllCallback} [cb] Callback.
-   * @returns {Promise<Array>} Even if callback is specified.
+   * @returns {Promise<Array<ExtendedResults>|Array<any>>} Even if callback
+   *   is specified.
    * @throws {TypeError} No input specified.
    */
   static decodeAll(input, options = {}, cb = null) {

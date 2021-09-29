@@ -5,7 +5,7 @@ const NoFilter = require('nofilter')
 const pEvent = require('p-event')
 const mockIo = require('mock-stdio')
 const utils = require('../lib/utils')
-const { Buffer } = require('buffer') // Not the mangled version
+const {Buffer} = require('buffer') // Not the mangled version
 
 const BAD_FILE = '/tmp/hopefully-does-not-exist'
 

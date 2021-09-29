@@ -27,10 +27,18 @@ function failAll(t, list) {
   )))
 }
 
-test('good', t => testAll(t, cases.good))
-test('encode', t => testAll(t, cases.encodeGood))
-test('decode', t => testAll(t, cases.decodeGood))
-test('fail', t => failAll(t, cases.decodeBad))
+test('good', async t => {
+  await testAll(t, cases.good)
+})
+test('encode', async t => {
+  await testAll(t, cases.encodeGood)
+})
+test('decode', async t => {
+  await testAll(t, cases.decodeGood)
+})
+test('fail', async t => {
+  await failAll(t, cases.decodeBad)
+})
 
 test('input_errors', async t => {
   t.throws(() => {

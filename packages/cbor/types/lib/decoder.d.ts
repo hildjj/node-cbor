@@ -34,11 +34,11 @@ declare class Decoder extends BinaryParseStream {
      *   received the `readable` event already, or you will get an error
      *   claiming "Insufficient data".
      * @param {DecoderOptions|string} [options={}] Options or encoding for input.
-     * @returns {any} The decoded value.
+     * @returns {ExtendedResults|any} The decoded value.
      * @throws {UnexpectedDataError} Data is left over after decoding.
      * @throws {Error} Insufficient data.
      */
-    static decodeFirstSync(input: BufferLike, options?: DecoderOptions | string): any;
+    static decodeFirstSync(input: BufferLike, options?: DecoderOptions | string): ExtendedResults | any;
     /**
      * Decode all of the CBOR items in the input into an array.  This will throw
      * an exception if the input is not valid CBOR; a zero-length input will
@@ -48,11 +48,11 @@ declare class Decoder extends BinaryParseStream {
      * @param {BufferLike} input What to parse?
      * @param {DecoderOptions|string} [options={}] Options or encoding
      *   for input.
-     * @returns {Array} Array of all found items.
+     * @returns {Array<ExtendedResults>|Array<any>} Array of all found items.
      * @throws {TypeError} No input provided.
      * @throws {Error} Insufficient data provided.
      */
-    static decodeAllSync(input: BufferLike, options?: DecoderOptions | string): any[];
+    static decodeAllSync(input: BufferLike, options?: DecoderOptions | string): Array<ExtendedResults> | Array<any>;
     /**
      * Decode the first CBOR item in the input.  This will error if there are
      * more bytes left over at the end (if options.extendedResults is not true),
@@ -65,14 +65,16 @@ declare class Decoder extends BinaryParseStream {
      * @param {DecoderOptions|decodeCallback|string} [options={}] Options, the
      *   callback, or input encoding.
      * @param {decodeCallback} [cb] Callback.
-     * @returns {Promise<any>} Returned even if callback is specified.
+     * @returns {Promise<ExtendedResults|any>} Returned even if callback is
+     *   specified.
      * @throws {TypeError} No input provided.
      */
-    static decodeFirst(input: BufferLike, options?: DecoderOptions | decodeCallback | string, cb?: decodeCallback): Promise<any>;
+    static decodeFirst(input: BufferLike, options?: DecoderOptions | decodeCallback | string, cb?: decodeCallback): Promise<ExtendedResults | any>;
     /**
      * @callback decodeAllCallback
      * @param {Error} error If one was generated.
-     * @param {Array} value All of the decoded values, wrapped in an Array.
+     * @param {Array<ExtendedResults>|Array<any>} value All of the decoded
+     *   values, wrapped in an Array.
      */
     /**
      * Decode all of the CBOR items in the input.  This will error if there are
@@ -83,10 +85,11 @@ declare class Decoder extends BinaryParseStream {
      * @param {DecoderOptions|decodeAllCallback|string} [options={}]
      *   Decoding options, the callback, or the input encoding.
      * @param {decodeAllCallback} [cb] Callback.
-     * @returns {Promise<Array>} Even if callback is specified.
+     * @returns {Promise<Array<ExtendedResults>|Array<any>>} Even if callback
+     *   is specified.
      * @throws {TypeError} No input specified.
      */
-    static decodeAll(input: BufferLike, options?: string | DecoderOptions | ((error: Error, value: any[]) => any), cb?: (error: Error, value: any[]) => any): Promise<any[]>;
+    static decodeAll(input: BufferLike, options?: string | DecoderOptions | ((error: Error, value: Array<ExtendedResults> | Array<any>) => any), cb?: (error: Error, value: Array<ExtendedResults> | Array<any>) => any): Promise<Array<ExtendedResults> | Array<any>>;
     /**
      * Create a parsing stream.
      *
@@ -161,8 +164,6 @@ type DecoderOptions = {
      */
     extendedResults?: boolean;
 };
-type decodeCallback = (error?: Error, value?: any) => void;
-declare const NOT_FOUND: unique symbol;
 type ExtendedResults = {
     /**
      * The value that was found.
@@ -180,10 +181,12 @@ type ExtendedResults = {
     bytes: Buffer;
     /**
      * The bytes that were left over from the original
-     * input.  This property only exists if {@linkcode Decoder.decodeFirst} or
-     * {@linkcode Decoder.decodeFirstSync} was called.
+     * input.  This property only exists if {@link Decoder.decodeFirst } or
+     * {@link Decoder.decodeFirstSync } was called.
      */
     unused?: Buffer;
 };
+type decodeCallback = (error?: Error, value?: any) => void;
+declare const NOT_FOUND: unique symbol;
 import { Buffer } from "buffer";
 import stream = require("stream");

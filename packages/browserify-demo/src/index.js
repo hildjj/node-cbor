@@ -1,8 +1,8 @@
 /* eslint-disable no-undef */
 'use strict'
 
-const { inspect } = require('node-inspect-extracted')
-const { Buffer } = require('buffer')
+const {inspect} = require('node-inspect-extracted')
+const {Buffer} = require('buffer')
 const bdec = require('cbor-bigdecimal')
 
 bdec(cbor)

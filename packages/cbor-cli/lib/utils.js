@@ -2,7 +2,7 @@
 
 const fs = require('fs')
 const stream = require('stream')
-const { Buffer } = require('buffer') // Not the mangled version
+const {Buffer} = require('buffer') // Not the mangled version
 
 exports.DeHexStream = class DeHexStream extends stream.Readable {
   constructor(hex) {

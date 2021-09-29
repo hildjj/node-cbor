@@ -369,7 +369,7 @@ class Tagged {
    * the list.
    */
   static reset() {
-    Tagged.TAGS = { ...TAGS }
+    Tagged.TAGS = {...TAGS}
   }
 }
 Tagged.INTERNAL_JSON = INTERNAL_JSON

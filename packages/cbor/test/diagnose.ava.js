@@ -26,9 +26,15 @@ function failAll(t, list) {
   )))
 }
 
-test('diagnose', t => testAll(t, cases.good))
-test('decode', t => testAll(t, cases.decodeGood))
-test('edges', t => failAll(t, cases.decodeBad))
+test('diagnose', async t => {
+  await testAll(t, cases.good)
+})
+test('decode', async t => {
+  await testAll(t, cases.decodeGood)
+})
+test('edges', async t => {
+  await failAll(t, cases.decodeBad)
+})
 
 test('construct', async t => {
   const d = new cbor.Diagnose()

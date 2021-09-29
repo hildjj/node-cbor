@@ -15,9 +15,9 @@ test('garbage', t => {
   for (let i = 0; i < REPEATS; i++) {
     inp.push(garbage(100))
   }
-  return Promise.all(inp.map(g => {
+  return Promise.all(inp.map(async g => {
     const c = cbor.encode(g)
-    return cbor.decodeFirst(c)
-      .then(val => t.deepEqual(val, g))
+    const val = await cbor.decodeFirst(c)
+    t.deepEqual(val, g)
   }))
 })

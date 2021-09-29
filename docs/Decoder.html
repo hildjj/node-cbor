@@ -247,7 +247,7 @@ up by calling <a href="Decoder.html#.nullcheck">Decoder.nullcheck</a>.</div>
 
     
 
-    <h4 class="name" id=".decodeAll"><span class="type-signature">(static) </span>decodeAll<span class="signature">(input, options<span class="signature-attributes">opt</span>, cb<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;Array>}</span></h4>
+    <h4 class="name" id=".decodeAll"><span class="type-signature">(static) </span>decodeAll<span class="signature">(input, options<span class="signature-attributes">opt</span>, cb<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;(Array.&lt;<a href="global.html#ExtendedResults">ExtendedResults</a>>|Array.&lt;any>)>}</span></h4>
 
     
 
@@ -291,7 +291,7 @@ more bytes left over at the end.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_decoder.js.html">lib/decoder.js</a>, <a href="lib_decoder.js.html#line368">line 368</a>
+        <a href="lib_decoder.js.html">lib/decoder.js</a>, <a href="lib_decoder.js.html#line371">line 371</a>
     </li></ul></dd>
     
 
@@ -523,7 +523,7 @@ more bytes left over at the end.
     </dt>
     <dd>
         
-<span class="param-type"><code>Promise.&lt;Array></code></span>
+<span class="param-type"><code>Promise.&lt;(Array.&lt;<a href="global.html#ExtendedResults">ExtendedResults</a>>|Array.&lt;any>)></code></span>
 
 
     </dd>
@@ -531,7 +531,8 @@ more bytes left over at the end.
 
 
 <div class="param-desc">
-    Even if callback is specified.
+    Even if callback
+  is specified.
 </div>
 
     
@@ -546,7 +547,7 @@ more bytes left over at the end.
 
     
 
-    <h4 class="name" id=".decodeAllSync"><span class="type-signature">(static) </span>decodeAllSync<span class="signature">(input, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Array}</span></h4>
+    <h4 class="name" id=".decodeAllSync"><span class="type-signature">(static) </span>decodeAllSync<span class="signature">(input, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Array.&lt;<a href="global.html#ExtendedResults">ExtendedResults</a>>|Array.&lt;any>}</span></h4>
 
     
 
@@ -806,7 +807,10 @@ return an empty array.
     </dt>
     <dd>
         
-<span class="param-type"><code>Array</code></span>
+<span class="param-type"><code>Array.&lt;<a href="global.html#ExtendedResults">ExtendedResults</a>></code></span>
+|
+
+<span class="param-type"><code>Array.&lt;any></code></span>
 
 
     </dd>
@@ -829,7 +833,7 @@ return an empty array.
 
     
 
-    <h4 class="name" id=".decodeFirst"><span class="type-signature">(static) </span>decodeFirst<span class="signature">(input, options<span class="signature-attributes">opt</span>, cb<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;any>}</span></h4>
+    <h4 class="name" id=".decodeFirst"><span class="type-signature">(static) </span>decodeFirst<span class="signature">(input, options<span class="signature-attributes">opt</span>, cb<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;(<a href="global.html#ExtendedResults">ExtendedResults</a>|any)>}</span></h4>
 
     
 
@@ -876,7 +880,7 @@ and optionally if there were no valid CBOR bytes in the input.  Emits the
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_decoder.js.html">lib/decoder.js</a>, <a href="lib_decoder.js.html#line296">line 296</a>
+        <a href="lib_decoder.js.html">lib/decoder.js</a>, <a href="lib_decoder.js.html#line297">line 297</a>
     </li></ul></dd>
     
 
@@ -1109,7 +1113,7 @@ and optionally if there were no valid CBOR bytes in the input.  Emits the
     </dt>
     <dd>
         
-<span class="param-type"><code>Promise.&lt;any></code></span>
+<span class="param-type"><code>Promise.&lt;(<a href="global.html#ExtendedResults">ExtendedResults</a>|any)></code></span>
 
 
     </dd>
@@ -1117,7 +1121,8 @@ and optionally if there were no valid CBOR bytes in the input.  Emits the
 
 
 <div class="param-desc">
-    Returned even if callback is specified.
+    Returned even if callback is
+  specified.
 </div>
 
     
@@ -1132,7 +1137,7 @@ and optionally if there were no valid CBOR bytes in the input.  Emits the
 
     
 
-    <h4 class="name" id=".decodeFirstSync"><span class="type-signature">(static) </span>decodeFirstSync<span class="signature">(input, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {any}</span></h4>
+    <h4 class="name" id=".decodeFirstSync"><span class="type-signature">(static) </span>decodeFirstSync<span class="signature">(input, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="global.html#ExtendedResults">ExtendedResults</a>|any}</span></h4>
 
     
 
@@ -1393,6 +1398,9 @@ left over at the end (if options.extendedResults is not true).
     </dt>
     <dd>
         
+<span class="param-type"><code><a href="global.html#ExtendedResults">ExtendedResults</a></code></span>
+|
+
 <span class="param-type"><code>any</code></span>
 
 
@@ -1662,7 +1670,7 @@ the CBOR stream.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_decoder.js.html">lib/decoder.js</a>, <a href="lib_decoder.js.html#line395">line 395</a>
+        <a href="lib_decoder.js.html">lib/decoder.js</a>, <a href="lib_decoder.js.html#line398">line 398</a>
     </li></ul></dd>
     
 

@@ -57,11 +57,21 @@ function failFirstAllCB(t, list) {
   )
 }
 
-test('good', t => testAll(t, cases.good))
-test('decode', t => testAll(t, cases.decodeGood))
-test('edges', t => failAll(t, cases.decodeBad))
-test('bad first', t => failFirstAll(t, cases.decodeBad))
-test('bad first cb', t => failFirstAllCB(t, cases.decodeBad))
+test('good', async t => {
+  await testAll(t, cases.good)
+})
+test('decode', async t => {
+  await testAll(t, cases.decodeGood)
+})
+test('edges', async t => {
+  await failAll(t, cases.decodeBad)
+})
+test('bad first', async t => {
+  await failFirstAll(t, cases.decodeBad)
+})
+test('bad first cb', async t => {
+  await failFirstAllCB(t, cases.decodeBad)
+})
 
 test('decodeFirstSync', t => {
   t.is(cbor.decodeFirstSync('02'), 2)
