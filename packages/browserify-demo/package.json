@@ -1,6 +1,6 @@
 {
   "name": "browserify-demo",
-  "version": "8.0.0",
+  "version": "8.0.2",
   "description": "",
   "private": "true",
   "scripts": {
@@ -21,7 +21,7 @@
     "@babel/core": "^7.15.5",
     "babelify": "^10.0.0",
     "browserify": "^17.0.0",
-    "cbor-bigdecimal": "^8.0.0",
+    "cbor-bigdecimal": "^8.0.2",
     "copyfiles": "^2.4.1",
     "node-inspect-extracted": "*",
     "rimraf": "^3.0.2",

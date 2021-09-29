@@ -1,6 +1,6 @@
 {
   "name": "plain-demo",
-  "version": "8.0.1",
+  "version": "8.0.2",
   "description": "A demo for cbor-web with no bundler",
   "private": true,
   "scripts": {
@@ -18,8 +18,8 @@
   "devDependencies": {
     "bignumber.js": "^9.0.1",
     "browser-resolve": "^2.0.0",
-    "cbor-bigdecimal": "^8.0.0",
-    "cbor-web": "^8.0.1",
+    "cbor-bigdecimal": "^8.0.2",
+    "cbor-web": "^8.0.2",
     "copyfiles": "^2.4.1",
     "node-inspect-extracted": "^1.0.8"
   },

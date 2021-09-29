@@ -1,6 +1,6 @@
 {
   "name": "parcel-demo",
-  "version": "8.0.0",
+  "version": "8.0.2",
   "description": "",
   "private": true,
   "type": "module",
@@ -22,8 +22,8 @@
     "@parcel/core": "^2.0.0-rc.0",
     "@parcel/optimizer-data-url": "^2.0.0-rc.0",
     "@parcel/transformer-inline-string": "^2.0.0-rc.0",
-    "cbor": "^8.0.0",
-    "cbor-bigdecimal": "^8.0.0",
+    "cbor": "^8.0.2",
+    "cbor-bigdecimal": "^8.0.2",
     "copyfiles": "^2.4.1",
     "node-inspect-extracted": "*",
     "parcel": "2.0.0-rc.0",
