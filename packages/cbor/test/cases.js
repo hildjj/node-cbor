@@ -109,6 +109,22 @@ exports.good = [
   fb                -- Float, next 8 bytes
     7fefffffffffffff -- 1.7976931348623157e+308
 0xfb7fefffffffffffff`],
+  [Number.MIN_SAFE_INTEGER, '-9007199254740991', `
+  3b                -- Negative number, next 8 bytes
+    001ffffffffffffe -- -9007199254740991
+0x3b001ffffffffffffe`],
+  [Number.MIN_SAFE_INTEGER - 1, '-9007199254740992_2', `
+  fa                -- Float, next 4 bytes
+    da000000        -- -9007199254740992
+0xfada000000`],
+  [Number.MIN_SAFE_INTEGER - 2, '-9007199254740992_2', `
+  fa                -- Float, next 4 bytes
+    da000000        -- -9007199254740992
+0xfada000000`],
+  [Number.MIN_VALUE, '5e-324_3', `
+  fb                -- Float, next 8 bytes
+    0000000000000001 -- 5e-324
+0xfb0000000000000001`],
   [-0x1c0000000000000001n, '3(h\'1c0000000000000000\')', `
   c3                -- Tag #3
     49              -- Bytes, length: 9

@@ -319,25 +319,33 @@ class Encoder extends stream.Transform {
    */
   _pushInt(obj, mt, orig) {
     const m = mt << 5
-    switch (false) {
-      case !(obj < 24):
-        return this._pushUInt8(m | obj)
-      case !(obj <= 0xff):
-        return this._pushUInt8(m | NUMBYTES.ONE) && this._pushUInt8(obj)
-      case !(obj <= 0xffff):
-        return this._pushUInt8(m | NUMBYTES.TWO) && this._pushUInt16BE(obj)
-      case !(obj <= 0xffffffff):
-        return this._pushUInt8(m | NUMBYTES.FOUR) && this._pushUInt32BE(obj)
-      case !(obj <= Number.MAX_SAFE_INTEGER):
-        return this._pushUInt8(m | NUMBYTES.EIGHT) &&
-          this._pushUInt32BE(Math.floor(obj / SHIFT32)) &&
-          this._pushUInt32BE(obj % SHIFT32)
-      default:
-        if (mt === MT.NEG_INT) {
-          return this._pushFloat(orig)
-        }
-        return this._pushFloat(obj)
+
+    if (obj < 24) {
+      return this._pushUInt8(m | obj)
     }
+    if (obj <= 0xff) {
+      return this._pushUInt8(m | NUMBYTES.ONE) && this._pushUInt8(obj)
+    }
+    if (obj <= 0xffff) {
+      return this._pushUInt8(m | NUMBYTES.TWO) && this._pushUInt16BE(obj)
+    }
+    if (obj <= 0xffffffff) {
+      return this._pushUInt8(m | NUMBYTES.FOUR) && this._pushUInt32BE(obj)
+    }
+    let max = Number.MAX_SAFE_INTEGER
+    if (mt === MT.NEG_INT) {
+      // Special case for Number.MIN_SAFE_INTEGER - 1
+      max--
+    }
+    if (obj <= max) {
+      return this._pushUInt8(m | NUMBYTES.EIGHT) &&
+        this._pushUInt32BE(Math.floor(obj / SHIFT32)) &&
+        this._pushUInt32BE(obj % SHIFT32)
+    }
+    if (mt === MT.NEG_INT) {
+      return this._pushFloat(orig)
+    }
+    return this._pushFloat(obj)
   }
 
   /**
@@ -365,16 +373,16 @@ class Encoder extends stream.Transform {
    * @ignore
    */
   _pushNumber(obj) {
-    switch (false) {
-      case !isNaN(obj):
-        return this._pushNaN()
-      case isFinite(obj):
-        return this._pushInfinity(obj)
-      case Math.round(obj) !== obj:
-        return this._pushIntNum(obj)
-      default:
-        return this._pushFloat(obj)
+    if (isNaN(obj)) {
+      return this._pushNaN()
     }
+    if (!isFinite(obj)) {
+      return this._pushInfinity(obj)
+    }
+    if (Math.round(obj) === obj) {
+      return this._pushIntNum(obj)
+    }
+    return this._pushFloat(obj)
   }
 
   /**
