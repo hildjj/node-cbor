@@ -308,3 +308,33 @@ test('Buffers', t => {
     ],
   })
 })
+
+test('duplicate map keys', t => {
+  // Default behaviour is unchanged and allows parsing maps with duplicate keys
+  t.deepEqual(
+    cbor.decode(Buffer.from('a200010002', 'hex')),
+    new Map([[0, 2]])
+  )
+  // When the new decoder option is set the decode will throw
+  t.throws(() => cbor.decode(Buffer.from('a200010002', 'hex'), {preventDuplicateKeys: true}))
+
+  // Default behaviour for maps with only string keys is also unchanged
+  t.deepEqual(
+    cbor.decode(Buffer.from('a268746f537472696e670068746f537472696e6701', 'hex')),
+    {
+      toString: 1,
+    }
+  )
+
+  // When parsing a map with only strings as keys the result is an object and
+  // we ignore keys from the object's prototype when checking for duplicates
+  t.deepEqual(
+    cbor.decode(Buffer.from('a268746f537472696e670063666f6f01', 'hex'), {preventDuplicateKeys: true}),
+    {
+      toString: 0,
+      foo: 1,
+    }
+  )
+
+  t.throws(() => cbor.decode(Buffer.from('a268746f537472696e670068746f537472696e6701', 'hex'), {preventDuplicateKeys: true}))
+})
