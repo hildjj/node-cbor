@@ -79,6 +79,8 @@ class UnexpectedDataError extends Error {
  * @property {boolean} [extendedResults=false] If true, emit extended
  *   results, which will be an object with shape {@link ExtendedResults}.
  *   The value will already have been null-checked.
+ * @property {boolean} [preventDuplicateKeys=false] If true, error is
+ *   thrown if a map has duplicate keys.
  */
 /**
  * @callback decodeCallback
@@ -129,6 +131,7 @@ class Decoder extends BinaryParseStream {
       required = false,
       encoding = 'hex',
       extendedResults = false,
+      preventDuplicateKeys = false,
       ...superOpts
     } = options
 
@@ -140,6 +143,7 @@ class Decoder extends BinaryParseStream {
     this.preferWeb = preferWeb
     this.extendedResults = extendedResults
     this.required = required
+    this.preventDuplicateKeys = preventDuplicateKeys
 
     if (extendedResults) {
       this.bs.on('read', this._onRead.bind(this))
@@ -594,11 +598,18 @@ class Decoder extends BinaryParseStream {
               if (allstrings) {
                 val = {}
                 for (let i = 0, len = parent.length; i < len; i += 2) {
+                  if (this.preventDuplicateKeys &&
+                    Object.prototype.hasOwnProperty.call(val, parent[i])) {
+                    throw new Error('Duplicate keys in a map')
+                  }
                   val[parent[i]] = parent[i + 1]
                 }
               } else {
                 val = new Map()
                 for (let i = 0, len = parent.length; i < len; i += 2) {
+                  if (this.preventDuplicateKeys && val.has(parent[i])) {
+                    throw new Error('Duplicate keys in a map')
+                  }
                   val.set(parent[i], parent[i + 1])
                 }
               }

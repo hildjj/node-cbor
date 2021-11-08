@@ -104,6 +104,7 @@ declare class Decoder extends BinaryParseStream {
     preferWeb: boolean;
     extendedResults: boolean;
     required: boolean;
+    preventDuplicateKeys: boolean;
     valueBytes: NoFilter;
     /**
      * Stop processing.
@@ -163,6 +164,11 @@ type DecoderOptions = {
      * The value will already have been null-checked.
      */
     extendedResults?: boolean;
+    /**
+     * If true, error is
+     * thrown if a map has duplicate keys.
+     */
+    preventDuplicateKeys?: boolean;
 };
 type ExtendedResults = {
     /**
