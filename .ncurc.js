@@ -2,6 +2,7 @@
 
 module.exports = {
   reject: [
-    "marked"
+    "marked",
+    "p-event",
   ]
 }

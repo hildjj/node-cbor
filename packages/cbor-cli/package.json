@@ -44,7 +44,7 @@
     "marked": "^0.7.0",
     "marked-man": "^0.7.0",
     "mock-stdio": "^1.0.3",
-    "nofilter": "^3.0.3",
+    "nofilter": "^3.1.0",
     "p-event": "^4.2.0",
     "rimraf": "^3.0.2"
   },
@@ -54,8 +54,8 @@
     "bignumber.js": "^9.0.1",
     "cbor": "^8.0.2",
     "cbor-bigdecimal": "^8.0.2",
-    "commander": "^8.2.0",
-    "json-text-sequence": "^0.3.0"
+    "commander": "^8.3.0",
+    "json-text-sequence": "^1.0.0"
   },
   "engines": {
     "node": ">=12.19"
