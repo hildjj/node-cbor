@@ -17,7 +17,7 @@
     "directory": "packages/webpack-demo"
   },
   "devDependencies": {
-    "@cto.af/textdecoder": "^0.0.0",
+    "@cto.af/textdecoder": "^0.0.1",
     "base64-js": "^1.5.1",
     "bignumber.js": "^9.0.1",
     "buffer": "*",
@@ -37,7 +37,7 @@
     "string_decoder": "^1.3.0",
     "style-loader": "^3.3.1",
     "util-deprecate": "^1.0.2",
-    "webpack": "^5.62.1",
+    "webpack": "^5.62.2",
     "webpack-cli": "^4.9.1"
   },
   "engines": {
