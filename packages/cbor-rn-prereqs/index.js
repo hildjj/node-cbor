@@ -28,7 +28,7 @@ function patchGlobal(g) {
     fixes.push('nextTick')
   }
 
-  if (g.TextEncoder === undefined) {
+  if (g.TextDecoder === undefined) {
     const TextDecoder = require('@cto.af/textdecoder')
     g.TextDecoder = TextDecoder
     fixes.push('TextDecoder')

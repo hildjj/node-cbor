@@ -13,7 +13,7 @@
   "scripts": {
     "clean": "rimraf node_modules coverage .nyc_output packages/*/node_modules packages/*/coverage packages/*/.nyc_output",
     "docs": "jsdoc -c .jsdoc.conf",
-    "lint": "eslint . --ext cjs --ext mjs --ext js --ext md",
+    "lint": "eslint . --ext cjs,mjs,js,md",
     "test": "ava packages/*/test/*.ava.js",
     "test:versions": "nve --continue --parallel 16,14,12 npm test",
     "test:bigendian": "docker run --rm -it -v ${PWD}:/root/cbor -w /root/cbor s390x/node npm test",
@@ -27,15 +27,15 @@
     "deploy": "pnpm -r deploy"
   },
   "dependencies": {
-    "nofilter": "^3.0.3"
+    "nofilter": "^3.1.0"
   },
   "devDependencies": {
-    "@cto.af/eslint-config": "^0.0.10",
+    "@cto.af/eslint-config": "^0.0.12",
     "ava": "^4.0.0-alpha.2",
     "bignumber.js": "^9.0.1",
-    "eslint": "^7.32.0",
-    "eslint-plugin-ava": "^13.0.0",
-    "eslint-plugin-jsdoc": "^36.1.0",
+    "eslint": "^8.2.0",
+    "eslint-plugin-ava": "^13.1.0",
+    "eslint-plugin-jsdoc": "^37.0.3",
     "eslint-plugin-markdown": "^2.2.1",
     "eslint-plugin-node": "^11.1.0",
     "jsdoc": "^3.6.7",
@@ -45,7 +45,7 @@
     "nve": "^14.0.0",
     "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
-    "typescript": "^4.4.3"
+    "typescript": "^4.4.4"
   },
   "license": "MIT",
   "engines": {

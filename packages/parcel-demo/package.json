@@ -19,15 +19,15 @@
     "directory": "packages/parcel-demo"
   },
   "devDependencies": {
-    "@parcel/core": "^2.0.0-rc.0",
-    "@parcel/optimizer-data-url": "^2.0.0-rc.0",
-    "@parcel/transformer-inline-string": "^2.0.0-rc.0",
+    "@parcel/core": "^2.0.1",
+    "@parcel/optimizer-data-url": "^2.0.1",
+    "@parcel/transformer-inline-string": "^2.0.1",
     "cbor": "^8.0.2",
     "cbor-bigdecimal": "^8.0.2",
     "copyfiles": "^2.4.1",
     "node-inspect-extracted": "*",
-    "parcel": "2.0.0-rc.0",
-    "postcss": "^8.3.8",
+    "parcel": "2.0.1",
+    "postcss": "^8.3.11",
     "regenerator-runtime": "^0.13.9",
     "rimraf": "^3.0.2"
   },

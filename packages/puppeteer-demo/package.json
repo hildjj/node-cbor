@@ -13,7 +13,7 @@
   "devDependencies": {
     "chalk": "^4.1.2",
     "chrome-finder": "^1.0.7",
-    "puppeteer": "^10.4.0"
+    "puppeteer": "^11.0.0"
   },
   "engines": {
     "node": ">=12.19"
