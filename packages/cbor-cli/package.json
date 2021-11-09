@@ -1,6 +1,6 @@
 {
   "name": "cbor-cli",
-  "version": "8.0.2",
+  "version": "8.1.0",
   "description": "Command line tools to encode and parse data in the Concise Binary Object Representation (CBOR) data format (RFC8949).",
   "repository": {
     "type": "git",
@@ -52,8 +52,8 @@
   "readmeFilename": "README.md",
   "dependencies": {
     "bignumber.js": "^9.0.1",
-    "cbor": "^8.0.2",
-    "cbor-bigdecimal": "^8.0.2",
+    "cbor": "^8.1.0",
+    "cbor-bigdecimal": "^8.1.0",
     "commander": "^8.3.0",
     "json-text-sequence": "^1.0.0"
   },

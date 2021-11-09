@@ -1,6 +1,6 @@
 {
   "name": "cbor-web",
-  "version": "8.0.2",
+  "version": "8.1.0",
   "description": "",
   "main": "dist/cbor.js",
   "scripts": {
@@ -19,7 +19,7 @@
   "devDependencies": {
     "base64-js": "^1.5.1",
     "buffer": "^6.0.3",
-    "cbor": "^8.0.2",
+    "cbor": "^8.1.0",
     "events": "^3.3.0",
     "ieee754": "^1.2.1",
     "inherits": "^2.0.4",
