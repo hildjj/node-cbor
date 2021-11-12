@@ -509,6 +509,9 @@ Call removeLoopDetectors before resuming.`)
       if (typeof f === 'function') {
         return f.call(obj, this)
       }
+      if (Buffer.isBuffer(obj)) {
+        return this.semanticTypes[Buffer.name].call(obj, this, obj)
+      }
       const converter = this.semanticTypes[obj.constructor.name]
       if (converter) {
         return converter.call(obj, this, obj)
