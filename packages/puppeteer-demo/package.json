@@ -11,9 +11,8 @@
   "author": "Joe Hildebrand <joe-github@cursive.net>",
   "license": "MIT",
   "devDependencies": {
-    "chalk": "^4.1.2",
     "chrome-finder": "^1.0.7",
-    "puppeteer": "^11.0.0"
+    "puppeteer": "^15.3.2"
   },
   "engines": {
     "node": ">=12.19"

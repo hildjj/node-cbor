@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 'use strict'
 const cbor = require(process.env.CBOR_PACKAGE || '../')
 const test = require('ava')

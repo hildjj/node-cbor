@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "@types/node": "*",
-    "bignumber.js": "^9.0.1",
+    "bignumber.js": "^9.0.2",
     "garbage": "~0.0.0",
     "p-event": "^4.2.0",
     "rimraf": "^3.0.2"

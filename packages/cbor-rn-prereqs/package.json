@@ -20,8 +20,8 @@
   "author": "Joe Hildebrand <joe-github@cursive.net>",
   "license": "MIT",
   "dependencies": {
-    "@cto.af/textdecoder": "^0.0.1",
-    "big-integer": "^1.6.50",
+    "@cto.af/textdecoder": "^0.2.0",
+    "big-integer": "^1.6.51",
     "buffer": "^6.0.3",
     "events": "^3.3.0",
     "process": "^0.11.10",
