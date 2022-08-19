@@ -116,6 +116,7 @@ function parseDateType(str) {
  * @property {boolean} [omitUndefinedProperties=false] When encoding
  *   objects or Maps, do not include a key if its corresponding value is
  *   `undefined`.
+ * @property {boolean} [useFloat32bit=false] Force float to use 32bit encoding.
  */
 
 /**
@@ -140,6 +141,7 @@ class Encoder extends stream.Transform {
       detectLoops = false,
       omitUndefinedProperties = false,
       genTypes = [],
+      useFloat32bit,
       ...superOpts
     } = options
 
@@ -154,6 +156,7 @@ class Encoder extends stream.Transform {
     this.disallowUndefinedKeys = disallowUndefinedKeys
     this.dateType = parseDateType(dateType)
     this.collapseBigIntegers = this.canonical ? true : collapseBigIntegers
+    this.useFloat32bit = useFloat32bit
 
     /** @type {WeakSet?} */
     this.detectLoops = undefined
@@ -294,10 +297,13 @@ class Encoder extends stream.Transform {
         return this._pushUInt8(HALF) && this.push(b2)
       }
     }
+
+    if (this.useFloat32bit) {
+      return this._pushUInt8(FLOAT) && this._pushFloatBE(obj)
+    }
     if (Math.fround(obj) === obj) {
       return this._pushUInt8(FLOAT) && this._pushFloatBE(obj)
     }
-
     return this._pushUInt8(DOUBLE) && this._pushDoubleBE(obj)
   }
 

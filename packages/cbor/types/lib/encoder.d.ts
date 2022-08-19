@@ -38,6 +38,8 @@ export = Encoder;
  * @property {boolean} [omitUndefinedProperties=false] When encoding
  *   objects or Maps, do not include a key if its corresponding value is
  *   `undefined`.
+ * 
+ * @property {boolean} [useFloat32bit=false] Force float to use 32bit encoding.
  */
 /**
  * Transform JavaScript values into CBOR bytes.  The `Writable` side of
@@ -454,6 +456,12 @@ type EncodingOptions = {
      * `undefined`.
      */
     omitUndefinedProperties?: boolean;
+
+    /**
+     * Force 32bit encoding for floats
+     */
+
+    useFloat32bit?: boolean
 };
 /**
  * A mapping from tag number to a tag decoding function.
