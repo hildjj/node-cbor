@@ -42,7 +42,8 @@
     "Denis Lapaev <den@lapaev.me> (http://lapaev.me/)",
     "Ruben Bridgewater <ruben@bridgewater.de>",
     "Burt Harris <Burt_Harris_cbor@azxs.33mail.com>",
-    "Jakub Arbet <hi@jakubarbet.me> (https://jakubarbet.me/)"
+    "Jakub Arbet <hi@jakubarbet.me> (https://jakubarbet.me/)",
+    "John Paul Rabanal <jprrabanal@gmail.com>"
   ],
   "types": "./types/lib/cbor.d.ts",
   "dependencies": {
