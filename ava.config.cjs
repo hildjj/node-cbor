@@ -3,6 +3,7 @@
 const path = require('path')
 const config = {
   files: ['./packages/*/test/*.ava.js'],
+  timeout: '5m',
 }
 
 if (process.env.CBOR_PACKAGE) {
