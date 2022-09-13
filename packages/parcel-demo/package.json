@@ -19,17 +19,20 @@
     "directory": "packages/parcel-demo"
   },
   "devDependencies": {
-    "@parcel/core": "^2.6.2",
-    "@parcel/optimizer-data-url": "^2.6.2",
-    "@parcel/transformer-inline-string": "^2.6.2",
+    "@parcel/optimizer-data-url": "2.7.0",
+    "@parcel/transformer-inline-string": "2.7.0",
+    "buffer": "6.0.3",
     "cbor": "^8.1.0",
     "cbor-bigdecimal": "^8.1.0",
     "copyfiles": "^2.4.1",
+    "events": "3.3.0",
     "node-inspect-extracted": "*",
-    "parcel": "2.6.2",
-    "postcss": "^8.4.14",
+    "parcel": "2.7.0",
+    "postcss": "^8.4.16",
+    "process": "0.11.10",
     "regenerator-runtime": "^0.13.9",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "stream-browserify": "3.0.0"
   },
   "engines": {
     "node": ">= 12.19"
@@ -37,9 +40,5 @@
   "browserslist": [
     "> 0.2%",
     "not dead"
-  ],
-  "alias": {
-    "stream": false,
-    "buffer": false
-  }
+  ]
 }

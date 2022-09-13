@@ -1,7 +1,9 @@
 'use strict'
 
 const path = require('path')
-const config = {}
+const config = {
+  files: ['./packages/*/test/*.ava.js'],
+}
 
 if (process.env.CBOR_PACKAGE) {
   const NODE_PATH = [
