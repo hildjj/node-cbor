@@ -1,4 +1,4 @@
-import 'regenerator-runtime/runtime'
+import 'regenerator-runtime/runtime.js'
 import * as cbor from 'cbor'
 import {Buffer} from 'buffer'
 import bdec from 'cbor-bigdecimal'

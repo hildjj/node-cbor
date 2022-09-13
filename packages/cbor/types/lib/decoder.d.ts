@@ -187,8 +187,8 @@ type ExtendedResults = {
     bytes: Buffer;
     /**
      * The bytes that were left over from the original
-     * input.  This property only exists if {@link Decoder.decodeFirst } or
-     * {@link Decoder.decodeFirstSync } was called.
+     * input.  This property only exists if {@linkcode Decoder.decodeFirst } or
+     * {@linkcode Decoder.decodeFirstSync } was called.
      */
     unused?: Buffer;
 };

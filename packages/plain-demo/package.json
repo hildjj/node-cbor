@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "build": "node build.js",
-    "predeploy": "npm run build",
-    "deploy": "copyfiles -u1 dist/* ../../docs/example"
+    "precopy": "npm run build",
+    "copy": "copyfiles -u1 dist/* ../../docs/example"
   },
   "author": "Joe Hildebrand <joe-github@cursive.net>",
   "license": "MIT",
@@ -16,12 +16,12 @@
     "directory": "packages/plain-demo"
   },
   "devDependencies": {
-    "bignumber.js": "^9.0.1",
+    "bignumber.js": "^9.1.0",
     "browser-resolve": "^2.0.0",
     "cbor-bigdecimal": "^8.1.0",
     "cbor-web": "^8.1.0",
     "copyfiles": "^2.4.1",
-    "node-inspect-extracted": "^1.0.8"
+    "node-inspect-extracted": "^1.1.0"
   },
   "engines": {
     "node": ">=12.19"

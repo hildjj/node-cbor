@@ -51,11 +51,11 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {
-    "bignumber.js": "^9.0.1",
+    "bignumber.js": "^9.1.0",
     "cbor": "^8.1.0",
     "cbor-bigdecimal": "^8.1.0",
-    "commander": "^8.3.0",
-    "json-text-sequence": "^1.0.0"
+    "commander": "^9.4.0",
+    "json-text-sequence": "^1.0.1"
   },
   "engines": {
     "node": ">=12.19"

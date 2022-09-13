@@ -1,7 +1,7 @@
+/* eslint-disable no-console */
 'use strict'
 
 const puppeteer = require('puppeteer')
-const chalk = require('chalk')
 const path = require('path')
 const assert = require('assert')
 const fs = require('fs')
@@ -46,20 +46,13 @@ async function main() {
         .type()
         .substr(0, 3)
         .toUpperCase()
-      const colors = {
-        LOG: text => text,
-        ERR: chalk.red,
-        WAR: chalk.yellow,
-        INF: chalk.cyan,
-      }
-      const color = colors[type] || chalk.blue
-      console.log(color(`${type} ${txt}`))
+      console.log(`${type} ${txt}`)
     })
-    .on('pageerror', ({message}) => console.log(chalk.red(message)))
+    .on('pageerror', ({message}) => console.log(message))
     // .on('response', response =>
-    //   console.log(chalk.green(`${response.status()} ${response.url()}`)))
+    //   console.log(`${response.status()} ${response.url()}`))
     .on('requestfailed', request => console.log(
-      chalk.magenta(`${request.failure().errorText} ${request.url()}`)
+      `${request.failure().errorText} ${request.url()}`
     ))
   await page.goto(TOP, {waitUntil: 'load'})
   const links = await page.$$('li a')

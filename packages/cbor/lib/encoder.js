@@ -181,15 +181,29 @@ class Encoder extends stream.Transform {
     }
   }
 
+  /**
+   * Transforming.
+   *
+   * @param {any} fresh Buffer to transcode.
+   * @param {BufferEncoding} encoding Name of encoding.
+   * @param {stream.TransformCallback} cb Callback when done.
+   * @ignore
+   */
   _transform(fresh, encoding, cb) {
     const ret = this.pushAny(fresh)
     // Old transformers might not return bool.  undefined !== false
-    return cb((ret === false) ? new Error('Push Error') : undefined)
+    cb((ret === false) ? new Error('Push Error') : undefined)
   }
 
+  /**
+   * Flushing.
+   *
+   * @param {stream.TransformCallback} cb Callback when done.
+   * @ignore
+   */
   // eslint-disable-next-line class-methods-use-this
   _flush(cb) {
-    return cb()
+    cb()
   }
 
   /**
@@ -1009,10 +1023,10 @@ Call removeLoopDetectors before resuming.`)
   /**
    * Encode one JavaScript object using the given options.
    *
-   * @static
    * @param {any} obj The object to encode.
    * @param {EncodingOptions} [options={}] Passed to the Encoder constructor.
    * @returns {Buffer} The encoded objects.
+   * @static
    */
   static encodeOne(obj, options) {
     return new Encoder(options)._encodeAll([obj])

@@ -28,11 +28,11 @@
     "node": ">=12.19"
   },
   "peerDependencies": {
-    "bignumber.js": "^9.0.1"
+    "bignumber.js": "^9.1.0"
   },
   "devDependencies": {
-    "bignumber.js": "^9.0.1",
-    "webpack": "^5.62.2",
-    "webpack-cli": "^4.9.1"
+    "bignumber.js": "^9.1.0",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0"
   }
 }

@@ -18,17 +18,17 @@ declare class BinaryParseStream extends stream.Transform {
     constructor(options: stream.TransformOptions);
     bs: NoFilter;
     __fresh: boolean;
-    __needed: number;
+    __needed: any;
     /**
      * Subclasses must override this to set their parsing behavior.  Yield a
      * number to receive a Buffer of that many bytes.
      *
      * @abstract
-     * @returns {Generator<number, undefined, Buffer>}
+     * @returns {Generator<number, any, Buffer>}
      */
-    _parse(): Generator<number, undefined, Buffer>;
+    _parse(): Generator<number, any, Buffer>;
     __restart(): void;
-    __parser: Generator<number, undefined, Buffer>;
+    __parser: Generator<number, any, Buffer>;
 }
 import stream = require("stream");
 import NoFilter = require("nofilter");
