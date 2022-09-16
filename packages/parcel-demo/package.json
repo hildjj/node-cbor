@@ -19,8 +19,10 @@
     "directory": "packages/parcel-demo"
   },
   "devDependencies": {
+    "@parcel/core": "2.7.0",
     "@parcel/optimizer-data-url": "2.7.0",
     "@parcel/transformer-inline-string": "2.7.0",
+    "bignumber.js": "9.1.0",
     "buffer": "6.0.3",
     "cbor": "^8.1.0",
     "cbor-bigdecimal": "^8.1.0",
