@@ -1,6 +1,7 @@
 'use strict'
 
 const {Buffer} = require('buffer')
+const {TextDecoder} = require('util')
 const NoFilter = require('nofilter')
 const stream = require('stream')
 const constants = require('./constants')
