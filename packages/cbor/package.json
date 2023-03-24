@@ -23,7 +23,7 @@
     "release": "npm version patch && git push --follow-tags && npm publish",
     "predev": "npm run coverage",
     "dev": "light-server -q -s. -w 'lib/*.js,test/*.js # npm run coverage' -o /coverage/lcov-report/index.html",
-    "types": "tsc && cp -r ./types ../cbor-web/"
+    "types": "tsc && (cp -r ./types ../cbor-web/ || xcopy types ..\cbor-web /E)"
   },
   "keywords": [
     "coap",
