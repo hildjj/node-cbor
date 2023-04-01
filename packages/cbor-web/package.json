@@ -3,6 +3,7 @@
   "version": "8.1.0",
   "description": "",
   "main": "dist/cbor.js",
+  "types": "./types/lib/cbor.d.ts",
   "scripts": {
     "build": "webpack",
     "copy": "webpack"
