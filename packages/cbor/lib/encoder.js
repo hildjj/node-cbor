@@ -79,6 +79,14 @@ function parseDateType(str) {
 }
 
 /**
+ * @typedef ObjectOptions
+ * @property {boolean} [indefinite = false] Force indefinite encoding for this
+ *   object.
+ * @property {boolean} [skipTypes = false] Do not use available type mappings
+ *   for this object, but encode it as a "normal" JS object would be.
+ */
+
+/**
  * @typedef EncodingOptions
  * @property {any[]|object} [genTypes=[]] Array of pairs of
  *   `type`, `function(Encoder)` for semantic types to be encoded.  Not
@@ -493,6 +501,7 @@ class Encoder extends stream.Transform {
 
   /**
    * @param {object} obj Object to encode.
+   * @param {ObjectOptions} [opts] Options for encoding this object.
    * @returns {boolean} True on success.
    * @throws {Error} Loop detected.
    * @ignore

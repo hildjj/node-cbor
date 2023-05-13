@@ -50,10 +50,10 @@ declare class CborMap extends Map<any, any> {
      * Returns a new Iterator object that contains the [key, value] pairs for
      * each element in the Map object in insertion order.
      *
+     * @returns {IterableIterator<any>} Key value pairs.
      * @yields {any[]} Key value pairs.
-     * @returns {IterableIterator<any, any>} Key value pairs.
      */
-    entries(): IterableIterator<any, any>;
+    entries(): IterableIterator<any>;
     /**
      * Executes a provided function once per each key/value pair in the Map
      * object, in insertion order.

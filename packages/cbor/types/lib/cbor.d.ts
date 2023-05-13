@@ -5,6 +5,7 @@ export const Encoder: typeof import("./encoder");
 export const Simple: typeof import("./simple");
 export const Tagged: typeof import("./tagged");
 export const Map: typeof import("./map");
+export const SharedValueEncoder: typeof import("./sharedValueEncoder");
 export namespace leveldb {
     const decode: typeof import("./decoder").decodeFirstSync;
     const encode: typeof import("./encoder").encode;

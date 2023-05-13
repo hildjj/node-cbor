@@ -7,6 +7,7 @@ exports.Encoder = require('./encoder')
 exports.Simple = require('./simple')
 exports.Tagged = require('./tagged')
 exports.Map = require('./map')
+exports.SharedValueEncoder = require('./sharedValueEncoder')
 
 /**
  * Convenience name for {@linkcode Commented.comment}.

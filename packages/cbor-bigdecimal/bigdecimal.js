@@ -49,6 +49,7 @@ function addBigDecimal(inCBOR) {
   cbor.Encoder.SEMANTIC_TYPES[BigNumber.name] = pushBigNumber
   cbor.Tagged.TAGS[4] = tag_4
   cbor.Tagged.TAGS[5] = tag_5
+  return cbor
 }
 
 addBigDecimal.BigNumber = BigNumber
