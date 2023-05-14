@@ -33,6 +33,7 @@
     "@cto.af/eslint-config": "^1.1.2",
     "ava": "^5.2.0",
     "bignumber.js": "^9.1.1",
+    "docdash": "2.0.1",
     "eslint": "^8.40.0",
     "eslint-plugin-ava": "^14.0.0",
     "eslint-plugin-jsdoc": "^44.2.3",
@@ -45,6 +46,7 @@
     "nve": "^15.5.0",
     "nyc": "^15.1.0",
     "rimraf": "^5.0.0",
+    "typedoc": "0.24.7",
     "typescript": "^5.0.4"
   },
   "license": "MIT",

@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Decoder - Documentation</title>
-
+    
+    
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 
@@ -23,8 +26,11 @@
 
 <label for="nav-trigger" class="overlay"></label>
 
-<nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="BinaryParseStream.html">BinaryParseStream</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="CborMap.html">CborMap</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="CborMap.html#delete">delete</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="CborMap.html#encodeCBOR">encodeCBOR</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="CborMap.html#entries">entries</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="CborMap.html#forEach">forEach</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="CborMap.html#get">get</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="CborMap.html#has">has</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="CborMap.html#keys">keys</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="CborMap.html#set">set</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Commented.html">Commented</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Commented.html#.comment">comment</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Decoder.html">Decoder</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Decoder.html#.decodeAll">decodeAll</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Decoder.html#.decodeAllSync">decodeAllSync</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Decoder.html#.decodeFirst">decodeFirst</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Decoder.html#.decodeFirstSync">decodeFirstSync</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Decoder.html#.nullcheck">nullcheck</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Decoder.html#close">close</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Diagnose.html">Diagnose</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Diagnose.html#.diagnose">diagnose</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Encoder.html">Encoder</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Encoder.html#.encode">encode</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Encoder.html#.encodeAsync">encodeAsync</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Encoder.html#.encodeCanonical">encodeCanonical</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Encoder.html#.encodeIndefinite">encodeIndefinite</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Encoder.html#.encodeOne">encodeOne</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Encoder.html#.pushArray">pushArray</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Encoder.html#.reset">reset</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Encoder.html#_transform">_transform</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Encoder.html#addSemanticType">addSemanticType</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Encoder.html#pushAny">pushAny</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Encoder.html#removeLoopDetectors">removeLoopDetectors</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Simple.html">Simple</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Simple.html#.decode">decode</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Simple.html#.isSimple">isSimple</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Simple.html#encodeCBOR">encodeCBOR</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Simple.html#toString">toString</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Tagged.html">Tagged</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tagged.html#.reset">reset</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tagged.html#convert">convert</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tagged.html#encodeCBOR">encodeCBOR</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tagged.html#toString">toString</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#comment">comment</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#decode">decode</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#decodeAll">decodeAll</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#decodeAllSync">decodeAllSync</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#decodeFirst">decodeFirst</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#decodeFirstSync">decodeFirstSync</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#diagnose">diagnose</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#encode">encode</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#encodeAsync">encodeAsync</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#encodeCanonical">encodeCanonical</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#encodeOne">encodeOne</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#leveldb">leveldb</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#reset">reset</a></span></li>
+<nav >
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BinaryParseStream.html">BinaryParseStream</a></li><li><a href="CborMap.html">CborMap</a><ul class='methods'><li data-type='method'><a href="CborMap.html#delete">delete</a></li><li data-type='method'><a href="CborMap.html#encodeCBOR">encodeCBOR</a></li><li data-type='method'><a href="CborMap.html#entries">entries</a></li><li data-type='method'><a href="CborMap.html#forEach">forEach</a></li><li data-type='method'><a href="CborMap.html#get">get</a></li><li data-type='method'><a href="CborMap.html#has">has</a></li><li data-type='method'><a href="CborMap.html#keys">keys</a></li><li data-type='method'><a href="CborMap.html#set">set</a></li></ul></li><li><a href="Commented.html">Commented</a><ul class='methods'><li data-type='method'><a href="Commented.html#.comment">comment</a></li></ul></li><li><a href="Decoder.html">Decoder</a><ul class='methods'><li data-type='method'><a href="Decoder.html#close">close</a></li><li data-type='method'><a href="Decoder.html#.decodeAll">decodeAll</a></li><li data-type='method'><a href="Decoder.html#.decodeAllSync">decodeAllSync</a></li><li data-type='method'><a href="Decoder.html#.decodeFirst">decodeFirst</a></li><li data-type='method'><a href="Decoder.html#.decodeFirstSync">decodeFirstSync</a></li><li data-type='method'><a href="Decoder.html#.nullcheck">nullcheck</a></li></ul></li><li><a href="Diagnose.html">Diagnose</a><ul class='methods'><li data-type='method'><a href="Diagnose.html#.diagnose">diagnose</a></li></ul></li><li><a href="Encoder.html">Encoder</a><ul class='methods'><li data-type='method'><a href="Encoder.html#addSemanticType">addSemanticType</a></li><li data-type='method'><a href="Encoder.html#pushAny">pushAny</a></li><li data-type='method'><a href="Encoder.html#removeLoopDetectors">removeLoopDetectors</a></li><li data-type='method'><a href="Encoder.html#.encode">encode</a></li><li data-type='method'><a href="Encoder.html#.encodeAsync">encodeAsync</a></li><li data-type='method'><a href="Encoder.html#.encodeCanonical">encodeCanonical</a></li><li data-type='method'><a href="Encoder.html#.encodeIndefinite">encodeIndefinite</a></li><li data-type='method'><a href="Encoder.html#.encodeOne">encodeOne</a></li><li data-type='method'><a href="Encoder.html#.pushArray">pushArray</a></li><li data-type='method'><a href="Encoder.html#.reset">reset</a></li></ul></li><li><a href="ObjectRecorder.html">ObjectRecorder</a><ul class='methods'><li data-type='method'><a href="ObjectRecorder.html#check">check</a></li><li data-type='method'><a href="ObjectRecorder.html#clear">clear</a></li><li data-type='method'><a href="ObjectRecorder.html#stop">stop</a></li></ul></li><li><a href="SharedValueEncoder.html">SharedValueEncoder</a><ul class='methods'><li data-type='method'><a href="SharedValueEncoder.html#clearRecording">clearRecording</a></li><li data-type='method'><a href="SharedValueEncoder.html#stopRecording">stopRecording</a></li><li data-type='method'><a href="SharedValueEncoder.html#.encode">encode</a></li><li data-type='method'><a href="SharedValueEncoder.html#.encodeAsync">encodeAsync</a></li><li data-type='method'><a href="SharedValueEncoder.html#.encodeCanonical">encodeCanonical</a></li><li data-type='method'><a href="SharedValueEncoder.html#.encodeOne">encodeOne</a></li></ul></li><li><a href="Simple.html">Simple</a><ul class='methods'><li data-type='method'><a href="Simple.html#encodeCBOR">encodeCBOR</a></li><li data-type='method'><a href="Simple.html#toString">toString</a></li><li data-type='method'><a href="Simple.html#.decode">decode</a></li><li data-type='method'><a href="Simple.html#.isSimple">isSimple</a></li></ul></li><li><a href="Tagged.html">Tagged</a><ul class='methods'><li data-type='method'><a href="Tagged.html#convert">convert</a></li><li data-type='method'><a href="Tagged.html#encodeCBOR">encodeCBOR</a></li><li data-type='method'><a href="Tagged.html#toString">toString</a></li><li data-type='method'><a href="Tagged.html#.reset">reset</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#comment">comment</a></li><li><a href="global.html#decode">decode</a></li><li><a href="global.html#decodeAll">decodeAll</a></li><li><a href="global.html#decodeAllSync">decodeAllSync</a></li><li><a href="global.html#decodeFirst">decodeFirst</a></li><li><a href="global.html#decodeFirstSync">decodeFirstSync</a></li><li><a href="global.html#diagnose">diagnose</a></li><li><a href="global.html#encode">encode</a></li><li><a href="global.html#encodeAsync">encodeAsync</a></li><li><a href="global.html#encodeCanonical">encodeCanonical</a></li><li><a href="global.html#encodeOne">encodeOne</a></li><li><a href="global.html#leveldb">leveldb</a></li><li><a href="global.html#reset">reset</a></li></ul>
+    
 </nav>
 
 <div id="main">
@@ -42,10 +48,12 @@
 <header>
     
         <h2>
-        Decoder
+        
+            Decoder
+        
         </h2>
         
-            <div class="class-description">Decode a stream of CBOR bytes by transforming them into equivalent
+            <div class="class-description usertext">Decode a stream of CBOR bytes by transforming them into equivalent
 JavaScript data.  Because of the limitations of Node object streams,
 special symbols are emitted instead of NULL or UNDEFINED.  Fix those
 up by calling <a href="Decoder.html#.nullcheck">Decoder.nullcheck</a>.</div>
@@ -54,10 +62,10 @@ up by calling <a href="Decoder.html#.nullcheck">Decoder.nullcheck</a>.</div>
 </header>
 
 <article>
-    <div class="container-overview">
     
+        <div class="container-overview">
         
-<div class="section-method">
+            
 
     
     <h2>Constructor</h2>
@@ -69,38 +77,11 @@ up by calling <a href="Decoder.html#.nullcheck">Decoder.nullcheck</a>.</div>
 
 
 
-<div class="description">
-    Create a parsing stream.
-</div>
-
-
-
-
 
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Create a parsing stream.</li></ul></dd>
     
 
     
@@ -108,6 +89,30 @@ up by calling <a href="Decoder.html#.nullcheck">Decoder.nullcheck</a>.</div>
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="lib_decoder.js.html">lib/decoder.js</a>, <a href="lib_decoder.js.html#line120">line 120</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -125,7 +130,11 @@ up by calling <a href="Decoder.html#.nullcheck">Decoder.nullcheck</a>.</div>
 
 
 
-    <h5>Parameters:</h5>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -160,7 +169,8 @@ up by calling <a href="Decoder.html#.nullcheck">Decoder.nullcheck</a>.</div>
             <td class="type">
             
                 
-<span class="param-type"><code><a href="global.html#DecoderOptions">DecoderOptions</a></code></span>
+<span class="param-type"><a href="global.html#DecoderOptions">DecoderOptions</a></span>
+
 
 
             
@@ -181,15 +191,12 @@ up by calling <a href="Decoder.html#.nullcheck">Decoder.nullcheck</a>.</div>
             
                 <td class="default">
                 
-                    {}
+                    <code>{}</code>
                 
                 </td>
             
 
-            <td class="description last">
-                Options.
-                
-            </td>
+            <td class="description last">Options.</td>
         </tr>
 
     
@@ -211,9 +218,12 @@ up by calling <a href="Decoder.html#.nullcheck">Decoder.nullcheck</a>.</div>
 
 
 
-</div>
+
+
+
+        
+        </div>
     
-    </div>
 
     
         <h3 class="subsection-title">Extends</h3>
@@ -231,6 +241,8 @@ up by calling <a href="Decoder.html#.nullcheck">Decoder.nullcheck</a>.</div>
     
 
     
+    
+    
 
      
 
@@ -243,27 +255,27 @@ up by calling <a href="Decoder.html#.nullcheck">Decoder.nullcheck</a>.</div>
 
         
             
-<div class="section-method">
 
     
 
-    <h4 class="name" id=".decodeAll"><span class="type-signature">(static) </span>decodeAll<span class="signature">(input, options<span class="signature-attributes">opt</span>, cb<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;(Array.&lt;<a href="global.html#ExtendedResults">ExtendedResults</a>>|Array.&lt;any>)>}</span></h4>
+    <h4 class="name" id="close"><span class="type-signature"></span>close<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
-
-
-
-<div class="description">
-    Decode all of the CBOR items in the input.  This will error if there are
-more bytes left over at the end.
-</div>
-
 
 
 
 
 <dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Stop processing.</li></ul></dd>
+    
 
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_decoder.js.html">lib/decoder.js</a>, <a href="lib_decoder.js.html#line402">line 402</a>
+    </li></ul></dd>
     
 
     
@@ -286,6 +298,63 @@ more bytes left over at the end.
 
     
 
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".decodeAll"><span class="type-signature type-signature-static">(static) </span>decodeAll<span class="signature">(input, options<span class="signature-attributes">opt</span>, cb<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;(Array.&lt;<a href="global.html#ExtendedResults">ExtendedResults</a>>|Array.&lt;any>)>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Decode all of the CBOR items in the input.  This will error if there are
+more bytes left over at the end.</li></ul></dd>
     
 
     
@@ -300,6 +369,30 @@ more bytes left over at the end.
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -310,7 +403,11 @@ more bytes left over at the end.
 
 
 
-    <h5>Parameters:</h5>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -345,7 +442,8 @@ more bytes left over at the end.
             <td class="type">
             
                 
-<span class="param-type"><code><a href="global.html#BufferLike">BufferLike</a></code></span>
+<span class="param-type"><a href="global.html#BufferLike">BufferLike</a></span>
+
 
 
             
@@ -367,10 +465,7 @@ more bytes left over at the end.
                 </td>
             
 
-            <td class="description last">
-                What to parse?
-                
-            </td>
+            <td class="description last">What to parse?</td>
         </tr>
 
     
@@ -383,13 +478,14 @@ more bytes left over at the end.
             <td class="type">
             
                 
-<span class="param-type"><code><a href="global.html#DecoderOptions">DecoderOptions</a></code></span>
+<span class="param-type"><a href="global.html#DecoderOptions">DecoderOptions</a></span>
 |
 
-<span class="param-type"><code><a href="global.html#decodeAllCallback">decodeAllCallback</a></code></span>
+<span class="param-type"><a href="global.html#decodeAllCallback">decodeAllCallback</a></span>
 |
 
-<span class="param-type"><code>string</code></span>
+<span class="param-type">string</span>
+
 
 
             
@@ -410,15 +506,12 @@ more bytes left over at the end.
             
                 <td class="default">
                 
-                    {}
+                    <code>{}</code>
                 
                 </td>
             
 
-            <td class="description last">
-                Decoding options, the callback, or the input encoding.
-                
-            </td>
+            <td class="description last">Decoding options, the callback, or the input encoding.</td>
         </tr>
 
     
@@ -431,7 +524,8 @@ more bytes left over at the end.
             <td class="type">
             
                 
-<span class="param-type"><code><a href="global.html#decodeAllCallback">decodeAllCallback</a></code></span>
+<span class="param-type"><a href="global.html#decodeAllCallback">decodeAllCallback</a></span>
+
 
 
             
@@ -452,15 +546,12 @@ more bytes left over at the end.
             
                 <td class="default">
                 
-                    null
+                    <code>null</code>
                 
                 </td>
             
 
-            <td class="description last">
-                Callback.
-                
-            </td>
+            <td class="description last">Callback.</td>
         </tr>
 
     
@@ -478,26 +569,28 @@ more bytes left over at the end.
 
 
 
-<div class="section-throws">
-<h5>Throws:</h5>
+
+
+<h5 class="h5-throws">Throws:</h5>
 
         
 
 <dl>
     <dt>
-        <div class="param-desc">
+        <div class="param-desc usertext">
         No input specified.
         </div>
     </dt>
     <dd></dd>
     <dt>
-        <dl>
+        <dl class="param-type">
             <dt>
                 Type
             </dt>
             <dd>
                 
-<span class="param-type"><code>TypeError</code></span>
+<span class="param-type">TypeError</span>
+
 
 
             </dd>
@@ -508,85 +601,53 @@ more bytes left over at the end.
 
 
     
-</div>
 
 
-
-<div class="section-returns">
-<h5>Returns:</h5>
+<h5 class="h5-returns">Returns:</h5>
 
         
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>Promise.&lt;(Array.&lt;<a href="global.html#ExtendedResults">ExtendedResults</a>>|Array.&lt;any>)></code></span>
-
-
-    </dd>
-</dl>
-
-
 <div class="param-desc">
     Even if callback
   is specified.
 </div>
 
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(Array.&lt;<a href="global.html#ExtendedResults">ExtendedResults</a>>|Array.&lt;any>)></span>
+
+
+
+    </dd>
+</dl>
+
     
-</div>
 
 
 
-</div>
         
             
-<div class="section-method">
 
     
 
-    <h4 class="name" id=".decodeAllSync"><span class="type-signature">(static) </span>decodeAllSync<span class="signature">(input, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Array.&lt;<a href="global.html#ExtendedResults">ExtendedResults</a>>|Array.&lt;any>}</span></h4>
+    <h4 class="name" id=".decodeAllSync"><span class="type-signature type-signature-static">(static) </span>decodeAllSync<span class="signature">(input, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Array.&lt;<a href="global.html#ExtendedResults">ExtendedResults</a>>|Array.&lt;any>}</span></h4>
 
     
-
-
-
-<div class="description">
-    Decode all of the CBOR items in the input into an array.  This will throw
-an exception if the input is not valid CBOR; a zero-length input will
-return an empty array.
-</div>
-
 
 
 
 
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Decode all of the CBOR items in the input into an array.  This will throw
+an exception if the input is not valid CBOR; a zero-length input will
+return an empty array.</li></ul></dd>
     
 
     
@@ -601,6 +662,30 @@ return an empty array.
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -611,7 +696,11 @@ return an empty array.
 
 
 
-    <h5>Parameters:</h5>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -646,7 +735,8 @@ return an empty array.
             <td class="type">
             
                 
-<span class="param-type"><code><a href="global.html#BufferLike">BufferLike</a></code></span>
+<span class="param-type"><a href="global.html#BufferLike">BufferLike</a></span>
+
 
 
             
@@ -668,10 +758,7 @@ return an empty array.
                 </td>
             
 
-            <td class="description last">
-                What to parse?
-                
-            </td>
+            <td class="description last">What to parse?</td>
         </tr>
 
     
@@ -684,10 +771,11 @@ return an empty array.
             <td class="type">
             
                 
-<span class="param-type"><code><a href="global.html#DecoderOptions">DecoderOptions</a></code></span>
+<span class="param-type"><a href="global.html#DecoderOptions">DecoderOptions</a></span>
 |
 
-<span class="param-type"><code>string</code></span>
+<span class="param-type">string</span>
+
 
 
             
@@ -708,16 +796,13 @@ return an empty array.
             
                 <td class="default">
                 
-                    {}
+                    <code>{}</code>
                 
                 </td>
             
 
-            <td class="description last">
-                Options or encoding
-  for input.
-                
-            </td>
+            <td class="description last">Options or encoding
+  for input.</td>
         </tr>
 
     
@@ -735,26 +820,28 @@ return an empty array.
 
 
 
-<div class="section-throws">
-<h5>Throws:</h5>
+
+
+<h5 class="h5-throws">Throws:</h5>
 <ul>
         <li>
 
 <dl>
     <dt>
-        <div class="param-desc">
+        <div class="param-desc usertext">
         No input provided.
         </div>
     </dt>
     <dd></dd>
     <dt>
-        <dl>
+        <dl class="param-type">
             <dt>
                 Type
             </dt>
             <dd>
                 
-<span class="param-type"><code>TypeError</code></span>
+<span class="param-type">TypeError</span>
+
 
 
             </dd>
@@ -769,19 +856,20 @@ return an empty array.
 
 <dl>
     <dt>
-        <div class="param-desc">
+        <div class="param-desc usertext">
         Insufficient data provided.
         </div>
     </dt>
     <dd></dd>
     <dt>
-        <dl>
+        <dl class="param-type">
             <dt>
                 Type
             </dt>
             <dd>
                 
-<span class="param-type"><code>Error</code></span>
+<span class="param-type">Error</span>
+
 
 
             </dd>
@@ -792,89 +880,57 @@ return an empty array.
 
 </li>
     </ul>
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    Array of all found items.
 </div>
 
 
 
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
 <dl class="param-type">
     <dt>
-        Type:
+        Type
     </dt>
     <dd>
         
-<span class="param-type"><code>Array.&lt;<a href="global.html#ExtendedResults">ExtendedResults</a>></code></span>
+<span class="param-type">Array.&lt;<a href="global.html#ExtendedResults">ExtendedResults</a>></span>
 |
 
-<span class="param-type"><code>Array.&lt;any></code></span>
+<span class="param-type">Array.&lt;any></span>
+
 
 
     </dd>
 </dl>
 
-
-<div class="param-desc">
-    Array of all found items.
-</div>
-
     
-</div>
 
 
 
-</div>
         
             
-<div class="section-method">
 
     
 
-    <h4 class="name" id=".decodeFirst"><span class="type-signature">(static) </span>decodeFirst<span class="signature">(input, options<span class="signature-attributes">opt</span>, cb<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;(<a href="global.html#ExtendedResults">ExtendedResults</a>|any)>}</span></h4>
+    <h4 class="name" id=".decodeFirst"><span class="type-signature type-signature-static">(static) </span>decodeFirst<span class="signature">(input, options<span class="signature-attributes">opt</span>, cb<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;(<a href="global.html#ExtendedResults">ExtendedResults</a>|any)>}</span></h4>
 
     
-
-
-
-<div class="description">
-    Decode the first CBOR item in the input.  This will error if there are
-more bytes left over at the end (if options.extendedResults is not true),
-and optionally if there were no valid CBOR bytes in the input.  Emits the
-{Decoder.NOT_FOUND} Symbol in the callback if no data was found and the
-`required` option is false.
-</div>
-
 
 
 
 
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Decode the first CBOR item in the input.  This will error if there are
+more bytes left over at the end (if options.extendedResults is not true),
+and optionally if there were no valid CBOR bytes in the input.  Emits the
+{Decoder.NOT_FOUND} Symbol in the callback if no data was found and the
+`required` option is false.</li></ul></dd>
     
 
     
@@ -889,6 +945,30 @@ and optionally if there were no valid CBOR bytes in the input.  Emits the
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -899,7 +979,11 @@ and optionally if there were no valid CBOR bytes in the input.  Emits the
 
 
 
-    <h5>Parameters:</h5>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -934,7 +1018,8 @@ and optionally if there were no valid CBOR bytes in the input.  Emits the
             <td class="type">
             
                 
-<span class="param-type"><code><a href="global.html#BufferLike">BufferLike</a></code></span>
+<span class="param-type"><a href="global.html#BufferLike">BufferLike</a></span>
+
 
 
             
@@ -956,10 +1041,7 @@ and optionally if there were no valid CBOR bytes in the input.  Emits the
                 </td>
             
 
-            <td class="description last">
-                What to parse?
-                
-            </td>
+            <td class="description last">What to parse?</td>
         </tr>
 
     
@@ -972,13 +1054,14 @@ and optionally if there were no valid CBOR bytes in the input.  Emits the
             <td class="type">
             
                 
-<span class="param-type"><code><a href="global.html#DecoderOptions">DecoderOptions</a></code></span>
+<span class="param-type"><a href="global.html#DecoderOptions">DecoderOptions</a></span>
 |
 
-<span class="param-type"><code><a href="global.html#decodeCallback">decodeCallback</a></code></span>
+<span class="param-type"><a href="global.html#decodeCallback">decodeCallback</a></span>
 |
 
-<span class="param-type"><code>string</code></span>
+<span class="param-type">string</span>
+
 
 
             
@@ -999,16 +1082,13 @@ and optionally if there were no valid CBOR bytes in the input.  Emits the
             
                 <td class="default">
                 
-                    {}
+                    <code>{}</code>
                 
                 </td>
             
 
-            <td class="description last">
-                Options, the
-  callback, or input encoding.
-                
-            </td>
+            <td class="description last">Options, the
+  callback, or input encoding.</td>
         </tr>
 
     
@@ -1021,7 +1101,8 @@ and optionally if there were no valid CBOR bytes in the input.  Emits the
             <td class="type">
             
                 
-<span class="param-type"><code><a href="global.html#decodeCallback">decodeCallback</a></code></span>
+<span class="param-type"><a href="global.html#decodeCallback">decodeCallback</a></span>
+
 
 
             
@@ -1042,15 +1123,12 @@ and optionally if there were no valid CBOR bytes in the input.  Emits the
             
                 <td class="default">
                 
-                    null
+                    <code>null</code>
                 
                 </td>
             
 
-            <td class="description last">
-                Callback.
-                
-            </td>
+            <td class="description last">Callback.</td>
         </tr>
 
     
@@ -1068,26 +1146,28 @@ and optionally if there were no valid CBOR bytes in the input.  Emits the
 
 
 
-<div class="section-throws">
-<h5>Throws:</h5>
+
+
+<h5 class="h5-throws">Throws:</h5>
 
         
 
 <dl>
     <dt>
-        <div class="param-desc">
+        <div class="param-desc usertext">
         No input provided.
         </div>
     </dt>
     <dd></dd>
     <dt>
-        <dl>
+        <dl class="param-type">
             <dt>
                 Type
             </dt>
             <dd>
                 
-<span class="param-type"><code>TypeError</code></span>
+<span class="param-type">TypeError</span>
+
 
 
             </dd>
@@ -1098,85 +1178,53 @@ and optionally if there were no valid CBOR bytes in the input.  Emits the
 
 
     
-</div>
 
 
-
-<div class="section-returns">
-<h5>Returns:</h5>
+<h5 class="h5-returns">Returns:</h5>
 
         
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>Promise.&lt;(<a href="global.html#ExtendedResults">ExtendedResults</a>|any)></code></span>
-
-
-    </dd>
-</dl>
-
-
 <div class="param-desc">
     Returned even if callback is
   specified.
 </div>
 
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(<a href="global.html#ExtendedResults">ExtendedResults</a>|any)></span>
+
+
+
+    </dd>
+</dl>
+
     
-</div>
 
 
 
-</div>
         
             
-<div class="section-method">
 
     
 
-    <h4 class="name" id=".decodeFirstSync"><span class="type-signature">(static) </span>decodeFirstSync<span class="signature">(input, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="global.html#ExtendedResults">ExtendedResults</a>|any}</span></h4>
+    <h4 class="name" id=".decodeFirstSync"><span class="type-signature type-signature-static">(static) </span>decodeFirstSync<span class="signature">(input, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="global.html#ExtendedResults">ExtendedResults</a>|any}</span></h4>
 
     
-
-
-
-<div class="description">
-    Decode the first CBOR item in the input, synchronously.  This will throw
-an exception if the input is not valid CBOR, or if there are more bytes
-left over at the end (if options.extendedResults is not true).
-</div>
-
 
 
 
 
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Decode the first CBOR item in the input, synchronously.  This will throw
+an exception if the input is not valid CBOR, or if there are more bytes
+left over at the end (if options.extendedResults is not true).</li></ul></dd>
     
 
     
@@ -1191,6 +1239,30 @@ left over at the end (if options.extendedResults is not true).
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -1201,7 +1273,11 @@ left over at the end (if options.extendedResults is not true).
 
 
 
-    <h5>Parameters:</h5>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -1236,7 +1312,8 @@ left over at the end (if options.extendedResults is not true).
             <td class="type">
             
                 
-<span class="param-type"><code><a href="global.html#BufferLike">BufferLike</a></code></span>
+<span class="param-type"><a href="global.html#BufferLike">BufferLike</a></span>
+
 
 
             
@@ -1258,12 +1335,9 @@ left over at the end (if options.extendedResults is not true).
                 </td>
             
 
-            <td class="description last">
-                If a Readable stream, must have
+            <td class="description last">If a Readable stream, must have
   received the `readable` event already, or you will get an error
-  claiming "Insufficient data".
-                
-            </td>
+  claiming "Insufficient data".</td>
         </tr>
 
     
@@ -1276,10 +1350,11 @@ left over at the end (if options.extendedResults is not true).
             <td class="type">
             
                 
-<span class="param-type"><code><a href="global.html#DecoderOptions">DecoderOptions</a></code></span>
+<span class="param-type"><a href="global.html#DecoderOptions">DecoderOptions</a></span>
 |
 
-<span class="param-type"><code>string</code></span>
+<span class="param-type">string</span>
+
 
 
             
@@ -1300,15 +1375,12 @@ left over at the end (if options.extendedResults is not true).
             
                 <td class="default">
                 
-                    {}
+                    <code>{}</code>
                 
                 </td>
             
 
-            <td class="description last">
-                Options or encoding for input.
-                
-            </td>
+            <td class="description last">Options or encoding for input.</td>
         </tr>
 
     
@@ -1326,26 +1398,28 @@ left over at the end (if options.extendedResults is not true).
 
 
 
-<div class="section-throws">
-<h5>Throws:</h5>
+
+
+<h5 class="h5-throws">Throws:</h5>
 <ul>
         <li>
 
 <dl>
     <dt>
-        <div class="param-desc">
+        <div class="param-desc usertext">
         Data is left over after decoding.
         </div>
     </dt>
     <dd></dd>
     <dt>
-        <dl>
+        <dl class="param-type">
             <dt>
                 Type
             </dt>
             <dd>
                 
-<span class="param-type"><code>UnexpectedDataError</code></span>
+<span class="param-type">UnexpectedDataError</span>
+
 
 
             </dd>
@@ -1360,19 +1434,20 @@ left over at the end (if options.extendedResults is not true).
 
 <dl>
     <dt>
-        <div class="param-desc">
+        <div class="param-desc usertext">
         Insufficient data.
         </div>
     </dt>
     <dd></dd>
     <dt>
-        <dl>
+        <dl class="param-type">
             <dt>
                 Type
             </dt>
             <dd>
                 
-<span class="param-type"><code>Error</code></span>
+<span class="param-type">Error</span>
+
 
 
             </dd>
@@ -1383,86 +1458,54 @@ left over at the end (if options.extendedResults is not true).
 
 </li>
     </ul>
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    The decoded value.
 </div>
 
 
 
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
 <dl class="param-type">
     <dt>
-        Type:
+        Type
     </dt>
     <dd>
         
-<span class="param-type"><code><a href="global.html#ExtendedResults">ExtendedResults</a></code></span>
+<span class="param-type"><a href="global.html#ExtendedResults">ExtendedResults</a></span>
 |
 
-<span class="param-type"><code>any</code></span>
+<span class="param-type">any</span>
+
 
 
     </dd>
 </dl>
 
-
-<div class="param-desc">
-    The decoded value.
-</div>
-
     
-</div>
 
 
 
-</div>
         
             
-<div class="section-method">
 
     
 
-    <h4 class="name" id=".nullcheck"><span class="type-signature">(static) </span>nullcheck<span class="signature">(val)</span><span class="type-signature"> &rarr; {any}</span></h4>
+    <h4 class="name" id=".nullcheck"><span class="type-signature type-signature-static">(static) </span>nullcheck<span class="signature">(val)</span><span class="type-signature"> &rarr; {any}</span></h4>
 
     
-
-
-
-<div class="description">
-    Check the given value for a symbol encoding a NULL or UNDEFINED value in
-the CBOR stream.
-</div>
-
 
 
 
 
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Check the given value for a symbol encoding a NULL or UNDEFINED value in
+the CBOR stream.</li></ul></dd>
     
 
     
@@ -1477,6 +1520,30 @@ the CBOR stream.
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -1487,7 +1554,19 @@ the CBOR stream.
 
 
 
-    <h5>Parameters:</h5>
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>myDecoder.on('data', val => {
+  val = Decoder.nullcheck(val)
+  // ...
+})</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -1518,7 +1597,8 @@ the CBOR stream.
             <td class="type">
             
                 
-<span class="param-type"><code>any</code></span>
+<span class="param-type">any</span>
+
 
 
             
@@ -1528,10 +1608,7 @@ the CBOR stream.
 
             
 
-            <td class="description last">
-                The value to check.
-                
-            </td>
+            <td class="description last">The value to check.</td>
         </tr>
 
     
@@ -1549,26 +1626,28 @@ the CBOR stream.
 
 
 
-<div class="section-throws">
-<h5>Throws:</h5>
+
+
+<h5 class="h5-throws">Throws:</h5>
 
         
 
 <dl>
     <dt>
-        <div class="param-desc">
+        <div class="param-desc usertext">
         Nothing was found.
         </div>
     </dt>
     <dd></dd>
     <dt>
-        <dl>
+        <dl class="param-type">
             <dt>
                 Type
             </dt>
             <dd>
                 
-<span class="param-type"><code>Error</code></span>
+<span class="param-type">Error</span>
+
 
 
             </dd>
@@ -1579,131 +1658,34 @@ the CBOR stream.
 
 
     
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    The corrected value.
 </div>
 
 
 
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
 <dl class="param-type">
     <dt>
-        Type:
+        Type
     </dt>
     <dd>
         
-<span class="param-type"><code>any</code></span>
+<span class="param-type">any</span>
+
 
 
     </dd>
 </dl>
 
-
-<div class="param-desc">
-    The corrected value.
-</div>
-
-    
-</div>
-
-
-
-<div class="section-examples">
-<h5>Example</h5>
-
-    <pre class="prettyprint"><code>myDecoder.on('data', val => {
-  val = Decoder.nullcheck(val)
-  // ...
-})</code></pre>
-
-</div>
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="close"><span class="type-signature"></span>close<span class="signature">()</span><span class="type-signature"></span></h4>
-
     
 
 
 
-<div class="description">
-    Stop processing.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_decoder.js.html">lib/decoder.js</a>, <a href="lib_decoder.js.html#line402">line 402</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
         
     
 
@@ -1717,15 +1699,21 @@ the CBOR stream.
 
 
 
+    
+    
 </div>
 
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.11</a> using the Minami theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
 <script src="scripts/linenumber.js"></script>
+
+
+
 </body>
 </html>

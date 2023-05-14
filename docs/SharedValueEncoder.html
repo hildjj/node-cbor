@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>CborMap - Documentation</title>
+    <title>SharedValueEncoder - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -35,7 +35,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">CborMap</h1>
+    <h1 class="page-title">SharedValueEncoder</h1>
     
 
     
@@ -49,17 +49,11 @@
     
         <h2>
         
-            CborMap
+            SharedValueEncoder
         
         </h2>
         
-            <div class="class-description usertext">Wrapper around a JavaScript Map object that allows the keys to be
-any complex type.  The base Map object allows this, but will only
-compare the keys by identity, not by value.  CborMap translates keys
-to CBOR first (and base64's them to ensure by-value comparison).
-
-This is not a subclass of Object, because it would be tough to get
-the semantics to be an exact match.</div>
+            <div class="class-description usertext">Implement value sharing.</div>
         
     
 </header>
@@ -74,7 +68,117 @@ the semantics to be an exact match.</div>
     <h2>Constructor</h2>
     
 
-    <h4 class="name" id="CborMap"><span class="type-signature"></span>new CborMap<span class="signature">(iterable<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="SharedValueEncoder"><span class="type-signature"></span>new SharedValueEncoder<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_sharedValueEncoder.js.html">lib/sharedValueEncoder.js</a>, <a href="lib_sharedValueEncoder.js.html#line13">line 13</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>cbor.schmorp.de/value-sharing</li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        </div>
+    
+
+    
+
+    
+
+    
+    
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="clearRecording"><span class="type-signature"></span>clearRecording<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
@@ -84,13 +188,185 @@ the semantics to be an exact match.</div>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li>Creates an instance of CborMap.</li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li>Remove the existing recording and start over.  Do this between encoding
+pairs.</li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_map.js.html">lib/map.js</a>, <a href="lib_map.js.html#line19">line 19</a>
+        <a href="lib_sharedValueEncoder.js.html">lib/sharedValueEncoder.js</a>, <a href="lib_sharedValueEncoder.js.html#line56">line 56</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="stopRecording"><span class="type-signature"></span>stopRecording<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Between encoding runs, stop recording, and start outputing correct tags.</li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_sharedValueEncoder.js.html">lib/sharedValueEncoder.js</a>, <a href="lib_sharedValueEncoder.js.html#line48">line 48</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".encode"><span class="type-signature type-signature-static">(static) </span>encode<span class="signature">(&hellip;objs)</span><span class="type-signature"> &rarr; {Buffer}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Encode one or more JavaScript objects, and return a Buffer containing the
+CBOR bytes.</li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_sharedValueEncoder.js.html">lib/sharedValueEncoder.js</a>, <a href="lib_sharedValueEncoder.js.html#line67">line 67</a>
     </li></ul></dd>
     
 
@@ -164,13 +440,13 @@ the semantics to be an exact match.</div>
 
         <tr>
             
-                <td class="name"><code>iterable</code></td>
+                <td class="name"><code>objs</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Iterable.&lt;any></span>
+<span class="param-type">any</span>
 
 
 
@@ -180,21 +456,18 @@ the semantics to be an exact match.</div>
             
                 <td class="attributes">
                 
-                    &lt;optional><br>
-                
 
                 
 
+                
+                    &lt;repeatable><br>
                 
                 </td>
             
 
             
 
-            <td class="description last">An Array or other iterable
-  object whose elements are key-value pairs (arrays with two elements, e.g.
-  <code>[[ 1, 'one' ],[ 2, 'two' ]]</code>). Each key-value pair is added
-  to the new CborMap; null values are treated as undefined.</td>
+            <td class="description last">The objects to encode.</td>
         </tr>
 
     
@@ -216,47 +489,38 @@ the semantics to be an exact match.</div>
 
 
 
-
-
-
-        
-        </div>
-    
-
-    
-        <h3 class="subsection-title">Extends</h3>
+<h5 class="h5-returns">Returns:</h5>
 
         
+<div class="param-desc">
+    The encoded objects.
+</div>
 
 
-    <ul>
-        <li>Map</li>
-    </ul>
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Buffer</span>
 
 
-    
 
-    
-
-    
-    
-    
-
-     
-
-    
-
-    
+    </dd>
+</dl>
 
     
-        <h3 class="subsection-title">Methods</h3>
+
+
 
         
             
 
     
 
-    <h4 class="name" id="delete"><span class="type-signature"></span>delete<span class="signature">(key)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    <h4 class="name" id=".encodeAsync"><span class="type-signature type-signature-static">(static) </span>encodeAsync<span class="signature">(obj, options)</span><span class="type-signature"> &rarr; {Promise.&lt;Buffer>}</span></h4>
 
     
 
@@ -266,13 +530,17 @@ the semantics to be an exact match.</div>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li>Removes the specified element.</li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li>Encode one JavaScript object using the given options in a way that
+is more resilient to objects being larger than the highWaterMark
+number of bytes.  As with the other static encode functions, this
+will still use a large amount of memory.  Use a stream-based approach
+directly if you need to process large and complicated inputs.</li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_map.js.html">lib/map.js</a>, <a href="lib_map.js.html#line79">line 79</a>
+        <a href="lib_sharedValueEncoder.js.html">lib/sharedValueEncoder.js</a>, <a href="lib_sharedValueEncoder.js.html#line124">line 124</a>
     </li></ul></dd>
     
 
@@ -344,7 +612,7 @@ the semantics to be an exact match.</div>
 
         <tr>
             
-                <td class="name"><code>key</code></td>
+                <td class="name"><code>obj</code></td>
             
 
             <td class="type">
@@ -361,8 +629,25 @@ the semantics to be an exact match.</div>
 
             
 
-            <td class="description last">The key identifying the element to delete. Can be any
-  type, which will be serialized into CBOR and compared by value.</td>
+            <td class="description last">The object to encode.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
         </tr>
 
     
@@ -388,8 +673,7 @@ the semantics to be an exact match.</div>
 
         
 <div class="param-desc">
-    True if an element in the Map object existed and has
-  been removed, or false if the element does not exist.
+    A promise for the encoded buffer.
 </div>
 
 
@@ -400,7 +684,7 @@ the semantics to be an exact match.</div>
     </dt>
     <dd>
         
-<span class="param-type">boolean</span>
+<span class="param-type">Promise.&lt;Buffer></span>
 
 
 
@@ -416,7 +700,7 @@ the semantics to be an exact match.</div>
 
     
 
-    <h4 class="name" id="encodeCBOR"><span class="type-signature"></span>encodeCBOR<span class="signature">(gen)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    <h4 class="name" id=".encodeCanonical"><span class="type-signature type-signature-static">(static) </span>encodeCanonical<span class="signature">(&hellip;objs)</span><span class="type-signature"> &rarr; {Buffer}</span></h4>
 
     
 
@@ -426,13 +710,14 @@ the semantics to be an exact match.</div>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li>Push the simple value onto the CBOR stream.</li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li>Encode one or more JavaScript objects canonically (slower!), and return
+a Buffer containing the CBOR bytes.</li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_map.js.html">lib/map.js</a>, <a href="lib_map.js.html#line158">line 158</a>
+        <a href="lib_sharedValueEncoder.js.html">lib/sharedValueEncoder.js</a>, <a href="lib_sharedValueEncoder.js.html#line89">line 89</a>
     </li></ul></dd>
     
 
@@ -492,296 +777,7 @@ the semantics to be an exact match.</div>
         <th>Type</th>
 
         
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>gen</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The generator to push onto.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5 class="h5-returns">Returns:</h5>
-
-        
-<div class="param-desc">
-    True on success.
-</div>
-
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">boolean</span>
-
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="entries"><span class="type-signature type-signature-generator">(generator) </span>entries<span class="signature">()</span><span class="type-signature"> &rarr; {Array.&lt;any>}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-    
-    <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li>Returns a new Iterator object that contains the [key, value] pairs for
-each element in the Map object in insertion order.</li></ul></dd>
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_map.js.html">lib/map.js</a>, <a href="lib_map.js.html#line117">line 117</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5 class="h5-returns">Returns:</h5>
-
-        
-<div class="param-desc">
-    Key value pairs.
-</div>
-
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">IterableIterator.&lt;any></span>
-
-
-
-    </dd>
-</dl>
-
-    
-
-		
-<h5 class="h5-yields">Yields:</h5>		
-		
-        
-<div class="param-desc">
-    Key value pairs.
-</div>
-
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Array.&lt;any></span>
-
-
-
-    </dd>
-</dl>
-		
-    
-
-        
-            
-
-    
-
-    <h4 class="name" id="forEach"><span class="type-signature"></span>forEach<span class="signature">(fun, thisArg)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-
-<dl class="details">
-    
-    <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li>Executes a provided function once per each key/value pair in the Map
-object, in insertion order.</li></ul></dd>
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_map.js.html">lib/map.js</a>, <a href="lib_map.js.html#line143">line 143</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <h5 class="h5-parameters">Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
+        <th>Attributes</th>
         
 
         
@@ -795,32 +791,7 @@ object, in insertion order.</li></ul></dd>
 
         <tr>
             
-                <td class="name"><code>fun</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Function to execute for
- each element, which takes a value, a key, and the Map being traversed.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>thisArg</code></td>
+                <td class="name"><code>objs</code></td>
             
 
             <td class="type">
@@ -834,10 +805,20 @@ object, in insertion order.</li></ul></dd>
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                    &lt;repeatable><br>
+                
+                </td>
+            
 
             
 
-            <td class="description last">Value to use as this when executing callback.</td>
+            <td class="description last">The objects to encode.</td>
         </tr>
 
     
@@ -864,7 +845,7 @@ object, in insertion order.</li></ul></dd>
 <dl>
     <dt>
         <div class="param-desc usertext">
-        Invalid function.
+        Always.  This combination doesn't work at the moment.
         </div>
     </dt>
     <dd></dd>
@@ -875,7 +856,7 @@ object, in insertion order.</li></ul></dd>
             </dt>
             <dd>
                 
-<span class="param-type">TypeError</span>
+<span class="param-type">Error</span>
 
 
 
@@ -889,6 +870,29 @@ object, in insertion order.</li></ul></dd>
     
 
 
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    Never.
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Buffer</span>
+
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -897,7 +901,7 @@ object, in insertion order.</li></ul></dd>
 
     
 
-    <h4 class="name" id="get"><span class="type-signature"></span>get<span class="signature">(key)</span><span class="type-signature"> &rarr; {any}</span></h4>
+    <h4 class="name" id=".encodeOne"><span class="type-signature type-signature-static">(static) </span>encodeOne<span class="signature">(obj, options)</span><span class="type-signature"> &rarr; {Buffer}</span></h4>
 
     
 
@@ -907,13 +911,13 @@ object, in insertion order.</li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li>Retrieve a specified element.</li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li>Encode one JavaScript object using the given options.</li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_map.js.html">lib/map.js</a>, <a href="lib_map.js.html#line54">line 54</a>
+        <a href="lib_sharedValueEncoder.js.html">lib/sharedValueEncoder.js</a>, <a href="lib_sharedValueEncoder.js.html#line102">line 102</a>
     </li></ul></dd>
     
 
@@ -985,7 +989,7 @@ object, in insertion order.</li></ul></dd>
 
         <tr>
             
-                <td class="name"><code>key</code></td>
+                <td class="name"><code>obj</code></td>
             
 
             <td class="type">
@@ -1002,9 +1006,25 @@ object, in insertion order.</li></ul></dd>
 
             
 
-            <td class="description last">The key identifying the element to retrieve.
-  Can be any type, which will be serialized into CBOR and compared by
-  value.</td>
+            <td class="description last">The object to encode.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
         </tr>
 
     
@@ -1030,7 +1050,7 @@ object, in insertion order.</li></ul></dd>
 
         
 <div class="param-desc">
-    The element if it exists, or <code>undefined</code>.
+    The encoded objects.
 </div>
 
 
@@ -1041,462 +1061,7 @@ object, in insertion order.</li></ul></dd>
     </dt>
     <dd>
         
-<span class="param-type">any</span>
-
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="has"><span class="type-signature"></span>has<span class="signature">(key)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-    
-    <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li>Does an element with the specified key exist?</li></ul></dd>
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_map.js.html">lib/map.js</a>, <a href="lib_map.js.html#line92">line 92</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <h5 class="h5-parameters">Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>key</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">any</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The key identifying the element to check.
-  Can be any type, which will be serialized into CBOR and compared by
-  value.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5 class="h5-returns">Returns:</h5>
-
-        
-<div class="param-desc">
-    True if an element with the specified key exists in
-  the Map object; otherwise false.
-</div>
-
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">boolean</span>
-
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="keys"><span class="type-signature type-signature-generator">(generator) </span>keys<span class="signature">()</span><span class="type-signature"> &rarr; {any}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-    
-    <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li>Returns a new Iterator object that contains the keys for each element
-in the Map object in insertion order.  The keys are decoded into their
-original format.</li></ul></dd>
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_map.js.html">lib/map.js</a>, <a href="lib_map.js.html#line103">line 103</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		
-<h5 class="h5-yields">Yields:</h5>		
-		
-        
-<div class="param-desc">
-    The keys of the map.
-</div>
-
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">any</span>
-
-
-
-    </dd>
-</dl>
-		
-    
-
-        
-            
-
-    
-
-    <h4 class="name" id="set"><span class="type-signature"></span>set<span class="signature">(key, val)</span><span class="type-signature"> &rarr; {this}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-    
-    <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li>Adds or updates an element with a specified key and value.</li></ul></dd>
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_map.js.html">lib/map.js</a>, <a href="lib_map.js.html#line67">line 67</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <h5 class="h5-parameters">Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>key</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">any</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The key identifying the element to store.
-  Can be any type, which will be serialized into CBOR and compared by
-  value.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>val</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">any</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The element to store.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5 class="h5-returns">Returns:</h5>
-
-        
-<div class="param-desc">
-    This object.
-</div>
-
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">this</span>
+<span class="param-type">Buffer</span>
 
 
 

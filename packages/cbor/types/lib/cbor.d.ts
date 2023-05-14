@@ -13,14 +13,4 @@ export namespace leveldb {
     const name: string;
 }
 export function reset(): void;
-export const comment: typeof import("./commented").comment;
-export const decodeAll: typeof import("./decoder").decodeAll;
-export const decodeAllSync: typeof import("./decoder").decodeAllSync;
-export const decodeFirst: typeof import("./decoder").decodeFirst;
-export const decodeFirstSync: typeof import("./decoder").decodeFirstSync;
-export const decode: typeof import("./decoder").decodeFirstSync;
-export const diagnose: typeof import("./diagnose").diagnose;
-export const encode: typeof import("./encoder").encode;
-export const encodeCanonical: typeof import("./encoder").encodeCanonical;
-export const encodeOne: typeof import("./encoder").encodeOne;
-export const encodeAsync: typeof import("./encoder").encodeAsync;
+export { comment, decodeAll, decodeFirst, decodeAllSync, decodeFirstSync, diagnose, encode, encodeCanonical, encodeOne, encodeAsync, decodeFirstSync as decode };

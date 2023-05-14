@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>vendor/binary-parse-stream/index.js - Documentation</title>
+    <title>lib/sharedValueEncoder.js - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -35,7 +35,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">vendor/binary-parse-stream/index.js</h1>
+    <h1 class="page-title">lib/sharedValueEncoder.js</h1>
     
 
     
@@ -45,116 +45,149 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>// Tweaked version of nathan7's binary-parse-stream
-// (see https://github.com/nathan7/binary-parse-stream)
-// Uses NoFilter instead of the readable in the original.  Removes
-// the ability to read -1, which was odd and un-needed.
-// License for binary-parse-stream: MIT
-
-// binary-parse-stream is now unmaintained, so I have rewritten it as
-// more modern JS so I can get tsc to help check types.
-
+            <pre class="prettyprint source linenums"><code>/* eslint-disable jsdoc/valid-types */
 'use strict'
-const stream = require('stream')
-const NoFilter = require('nofilter')
+
+const Encoder = require('./encoder')
+const ObjectRecorder = require('./objectRecorder')
+const {Buffer} = require('buffer')
 
 /**
- * BinaryParseStream is a TransformStream that consumes buffers and outputs
- * objects on the other end.  It expects your subclass to implement a `_parse`
- * method that is a generator.  When your generator yields a number, it'll be
- * fed a buffer of that length from the input.  When your generator returns,
- * the return value will be pushed to the output side.
+ * Implement value sharing.
  *
- * @extends stream.Transform
+ * @see {@link cbor.schmorp.de/value-sharing}
  */
-class BinaryParseStream extends stream.Transform {
-  /**
-   * Creates an instance of BinaryParseStream.
-   *
-   * @memberof BinaryParseStream
-   * @param {stream.TransformOptions} options Stream options.
-   */
-  constructor(options) {
-    super(options)
-    // Doesn't work to pass these in as opts, for some reason
-    // also, work around typescript not knowing TransformStream internals
-    // eslint-disable-next-line dot-notation
-    this['_writableState'].objectMode = false
-    // eslint-disable-next-line dot-notation
-    this['_readableState'].objectMode = true
-
-    this.bs = new NoFilter()
-    this.__restart()
+class SharedValueEncoder extends Encoder {
+  constructor(opts) {
+    super(opts)
+    this.valueSharing = new ObjectRecorder()
   }
 
   /**
-   * Transforming.
-   *
-   * @param {any} fresh Buffer to transcode.
-   * @param {BufferEncoding} encoding Name of encoding.
-   * @param {stream.TransformCallback} cb Callback when done.
+   * @param {object} obj Object to encode.
+   * @param {import('./encoder').ObjectOptions} [opts] Options for encoding
+   *   this object.
+   * @returns {boolean} True on success.
+   * @throws {Error} Loop detected.
    * @ignore
    */
-  _transform(fresh, encoding, cb) {
-    this.bs.write(fresh)
-
-    while (this.bs.length >= this.__needed) {
-      let ret = null
-      const chunk = (this.__needed === null) ?
-        undefined :
-        this.bs.read(this.__needed)
-
-      try {
-        ret = this.__parser.next(chunk)
-      } catch (e) {
-        return cb(e)
-      }
-
-      if (this.__needed) {
-        this.__fresh = false
-      }
-
-      if (ret.done) {
-        this.push(ret.value)
-        this.__restart()
-      } else {
-        this.__needed = ret.value || Infinity
+  _pushObject(obj, opts) {
+    if (obj !== null) {
+      const shared = this.valueSharing.check(obj)
+      switch (shared) {
+        case ObjectRecorder.FIRST:
+          // Prefix with tag 28
+          this._pushTag(28)
+          break
+        case ObjectRecorder.NEVER:
+          // Do nothing
+          break
+        default:
+          return this._pushTag(29) &amp;&amp; this._pushIntNum(shared)
       }
     }
-
-    return cb()
+    return super._pushObject(obj, opts)
   }
 
   /**
-   * Subclasses must override this to set their parsing behavior.  Yield a
-   * number to receive a Buffer of that many bytes.
-   *
-   * @abstract
-   * @returns {Generator&lt;number, any, Buffer>}
+   * Between encoding runs, stop recording, and start outputing correct tags.
    */
-  /* istanbul ignore next */
-  *_parse() { // eslint-disable-line class-methods-use-this, require-yield
-    throw new Error('Must be implemented in subclass')
-  }
-
-  __restart() {
-    this.__needed = null
-    this.__parser = this._parse()
-    this.__fresh = true
+  stopRecording() {
+    this.valueSharing.stop()
   }
 
   /**
-   * Flushing.
-   *
-   * @param {stream.TransformCallback} cb Callback when done.
-   * @ignore
+   * Remove the existing recording and start over.  Do this between encoding
+   * pairs.
    */
-  _flush(cb) {
-    cb(this.__fresh ? null : new Error('unexpected end of input'))
+  clearRecording() {
+    this.valueSharing.clear()
+  }
+
+  /**
+   * Encode one or more JavaScript objects, and return a Buffer containing the
+   * CBOR bytes.
+   *
+   * @param {...any} objs The objects to encode.
+   * @returns {Buffer} The encoded objects.
+   */
+  static encode(...objs) {
+    const enc = new SharedValueEncoder()
+    // eslint-disable-next-line no-empty-function
+    enc.on('data', () => {}) // Sink all writes
+
+    for (const o of objs) {
+      enc.pushAny(o)
+    }
+    enc.stopRecording()
+    enc.removeAllListeners('data')
+    return enc._encodeAll(objs)
+  }
+
+  // eslint-disable-next-line jsdoc/require-returns-check
+  /**
+   * Encode one or more JavaScript objects canonically (slower!), and return
+   * a Buffer containing the CBOR bytes.
+   *
+   * @param {...any} objs The objects to encode.
+   * @returns {Buffer} Never.
+   * @throws {Error} Always.  This combination doesn't work at the moment.
+   */
+  static encodeCanonical(...objs) {
+    throw new Error('Cannot encode canonically in a SharedValueEncoder, which serializes objects multiple times.')
+  }
+
+  /**
+   * Encode one JavaScript object using the given options.
+   *
+   * @param {any} obj The object to encode.
+   * @param {import('./encoder').EncodingOptions} [options={}]
+   *   Passed to the Encoder constructor.
+   * @returns {Buffer} The encoded objects.
+   * @static
+   */
+  static encodeOne(obj, options) {
+    const enc = new SharedValueEncoder(options)
+    // eslint-disable-next-line no-empty-function
+    enc.on('data', () => {}) // Sink all writes
+    enc.pushAny(obj)
+    enc.stopRecording()
+    enc.removeAllListeners('data')
+    return enc._encodeAll([obj])
+  }
+
+  /**
+   * Encode one JavaScript object using the given options in a way that
+   * is more resilient to objects being larger than the highWaterMark
+   * number of bytes.  As with the other static encode functions, this
+   * will still use a large amount of memory.  Use a stream-based approach
+   * directly if you need to process large and complicated inputs.
+   *
+   * @param {any} obj The object to encode.
+   * @param {import('./encoder').EncodingOptions} [options={}]
+   *   Passed to the Encoder constructor.
+   * @returns {Promise&lt;Buffer>} A promise for the encoded buffer.
+   */
+  static encodeAsync(obj, options) {
+    return new Promise((resolve, reject) => {
+      /** @type {Buffer[]} */
+      const bufs = []
+      const enc = new SharedValueEncoder(options)
+      // eslint-disable-next-line no-empty-function
+      enc.on('data', () => {})
+      enc.on('error', reject)
+      enc.on('finish', () => resolve(Buffer.concat(bufs)))
+      enc.pushAny(obj)
+      enc.stopRecording()
+      enc.removeAllListeners('data')
+      enc.on('data', buf => bufs.push(buf))
+      enc.pushAny(obj)
+      enc.end()
+    })
   }
 }
 
-module.exports = BinaryParseStream
+module.exports = SharedValueEncoder
 </code></pre>
         </article>
     </section>

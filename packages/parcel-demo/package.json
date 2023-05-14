@@ -28,7 +28,7 @@
     "cbor-bigdecimal": "^8.1.0",
     "copyfiles": "^2.4.1",
     "events": "3.3.0",
-    "node-inspect-extracted": "^1.1.0",
+    "node-inspect-extracted": "^2.0.2",
     "parcel": "2.8.3",
     "postcss": "^8.4.23",
     "process": "0.11.10",

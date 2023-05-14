@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>vendor/binary-parse-stream/index.js - Documentation</title>
+    <title>lib/objectRecorder.js - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -35,7 +35,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">vendor/binary-parse-stream/index.js</h1>
+    <h1 class="page-title">lib/objectRecorder.js</h1>
     
 
     
@@ -45,116 +45,77 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>// Tweaked version of nathan7's binary-parse-stream
-// (see https://github.com/nathan7/binary-parse-stream)
-// Uses NoFilter instead of the readable in the original.  Removes
-// the ability to read -1, which was odd and un-needed.
-// License for binary-parse-stream: MIT
-
-// binary-parse-stream is now unmaintained, so I have rewritten it as
-// more modern JS so I can get tsc to help check types.
-
-'use strict'
-const stream = require('stream')
-const NoFilter = require('nofilter')
+            <pre class="prettyprint source linenums"><code>'use strict'
 
 /**
- * BinaryParseStream is a TransformStream that consumes buffers and outputs
- * objects on the other end.  It expects your subclass to implement a `_parse`
- * method that is a generator.  When your generator yields a number, it'll be
- * fed a buffer of that length from the input.  When your generator returns,
- * the return value will be pushed to the output side.
+ * Record objects that pass by in a stream.  If the same object is used more
+ * than once, it can be value-shared using shared values.
  *
- * @extends stream.Transform
+ * @see {@link http://cbor.schmorp.de/value-sharing}
  */
-class BinaryParseStream extends stream.Transform {
-  /**
-   * Creates an instance of BinaryParseStream.
-   *
-   * @memberof BinaryParseStream
-   * @param {stream.TransformOptions} options Stream options.
-   */
-  constructor(options) {
-    super(options)
-    // Doesn't work to pass these in as opts, for some reason
-    // also, work around typescript not knowing TransformStream internals
-    // eslint-disable-next-line dot-notation
-    this['_writableState'].objectMode = false
-    // eslint-disable-next-line dot-notation
-    this['_readableState'].objectMode = true
-
-    this.bs = new NoFilter()
-    this.__restart()
+class ObjectRecorder {
+  constructor() {
+    this.clear()
   }
 
   /**
-   * Transforming.
-   *
-   * @param {any} fresh Buffer to transcode.
-   * @param {BufferEncoding} encoding Name of encoding.
-   * @param {stream.TransformCallback} cb Callback when done.
-   * @ignore
+   * Clear all of the objects that have been seen.  Revert to recording mode.
    */
-  _transform(fresh, encoding, cb) {
-    this.bs.write(fresh)
+  clear() {
+    this.map = new WeakMap()
+    this.count = 0
+    this.recording = true
+  }
 
-    while (this.bs.length >= this.__needed) {
-      let ret = null
-      const chunk = (this.__needed === null) ?
-        undefined :
-        this.bs.read(this.__needed)
+  /**
+   * Stop recording.
+   */
+  stop() {
+    this.recording = false
+  }
 
-      try {
-        ret = this.__parser.next(chunk)
-      } catch (e) {
-        return cb(e)
+  /**
+   * Determine if wrapping a tag 28 or 29 around an object that has been
+   * reused is appropriate.  This method stores state for which objects have
+   * been seen.
+   *
+   * @param {object} obj Any object about to be serialized.
+   * @returns {number} If recording: -1 for first use, index for second use.
+   *   If not recording, -1 for never-duplicated, -2 for first use, index for
+   *   subsequent uses.
+   * @throws {Error} Recording does not match playback.
+   */
+  check(obj) {
+    const val = this.map.get(obj)
+    if (val) {
+      if (val.length > 1) {
+        if (val[0] || this.recording) {
+          return val[1]
+        }
+
+        val[0] = true
+        return ObjectRecorder.FIRST
       }
-
-      if (this.__needed) {
-        this.__fresh = false
+      if (!this.recording) {
+        return ObjectRecorder.NEVER
       }
-
-      if (ret.done) {
-        this.push(ret.value)
-        this.__restart()
-      } else {
-        this.__needed = ret.value || Infinity
-      }
+      val.push(this.count++)
+      // Second use while recording
+      return val[1]
     }
-
-    return cb()
-  }
-
-  /**
-   * Subclasses must override this to set their parsing behavior.  Yield a
-   * number to receive a Buffer of that many bytes.
-   *
-   * @abstract
-   * @returns {Generator&lt;number, any, Buffer>}
-   */
-  /* istanbul ignore next */
-  *_parse() { // eslint-disable-line class-methods-use-this, require-yield
-    throw new Error('Must be implemented in subclass')
-  }
-
-  __restart() {
-    this.__needed = null
-    this.__parser = this._parse()
-    this.__fresh = true
-  }
-
-  /**
-   * Flushing.
-   *
-   * @param {stream.TransformCallback} cb Callback when done.
-   * @ignore
-   */
-  _flush(cb) {
-    cb(this.__fresh ? null : new Error('unexpected end of input'))
+    if (!this.recording) {
+      throw new Error('New object detected when not recording')
+    }
+    this.map.set(obj, [false])
+    // First use while recording
+    return ObjectRecorder.NEVER
   }
 }
 
-module.exports = BinaryParseStream
+ObjectRecorder.NEVER = -1
+ObjectRecorder.FIRST = -2
+
+module.exports = ObjectRecorder
 </code></pre>
         </article>
     </section>

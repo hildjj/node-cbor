@@ -6,12 +6,13 @@ export = ObjectRecorder;
  * @see {@link http://cbor.schmorp.de/value-sharing}
  */
 declare class ObjectRecorder {
-    static NEVER: number;
-    static FIRST: number;
     /**
      * Clear all of the objects that have been seen.  Revert to recording mode.
      */
     clear(): void;
+    map: WeakMap<object, any>;
+    count: number;
+    recording: boolean;
     /**
      * Stop recording.
      */
@@ -28,5 +29,8 @@ declare class ObjectRecorder {
      * @throws {Error} Recording does not match playback.
      */
     check(obj: object): number;
-    #private;
+}
+declare namespace ObjectRecorder {
+    const NEVER: number;
+    const FIRST: number;
 }

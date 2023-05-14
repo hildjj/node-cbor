@@ -5,6 +5,8 @@ export = SharedValueEncoder;
  * @see {@link cbor.schmorp.de/value-sharing}
  */
 declare class SharedValueEncoder extends Encoder {
+    constructor(opts: any);
+    valueSharing: ObjectRecorder;
     /**
      * Between encoding runs, stop recording, and start outputing correct tags.
      */
@@ -14,6 +16,6 @@ declare class SharedValueEncoder extends Encoder {
      * pairs.
      */
     clearRecording(): void;
-    #private;
 }
 import Encoder = require("./encoder");
+import ObjectRecorder = require("./objectRecorder");
