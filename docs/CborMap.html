@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>CborMap - Documentation</title>
-
+    
+    
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 
@@ -23,8 +26,11 @@
 
 <label for="nav-trigger" class="overlay"></label>
 
-<nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="BinaryParseStream.html">BinaryParseStream</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="CborMap.html">CborMap</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="CborMap.html#delete">delete</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="CborMap.html#encodeCBOR">encodeCBOR</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="CborMap.html#entries">entries</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="CborMap.html#forEach">forEach</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="CborMap.html#get">get</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="CborMap.html#has">has</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="CborMap.html#keys">keys</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="CborMap.html#set">set</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Commented.html">Commented</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Commented.html#.comment">comment</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Decoder.html">Decoder</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Decoder.html#.decodeAll">decodeAll</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Decoder.html#.decodeAllSync">decodeAllSync</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Decoder.html#.decodeFirst">decodeFirst</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Decoder.html#.decodeFirstSync">decodeFirstSync</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Decoder.html#.nullcheck">nullcheck</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Decoder.html#close">close</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Diagnose.html">Diagnose</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Diagnose.html#.diagnose">diagnose</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Encoder.html">Encoder</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Encoder.html#.encode">encode</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Encoder.html#.encodeAsync">encodeAsync</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Encoder.html#.encodeCanonical">encodeCanonical</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Encoder.html#.encodeIndefinite">encodeIndefinite</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Encoder.html#.encodeOne">encodeOne</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Encoder.html#.pushArray">pushArray</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Encoder.html#.reset">reset</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Encoder.html#_transform">_transform</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Encoder.html#addSemanticType">addSemanticType</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Encoder.html#pushAny">pushAny</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Encoder.html#removeLoopDetectors">removeLoopDetectors</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Simple.html">Simple</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Simple.html#.decode">decode</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Simple.html#.isSimple">isSimple</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Simple.html#encodeCBOR">encodeCBOR</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Simple.html#toString">toString</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Tagged.html">Tagged</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tagged.html#.reset">reset</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tagged.html#convert">convert</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tagged.html#encodeCBOR">encodeCBOR</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tagged.html#toString">toString</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#comment">comment</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#decode">decode</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#decodeAll">decodeAll</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#decodeAllSync">decodeAllSync</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#decodeFirst">decodeFirst</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#decodeFirstSync">decodeFirstSync</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#diagnose">diagnose</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#encode">encode</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#encodeAsync">encodeAsync</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#encodeCanonical">encodeCanonical</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#encodeOne">encodeOne</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#leveldb">leveldb</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#reset">reset</a></span></li>
+<nav >
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BinaryParseStream.html">BinaryParseStream</a></li><li><a href="CborMap.html">CborMap</a><ul class='methods'><li data-type='method'><a href="CborMap.html#delete">delete</a></li><li data-type='method'><a href="CborMap.html#encodeCBOR">encodeCBOR</a></li><li data-type='method'><a href="CborMap.html#entries">entries</a></li><li data-type='method'><a href="CborMap.html#forEach">forEach</a></li><li data-type='method'><a href="CborMap.html#get">get</a></li><li data-type='method'><a href="CborMap.html#has">has</a></li><li data-type='method'><a href="CborMap.html#keys">keys</a></li><li data-type='method'><a href="CborMap.html#set">set</a></li></ul></li><li><a href="Commented.html">Commented</a><ul class='methods'><li data-type='method'><a href="Commented.html#.comment">comment</a></li></ul></li><li><a href="Decoder.html">Decoder</a><ul class='methods'><li data-type='method'><a href="Decoder.html#close">close</a></li><li data-type='method'><a href="Decoder.html#.decodeAll">decodeAll</a></li><li data-type='method'><a href="Decoder.html#.decodeAllSync">decodeAllSync</a></li><li data-type='method'><a href="Decoder.html#.decodeFirst">decodeFirst</a></li><li data-type='method'><a href="Decoder.html#.decodeFirstSync">decodeFirstSync</a></li><li data-type='method'><a href="Decoder.html#.nullcheck">nullcheck</a></li></ul></li><li><a href="Diagnose.html">Diagnose</a><ul class='methods'><li data-type='method'><a href="Diagnose.html#.diagnose">diagnose</a></li></ul></li><li><a href="Encoder.html">Encoder</a><ul class='methods'><li data-type='method'><a href="Encoder.html#addSemanticType">addSemanticType</a></li><li data-type='method'><a href="Encoder.html#pushAny">pushAny</a></li><li data-type='method'><a href="Encoder.html#removeLoopDetectors">removeLoopDetectors</a></li><li data-type='method'><a href="Encoder.html#.encode">encode</a></li><li data-type='method'><a href="Encoder.html#.encodeAsync">encodeAsync</a></li><li data-type='method'><a href="Encoder.html#.encodeCanonical">encodeCanonical</a></li><li data-type='method'><a href="Encoder.html#.encodeIndefinite">encodeIndefinite</a></li><li data-type='method'><a href="Encoder.html#.encodeOne">encodeOne</a></li><li data-type='method'><a href="Encoder.html#.pushArray">pushArray</a></li><li data-type='method'><a href="Encoder.html#.reset">reset</a></li></ul></li><li><a href="ObjectRecorder.html">ObjectRecorder</a><ul class='methods'><li data-type='method'><a href="ObjectRecorder.html#check">check</a></li><li data-type='method'><a href="ObjectRecorder.html#clear">clear</a></li><li data-type='method'><a href="ObjectRecorder.html#stop">stop</a></li></ul></li><li><a href="SharedValueEncoder.html">SharedValueEncoder</a><ul class='methods'><li data-type='method'><a href="SharedValueEncoder.html#clearRecording">clearRecording</a></li><li data-type='method'><a href="SharedValueEncoder.html#stopRecording">stopRecording</a></li><li data-type='method'><a href="SharedValueEncoder.html#.encode">encode</a></li><li data-type='method'><a href="SharedValueEncoder.html#.encodeAsync">encodeAsync</a></li><li data-type='method'><a href="SharedValueEncoder.html#.encodeCanonical">encodeCanonical</a></li><li data-type='method'><a href="SharedValueEncoder.html#.encodeOne">encodeOne</a></li></ul></li><li><a href="Simple.html">Simple</a><ul class='methods'><li data-type='method'><a href="Simple.html#encodeCBOR">encodeCBOR</a></li><li data-type='method'><a href="Simple.html#toString">toString</a></li><li data-type='method'><a href="Simple.html#.decode">decode</a></li><li data-type='method'><a href="Simple.html#.isSimple">isSimple</a></li></ul></li><li><a href="Tagged.html">Tagged</a><ul class='methods'><li data-type='method'><a href="Tagged.html#convert">convert</a></li><li data-type='method'><a href="Tagged.html#encodeCBOR">encodeCBOR</a></li><li data-type='method'><a href="Tagged.html#toString">toString</a></li><li data-type='method'><a href="Tagged.html#.reset">reset</a></li></ul></li></ul><h3><a href="global.html">Global</a></h3>
+    
 </nav>
 
 <div id="main">
@@ -42,10 +48,12 @@
 <header>
     
         <h2>
-        CborMap
+        
+            CborMap
+        
         </h2>
         
-            <div class="class-description">Wrapper around a JavaScript Map object that allows the keys to be
+            <div class="class-description usertext">Wrapper around a JavaScript Map object that allows the keys to be
 any complex type.  The base Map object allows this, but will only
 compare the keys by identity, not by value.  CborMap translates keys
 to CBOR first (and base64's them to ensure by-value comparison).
@@ -57,10 +65,10 @@ the semantics to be an exact match.</div>
 </header>
 
 <article>
-    <div class="container-overview">
     
+        <div class="container-overview">
         
-<div class="section-method">
+            
 
     
     <h2>Constructor</h2>
@@ -72,38 +80,11 @@ the semantics to be an exact match.</div>
 
 
 
-<div class="description">
-    Creates an instance of CborMap.
-</div>
-
-
-
-
 
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Creates an instance of CborMap.</li></ul></dd>
     
 
     
@@ -111,6 +92,30 @@ the semantics to be an exact match.</div>
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="lib_map.js.html">lib/map.js</a>, <a href="lib_map.js.html#line19">line 19</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -128,7 +133,11 @@ the semantics to be an exact match.</div>
 
 
 
-    <h5>Parameters:</h5>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -161,7 +170,8 @@ the semantics to be an exact match.</div>
             <td class="type">
             
                 
-<span class="param-type"><code>Iterable.&lt;any></code></span>
+<span class="param-type">Iterable.&lt;any></span>
+
 
 
             
@@ -181,13 +191,10 @@ the semantics to be an exact match.</div>
 
             
 
-            <td class="description last">
-                An Array or other iterable
+            <td class="description last">An Array or other iterable
   object whose elements are key-value pairs (arrays with two elements, e.g.
   <code>[[ 1, 'one' ],[ 2, 'two' ]]</code>). Each key-value pair is added
-  to the new CborMap; null values are treated as undefined.
-                
-            </td>
+  to the new CborMap; null values are treated as undefined.</td>
         </tr>
 
     
@@ -209,9 +216,12 @@ the semantics to be an exact match.</div>
 
 
 
-</div>
+
+
+
+        
+        </div>
     
-    </div>
 
     
         <h3 class="subsection-title">Extends</h3>
@@ -229,6 +239,8 @@ the semantics to be an exact match.</div>
     
 
     
+    
+    
 
      
 
@@ -241,7 +253,6 @@ the semantics to be an exact match.</div>
 
         
             
-<div class="section-method">
 
     
 
@@ -251,38 +262,11 @@ the semantics to be an exact match.</div>
 
 
 
-<div class="description">
-    Removes the specified element.
-</div>
-
-
-
-
 
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Removes the specified element.</li></ul></dd>
     
 
     
@@ -290,6 +274,30 @@ the semantics to be an exact match.</div>
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="lib_map.js.html">lib/map.js</a>, <a href="lib_map.js.html#line79">line 79</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -307,7 +315,11 @@ the semantics to be an exact match.</div>
 
 
 
-    <h5>Parameters:</h5>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -338,7 +350,8 @@ the semantics to be an exact match.</div>
             <td class="type">
             
                 
-<span class="param-type"><code>any</code></span>
+<span class="param-type">any</span>
+
 
 
             
@@ -348,11 +361,8 @@ the semantics to be an exact match.</div>
 
             
 
-            <td class="description last">
-                The key identifying the element to delete. Can be any
-  type, which will be serialized into CBOR and compared by value.
-                
-            </td>
+            <td class="description last">The key identifying the element to delete. Can be any
+  type, which will be serialized into CBOR and compared by value.</td>
         </tr>
 
     
@@ -372,38 +382,37 @@ the semantics to be an exact match.</div>
 
 
 
-<div class="section-returns">
-<h5>Returns:</h5>
+
+
+<h5 class="h5-returns">Returns:</h5>
 
         
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>boolean</code></span>
-
-
-    </dd>
-</dl>
-
-
 <div class="param-desc">
     True if an element in the Map object existed and has
   been removed, or false if the element does not exist.
 </div>
 
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+
+    </dd>
+</dl>
+
     
-</div>
 
 
 
-</div>
         
             
-<div class="section-method">
 
     
 
@@ -413,45 +422,42 @@ the semantics to be an exact match.</div>
 
 
 
-<div class="description">
-    Push the simple value onto the CBOR stream.
-</div>
-
-
-
-
 
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Push the simple value onto the CBOR stream.</li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_map.js.html">lib/map.js</a>, <a href="lib_map.js.html#line158">line 158</a>
+        <a href="lib_map.js.html">lib/map.js</a>, <a href="lib_map.js.html#line156">line 156</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -469,7 +475,11 @@ the semantics to be an exact match.</div>
 
 
 
-    <h5>Parameters:</h5>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -500,7 +510,8 @@ the semantics to be an exact match.</div>
             <td class="type">
             
                 
-<span class="param-type"><code>object</code></span>
+<span class="param-type">object</span>
+
 
 
             
@@ -510,10 +521,7 @@ the semantics to be an exact match.</div>
 
             
 
-            <td class="description last">
-                The generator to push onto.
-                
-            </td>
+            <td class="description last">The generator to push onto.</td>
         </tr>
 
     
@@ -533,85 +541,57 @@ the semantics to be an exact match.</div>
 
 
 
-<div class="section-returns">
-<h5>Returns:</h5>
+
+
+<h5 class="h5-returns">Returns:</h5>
 
         
+<div class="param-desc">
+    True on success.
+</div>
+
+
 
 <dl class="param-type">
     <dt>
-        Type:
+        Type
     </dt>
     <dd>
         
-<span class="param-type"><code>boolean</code></span>
+<span class="param-type">boolean</span>
+
 
 
     </dd>
 </dl>
 
-
-<div class="param-desc">
-    True on success.
-</div>
-
     
-</div>
 
 
 
-</div>
         
             
-<div class="section-method">
 
     
 
-    <h4 class="name" id="entries"><span class="type-signature">(generator) </span>entries<span class="signature">()</span><span class="type-signature"> &rarr; {IterableIterator.&lt;any, any>}</span></h4>
+    <h4 class="name" id="entries"><span class="type-signature type-signature-generator">(generator) </span>entries<span class="signature">()</span><span class="type-signature"> &rarr; {Array.&lt;any>}</span></h4>
 
     
-
-
-
-<div class="description">
-    Returns a new Iterator object that contains the [key, value] pairs for
-each element in the Map object in insertion order.
-</div>
-
 
 
 
 
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Returns a new Iterator object that contains the [key, value] pairs for
+each element in the Map object in insertion order.</li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_map.js.html">lib/map.js</a>, <a href="lib_map.js.html#line117">line 117</a>
+        <a href="lib_map.js.html">lib/map.js</a>, <a href="lib_map.js.html#line116">line 116</a>
     </li></ul></dd>
     
 
@@ -620,6 +600,30 @@ each element in the Map object in insertion order.
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -642,37 +646,63 @@ each element in the Map object in insertion order.
 
 
 
-<div class="section-returns">
-<h5>Returns:</h5>
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
 
         
+<div class="param-desc">
+    Key value pairs.
+</div>
+
+
 
 <dl class="param-type">
     <dt>
-        Type:
+        Type
     </dt>
     <dd>
         
-<span class="param-type"><code>IterableIterator.&lt;any, any></code></span>
+<span class="param-type">IterableIterator.&lt;any></span>
+
 
 
     </dd>
 </dl>
 
+    
 
+		
+<h5 class="h5-yields">Yields:</h5>		
+		
+        
 <div class="param-desc">
     Key value pairs.
 </div>
 
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;any></span>
+
+
+
+    </dd>
+</dl>
+		
     
-</div>
 
-
-
-</div>
         
             
-<div class="section-method">
 
     
 
@@ -682,46 +712,43 @@ each element in the Map object in insertion order.
 
 
 
-<div class="description">
-    Executes a provided function once per each key/value pair in the Map
-object, in insertion order.
-</div>
-
-
-
-
 
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Executes a provided function once per each key/value pair in the Map
+object, in insertion order.</li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_map.js.html">lib/map.js</a>, <a href="lib_map.js.html#line143">line 143</a>
+        <a href="lib_map.js.html">lib/map.js</a>, <a href="lib_map.js.html#line141">line 141</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -739,7 +766,11 @@ object, in insertion order.
 
 
 
-    <h5>Parameters:</h5>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -770,7 +801,8 @@ object, in insertion order.
             <td class="type">
             
                 
-<span class="param-type"><code>function</code></span>
+<span class="param-type">function</span>
+
 
 
             
@@ -780,11 +812,8 @@ object, in insertion order.
 
             
 
-            <td class="description last">
-                Function to execute for
- each element, which takes a value, a key, and the Map being traversed.
-                
-            </td>
+            <td class="description last">Function to execute for
+  each element, which takes a value, a key, and the Map being traversed.</td>
         </tr>
 
     
@@ -797,7 +826,8 @@ object, in insertion order.
             <td class="type">
             
                 
-<span class="param-type"><code>any</code></span>
+<span class="param-type">any</span>
+
 
 
             
@@ -807,10 +837,7 @@ object, in insertion order.
 
             
 
-            <td class="description last">
-                Value to use as this when executing callback.
-                
-            </td>
+            <td class="description last">Value to use as this when executing callback.</td>
         </tr>
 
     
@@ -828,26 +855,28 @@ object, in insertion order.
 
 
 
-<div class="section-throws">
-<h5>Throws:</h5>
+
+
+<h5 class="h5-throws">Throws:</h5>
 
         
 
 <dl>
     <dt>
-        <div class="param-desc">
+        <div class="param-desc usertext">
         Invalid function.
         </div>
     </dt>
     <dd></dd>
     <dt>
-        <dl>
+        <dl class="param-type">
             <dt>
                 Type
             </dt>
             <dd>
                 
-<span class="param-type"><code>TypeError</code></span>
+<span class="param-type">TypeError</span>
+
 
 
             </dd>
@@ -858,16 +887,13 @@ object, in insertion order.
 
 
     
-</div>
 
 
 
 
 
-</div>
         
             
-<div class="section-method">
 
     
 
@@ -877,38 +903,11 @@ object, in insertion order.
 
 
 
-<div class="description">
-    Retrieve a specified element.
-</div>
-
-
-
-
 
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Retrieve a specified element.</li></ul></dd>
     
 
     
@@ -923,6 +922,30 @@ object, in insertion order.
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -933,7 +956,11 @@ object, in insertion order.
 
 
 
-    <h5>Parameters:</h5>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -964,7 +991,8 @@ object, in insertion order.
             <td class="type">
             
                 
-<span class="param-type"><code>any</code></span>
+<span class="param-type">any</span>
+
 
 
             
@@ -974,12 +1002,9 @@ object, in insertion order.
 
             
 
-            <td class="description last">
-                The key identifying the element to retrieve.
+            <td class="description last">The key identifying the element to retrieve.
   Can be any type, which will be serialized into CBOR and compared by
-  value.
-                
-            </td>
+  value.</td>
         </tr>
 
     
@@ -999,37 +1024,36 @@ object, in insertion order.
 
 
 
-<div class="section-returns">
-<h5>Returns:</h5>
+
+
+<h5 class="h5-returns">Returns:</h5>
 
         
+<div class="param-desc">
+    The element if it exists, or <code>undefined</code>.
+</div>
+
+
 
 <dl class="param-type">
     <dt>
-        Type:
+        Type
     </dt>
     <dd>
         
-<span class="param-type"><code>any</code></span>
+<span class="param-type">any</span>
+
 
 
     </dd>
 </dl>
 
-
-<div class="param-desc">
-    The element if it exists, or <code>undefined</code>.
-</div>
-
     
-</div>
 
 
 
-</div>
         
             
-<div class="section-method">
 
     
 
@@ -1039,38 +1063,11 @@ object, in insertion order.
 
 
 
-<div class="description">
-    Does an element with the specified key exist?
-</div>
-
-
-
-
 
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Does an element with the specified key exist?</li></ul></dd>
     
 
     
@@ -1085,6 +1082,30 @@ object, in insertion order.
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -1095,7 +1116,11 @@ object, in insertion order.
 
 
 
-    <h5>Parameters:</h5>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -1126,7 +1151,8 @@ object, in insertion order.
             <td class="type">
             
                 
-<span class="param-type"><code>any</code></span>
+<span class="param-type">any</span>
+
 
 
             
@@ -1136,12 +1162,9 @@ object, in insertion order.
 
             
 
-            <td class="description last">
-                The key identifying the element to check.
+            <td class="description last">The key identifying the element to check.
   Can be any type, which will be serialized into CBOR and compared by
-  value.
-                
-            </td>
+  value.</td>
         </tr>
 
     
@@ -1161,81 +1184,53 @@ object, in insertion order.
 
 
 
-<div class="section-returns">
-<h5>Returns:</h5>
+
+
+<h5 class="h5-returns">Returns:</h5>
 
         
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>boolean</code></span>
-
-
-    </dd>
-</dl>
-
-
 <div class="param-desc">
     True if an element with the specified key exists in
   the Map object; otherwise false.
 </div>
 
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+
+    </dd>
+</dl>
+
     
-</div>
 
 
 
-</div>
         
             
-<div class="section-method">
 
     
 
-    <h4 class="name" id="keys"><span class="type-signature">(generator) </span>keys<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="keys"><span class="type-signature type-signature-generator">(generator) </span>keys<span class="signature">()</span><span class="type-signature"> &rarr; {any}</span></h4>
 
     
-
-
-
-<div class="description">
-    Returns a new Iterator object that contains the keys for each element
-in the Map object in insertion order.  The keys are decoded into their
-original format.
-</div>
-
 
 
 
 
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Returns a new Iterator object that contains the keys for each element
+in the Map object in insertion order.  The keys are decoded into their
+original format.</li></ul></dd>
     
 
     
@@ -1250,6 +1245,30 @@ original format.
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -1274,10 +1293,38 @@ original format.
 
 
 
+
+
+
+
+
+		
+<h5 class="h5-yields">Yields:</h5>		
+		
+        
+<div class="param-desc">
+    The keys of the map.
 </div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">any</span>
+
+
+
+    </dd>
+</dl>
+		
+    
+
         
             
-<div class="section-method">
 
     
 
@@ -1287,38 +1334,11 @@ original format.
 
 
 
-<div class="description">
-    Adds or updates an element with a specified key and value.
-</div>
-
-
-
-
 
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Adds or updates an element with a specified key and value.</li></ul></dd>
     
 
     
@@ -1333,6 +1353,30 @@ original format.
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -1343,7 +1387,11 @@ original format.
 
 
 
-    <h5>Parameters:</h5>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -1374,7 +1422,8 @@ original format.
             <td class="type">
             
                 
-<span class="param-type"><code>any</code></span>
+<span class="param-type">any</span>
+
 
 
             
@@ -1384,12 +1433,9 @@ original format.
 
             
 
-            <td class="description last">
-                The key identifying the element to store.
+            <td class="description last">The key identifying the element to store.
   Can be any type, which will be serialized into CBOR and compared by
-  value.
-                
-            </td>
+  value.</td>
         </tr>
 
     
@@ -1402,7 +1448,8 @@ original format.
             <td class="type">
             
                 
-<span class="param-type"><code>any</code></span>
+<span class="param-type">any</span>
+
 
 
             
@@ -1412,10 +1459,7 @@ original format.
 
             
 
-            <td class="description last">
-                The element to store.
-                
-            </td>
+            <td class="description last">The element to store.</td>
         </tr>
 
     
@@ -1435,34 +1479,34 @@ original format.
 
 
 
-<div class="section-returns">
-<h5>Returns:</h5>
+
+
+<h5 class="h5-returns">Returns:</h5>
 
         
+<div class="param-desc">
+    This object.
+</div>
+
+
 
 <dl class="param-type">
     <dt>
-        Type:
+        Type
     </dt>
     <dd>
         
-<span class="param-type"><code>this</code></span>
+<span class="param-type">this</span>
+
 
 
     </dd>
 </dl>
 
-
-<div class="param-desc">
-    This object.
-</div>
-
     
-</div>
 
 
 
-</div>
         
     
 
@@ -1476,15 +1520,21 @@ original format.
 
 
 
+    
+    
 </div>
 
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.11</a> using the Minami theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
 <script src="scripts/linenumber.js"></script>
+
+
+
 </body>
 </html>

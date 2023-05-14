@@ -12,8 +12,8 @@ declare class BinaryParseStream extends stream.Transform {
     /**
      * Creates an instance of BinaryParseStream.
      *
-     * @param {stream.TransformOptions} options Stream options.
      * @memberof BinaryParseStream
+     * @param {stream.TransformOptions} options Stream options.
      */
     constructor(options: stream.TransformOptions);
     bs: NoFilter;

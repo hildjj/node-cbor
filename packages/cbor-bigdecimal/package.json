@@ -6,6 +6,7 @@
   "main": "./bigdecimal.js",
   "scripts": {
     "build": "webpack",
+    "clean": "rimraf dist",
     "coverage": "nyc -r lcov npm test",
     "test": "ava test/*.ava.js",
     "dev": "light-server -q -s. -w 'lib/*.js,test/*.js # npm run coverage' -o /coverage/lcov-report/index.html"
@@ -24,15 +25,15 @@
     "url": "http://github.com/hildjj/node-cbor.git",
     "directory": "packages/cbor-bigdecimal"
   },
-  "engines": {
-    "node": ">=12.19"
-  },
   "peerDependencies": {
     "bignumber.js": "^9.1.0"
   },
   "devDependencies": {
-    "bignumber.js": "^9.1.0",
-    "webpack": "^5.74.0",
-    "webpack-cli": "^4.10.0"
+    "bignumber.js": "^9.1.1",
+    "webpack": "^5.82.1",
+    "webpack-cli": "^5.1.1"
+  },
+  "engines": {
+    "node": ">=16"
   }
 }
