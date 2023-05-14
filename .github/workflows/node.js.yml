@@ -3,17 +3,16 @@ name: Tests
 
 on:
   push:
-    branches:
-      - '*'
+    branches: [master, main]
   pull_request:
-    branches: [master]
+    branches: [master, main]
 
 jobs:
   build:
 
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 18.x]
+        node-version: [14.x, 16.x, 18.x, 20.x]
         platform: [ubuntu-20.04, windows-latest]
 
     runs-on: ${{ matrix.platform }}
@@ -23,7 +22,7 @@ jobs:
         with:
           submodules: true
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
       - name: Cache pnpm modules
@@ -37,9 +36,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.node-version }}-
       - name: Install pnpm
-        uses: pnpm/action-setup@v2.2.2
+        uses: pnpm/action-setup@v2
         with:
-          version: 7.11.0
+          version: 8.5.0
           run_install: |
             - recursive: true
               args: [--filter, '!*-demo', --filter, '!cbor-web']
