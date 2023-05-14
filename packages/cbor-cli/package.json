@@ -58,6 +58,6 @@
     "json-text-sequence": "^1.0.1"
   },
   "engines": {
-    "node": ">=12.19"
+    "node": ">=16"
   }
 }

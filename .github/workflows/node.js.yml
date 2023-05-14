@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 18.x, 20.x]
+        node-version: [16.x, 18.x, 20.x]
         platform: [ubuntu-20.04, windows-latest]
 
     runs-on: ${{ matrix.platform }}
@@ -38,7 +38,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 7.32.4 # Update this to v8 when node14 is de-supported
+          version: 8.5.0
           run_install: |
             - recursive: true
               args: [--filter, '!*-demo', --filter, '!cbor-web']
