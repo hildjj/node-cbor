@@ -1,6 +1,6 @@
 {
   "name": "cbor-rn-prereqs",
-  "version": "8.1.0",
+  "version": "9.0.0",
   "description": "React Native pre-requisites for cbor",
   "main": "index.js",
   "scripts": {

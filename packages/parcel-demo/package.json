@@ -1,6 +1,6 @@
 {
   "name": "parcel-demo",
-  "version": "8.1.0",
+  "version": "9.0.0",
   "description": "",
   "private": true,
   "type": "module",
@@ -24,8 +24,8 @@
     "@parcel/transformer-inline-string": "2.8.3",
     "bignumber.js": "9.1.1",
     "buffer": "5.5.0",
-    "cbor": "^8.1.0",
-    "cbor-bigdecimal": "^8.1.0",
+    "cbor": "^9.0.0",
+    "cbor-bigdecimal": "^9.0.0",
     "copyfiles": "^2.4.1",
     "events": "3.3.0",
     "node-inspect-extracted": "^2.0.2",
