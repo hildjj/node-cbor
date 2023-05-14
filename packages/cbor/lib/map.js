@@ -106,7 +106,6 @@ class CborMap extends Map {
     }
   }
 
-  /* eslint-disable jsdoc/require-returns-check */
   /**
    * Returns a new Iterator object that contains the [key, value] pairs for
    * each element in the Map object in insertion order.
@@ -119,7 +118,6 @@ class CborMap extends Map {
       yield [CborMap._decode(kv[0]), kv[1]]
     }
   }
-  /* eslint-enable jsdoc/require-returns-check */
 
   /**
    * Returns a new Iterator object that contains the [key, value] pairs for
@@ -136,7 +134,7 @@ class CborMap extends Map {
    * object, in insertion order.
    *
    * @param {function(any, any, Map): undefined} fun Function to execute for
-   *  each element, which takes a value, a key, and the Map being traversed.
+   *   each element, which takes a value, a key, and the Map being traversed.
    * @param {any} thisArg Value to use as this when executing callback.
    * @throws {TypeError} Invalid function.
    */

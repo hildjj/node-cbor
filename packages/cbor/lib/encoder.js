@@ -291,7 +291,7 @@ class Encoder extends stream.Transform {
    * Choose the best float representation for a number and encode it.
    *
    * @param {number} obj A number that is known to be not-integer, but not
-   *    how many bytes of precision it needs.
+   *   how many bytes of precision it needs.
    * @returns {boolean} True on success.
    * @ignore
    */
@@ -329,13 +329,13 @@ class Encoder extends stream.Transform {
    * don't remember why).
    *
    * @param {number} obj A positive number that is known to be an integer,
-   *    but not how many bytes of precision it needs.
+   *   but not how many bytes of precision it needs.
    * @param {number} mt The Major Type number to combine with the integer.
-   *    Not yet shifted.
+   *   Not yet shifted.
    * @param {number} [orig] The number before it was transformed to positive.
-   *    If the mt is NEG_INT, and the positive number is over MAX_SAFE_INT,
-   *    then we'll encode this as a float rather than making the number
-   *    negative again and losing precision.
+   *   If the mt is NEG_INT, and the positive number is over MAX_SAFE_INT,
+   *   then we'll encode this as a float rather than making the number
+   *   negative again and losing precision.
    * @returns {boolean} True on success.
    * @ignore
    */
@@ -374,7 +374,7 @@ class Encoder extends stream.Transform {
    * Choose the best integer representation for a number and encode it.
    *
    * @param {number} obj A number that is known to be an integer,
-   *    but not how many bytes of precision it needs.
+   *   but not how many bytes of precision it needs.
    * @returns {boolean} True on success.
    * @ignore
    */

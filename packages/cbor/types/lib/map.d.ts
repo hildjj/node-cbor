@@ -59,7 +59,7 @@ declare class CborMap extends Map<any, any> {
      * object, in insertion order.
      *
      * @param {function(any, any, Map): undefined} fun Function to execute for
-     *  each element, which takes a value, a key, and the Map being traversed.
+     *   each element, which takes a value, a key, and the Map being traversed.
      * @param {any} thisArg Value to use as this when executing callback.
      * @throws {TypeError} Invalid function.
      */

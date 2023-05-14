@@ -34,7 +34,8 @@
     "process": "0.11.10",
     "regenerator-runtime": "^0.13.11",
     "rimraf": "^5.0.0",
-    "stream-browserify": "3.0.0"
+    "stream-browserify": "3.0.0",
+    "svgo": "3.0.2"
   },
   "engines": {
     "node": ">= 12.19"

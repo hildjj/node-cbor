@@ -1,4 +1,3 @@
-/* eslint-disable jsdoc/valid-types */
 'use strict'
 
 const Encoder = require('./encoder')
