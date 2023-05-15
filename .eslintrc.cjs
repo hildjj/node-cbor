@@ -21,6 +21,7 @@ module.exports = {
       files: ['**/*.md/*.js'],
       rules: {
         'no-console': 'off',
+        'node/no-missing-import': 'off',
       },
     },
   ],

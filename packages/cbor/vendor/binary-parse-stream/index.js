@@ -7,7 +7,6 @@
 // binary-parse-stream is now unmaintained, so I have rewritten it as
 // more modern JS so I can get tsc to help check types.
 
-import {Buffer} from 'buffer'
 import {NoFilter} from 'nofilter'
 import {Transform} from 'stream'
 

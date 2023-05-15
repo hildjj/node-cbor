@@ -40,8 +40,8 @@ class UnexpectedDataError extends Error {
 /**
  * Things that can act as inputs, from which a NoFilter can be created.
  *
- * @typedef {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
- *   |DataView|import('stream').Readable} BufferLike
+ * @typedef {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray|
+ *   ArrayBufferView|DataView|import('stream').Readable} BufferLike
  */
 /**
  * @typedef ExtendedResults

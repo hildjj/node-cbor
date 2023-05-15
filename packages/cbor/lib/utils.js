@@ -353,8 +353,8 @@ export function cborValueToString(val, float_bytes = -1) {
 /**
  * Convert to a readable stream.
  *
- * @param {string|Buffer|ArrayBuffer|ArrayBufferView|Readable} input Source of
- *   input.
+ * @param {string|Buffer|ArrayBuffer|ArrayBufferView|Readable} input Source
+ *   of input.
  * @param {BufferEncoding} [encoding] If the input is a string, how should it
  *   be encoded?
  * @returns {Readable} Input converted to Readable stream.
