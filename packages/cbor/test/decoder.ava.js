@@ -333,3 +333,17 @@ test('duplicate map keys', t => {
 
   t.throws(() => cbor.decode(Buffer.from('a268746f537472696e670068746f537472696e6701', 'hex'), {preventDuplicateKeys: true}))
 })
+
+test('ArrayBufferView', async t => {
+  const buf = new Uint8Array([0x83, 0x01, 0x02, 0x03])
+  const buf16 = new Uint16Array(buf.buffer, buf.byteOffset, buf.byteLength / 2)
+
+  let val = await cbor.decodeFirst(buf16)
+  t.deepEqual(val, [1, 2, 3])
+  val = cbor.decodeFirstSync(buf16)
+  t.deepEqual(val, [1, 2, 3])
+  val = cbor.decodeAllSync(buf16)
+  t.deepEqual(val, [[1, 2, 3]])
+  val = await cbor.decodeAll(buf16)
+  t.deepEqual(val, [[1, 2, 3]])
+})

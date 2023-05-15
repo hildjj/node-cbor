@@ -117,7 +117,7 @@ export class Decoder extends BinaryParseStream {
 /**
  * Things that can act as inputs, from which a NoFilter can be created.
  */
-export type BufferLike = string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | import('stream').Readable;
+export type BufferLike = string | Buffer | ArrayBuffer | ArrayBufferView | import('stream').Readable;
 export type ExtendedResults = {
     /**
      * The value that was found.

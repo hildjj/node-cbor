@@ -1,4 +1,3 @@
-/// <reference types="node" />
 /**
  * BinaryParseStream is a TransformStream that consumes buffers and outputs
  * objects on the other end.  It expects your subclass to implement a `_parse`
@@ -22,7 +21,9 @@ export class BinaryParseStream extends Transform {
      * number to receive a Buffer of that many bytes.
      *
      * @abstract
-     * @returns {Generator<number, any, Buffer>}
+     * @returns {Generator<number, any, Buffer>} Yield a number to this to get a
+     *   Buffer.
+     * @throws {Error} Abstract.
      */
     _parse(): Generator<number, any, Buffer>;
     __restart(): void;
@@ -30,4 +31,3 @@ export class BinaryParseStream extends Transform {
 }
 import { Transform } from 'stream';
 import { NoFilter } from 'nofilter';
-import { Buffer } from 'buffer';

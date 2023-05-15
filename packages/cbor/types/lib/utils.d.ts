@@ -15,11 +15,11 @@ export namespace utf8 {
  * Type guard for buffer-like objects.
  *
  * @param {any} b The candidate object.
- * @returns {b is Buffer|Uint16Array|Uint8ClampedArray|ArrayBuffer|DataView}
+ * @returns {b is ArrayBufferView}
  *   Safe to typecast b (boolean).
  * @private
  */
-export function isBufferish(b: any): b is ArrayBuffer | DataView | Uint8ClampedArray | Uint16Array | Buffer;
+export function isBufferish(b: any): b is ArrayBufferView;
 /**
  * Convert object to a buffer.
  *
@@ -116,8 +116,8 @@ export function cborValueToString(val: any, float_bytes?: number): string;
 /**
  * Convert to a readable stream.
  *
- * @param {string|Buffer|ArrayBuffer|ArrayBufferView|Readable} input Source of
- *   input.
+ * @param {string|Buffer|ArrayBuffer|ArrayBufferView|Readable} input Source
+ *   of input.
  * @param {BufferEncoding} [encoding] If the input is a string, how should it
  *   be encoded?
  * @returns {Readable} Input converted to Readable stream.
@@ -126,19 +126,19 @@ export function cborValueToString(val: any, float_bytes?: number): string;
  */
 export function guessEncoding(input: string | Buffer | ArrayBuffer | ArrayBufferView | Readable, encoding?: BufferEncoding): Readable;
 /**
- * @param {Buffer|Uint8Array|Uint8ClampedArray|ArrayBuffer|DataView} buf
+ * @param {Buffer|ArrayBufferView|ArrayBuffer} buf
  *   Buffer to convert.
  * @returns {string} Base64url string.
  * @private
  */
-export function base64url(buf: Buffer | Uint8Array | Uint8ClampedArray | ArrayBuffer | DataView): string;
+export function base64url(buf: Buffer | ArrayBufferView | ArrayBuffer): string;
 /**
- * @param {Buffer|Uint8Array|Uint8ClampedArray|ArrayBuffer|DataView} buf
+ * @param {Buffer|ArrayBufferView|ArrayBuffer} buf
  *   Buffer to convert.
  * @returns {string} Base64 string.
  * @private
  */
-export function base64(buf: Buffer | Uint8Array | Uint8ClampedArray | ArrayBuffer | DataView): string;
+export function base64(buf: Buffer | ArrayBufferView | ArrayBuffer): string;
 /**
  * Is the current system big-endian?  Tests, rather than using the node
  * os.endianness() function, so that it will work in the browser.

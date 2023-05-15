@@ -40,7 +40,7 @@ function b64urlThis() {
 
 function hexThis() {
   // eslint-disable-next-line no-invalid-this
-  return this.toString('hex')
+  return utils.bufferishToBuffer(this).toString('hex')
 }
 
 function swapEndian(ab, size, byteOffset, byteLength) {
