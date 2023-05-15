@@ -62,7 +62,7 @@ const cborPkg = JSON.parse(
 let branch = ''
 try {
   // Too hard to test both branches.
-  /* istanbul ignore next */
+  /* c8 ignore next */
   if (fs.statSync(path.resolve(cborPath, '..', '..', '.git')).isDirectory()) {
     try {
       // eslint-disable-next-line prefer-template
@@ -222,12 +222,10 @@ cborRepl.writer = output => {
 
 // Throw our history in with the normal node history file.  This is only
 // needed in node 11+
-/* istanbul ignore else */
 if (typeof cborRepl.setupHistory === 'function') {
   cborRepl.setupHistory(process.env.NODE_REPL_HISTORY, er => {
     // No good way to get this to fire, even with bad permissions
     // or invalid file
-    /* istanbul ignore if */
     if (er) {
       console.error(er)
     }

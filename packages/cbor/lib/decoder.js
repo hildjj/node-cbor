@@ -178,9 +178,9 @@ export class Decoder extends BinaryParseStream {
         return undefined
       // Leaving this in for now as belt-and-suspenders, but I'm pretty sure
       // it can't happen.
-      /* istanbul ignore next */
+      /* c8 ignore next */
       case Decoder.NOT_FOUND:
-        /* istanbul ignore next */
+        /* c8 ignore next */
         throw new Error('Value not found')
       default:
         return val
@@ -340,9 +340,9 @@ export class Decoder extends BinaryParseStream {
             }
             return resolve(v)
           // Pretty sure this can't happen, but not *certain*.
-          /* istanbul ignore next */
+          /* c8 ignore next */
           case ERROR:
-            /* istanbul ignore next */
+            /* c8 ignore next */
             return undefined
           default:
             return resolve(v)
@@ -626,7 +626,7 @@ export class Decoder extends BinaryParseStream {
               break
             }
           }
-        } else /* istanbul ignore else */ if (parent instanceof NoFilter) {
+        } else if (parent instanceof NoFilter) {
           // Only parent types are Array and NoFilter for (Array/Map) and
           // (bytes/string) respectively.
           switch (parent[MAJOR]) {

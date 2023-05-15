@@ -38,6 +38,7 @@ export class HexStream extends Transform {
 export function printError(er) {
   if (er != null) {
     console.error(er)
+    process.exitCode = 1
   }
 }
 

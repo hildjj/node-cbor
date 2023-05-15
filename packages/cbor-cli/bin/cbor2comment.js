@@ -32,7 +32,4 @@ utils.streamFiles(argv, () => {
   })
   c.pipe(process.stdout)
   return c
-}).catch(e => {
-  utils.printError(e)
-  process.exit(1)
-})
+}).catch(utils.printError)

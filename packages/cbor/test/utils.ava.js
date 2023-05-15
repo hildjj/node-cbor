@@ -84,3 +84,8 @@ test('cborValueToString', t => {
   t.is(utils.cborValueToString(Symbol('foo')), 'foo')
   t.is(utils.cborValueToString(Symbol('')), 'Symbol')
 })
+
+test('buffertoBigInt', t => {
+  t.is(utils.bufferToBigInt(Buffer.from('04', 'hex')), 4n)
+  t.is(utils.bufferToBigInt(Buffer.from('0001020304050607', 'hex')), 0x1020304050607n)
+})

@@ -30,7 +30,4 @@ utils.streamFiles(argv, () => {
     console.log(JSON.stringify(v))
   })
   return d
-}).catch(e => {
-  utils.printError(e)
-  process.exit(1)
-})
+}).catch(utils.printError)

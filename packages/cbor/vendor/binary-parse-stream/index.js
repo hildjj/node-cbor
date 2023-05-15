@@ -51,13 +51,9 @@ export class BinaryParseStream extends Transform {
 
     while (this.bs.length >= this.__needed) {
       let ret = null
-      let chunk = (this.__needed === null) ?
+      const chunk = (this.__needed === null) ?
         undefined :
-        this.bs.read(this.__needed)
-
-      if (typeof chunk === 'string') {
-        chunk = Buffer.from(chunk, encoding)
-      }
+        /** @type {Buffer} */ (this.bs.read(this.__needed))
 
       try {
         ret = this.__parser.next(chunk)
@@ -80,17 +76,21 @@ export class BinaryParseStream extends Transform {
     return cb()
   }
 
+  /* c8 ignore start */
   /**
    * Subclasses must override this to set their parsing behavior.  Yield a
    * number to receive a Buffer of that many bytes.
    *
    * @abstract
-   * @returns {Generator<number, any, Buffer>}
+   * @returns {Generator<number, any, Buffer>} Yield a number to this to get a
+   *   Buffer.
+   * @throws {Error} Abstract.
    */
-  /* istanbul ignore next */
   *_parse() { // eslint-disable-line class-methods-use-this, require-yield
     throw new Error('Must be implemented in subclass')
   }
+
+  /* c8 ignore end */
 
   __restart() {
     this.__needed = null

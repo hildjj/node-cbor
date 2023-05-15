@@ -26,7 +26,4 @@ utils.streamFiles(argv, () => {
   const d = new cbor.Diagnose()
   d.pipe(process.stdout)
   return d
-}).catch(e => {
-  utils.printError(e)
-  process.exit(1)
-})
+}).catch(utils.printError)

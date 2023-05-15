@@ -22,8 +22,8 @@
     "test:web": "node packages/puppeteer-demo/index.js",
     "test:all": "npm run test:versions && npm run test:spot-check && npm run test:bigendian && npm run test:web",
     "build": "pnpm -r build",
-    "coverage": "nyc -r lcov npm test",
-    "coverage:all": "nyc -r lcov npm run test:all",
+    "coverage": "c8 npm test",
+    "coverage:all": "c8 npm run test:all",
     "precopy": "rimraf docs/example/*",
     "copy": "pnpm -r copy",
     "types": "pnpm -r types"
@@ -35,6 +35,7 @@
     "@cto.af/eslint-config": "^1.1.2",
     "ava": "^5.2.0",
     "bignumber.js": "^9.1.1",
+    "c8": "7.13.0",
     "copyfiles": "2.4.1",
     "docdash": "2.0.1",
     "eslint": "^8.40.0",
@@ -47,7 +48,6 @@
     "light-server": "^2.9.1",
     "minami": "*",
     "nve": "^16.0.0",
-    "nyc": "^15.1.0",
     "rimraf": "^5.0.0",
     "typescript": "^5.0.4"
   },
