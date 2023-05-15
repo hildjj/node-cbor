@@ -1,14 +1,13 @@
 /// <reference types="node" />
-export = Encoder;
 /**
- * @typedef ObjectOptions
- * @property {boolean} [indefinite = false] Force indefinite encoding for this
+ * @typedef {object} ObjectOptions
+ * @property {boolean} [indefinite=false] Force indefinite encoding for this
  *   object.
- * @property {boolean} [skipTypes = false] Do not use available type mappings
+ * @property {boolean} [skipTypes=false] Do not use available type mappings
  *   for this object, but encode it as a "normal" JS object would be.
  */
 /**
- * @typedef EncodingOptions
+ * @typedef {object} EncodingOptions
  * @property {any[]|object} [genTypes=[]] Array of pairs of
  *   `type`, `function(Encoder)` for semantic types to be encoded.  Not
  *   needed for Array, Date, Buffer, Map, RegExp, Set, or URL.
@@ -49,10 +48,8 @@ export = Encoder;
 /**
  * Transform JavaScript values into CBOR bytes.  The `Writable` side of
  * the stream is in object mode.
- *
- * @extends stream.Transform
  */
-declare class Encoder extends stream.Transform {
+export class Encoder extends Transform {
     /**
      * Encode an array and all of its elements.
      *
@@ -386,17 +383,19 @@ declare class Encoder extends stream.Transform {
      */
     removeLoopDetectors(): boolean;
 }
-declare namespace Encoder {
-    export { EncodeFunction, SemanticMap, ObjectOptions, EncodingOptions };
-}
-import stream = require("stream");
 /**
  * Generate the CBOR for a value.  If you are using this, you'll either need
  * to call {@link Encoder.write } with a Buffer, or look into the internals of
  * Encoder to reuse existing non-documented behavior.
  */
-type EncodeFunction = (enc: Encoder, val: any) => boolean;
-type ObjectOptions = {
+export type EncodeFunction = (enc: Encoder, val: any) => boolean;
+/**
+ * A mapping from tag number to a tag decoding function.
+ */
+export type SemanticMap = {
+    [x: string]: EncodeFunction;
+};
+export type ObjectOptions = {
     /**
      * Force indefinite encoding for this
      * object.
@@ -408,9 +407,7 @@ type ObjectOptions = {
      */
     skipTypes?: boolean;
 };
-import { Buffer } from "buffer";
-import NoFilter = require("nofilter");
-type EncodingOptions = {
+export type EncodingOptions = {
     /**
      * Array of pairs of
      * `type`, `function(Encoder)` for semantic types to be encoded.  Not
@@ -475,9 +472,6 @@ type EncodingOptions = {
      */
     omitUndefinedProperties?: boolean;
 };
-/**
- * A mapping from tag number to a tag decoding function.
- */
-type SemanticMap = {
-    [x: string]: EncodeFunction;
-};
+import { Transform } from 'stream';
+import { Buffer } from 'buffer';
+import { NoFilter } from 'nofilter';

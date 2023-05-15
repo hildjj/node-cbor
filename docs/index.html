@@ -1,154 +1,66 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    
-    <meta charset="utf-8">
-    <title>Home - Documentation</title>
-    
-    
-    <script src="scripts/prettify/prettify.js"></script>
-    <script src="scripts/prettify/lang-css.js"></script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
-    <script src="scripts/nav.js" defer></script>
-    
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body>
-
-<input type="checkbox" id="nav-trigger" class="nav-trigger" />
-<label for="nav-trigger" class="navicon-button x">
-  <div class="navicon"></div>
-</label>
-
-<label for="nav-trigger" class="overlay"></label>
-
-<nav >
-    
-    
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BinaryParseStream.html">BinaryParseStream</a></li><li><a href="CborMap.html">CborMap</a><ul class='methods'><li data-type='method'><a href="CborMap.html#delete">delete</a></li><li data-type='method'><a href="CborMap.html#encodeCBOR">encodeCBOR</a></li><li data-type='method'><a href="CborMap.html#entries">entries</a></li><li data-type='method'><a href="CborMap.html#forEach">forEach</a></li><li data-type='method'><a href="CborMap.html#get">get</a></li><li data-type='method'><a href="CborMap.html#has">has</a></li><li data-type='method'><a href="CborMap.html#keys">keys</a></li><li data-type='method'><a href="CborMap.html#set">set</a></li></ul></li><li><a href="Commented.html">Commented</a><ul class='methods'><li data-type='method'><a href="Commented.html#.comment">comment</a></li></ul></li><li><a href="Decoder.html">Decoder</a><ul class='methods'><li data-type='method'><a href="Decoder.html#close">close</a></li><li data-type='method'><a href="Decoder.html#.decodeAll">decodeAll</a></li><li data-type='method'><a href="Decoder.html#.decodeAllSync">decodeAllSync</a></li><li data-type='method'><a href="Decoder.html#.decodeFirst">decodeFirst</a></li><li data-type='method'><a href="Decoder.html#.decodeFirstSync">decodeFirstSync</a></li><li data-type='method'><a href="Decoder.html#.nullcheck">nullcheck</a></li></ul></li><li><a href="Diagnose.html">Diagnose</a><ul class='methods'><li data-type='method'><a href="Diagnose.html#.diagnose">diagnose</a></li></ul></li><li><a href="Encoder.html">Encoder</a><ul class='methods'><li data-type='method'><a href="Encoder.html#addSemanticType">addSemanticType</a></li><li data-type='method'><a href="Encoder.html#pushAny">pushAny</a></li><li data-type='method'><a href="Encoder.html#removeLoopDetectors">removeLoopDetectors</a></li><li data-type='method'><a href="Encoder.html#.encode">encode</a></li><li data-type='method'><a href="Encoder.html#.encodeAsync">encodeAsync</a></li><li data-type='method'><a href="Encoder.html#.encodeCanonical">encodeCanonical</a></li><li data-type='method'><a href="Encoder.html#.encodeIndefinite">encodeIndefinite</a></li><li data-type='method'><a href="Encoder.html#.encodeOne">encodeOne</a></li><li data-type='method'><a href="Encoder.html#.pushArray">pushArray</a></li><li data-type='method'><a href="Encoder.html#.reset">reset</a></li></ul></li><li><a href="ObjectRecorder.html">ObjectRecorder</a><ul class='methods'><li data-type='method'><a href="ObjectRecorder.html#check">check</a></li><li data-type='method'><a href="ObjectRecorder.html#clear">clear</a></li><li data-type='method'><a href="ObjectRecorder.html#stop">stop</a></li></ul></li><li><a href="SharedValueEncoder.html">SharedValueEncoder</a><ul class='methods'><li data-type='method'><a href="SharedValueEncoder.html#clearRecording">clearRecording</a></li><li data-type='method'><a href="SharedValueEncoder.html#stopRecording">stopRecording</a></li><li data-type='method'><a href="SharedValueEncoder.html#.encode">encode</a></li><li data-type='method'><a href="SharedValueEncoder.html#.encodeAsync">encodeAsync</a></li><li data-type='method'><a href="SharedValueEncoder.html#.encodeCanonical">encodeCanonical</a></li><li data-type='method'><a href="SharedValueEncoder.html#.encodeOne">encodeOne</a></li></ul></li><li><a href="Simple.html">Simple</a><ul class='methods'><li data-type='method'><a href="Simple.html#encodeCBOR">encodeCBOR</a></li><li data-type='method'><a href="Simple.html#toString">toString</a></li><li data-type='method'><a href="Simple.html#.decode">decode</a></li><li data-type='method'><a href="Simple.html#.isSimple">isSimple</a></li></ul></li><li><a href="Tagged.html">Tagged</a><ul class='methods'><li data-type='method'><a href="Tagged.html#convert">convert</a></li><li data-type='method'><a href="Tagged.html#encodeCBOR">encodeCBOR</a></li><li data-type='method'><a href="Tagged.html#toString">toString</a></li><li data-type='method'><a href="Tagged.html#.reset">reset</a></li></ul></li></ul><h3><a href="global.html">Global</a></h3>
-    
-</nav>
-
-<div id="main">
-    
-
-    
-
-
-
-    
-
-
-    <section class="package">
-        <h3> </h3>		
-    </section>
-
-
-
-
-
-
-
-
-
-    
-
-
-
-    <section class="readme usertext">
-        <article><h1>cbor</h1>
-<p>Encode and parse data in the Concise Binary Object Representation (CBOR) data format (<a href="https://www.rfc-editor.org/rfc/rfc8949.html">RFC8949</a>).</p>
-<h2>Supported Node.js versions</h2>
-<p>This project now only supports versions of Node that the Node team is
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>cbor</title><meta name="description" content="Documentation for cbor"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script defer src="assets/main.js"></script><script async src="assets/search.js" id="tsd-search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container">
+<div class="table-cell" id="tsd-search" data-base=".">
+<div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M15.7824 13.833L12.6666 10.7177C12.5259 10.5771 12.3353 10.499 12.1353 10.499H11.6259C12.4884 9.39596 13.001 8.00859 13.001 6.49937C13.001 2.90909 10.0914 0 6.50048 0C2.90959 0 0 2.90909 0 6.49937C0 10.0896 2.90959 12.9987 6.50048 12.9987C8.00996 12.9987 9.39756 12.4863 10.5008 11.6239V12.1332C10.5008 12.3332 10.5789 12.5238 10.7195 12.6644L13.8354 15.7797C14.1292 16.0734 14.6042 16.0734 14.8948 15.7797L15.7793 14.8954C16.0731 14.6017 16.0731 14.1267 15.7824 13.833ZM6.50048 10.499C4.29094 10.499 2.50018 8.71165 2.50018 6.49937C2.50018 4.29021 4.28781 2.49976 6.50048 2.49976C8.71001 2.49976 10.5008 4.28708 10.5008 6.49937C10.5008 8.70852 8.71314 10.499 6.50048 10.499Z" fill="var(--color-text)"></path></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
+<div class="field">
+<div id="tsd-toolbar-links"></div></div>
+<ul class="results">
+<li class="state loading">Preparing search index...</li>
+<li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">cbor</a></div>
+<div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="7" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="11" width="14" height="2" fill="var(--color-text)"></rect></svg></a></div></div></header>
+<div class="container container-main">
+<div class="col-content">
+<div class="tsd-page-title">
+<h2>cbor</h2></div>
+<div class="tsd-panel tsd-typography"><a id="md:cbor" class="tsd-anchor"></a><h1><a href="#md:cbor">cbor</a></h1><p>Encode and parse data in the Concise Binary Object Representation (CBOR) data format (<a href="https://www.rfc-editor.org/rfc/rfc8949.html">RFC8949</a>).</p>
+<a id="md:supported-nodejs-versions" class="tsd-anchor"></a><h2><a href="#md:supported-nodejs-versions">Supported Node.js versions</a></h2><p>This project now only supports versions of Node that the Node team is
 <a href="https://github.com/nodejs/Release#release-schedule">currently supporting</a>.
-Ava's <a href="https://github.com/avajs/ava/blob/main/docs/support-statement.md">support
+Ava&#39;s <a href="https://github.com/avajs/ava/blob/main/docs/support-statement.md">support
 statement</a>
-is what we will be using as well.  Currently, that means Node <code>10</code>+ is
+is what we will be using as well.  Currently, that means Node <code>16</code>+ is
 required.  If you need to support an older version of Node (back to version
-6), use cbor version 5.2.x, which will get nothing but security updates from
-here on out.</p>
-<h2>Installation:</h2>
-<pre class="prettyprint source lang-bash"><code>$ npm install --save cbor
-</code></pre>
+6), use cbor version 5.2.x.  If you need commonjs support, use cbor v9.0.x.
+Neither of these versions will get anything but high-severity security updates
+from here on out.</p>
+<p>However note: cbor-web may be a valid option if you want the latest code
+and commonjs support.</p>
+<a id="md:installation" class="tsd-anchor"></a><h2><a href="#md:installation">Installation:</a></h2><pre><code class="language-bash"><span class="hl-0">$</span><span class="hl-1"> </span><span class="hl-2">npm</span><span class="hl-1"> </span><span class="hl-2">install</span><span class="hl-1"> </span><span class="hl-3">--save</span><span class="hl-1"> </span><span class="hl-2">cbor</span>
+</code><button>Copy</button></pre>
 <p><strong>NOTE</strong>
 If you are going to use this on the web, use <a href="../cbor-web">cbor-web</a> instead.</p>
 <p>If you need support for encoding and decoding BigDecimal fractions (tag 4) or
 BigFloats (tag 5), please see <a href="../cbor-bigdecimal">cbor-bigdecimal</a>.</p>
-<h2>Documentation:</h2>
-<p>See the full API <a href="http://hildjj.github.io/node-cbor/">documentation</a>.</p>
+<a id="md:documentation" class="tsd-anchor"></a><h2><a href="#md:documentation">Documentation:</a></h2><p>See the full API <a href="http://hildjj.github.io/node-cbor/">documentation</a>.</p>
 <p>For a command-line interface, see <a href="../cbor-cli">cbor-cli</a>.</p>
 <p>Example:</p>
-<pre class="prettyprint source lang-js"><code>const cbor = require('cbor')
-const assert = require('assert')
-
-let encoded = cbor.encode(true) // Returns &lt;Buffer f5>
-cbor.decodeFirst(encoded, (error, obj) => {
-  // If there was an error, error != null
-  // obj is the unpacked object
-  assert.ok(obj === true)
-})
-
-// Use integers as keys?
-const m = new Map()
-m.set(1, 2)
-encoded = cbor.encode(m) // &lt;Buffer a1 01 02>
-</code></pre>
+<pre><code class="language-js"><span class="hl-4">import</span><span class="hl-1"> </span><span class="hl-3">*</span><span class="hl-1"> </span><span class="hl-4">as</span><span class="hl-1"> </span><span class="hl-5">cbor</span><span class="hl-1"> </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cbor&#39;</span><br/><span class="hl-4">import</span><span class="hl-1"> </span><span class="hl-5">assert</span><span class="hl-1"> </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;assert&#39;</span><br/><br/><span class="hl-3">let</span><span class="hl-1"> </span><span class="hl-5">encoded</span><span class="hl-1"> = </span><span class="hl-5">cbor</span><span class="hl-1">.</span><span class="hl-0">encode</span><span class="hl-1">(</span><span class="hl-3">true</span><span class="hl-1">) </span><span class="hl-6">// Returns &lt;Buffer f5&gt;</span><br/><span class="hl-5">cbor</span><span class="hl-1">.</span><span class="hl-0">decodeFirst</span><span class="hl-1">(</span><span class="hl-5">encoded</span><span class="hl-1">, (</span><span class="hl-5">error</span><span class="hl-1">, </span><span class="hl-5">obj</span><span class="hl-1">) </span><span class="hl-3">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-6">// If there was an error, error != null</span><br/><span class="hl-1">  </span><span class="hl-6">// obj is the unpacked object</span><br/><span class="hl-1">  </span><span class="hl-5">assert</span><span class="hl-1">.</span><span class="hl-0">ok</span><span class="hl-1">(</span><span class="hl-5">obj</span><span class="hl-1"> === </span><span class="hl-3">true</span><span class="hl-1">)</span><br/><span class="hl-1">})</span><br/><br/><span class="hl-6">// Use integers as keys?</span><br/><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-7">m</span><span class="hl-1"> = </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">Map</span><span class="hl-1">()</span><br/><span class="hl-5">m</span><span class="hl-1">.</span><span class="hl-0">set</span><span class="hl-1">(</span><span class="hl-8">1</span><span class="hl-1">, </span><span class="hl-8">2</span><span class="hl-1">)</span><br/><span class="hl-5">encoded</span><span class="hl-1"> = </span><span class="hl-5">cbor</span><span class="hl-1">.</span><span class="hl-0">encode</span><span class="hl-1">(</span><span class="hl-5">m</span><span class="hl-1">) </span><span class="hl-6">// &lt;Buffer a1 01 02&gt;</span>
+</code><button>Copy</button></pre>
 <p>Allows streaming as well:</p>
-<pre class="prettyprint source lang-js"><code>const cbor = require('cbor')
-const fs = require('fs')
-
-const d = new cbor.Decoder()
-d.on('data', obj => {
-  console.log(obj)
-})
-
-const s = fs.createReadStream('foo')
-s.pipe(d)
-
-const d2 = new cbor.Decoder({input: '00', encoding: 'hex'})
-d.on('data', obj => {
-  console.log(obj)
-})
-</code></pre>
+<pre><code class="language-js"><span class="hl-4">import</span><span class="hl-1"> </span><span class="hl-3">*</span><span class="hl-1"> </span><span class="hl-4">as</span><span class="hl-1"> </span><span class="hl-5">cbor</span><span class="hl-1"> </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cbor&#39;</span><br/><span class="hl-4">import</span><span class="hl-1"> </span><span class="hl-5">fs</span><span class="hl-1"> </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;fs&#39;</span><br/><br/><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-7">d</span><span class="hl-1"> = </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-5">cbor</span><span class="hl-1">.</span><span class="hl-0">Decoder</span><span class="hl-1">()</span><br/><span class="hl-5">d</span><span class="hl-1">.</span><span class="hl-0">on</span><span class="hl-1">(</span><span class="hl-2">&#39;data&#39;</span><span class="hl-1">, </span><span class="hl-5">obj</span><span class="hl-1"> </span><span class="hl-3">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-5">console</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">(</span><span class="hl-5">obj</span><span class="hl-1">)</span><br/><span class="hl-1">})</span><br/><br/><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-7">s</span><span class="hl-1"> = </span><span class="hl-5">fs</span><span class="hl-1">.</span><span class="hl-0">createReadStream</span><span class="hl-1">(</span><span class="hl-2">&#39;foo&#39;</span><span class="hl-1">)</span><br/><span class="hl-5">s</span><span class="hl-1">.</span><span class="hl-0">pipe</span><span class="hl-1">(</span><span class="hl-5">d</span><span class="hl-1">)</span><br/><br/><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-7">d2</span><span class="hl-1"> = </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-5">cbor</span><span class="hl-1">.</span><span class="hl-0">Decoder</span><span class="hl-1">({</span><span class="hl-5">input:</span><span class="hl-1"> </span><span class="hl-2">&#39;00&#39;</span><span class="hl-1">, </span><span class="hl-5">encoding:</span><span class="hl-1"> </span><span class="hl-2">&#39;hex&#39;</span><span class="hl-1">})</span><br/><span class="hl-5">d</span><span class="hl-1">.</span><span class="hl-0">on</span><span class="hl-1">(</span><span class="hl-2">&#39;data&#39;</span><span class="hl-1">, </span><span class="hl-5">obj</span><span class="hl-1"> </span><span class="hl-3">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-5">console</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">(</span><span class="hl-5">obj</span><span class="hl-1">)</span><br/><span class="hl-1">})</span>
+</code><button>Copy</button></pre>
 <p>There is also support for synchronous decodes:</p>
-<pre class="prettyprint source lang-js"><code>try {
-  console.log(cbor.decodeFirstSync('02')) // 2
-  console.log(cbor.decodeAllSync('0202')) // [2, 2]
-} catch (e) {
-  // Throws on invalid input
-}
-</code></pre>
+<pre><code class="language-js"><span class="hl-4">try</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-5">console</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">(</span><span class="hl-5">cbor</span><span class="hl-1">.</span><span class="hl-0">decodeFirstSync</span><span class="hl-1">(</span><span class="hl-2">&#39;02&#39;</span><span class="hl-1">)) </span><span class="hl-6">// 2</span><br/><span class="hl-1">  </span><span class="hl-5">console</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">(</span><span class="hl-5">cbor</span><span class="hl-1">.</span><span class="hl-0">decodeAllSync</span><span class="hl-1">(</span><span class="hl-2">&#39;0202&#39;</span><span class="hl-1">)) </span><span class="hl-6">// [2, 2]</span><br/><span class="hl-1">} </span><span class="hl-4">catch</span><span class="hl-1"> (</span><span class="hl-5">e</span><span class="hl-1">) {</span><br/><span class="hl-1">  </span><span class="hl-6">// Throws on invalid input</span><br/><span class="hl-1">}</span>
+</code><button>Copy</button></pre>
 <p>The sync encoding and decoding are exported as a
 <a href="https://github.com/Level/levelup#custom_encodings">leveldb encoding</a>, as
 <code>cbor.leveldb</code>.</p>
-<h2>highWaterMark</h2>
-<p>The synchronous routines for encoding and decoding will have problems with
+<a id="md:highwatermark" class="tsd-anchor"></a><h2><a href="#md:highwatermark">highWaterMark</a></h2><p>The synchronous routines for encoding and decoding will have problems with
 objects that are larger than 16kB, which the default buffer size for Node
 streams.  There are a few ways to fix this:</p>
 <ol>
 <li>pass in a <code>highWaterMark</code> option with the value of the largest buffer size you think you will need:</li>
 </ol>
-<pre class="prettyprint source lang-js"><code>cbor.encodeOne(new ArrayBuffer(40000), {highWaterMark: 65535})
-</code></pre>
+<pre><code class="language-js"><span class="hl-5">cbor</span><span class="hl-1">.</span><span class="hl-0">encodeOne</span><span class="hl-1">(</span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">ArrayBuffer</span><span class="hl-1">(</span><span class="hl-8">40000</span><span class="hl-1">), {</span><span class="hl-5">highWaterMark:</span><span class="hl-1"> </span><span class="hl-8">65535</span><span class="hl-1">})</span>
+</code><button>Copy</button></pre>
 <ol start="2">
-<li>use stream mode.  Catch the <code>data</code>, <code>finish</code>, and <code>error</code> events.  Make sure to call <code>end()</code> when you're done.</li>
+<li>use stream mode.  Catch the <code>data</code>, <code>finish</code>, and <code>error</code> events.  Make sure to call <code>end()</code> when you&#39;re done.</li>
 </ol>
-<pre class="prettyprint source lang-js"><code>const enc = new cbor.Encoder()
-enc.on('data', buf => /* Send the data somewhere */ null)
-enc.on('error', console.error)
-enc.on('finish', () => /* Tell the consumer we are finished */ null)
-
-enc.end(['foo', 1, false])
-</code></pre>
+<pre><code class="language-js"><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-7">enc</span><span class="hl-1"> = </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-5">cbor</span><span class="hl-1">.</span><span class="hl-0">Encoder</span><span class="hl-1">()</span><br/><span class="hl-5">enc</span><span class="hl-1">.</span><span class="hl-0">on</span><span class="hl-1">(</span><span class="hl-2">&#39;data&#39;</span><span class="hl-1">, </span><span class="hl-5">buf</span><span class="hl-1"> </span><span class="hl-3">=&gt;</span><span class="hl-1"> </span><span class="hl-6">/* Send the data somewhere */</span><span class="hl-1"> </span><span class="hl-3">null</span><span class="hl-1">)</span><br/><span class="hl-5">enc</span><span class="hl-1">.</span><span class="hl-0">on</span><span class="hl-1">(</span><span class="hl-2">&#39;error&#39;</span><span class="hl-1">, </span><span class="hl-5">console</span><span class="hl-1">.</span><span class="hl-5">error</span><span class="hl-1">)</span><br/><span class="hl-5">enc</span><span class="hl-1">.</span><span class="hl-0">on</span><span class="hl-1">(</span><span class="hl-2">&#39;finish&#39;</span><span class="hl-1">, () </span><span class="hl-3">=&gt;</span><span class="hl-1"> </span><span class="hl-6">/* Tell the consumer we are finished */</span><span class="hl-1"> </span><span class="hl-3">null</span><span class="hl-1">)</span><br/><br/><span class="hl-5">enc</span><span class="hl-1">.</span><span class="hl-0">end</span><span class="hl-1">([</span><span class="hl-2">&#39;foo&#39;</span><span class="hl-1">, </span><span class="hl-8">1</span><span class="hl-1">, </span><span class="hl-3">false</span><span class="hl-1">])</span>
+</code><button>Copy</button></pre>
 <ol start="3">
 <li>use <code>encodeAsync()</code>, which uses the approach from approach 2 to return a memory-inefficient promise for a Buffer.</li>
 </ol>
-<h2>Supported types</h2>
-<p>The following types are supported for encoding:</p>
+<a id="md:supported-types" class="tsd-anchor"></a><h2><a href="#md:supported-types">Supported types</a></h2><p>The following types are supported for encoding:</p>
 <ul>
 <li>boolean</li>
 <li>number (including -0, NaN, and ±Infinity)</li>
@@ -172,8 +84,7 @@ enc.end(['foo', 1, false])
 <th>Generated Type</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>0</td>
 <td>Date</td>
 </tr>
@@ -200,6 +111,14 @@ enc.end(['foo', 1, false])
 <tr>
 <td>23</td>
 <td>Tagged, with toJSON</td>
+</tr>
+<tr>
+<td>28</td>
+<td>Original object, with SharedValueEncoder</td>
+</tr>
+<tr>
+<td>29</td>
+<td>Same original object, with SharedValueEncoder</td>
 </tr>
 <tr>
 <td>32</td>
@@ -297,112 +216,150 @@ enc.end(['foo', 1, false])
 <td>258</td>
 <td>Set</td>
 </tr>
-</tbody>
-</table>
-<h2>Adding new Encoders</h2>
-<p>There are several ways to add a new encoder:</p>
-<h3><code>encodeCBOR</code> method</h3>
-<p>This is the easiest approach, if you can modify the class being encoded.  Add an
+</tbody></table>
+<a id="md:adding-new-encoders" class="tsd-anchor"></a><h2><a href="#md:adding-new-encoders">Adding new Encoders</a></h2><p>There are several ways to add a new encoder:</p>
+<a id="md:encodecbor-method" class="tsd-anchor"></a><h3><a href="#md:encodecbor-method"><code>encodeCBOR</code> method</a></h3><p>This is the easiest approach, if you can modify the class being encoded.  Add an
 <code>encodeCBOR</code> method to your class, which takes a single parameter of the encoder
 currently being used.  Your method should return <code>true</code> on success, else <code>false</code>.
 Your method may call <code>encoder.push(buffer)</code> or <code>encoder.pushAny(any)</code> as needed.</p>
 <p>For example:</p>
-<pre class="prettyprint source lang-js"><code>class Foo {
-  constructor() {
-    this.one = 1
-    this.two = 2
-  }
-
-  encodeCBOR(encoder) {
-    const tagged = new Tagged(64000, [this.one, this.two])
-    return encoder.pushAny(tagged)
-  }
-}
-</code></pre>
+<pre><code class="language-js"><span class="hl-3">class</span><span class="hl-1"> </span><span class="hl-9">Foo</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-3">constructor</span><span class="hl-1">() {</span><br/><span class="hl-1">    </span><span class="hl-3">this</span><span class="hl-1">.</span><span class="hl-5">one</span><span class="hl-1"> = </span><span class="hl-8">1</span><br/><span class="hl-1">    </span><span class="hl-3">this</span><span class="hl-1">.</span><span class="hl-5">two</span><span class="hl-1"> = </span><span class="hl-8">2</span><br/><span class="hl-1">  }</span><br/><br/><span class="hl-1">  </span><span class="hl-0">encodeCBOR</span><span class="hl-1">(</span><span class="hl-5">encoder</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-7">tagged</span><span class="hl-1"> = </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">Tagged</span><span class="hl-1">(</span><span class="hl-8">64000</span><span class="hl-1">, [</span><span class="hl-3">this</span><span class="hl-1">.</span><span class="hl-5">one</span><span class="hl-1">, </span><span class="hl-3">this</span><span class="hl-1">.</span><span class="hl-5">two</span><span class="hl-1">])</span><br/><span class="hl-1">    </span><span class="hl-4">return</span><span class="hl-1"> </span><span class="hl-5">encoder</span><span class="hl-1">.</span><span class="hl-0">pushAny</span><span class="hl-1">(</span><span class="hl-5">tagged</span><span class="hl-1">)</span><br/><span class="hl-1">  }</span><br/><span class="hl-1">}</span>
+</code><button>Copy</button></pre>
 <p>You can also modify an existing type by monkey-patching an <code>encodeCBOR</code> function
-onto its prototype, but this isn't recommended.</p>
-<h3><code>addSemanticType</code></h3>
-<p>Sometimes, you want to support an existing type without modification to that
+onto its prototype, but this isn&#39;t recommended.</p>
+<a id="md:addsemantictype" class="tsd-anchor"></a><h3><a href="#md:addsemantictype"><code>addSemanticType</code></a></h3><p>Sometimes, you want to support an existing type without modification to that
 type.  In this case, call <code>addSemanticType(type, encodeFunction)</code> on an existing
 <code>Encoder</code> instance. The <code>encodeFunction</code> takes an encoder and an object to
 encode, for example:</p>
-<pre class="prettyprint source lang-js"><code>class Bar {
-  constructor() {
-    this.three = 3
-  }
-}
-const enc = new Encoder()
-enc.addSemanticType(Bar, (encoder, b) => {
-  encoder.pushAny(b.three)
-})
-</code></pre>
-<h2>Adding new decoders</h2>
-<p>Most of the time, you will want to add support for decoding a new tag type.  If
-the Decoder class encounters a tag it doesn't support, it will generate a <code>Tagged</code>
+<pre><code class="language-js"><span class="hl-3">class</span><span class="hl-1"> </span><span class="hl-9">Bar</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-3">constructor</span><span class="hl-1">() {</span><br/><span class="hl-1">    </span><span class="hl-3">this</span><span class="hl-1">.</span><span class="hl-5">three</span><span class="hl-1"> = </span><span class="hl-8">3</span><br/><span class="hl-1">  }</span><br/><span class="hl-1">}</span><br/><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-7">enc</span><span class="hl-1"> = </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">Encoder</span><span class="hl-1">()</span><br/><span class="hl-5">enc</span><span class="hl-1">.</span><span class="hl-0">addSemanticType</span><span class="hl-1">(</span><span class="hl-5">Bar</span><span class="hl-1">, (</span><span class="hl-5">encoder</span><span class="hl-1">, </span><span class="hl-5">b</span><span class="hl-1">) </span><span class="hl-3">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-5">encoder</span><span class="hl-1">.</span><span class="hl-0">pushAny</span><span class="hl-1">(</span><span class="hl-5">b</span><span class="hl-1">.</span><span class="hl-5">three</span><span class="hl-1">)</span><br/><span class="hl-1">})</span>
+</code><button>Copy</button></pre>
+<a id="md:adding-new-decoders" class="tsd-anchor"></a><h2><a href="#md:adding-new-decoders">Adding new decoders</a></h2><p>Most of the time, you will want to add support for decoding a new tag type.  If
+the Decoder class encounters a tag it doesn&#39;t support, it will generate a <code>Tagged</code>
 instance that you can handle or ignore as needed.  To have a specific type
-generated instead, pass a <code>tags</code> option to the <code>Decoder</code>'s constructor, consisting
+generated instead, pass a <code>tags</code> option to the <code>Decoder</code>&#39;s constructor, consisting
 of an object with tag number keys and function values.  The function will be
 passed the decoded value associated with the tag, and should return the decoded
 value.  For the <code>Foo</code> example above, this might look like:</p>
-<pre class="prettyprint source lang-js"><code>const d = new Decoder({
-  tags: {
-    64000: val => {
-      // Check val to make sure it's an Array as expected, etc.
-      const foo = new Foo()
-      ;[foo.one, foo.two] = val
-      return foo
-    },
-  },
-})
-</code></pre>
+<pre><code class="language-js"><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-7">d</span><span class="hl-1"> = </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">Decoder</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-5">tags:</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-8">64000</span><span class="hl-5">:</span><span class="hl-1"> </span><span class="hl-5">val</span><span class="hl-1"> </span><span class="hl-3">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">      </span><span class="hl-6">// Check val to make sure it&#39;s an Array as expected, etc.</span><br/><span class="hl-1">      </span><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-7">foo</span><span class="hl-1"> = </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">Foo</span><span class="hl-1">()</span><br/><span class="hl-1">      ;[</span><span class="hl-5">foo</span><span class="hl-1">.</span><span class="hl-5">one</span><span class="hl-1">, </span><span class="hl-5">foo</span><span class="hl-1">.</span><span class="hl-5">two</span><span class="hl-1">] = </span><span class="hl-5">val</span><br/><span class="hl-1">      </span><span class="hl-4">return</span><span class="hl-1"> </span><span class="hl-5">foo</span><br/><span class="hl-1">    },</span><br/><span class="hl-1">  },</span><br/><span class="hl-1">})</span>
+</code><button>Copy</button></pre>
 <p>You can also replace the default decoders by passing in an appropriate tag
 function.  For example:</p>
-<pre class="prettyprint source lang-js"><code>cbor.decodeFirstSync(input, {
-  tags: {
-    // Replace the Tag 0 (RFC3339 Date/Time string) decoder.
-    // See https://tc39.es/proposal-temporal/docs/ for the upcoming
-    // Temporal built-in, which supports nanosecond time:
-    0: x => Temporal.Instant.from(x),
-  },
-})
-</code></pre>
-<h2>Developers</h2>
-<p>The tests for this package use a set of test vectors from RFC 8949 appendix A
+<pre><code class="language-js"><span class="hl-5">cbor</span><span class="hl-1">.</span><span class="hl-0">decodeFirstSync</span><span class="hl-1">(</span><span class="hl-5">input</span><span class="hl-1">, {</span><br/><span class="hl-1">  </span><span class="hl-5">tags:</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-6">// Replace the Tag 0 (RFC3339 Date/Time string) decoder.</span><br/><span class="hl-1">    </span><span class="hl-6">// See https://tc39.es/proposal-temporal/docs/ for the upcoming</span><br/><span class="hl-1">    </span><span class="hl-6">// Temporal built-in, which supports nanosecond time:</span><br/><span class="hl-1">    </span><span class="hl-8">0</span><span class="hl-5">:</span><span class="hl-1"> </span><span class="hl-5">x</span><span class="hl-1"> </span><span class="hl-3">=&gt;</span><span class="hl-1"> </span><span class="hl-5">Temporal</span><span class="hl-1">.</span><span class="hl-5">Instant</span><span class="hl-1">.</span><span class="hl-0">from</span><span class="hl-1">(</span><span class="hl-5">x</span><span class="hl-1">),</span><br/><span class="hl-1">  },</span><br/><span class="hl-1">})</span>
+</code><button>Copy</button></pre>
+<a id="md:developers" class="tsd-anchor"></a><h2><a href="#md:developers">Developers</a></h2><p>The tests for this package use a set of test vectors from RFC 8949 appendix A
 by importing a machine readable version of them from
-https://github.com/cbor/test-vectors. For these tests to work, you will need
+<a href="https://github.com/cbor/test-vectors">https://github.com/cbor/test-vectors</a>. For these tests to work, you will need
 to use the command <code>git submodule update --init</code> after cloning or pulling this
-code.   See https://gist.github.com/gitaarik/8735255#file-git_submodules-md
+code.   See <a href="https://gist.github.com/gitaarik/8735255#file-git_submodules-md">https://gist.github.com/gitaarik/8735255#file-git_submodules-md</a>
 for more information.</p>
 <p>Get a list of build steps with <code>npm run</code>.  I use <code>npm run dev</code>, which rebuilds,
 runs tests, and refreshes a browser window with coverage metrics every time I
-save a <code>.js</code> file.  If you don't want to run the fuzz tests every time, set
+save a <code>.js</code> file.  If you don&#39;t want to run the fuzz tests every time, set
 a <code>NO_GARBAGE</code> environment variable:</p>
-<pre class="prettyprint source"><code>env NO_GARBAGE=1 npm run dev
-</code></pre>
+<pre><code><span class="hl-5">env</span><span class="hl-1"> </span><span class="hl-7">NO_GARBAGE</span><span class="hl-1">=</span><span class="hl-8">1</span><span class="hl-1"> </span><span class="hl-5">npm</span><span class="hl-1"> </span><span class="hl-5">run</span><span class="hl-1"> </span><span class="hl-5">dev</span>
+</code><button>Copy</button></pre>
 <p><a href="https://github.com/hildjj/node-cbor/actions?query=workflow%3ATests"><img src="https://github.com/hildjj/node-cbor/workflows/Tests/badge.svg" alt="Build Status"></a>
-<a href="https://coveralls.io/r/hildjj/node-cbor?branch=main"><img src="https://coveralls.io/repos/hildjj/node-cbor/badge.svg?branch=main" alt="Coverage Status"></a></p></article>
-    </section>
-
-
-
-
-
-
-    
-    
-</div>
-
-<br class="clear">
-
-<footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
-</footer>
-
-<script>prettyPrint();</script>
-<script src="scripts/polyfill.js"></script>
-<script src="scripts/linenumber.js"></script>
-
-
-
-</body>
-</html>
+<a href="https://coveralls.io/r/hildjj/node-cbor?branch=main"><img src="https://coveralls.io/repos/hildjj/node-cbor/badge.svg?branch=main" alt="Coverage Status"></a></p>
+</div></div>
+<div class="col-sidebar">
+<div class="page-menu">
+<div class="tsd-navigation settings">
+<details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg>Settings</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-filter-visibility">
+<h4 class="uppercase">Member Visibility</h4><form>
+<ul id="tsd-filter-options">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-private" name="private"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Private</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></form></div>
+<div class="tsd-theme-toggle">
+<h4 class="uppercase">Theme</h4><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<details open class="tsd-index-accordion tsd-page-navigation"><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg>On This Page</h3></summary>
+<div class="tsd-accordion-details">
+<ul>
+<li>
+<ul>
+<li><a href="#md:cbor"><span>cbor</span></a></li>
+<li>
+<ul>
+<li><a href="#md:supported-nodejs-versions"><span>Supported <wbr/>Node.js versions</span></a></li>
+<li><a href="#md:installation"><span>Installation:</span></a></li>
+<li><a href="#md:documentation"><span>Documentation:</span></a></li>
+<li><a href="#md:highwatermark"><span>high<wbr/>Water<wbr/>Mark</span></a></li>
+<li><a href="#md:supported-types"><span>Supported types</span></a></li>
+<li><a href="#md:adding-new-encoders"><span>Adding new <wbr/>Encoders</span></a></li>
+<li>
+<ul>
+<li><a href="#md:encodecbor-method"><span>encodeCBOR method</span></a></li>
+<li><a href="#md:addsemantictype"><span>add<wbr/>Semantic<wbr/>Type</span></a></li></ul></li>
+<li><a href="#md:adding-new-decoders"><span>Adding new decoders</span></a></li>
+<li><a href="#md:developers"><span>Developers</span></a></li></ul></li></ul></li></ul></div></details></div>
+<div class="site-menu">
+<nav id="tsd-sidebar-links" class="tsd-navigation"><a href="https://github.com/hildjj/node-cbor" target="_blank">GitHub</a><a href="http://hildjj.github.io/node-cbor/" target="_blank">Documentation</a><a href="http://hildjj.github.io/node-cbor/example/" target="_blank">Playground</a><a href="http://cbor.io/" target="_blank">Spec</a></nav>
+<nav class="tsd-navigation"><a href="index.html" class="current"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-namespace)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-4-path"></rect><path d="M9.33 16V7.24H10.77L13.446 14.74C13.43 14.54 13.41 14.296 13.386 14.008C13.37 13.712 13.354 13.404 13.338 13.084C13.33 12.756 13.326 12.448 13.326 12.16V7.24H14.37V16H12.93L10.266 8.5C10.282 8.692 10.298 8.936 10.314 9.232C10.33 9.52 10.342 9.828 10.35 10.156C10.366 10.476 10.374 10.784 10.374 11.08V16H9.33Z" fill="var(--color-text)" id="icon-4-text"></path></svg><span>cbor</span></a>
+<ul class="tsd-small-nested-navigation">
+<li>
+<details class="tsd-index-accordion" data-key="cbor"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg><a href="modules/cbor.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4-path"></use><use href="#icon-4-text"></use></svg><span>cbor</span></a></summary>
+<div class="tsd-accordion-details">
+<ul class="tsd-nested-navigation">
+<li><a href="modules/cbor.html#Commented"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF4D82" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-8388608-path"></rect><path d="M10.354 17V8.24H13.066C13.586 8.24 14.042 8.348 14.434 8.564C14.826 8.772 15.13 9.064 15.346 9.44C15.562 9.816 15.67 10.256 15.67 10.76C15.67 11.352 15.514 11.86 15.202 12.284C14.898 12.708 14.482 13 13.954 13.16L15.79 17H14.518L12.838 13.28H11.434V17H10.354ZM11.434 12.308H13.066C13.514 12.308 13.874 12.168 14.146 11.888C14.418 11.6 14.554 11.224 14.554 10.76C14.554 10.288 14.418 9.912 14.146 9.632C13.874 9.352 13.514 9.212 13.066 9.212H11.434V12.308Z" fill="var(--color-text)" id="icon-8388608-text"></path></svg><span>Commented</span></a></li>
+<li><a href="modules/cbor.html#Decoder"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8388608-path"></use><use href="#icon-8388608-text"></use></svg><span>Decoder</span></a></li>
+<li><a href="modules/cbor.html#Diagnose"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8388608-path"></use><use href="#icon-8388608-text"></use></svg><span>Diagnose</span></a></li>
+<li><a href="modules/cbor.html#Encoder"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8388608-path"></use><use href="#icon-8388608-text"></use></svg><span>Encoder</span></a></li>
+<li><a href="classes/cbor.Map.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-class)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-128-path"></rect><path d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z" fill="var(--color-text)" id="icon-128-text"></path></svg><span>Map</span></a></li>
+<li><a href="classes/cbor.SharedValueEncoder.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg><span>Shared<wbr/>Value<wbr/>Encoder</span></a></li>
+<li><a href="classes/cbor.Simple.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg><span>Simple</span></a></li>
+<li><a href="classes/cbor.Tagged.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg><span>Tagged</span></a></li>
+<li><a href="functions/cbor.comment.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-function)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-64-path"></rect><path d="M9.39 16V7.24H14.55V8.224H10.446V11.128H14.238V12.112H10.47V16H9.39Z" fill="var(--color-text)" id="icon-64-text"></path></svg><span>comment</span></a></li>
+<li><a href="functions/cbor.decode.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg><span>decode</span></a></li>
+<li><a href="functions/cbor.decodeAll.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg><span>decode<wbr/>All</span></a></li>
+<li><a href="functions/cbor.decodeAllSync.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg><span>decode<wbr/>All<wbr/>Sync</span></a></li>
+<li><a href="functions/cbor.decodeFirst.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg><span>decode<wbr/>First</span></a></li>
+<li><a href="functions/cbor.decodeFirstSync.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg><span>decode<wbr/>First<wbr/>Sync</span></a></li>
+<li><a href="functions/cbor.diagnose-1.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg><span>diagnose</span></a></li>
+<li><a href="functions/cbor.encode.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg><span>encode</span></a></li>
+<li><a href="functions/cbor.encodeAsync.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg><span>encode<wbr/>Async</span></a></li>
+<li><a href="functions/cbor.encodeCanonical.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg><span>encode<wbr/>Canonical</span></a></li>
+<li><a href="functions/cbor.encodeOne.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg><span>encode<wbr/>One</span></a></li>
+<li><a href="variables/cbor.leveldb.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-variable)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-32-path"></rect><path d="M11.106 16L8.85 7.24H9.966L11.454 13.192C11.558 13.608 11.646 13.996 11.718 14.356C11.79 14.708 11.842 14.976 11.874 15.16C11.906 14.976 11.954 14.708 12.018 14.356C12.09 13.996 12.178 13.608 12.282 13.192L13.758 7.24H14.85L12.582 16H11.106Z" fill="var(--color-text)" id="icon-32-text"></path></svg><span>leveldb</span></a></li>
+<li><a href="functions/cbor.reset.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg><span>reset</span></a></li></ul></div></details></li>
+<li>
+<details class="tsd-index-accordion" data-key="commented"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg><a href="modules/commented.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4-path"></use><use href="#icon-4-text"></use></svg><span>commented</span></a></summary>
+<div class="tsd-accordion-details">
+<ul class="tsd-nested-navigation">
+<li><a href="interfaces/commented.CommentOptions.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-interface)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-256-path"></rect><path d="M9.51 16V15.016H11.298V8.224H9.51V7.24H14.19V8.224H12.402V15.016H14.19V16H9.51Z" fill="var(--color-text)" id="icon-256-text"></path></svg><span>Comment<wbr/>Options</span></a></li>
+<li><a href="classes/commented.Commented.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg><span>Commented</span></a></li>
+<li><a href="types/commented.commentCallback.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-type-alias)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-4194304-path"></rect><path d="M11.31 16V8.224H8.91V7.24H14.79V8.224H12.39V16H11.31Z" fill="var(--color-text)" id="icon-4194304-text"></path></svg><span>comment<wbr/>Callback</span></a></li></ul></div></details></li>
+<li>
+<details class="tsd-index-accordion" data-key="decoder"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg><a href="modules/decoder.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4-path"></use><use href="#icon-4-text"></use></svg><span>decoder</span></a></summary>
+<div class="tsd-accordion-details">
+<ul class="tsd-nested-navigation">
+<li><a href="types/decoder.BufferLike.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg><span>Buffer<wbr/>Like</span></a></li>
+<li><a href="classes/decoder.Decoder.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg><span>Decoder</span></a></li>
+<li><a href="interfaces/decoder.DecoderOptions.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>Decoder<wbr/>Options</span></a></li>
+<li><a href="interfaces/decoder.ExtendedResults.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>Extended<wbr/>Results</span></a></li>
+<li><a href="types/decoder.decodeAllCallback.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg><span>decode<wbr/>All<wbr/>Callback</span></a></li>
+<li><a href="types/decoder.decodeCallback.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg><span>decode<wbr/>Callback</span></a></li></ul></div></details></li>
+<li>
+<details class="tsd-index-accordion" data-key="diagnose"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg><a href="modules/diagnose.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4-path"></use><use href="#icon-4-text"></use></svg><span>diagnose</span></a></summary>
+<div class="tsd-accordion-details">
+<ul class="tsd-nested-navigation">
+<li><a href="types/diagnose.BufferLike.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg><span>Buffer<wbr/>Like</span></a></li>
+<li><a href="classes/diagnose.Diagnose.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg><span>Diagnose</span></a></li>
+<li><a href="interfaces/diagnose.DiagnoseOptions.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>Diagnose<wbr/>Options</span></a></li>
+<li><a href="types/diagnose.diagnoseCallback.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg><span>diagnose<wbr/>Callback</span></a></li></ul></div></details></li>
+<li>
+<details class="tsd-index-accordion" data-key="encoder"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg><a href="modules/encoder.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4-path"></use><use href="#icon-4-text"></use></svg><span>encoder</span></a></summary>
+<div class="tsd-accordion-details">
+<ul class="tsd-nested-navigation">
+<li><a href="types/encoder.EncodeFunction.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg><span>Encode<wbr/>Function</span></a></li>
+<li><a href="classes/encoder.Encoder.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg><span>Encoder</span></a></li>
+<li><a href="interfaces/encoder.EncodingOptions.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>Encoding<wbr/>Options</span></a></li>
+<li><a href="interfaces/encoder.ObjectOptions.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>Object<wbr/>Options</span></a></li>
+<li><a href="types/encoder.SemanticMap.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg><span>Semantic<wbr/>Map</span></a></li></ul></div></details></li></ul></nav></div></div></div>
+<div class="tsd-generator">
+<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>
+<div class="overlay"></div></body></html>

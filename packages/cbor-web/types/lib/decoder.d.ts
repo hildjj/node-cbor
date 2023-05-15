@@ -1,5 +1,4 @@
 /// <reference types="node" />
-export = Decoder;
 /**
  * Decode a stream of CBOR bytes by transforming them into equivalent
  * JavaScript data.  Because of the limitations of Node object streams,
@@ -8,7 +7,11 @@ export = Decoder;
  *
  * @extends BinaryParseStream
  */
-declare class Decoder extends BinaryParseStream {
+export class Decoder extends BinaryParseStream {
+    /**
+     * Error when value was required.
+     */
+    static NOT_FOUND: symbol;
     /**
      * Check the given value for a symbol encoding a NULL or UNDEFINED value in
      * the CBOR stream.
@@ -71,12 +74,6 @@ declare class Decoder extends BinaryParseStream {
      */
     static decodeFirst(input: BufferLike, options?: DecoderOptions | decodeCallback | string, cb?: decodeCallback): Promise<ExtendedResults | any>;
     /**
-     * @callback decodeAllCallback
-     * @param {Error} error If one was generated.
-     * @param {Array<ExtendedResults>|Array<any>} value All of the decoded
-     *   values, wrapped in an Array.
-     */
-    /**
      * Decode all of the CBOR items in the input.  This will error if there are
      * more bytes left over at the end.
      *
@@ -89,7 +86,7 @@ declare class Decoder extends BinaryParseStream {
      * @throws {TypeError} No input specified.
      * @static
      */
-    static decodeAll(input: BufferLike, options?: string | DecoderOptions | ((error: Error, value: Array<ExtendedResults> | Array<any>) => any), cb?: (error: Error, value: Array<ExtendedResults> | Array<any>) => any): Promise<Array<ExtendedResults> | Array<any>>;
+    static decodeAll(input: BufferLike, options?: DecoderOptions | decodeAllCallback | string, cb?: decodeAllCallback): Promise<Array<ExtendedResults> | Array<any>>;
     /**
      * Create a parsing stream.
      *
@@ -99,7 +96,7 @@ declare class Decoder extends BinaryParseStream {
     running: boolean;
     max_depth: number;
     tags: {
-        [x: string]: Tagged.TagFunction;
+        [x: string]: import("./tagged.js").TagFunction;
     };
     preferWeb: boolean;
     extendedResults: boolean;
@@ -117,60 +114,11 @@ declare class Decoder extends BinaryParseStream {
      */
     _onRead(data: any): void;
 }
-declare namespace Decoder {
-    export { NOT_FOUND, BufferLike, ExtendedResults, DecoderOptions, decodeCallback };
-}
-import BinaryParseStream = require("../vendor/binary-parse-stream");
-import Tagged = require("./tagged");
-import NoFilter = require("nofilter");
 /**
  * Things that can act as inputs, from which a NoFilter can be created.
  */
-type BufferLike = string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | stream.Readable;
-type DecoderOptions = {
-    /**
-     * The maximum depth to parse.
-     * Use -1 for "until you run out of memory".  Set this to a finite
-     * positive number for un-trusted inputs.  Most standard inputs won't nest
-     * more than 100 or so levels; I've tested into the millions before
-     * running out of memory.
-     */
-    max_depth?: number;
-    /**
-     * Mapping from tag number to function(v),
-     * where v is the decoded value that comes after the tag, and where the
-     * function returns the correctly-created value for that tag.
-     */
-    tags?: Tagged.TagMap;
-    /**
-     * If true, prefer Uint8Arrays to
-     * be generated instead of node Buffers.  This might turn on some more
-     * changes in the future, so forward-compatibility is not guaranteed yet.
-     */
-    preferWeb?: boolean;
-    /**
-     * The encoding of the input.
-     * Ignored if input is a Buffer.
-     */
-    encoding?: BufferEncoding;
-    /**
-     * Should an error be thrown when no
-     * data is in the input?
-     */
-    required?: boolean;
-    /**
-     * If true, emit extended
-     * results, which will be an object with shape {@link ExtendedResults }.
-     * The value will already have been null-checked.
-     */
-    extendedResults?: boolean;
-    /**
-     * If true, error is
-     * thrown if a map has duplicate keys.
-     */
-    preventDuplicateKeys?: boolean;
-};
-type ExtendedResults = {
+export type BufferLike = string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | import('stream').Readable;
+export type ExtendedResults = {
     /**
      * The value that was found.
      */
@@ -192,7 +140,50 @@ type ExtendedResults = {
      */
     unused?: Buffer;
 };
-type decodeCallback = (error?: Error, value?: any) => void;
-declare const NOT_FOUND: unique symbol;
-import { Buffer } from "buffer";
-import stream = require("stream");
+export type DecoderOptions = {
+    /**
+     * The maximum depth to parse. Use -1 for
+     * "until you run out of memory".  Set this to a finite positive number for
+     * un-trusted inputs.  Most standard inputs won't nest more than 100 or so
+     * levels; I've tested into the millions before running out of memory.
+     */
+    max_depth?: number;
+    /**
+     * Mapping from tag number to
+     * function(v), where v is the decoded value that comes after the tag, and
+     * where the function returns the correctly-created value for that tag.
+     */
+    tags?: import('./tagged.js').TagMap;
+    /**
+     * If true, prefer Uint8Arrays to be
+     * generated instead of node Buffers.  This might turn on some more changes
+     * in the future, so forward-compatibility is not guaranteed yet.
+     */
+    preferWeb?: boolean;
+    /**
+     * The encoding of the input.
+     * Ignored if input is a Buffer.
+     */
+    encoding?: BufferEncoding;
+    /**
+     * Should an error be thrown when no data
+     * is in the input?
+     */
+    required?: boolean;
+    /**
+     * If true, emit extended results,
+     * which will be an object with shape {@link ExtendedResults }. The value
+     * will already have been null-checked.
+     */
+    extendedResults?: boolean;
+    /**
+     * If true, error is thrown
+     * if a map has duplicate keys.
+     */
+    preventDuplicateKeys?: boolean;
+};
+export type decodeCallback = (error?: Error, value?: any) => void;
+export type decodeAllCallback = (error: Error, value: Array<ExtendedResults> | Array<any>) => any;
+import { BinaryParseStream } from '../vendor/binary-parse-stream/index.js';
+import { NoFilter } from 'nofilter';
+import { Buffer } from 'buffer';

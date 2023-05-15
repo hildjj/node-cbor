@@ -1,20 +1,20 @@
 #!/usr/bin/env node
-'use strict'
 
-const cbor = require('cbor')
-const utils = require('../lib/utils')
-const pkg = require('../package.json')
-const {program} = require('commander')
-const path = require('path')
-const stream = require('stream')
-const Module = require('module')
-const {Buffer} = require('buffer') // Not the mangled version
-const bdec = require('cbor-bigdecimal')
-bdec(cbor)
+import * as cbor from 'cbor'
+import * as utils from '../lib/utils.js'
+import {Buffer} from 'buffer' // Not the mangled version
+import {Command} from 'commander'
+import {Module} from 'module'
+import {addBigDecimal} from 'cbor-bigdecimal'
+import path from 'path'
+import stream from 'stream'
 
-program
+addBigDecimal(cbor)
+
+const pkg = await utils.pkg()
+const program = new Command()
   .version(pkg.version)
-  .usage('[options] <file ...>')
+  .argument('[file ...]')
   .option('-x, --hex', 'Hex string output')
   .option('-c, --canonical', 'Canonical output')
   .parse(process.argv)
@@ -43,7 +43,7 @@ class ModuleStream extends stream.Transform {
   }
 
   _flush() {
-    const m = new Module(this.filename, module)
+    const m = new Module(this.filename)
     m.filename = this.filename
     m.paths = Module._nodeModulePaths(path.dirname(this.filename))
     m._compile(Buffer.concat(this.bufs).toString('utf8'), this.filename)
@@ -68,4 +68,7 @@ utils.streamFiles(argv, f => {
   }
   o.pipe(process.stdout)
   return m
-}).catch(utils.printError)
+}).catch(e => {
+  utils.printError(e)
+  process.exit(1)
+})

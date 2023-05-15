@@ -3,6 +3,7 @@
   "private": true,
   "main": "./packages/cbor/lib/cbor.js",
   "version": "8.0.0",
+  "type": "module",
   "author": {
     "name": "Joe Hildebrand",
     "email": "joe-github@cursive.net"
@@ -11,23 +12,24 @@
     "./packages/*"
   ],
   "scripts": {
-    "clean": "rimraf node_modules coverage .nyc_output packages/*/node_modules packages/*/coverage packages/*/.nyc_output",
-    "docs": "jsdoc -c .jsdoc.conf",
+    "clean": "rimraf docs node_modules coverage .nyc_output packages/*/node_modules packages/*/coverage packages/*/.nyc_output packages/*/.parcel-cache pacakges/*/dist",
+    "docs": "pnpm run -C packages/cbor docs",
     "lint": "eslint . --ext cjs,mjs,js,md",
     "test": "ava packages/*/test/*.ava.js",
     "test:versions": "nve --continue --arch x64 --parallel 20,18,16,14 npm test",
     "test:bigendian": "docker run --rm -it -v ${PWD}:/root/cbor -w /root/cbor s390x/node npm test",
-    "test:spot-check": "ava test/*.ava.js && CBOR_PACKAGE=${INIT_CWD}/packages/cbor-web/dist/cbor.js npm run test",
+    "test:spot-check": "ava test/*.ava.cjs && CBOR_PACKAGE=${INIT_CWD}/packages/cbor-web/dist/cbor.cjs npm run test",
     "test:web": "node packages/puppeteer-demo/index.js",
     "test:all": "npm run test:versions && npm run test:spot-check && npm run test:bigendian && npm run test:web",
     "build": "pnpm -r build",
     "coverage": "nyc -r lcov npm test",
     "coverage:all": "nyc -r lcov npm run test:all",
     "precopy": "rimraf docs/example/*",
-    "copy": "pnpm -r copy"
+    "copy": "pnpm -r copy",
+    "types": "pnpm -r types"
   },
   "dependencies": {
-    "nofilter": "^3.1.0"
+    "nofilter": "^4.0.0"
   },
   "devDependencies": {
     "@cto.af/eslint-config": "^1.1.2",
@@ -37,17 +39,16 @@
     "docdash": "2.0.1",
     "eslint": "^8.40.0",
     "eslint-plugin-ava": "^14.0.0",
-    "eslint-plugin-jsdoc": "^44.2.3",
+    "eslint-plugin-jsdoc": "^44.2.4",
     "eslint-plugin-markdown": "^3.0.0",
     "eslint-plugin-node": "^11.1.0",
     "jsdoc": "^4.0.2",
     "lerna": "^6.6.2",
     "light-server": "^2.9.1",
     "minami": "*",
-    "nve": "^15.5.0",
+    "nve": "^16.0.0",
     "nyc": "^15.1.0",
     "rimraf": "^5.0.0",
-    "typedoc": "0.24.7",
     "typescript": "^5.0.4"
   },
   "license": "MIT",

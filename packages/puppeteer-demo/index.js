@@ -1,14 +1,16 @@
 /* eslint-disable no-console */
-'use strict'
+import {fileURLToPath, pathToFileURL} from 'url'
+import assert from 'assert'
+import fs from 'fs'
+import path from 'path'
+import puppeteer from 'puppeteer'
 
-const puppeteer = require('puppeteer')
-const path = require('path')
-const assert = require('assert')
-const fs = require('fs')
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
-const TOP = `file://${path.resolve(
+const TOP = pathToFileURL(path.resolve(
   __dirname, '..', '..', 'docs', 'example', 'index.html'
-)}`
+))
 
 let executablePath = process.env.PUPPETEER_EXECUTABLE_PATH
 if (!executablePath && (process.platform === 'darwin')) {

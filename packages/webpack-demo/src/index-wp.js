@@ -1,14 +1,11 @@
-/* eslint-disable no-undef */
-'use strict'
-const cbor = require('cbor-web')
-const {inspect} = require('node-inspect-extracted')
-const {Buffer} = require('buffer')
-const bdec = require('cbor-bigdecimal')
+import './style.css'
+import * as cbor from 'cbor'
+import {Buffer} from 'buffer'
+import {addBigDecimal} from 'cbor-bigdecimal'
+import util from 'node-inspect-extracted'
 
-// eslint-disable-next-line no-unused-vars
-const style = require('./style.css')
+addBigDecimal(cbor)
 
-bdec(cbor)
 const ofmt = document.getElementById('output-fmt')
 const otxt = document.getElementById('output-text')
 const itxt = document.getElementById('input-text')
@@ -59,7 +56,7 @@ function output(buf, typ) {
     case 'js':
       copy.disabled = true
       cbor.decodeFirst(buf).then(o => {
-        otxt.value = inspect(o, {
+        otxt.value = util.inspect(o, {
           depth: Infinity,
           compact: 1,
           maxArrayLength: Infinity,

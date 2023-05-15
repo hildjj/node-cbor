@@ -1,13 +1,10 @@
-'use strict'
+import * as cases from './cases.js'
+import {DeHexStream} from './streams.js'
+import pEvent from 'p-event'
+import test from 'ava'
+import util from 'util'
 
-const cbor = require(process.env.CBOR_PACKAGE || '../')
-const test = require('ava')
-const pEvent = require('p-event')
-const util = require('util')
-const cases = require('./cases')
-const streams = require('./streams')
-// Use mangled version
-const NoFilter = new cbor.Commented().all.constructor
+const {cbor, NoFilter} = cases.getMangled()
 const pcomment = util.promisify(cbor.comment)
 
 function testAll(t, list) {
@@ -65,7 +62,7 @@ test('stream', async t => {
   parser.pipe(bs)
   parser.on('error', er => t.fail(`Failed: ${er}`))
 
-  const h = new streams.DeHexStream('6161')
+  const h = new DeHexStream('6161')
   h.pipe(parser)
 
   await pEvent(parser, 'end')

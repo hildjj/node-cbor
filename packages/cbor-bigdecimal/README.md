@@ -1,6 +1,6 @@
 # cbor-bignumber
 
-This package adds suppot for BigDecimal and BigFloats to the [cbor](../cbor)
+This package adds support for BigDecimal and BigFloats to the [cbor](../cbor)
 package, relying on [bignumber.js](https://github.com/MikeMcl/bignumber.js).
 
 ## Installation
@@ -14,9 +14,10 @@ npm install cbor cbor-bignumber
 Before trying to encode or decode:
 
 ```js
-const cbor = require('cbor')
-const bdec = require('cbor-bigdecimal')
-bdec(cbor)
+import * as cbor from 'cbor'
+import {addBigDecimal} from 'cbor-bigdecimal'
+
+addBigDecimal(cbor)
 ```
 
 If you want to remove the added encoders and decoders:

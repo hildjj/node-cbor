@@ -8,10 +8,14 @@ This project now only supports versions of Node that the Node team is
 [currently supporting](https://github.com/nodejs/Release#release-schedule).
 Ava's [support
 statement](https://github.com/avajs/ava/blob/main/docs/support-statement.md)
-is what we will be using as well.  Currently, that means Node `10`+ is
+is what we will be using as well.  Currently, that means Node `16`+ is
 required.  If you need to support an older version of Node (back to version
-6), use cbor version 5.2.x, which will get nothing but security updates from
-here on out.
+6), use cbor version 5.2.x.  If you need commonjs support, use cbor v9.0.x.
+Neither of these versions will get anything but high-severity security updates
+from here on out.
+
+However note: cbor-web may be a valid option if you want the latest code
+and commonjs support.
 
 ## Installation:
 
@@ -33,8 +37,8 @@ For a command-line interface, see [cbor-cli](../cbor-cli).
 
 Example:
 ```js
-const cbor = require('cbor')
-const assert = require('assert')
+import * as cbor from 'cbor'
+import assert from 'assert'
 
 let encoded = cbor.encode(true) // Returns <Buffer f5>
 cbor.decodeFirst(encoded, (error, obj) => {
@@ -52,8 +56,8 @@ encoded = cbor.encode(m) // <Buffer a1 01 02>
 Allows streaming as well:
 
 ```js
-const cbor = require('cbor')
-const fs = require('fs')
+import * as cbor from 'cbor'
+import fs from 'fs'
 
 const d = new cbor.Decoder()
 d.on('data', obj => {
@@ -138,6 +142,8 @@ Decoding supports the above types, including the following CBOR tag numbers:
 | 21  | Tagged, with toJSON |
 | 22  | Tagged, with toJSON |
 | 23  | Tagged, with toJSON |
+| 28  | Original object, with SharedValueEncoder |
+| 29  | Same original object, with SharedValueEncoder |
 | 32  | URL                 |
 | 33  | Tagged              |
 | 34  | Tagged              |

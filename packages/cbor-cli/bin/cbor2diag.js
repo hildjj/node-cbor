@@ -1,14 +1,14 @@
 #!/usr/bin/env node
-'use strict'
 
-const cbor = require('cbor')
-const utils = require('../lib/utils')
-const pkg = require('../package.json')
-const {program} = require('commander')
+import * as cbor from 'cbor'
+import * as utils from '../lib/utils.js'
+import {Command} from 'commander'
 
-program
+const pkg = await utils.pkg()
+
+const program = new Command()
   .version(pkg.version)
-  .usage('[options] <file ...>')
+  .argument('[file...]', 'Files to read, or "-" for stdin')
   .option('-x, --hex <STRING>', 'Hex string input')
   .parse(process.argv)
 
@@ -26,4 +26,7 @@ utils.streamFiles(argv, () => {
   const d = new cbor.Diagnose()
   d.pipe(process.stdout)
   return d
-}).catch(utils.printError)
+}).catch(e => {
+  utils.printError(e)
+  process.exit(1)
+})

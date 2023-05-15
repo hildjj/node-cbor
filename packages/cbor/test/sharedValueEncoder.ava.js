@@ -1,8 +1,8 @@
-'use strict'
+import {getMangled} from './cases.js'
+import test from 'ava'
 
-const test = require('ava')
-const SharedValueEncoder = require('../lib/sharedValueEncoder')
-const {Buffer} = require('buffer')
+const {cbor, Buffer} = getMangled()
+const {SharedValueEncoder} = cbor
 
 test('create SVE', async t => {
   const a = {}

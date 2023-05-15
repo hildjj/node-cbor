@@ -1,11 +1,9 @@
-'use strict'
-
-const stream = require('stream')
-const utils = require('./utils')
-const Decoder = require('./decoder')
-const NoFilter = require('nofilter')
-const {MT, NUMBYTES, SYMS} = require('./constants')
-const {Buffer} = require('buffer')
+import * as utils from './utils.js'
+import {MT, NUMBYTES, SYMS} from './constants.js'
+import {Buffer} from 'buffer'
+import {Decoder} from './decoder.js'
+import {NoFilter} from 'nofilter'
+import {Transform} from 'stream'
 
 function plural(c) {
   if (c > 1) {
@@ -63,10 +61,8 @@ function normalizeOptions(opts, cb) {
 
 /**
  * Generate the expanded format of RFC 8949, section 3.2.2.
- *
- * @extends stream.Transform
  */
-class Commented extends stream.Transform {
+export class Commented extends Transform {
   /**
    * Create a CBOR commenter.
    *
@@ -133,7 +129,7 @@ class Commented extends stream.Transform {
    *
    * @param {any} fresh Buffer to transcode.
    * @param {BufferEncoding} encoding Name of encoding.
-   * @param {stream.TransformCallback} cb Callback when done.
+   * @param {import('stream').TransformCallback} cb Callback when done.
    * @ignore
    */
   _transform(fresh, encoding, cb) {
@@ -143,7 +139,7 @@ class Commented extends stream.Transform {
   /**
    * Flushing.
    *
-   * @param {stream.TransformCallback} cb Callback when done.
+   * @param {import('stream').TransformCallback} cb Callback when done.
    * @ignore
    */
   _flush(cb) {
@@ -156,7 +152,7 @@ class Commented extends stream.Transform {
    * callback.  If callback not specified, a promise is returned.
    *
    * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
-   *   |DataView|stream.Readable} input Something to parse.
+   *   |DataView|import('stream').Readable} input Something to parse.
    * @param {CommentOptions|commentCallback|string|number} [options={}]
    *   Encoding, max_depth, or callback.
    * @param {commentCallback} [cb] If specified, called on completion.
@@ -379,5 +375,3 @@ class Commented extends stream.Transform {
     this.push('\n')
   }
 }
-
-module.exports = Commented

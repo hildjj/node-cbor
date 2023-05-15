@@ -3,6 +3,7 @@
   "version": "9.0.0",
   "description": "Encode and parse data in the Concise Binary Object Representation (CBOR) data format (RFC8949).",
   "main": "./lib/cbor.js",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "http://github.com/hildjj/node-cbor.git",
@@ -17,6 +18,7 @@
   },
   "scripts": {
     "clean": "rimraf coverage .nyc_output/ docs",
+    "docs": "typedoc",
     "lint": "eslint lib/*.js test/*.js",
     "coverage": "nyc -r lcov npm test",
     "test": "ava test/*.ava.js",
@@ -48,14 +50,15 @@
   ],
   "types": "./types/lib/cbor.d.ts",
   "dependencies": {
-    "nofilter": "^3.1.0"
+    "nofilter": "^4.0.0"
   },
   "devDependencies": {
     "@types/node": "^20",
     "bignumber.js": "^9.1.1",
     "garbage": "~0.0.0",
     "p-event": "^4.2.0",
-    "rimraf": "^5.0.0"
+    "rimraf": "^5.0.0",
+    "typedoc": "0.24.7"
   },
   "license": "MIT",
   "readmeFilename": "README.md",

@@ -1,14 +1,16 @@
 #!/usr/bin/env node
-'use strict'
+import * as cbor from 'cbor'
+import * as utils from '../lib/utils.js'
+import {Command} from 'commander'
+import {Parser} from 'json-text-sequence'
+import {addBigDecimal} from 'cbor-bigdecimal'
 
-const cbor = require('cbor')
-const utils = require('../lib/utils')
-const pkg = require('../package.json')
-const {program} = require('commander')
+addBigDecimal(cbor)
 
-program
+const pkg = await utils.pkg()
+const program = new Command()
   .version(pkg.version)
-  .usage('[options] <file ...>')
+  .argument('[file...]')
   .option('-x, --hex', 'Hex string output')
   .option('-c, --canonical', 'Canonical output')
   .parse(process.argv)
@@ -20,7 +22,6 @@ if (argv.length === 0) {
 }
 
 utils.streamFiles(argv, () => {
-  const Parser = require('json-text-sequence').parser
   const p = new Parser()
   const d = new cbor.Encoder({canonical: opts.canonical})
   p.pipe(d)
@@ -40,4 +41,7 @@ utils.streamFiles(argv, () => {
   }
   o.pipe(process.stdout)
   return p
-}).catch(utils.printError)
+}).catch(e => {
+  utils.printError(e)
+  process.exit(1)
+})

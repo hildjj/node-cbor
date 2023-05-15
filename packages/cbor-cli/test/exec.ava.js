@@ -1,11 +1,14 @@
-'use strict'
+import * as utils from '../lib/utils.js'
+import {Buffer} from 'buffer' // Not the mangled version
+import {fileURLToPath} from 'url'
+import path from 'path'
+import process from 'process'
+import {spawn} from 'child_process'
+import test from 'ava'
 
-const test = require('ava')
-const {spawn} = require('child_process')
-const path = require('path')
-const process = require('process')
-const pkg = require('../package.json')
-const {Buffer} = require('buffer') // Not the mangled version
+const pkg = await utils.pkg()
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 function exec(bin, opts = {}) {
   opts = {
@@ -15,7 +18,7 @@ function exec(bin, opts = {}) {
     ...opts,
   }
   return new Promise((resolve, reject) => {
-    bin = path.join(__dirname, '..', 'bin', `${bin}.js`)
+    bin = path.resolve(__dirname, '..', 'bin', `${bin}.js`)
     const env = {
       ...process.env,
       ...opts.env,
@@ -182,7 +185,7 @@ test('cbor', async t => {
       NODE_REPL_HISTORY: '',
     },
   })
-  t.regex(buf, / +a: 1\n/)
+  t.regex(buf, / +a: 1 /)
   buf = await exec(t.title, {
     stdin: 'comment("01")',
     env: {
@@ -246,12 +249,12 @@ test('js2cbor', async t => {
   t.is(buf, 'a16161f5\n')
   const fixtureFiles = [
     {
-      name: 'object.js',
+      name: 'object.cjs',
       result: 'a263666f6fc1fb41d808c21e2a5e35636261724e3031363132393038363634363632',
     },
     {
-      name: 'function.js',
-      result: 'a363666f6fc1fb41d808c21e2a5e35636261724e30313631323930383636343636326466696c65826866697874757265736b66756e6374696f6e2e6a73',
+      name: 'function.cjs',
+      result: 'a363666f6fc1fb41d808c21e2a5e35636261724e30313631323930383636343636326466696c65826866697874757265736c66756e6374696f6e2e636a73',
     },
   ]
   const fixtures = path.resolve(__dirname, 'fixtures')

@@ -1,8 +1,7 @@
-'use strict'
+import {getMangled} from './cases.js'
+import test from 'ava'
 
-const test = require('ava')
-const cbor = require(process.env.CBOR_PACKAGE || '../')
-const Buffer = cbor.encode(0).constructor
+const {cbor, Buffer} = getMangled()
 
 test('create', t => {
   const tag = new cbor.Tagged(1, 'one')

@@ -1,16 +1,20 @@
 #!/usr/bin/env node
 
-'use strict'
-const child_process = require('child_process')
-const fs = require('fs')
-const path = require('path')
-const util = require('util')
-const cbor = require('cbor')
-const bdec = require('cbor-bigdecimal')
-const commander = require('commander')
-const pkg = require('../package.json')
+import * as cbor from 'cbor'
+import {Command, InvalidOptionArgumentError} from 'commander'
+import {NoFilter} from 'nofilter'
+import {addBigDecimal} from 'cbor-bigdecimal'
+import child_process from 'child_process'
+import {createRequire} from 'node:module'
+import fs from 'fs'
+import path from 'path'
+import {pkg} from '../lib/utils.js'
+import repl from 'repl'
+import util from 'util'
 
-bdec(cbor)
+addBigDecimal(cbor)
+
+const require = createRequire(import.meta.url)
 const HEX = /^\s*(?:['"`]|0x)(?<hex>[0-9a-f]+)\s*$/
 const OUTPUT_TYPES = {
   comment: 'comment',
@@ -25,15 +29,16 @@ const OUTPUT_TYPES = {
 function outputType(val) {
   const norm = OUTPUT_TYPES[val]
   if (!norm) {
-    throw new commander.InvalidOptionArgumentError(
+    throw new InvalidOptionArgumentError(
       `Not one of: ${Object.keys(OUTPUT_TYPES).join(', ')}`
     )
   }
   return norm
 }
 
-const opts = commander.program
-  .version(pkg.version)
+const pk = await pkg()
+const opts = new Command()
+  .version(pk.version)
   .usage('[options]')
   .option('-c, --color', 'Force color output even if stdout is not a TTY')
   .option(
@@ -109,7 +114,6 @@ class PlainResults {
 }
 
 util.inspect.defaultOptions.compact = false
-const repl = require('repl')
 const cborRepl = repl.start({
   prompt: `${stylizeWithColor('cbor', 'string')}> `,
   ignoreUndefined: true,
@@ -121,7 +125,7 @@ for (const [k, v] of Object.entries(cbor)) {
   cborRepl.context[k] = v
 }
 cborRepl.context.cbor = cbor
-cborRepl.context.NoFilter = require('nofilter')
+cborRepl.context.NoFilter = NoFilter
 cborRepl.context.comment =
   function comment(input, options) {
     return cbor

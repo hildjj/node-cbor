@@ -1,19 +1,14 @@
-'use strict'
-
-const BinaryParseStream = require('../vendor/binary-parse-stream')
-const Tagged = require('./tagged')
-const Simple = require('./simple')
-const utils = require('./utils')
-const NoFilter = require('nofilter')
-const stream = require('stream')
-const constants = require('./constants')
-const {MT, NUMBYTES, SYMS, BI} = constants
-const {Buffer} = require('buffer')
+import * as utils from './utils.js'
+import {BI, MT, NUMBYTES, SYMS} from './constants.js'
+import {BinaryParseStream} from '../vendor/binary-parse-stream/index.js'
+import {Buffer} from 'buffer'
+import {NoFilter} from 'nofilter'
+import {Simple} from './simple.js'
+import {Tagged} from './tagged.js'
 
 const COUNT = Symbol('count')
 const MAJOR = Symbol('major type')
 const ERROR = Symbol('error')
-const NOT_FOUND = Symbol('not found')
 
 function parentArray(parent, typ, count) {
   const a = []
@@ -46,7 +41,7 @@ class UnexpectedDataError extends Error {
  * Things that can act as inputs, from which a NoFilter can be created.
  *
  * @typedef {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
- *   |DataView|stream.Readable} BufferLike
+ *   |DataView|import('stream').Readable} BufferLike
  */
 /**
  * @typedef ExtendedResults
@@ -61,32 +56,37 @@ class UnexpectedDataError extends Error {
  */
 /**
  * @typedef DecoderOptions
- * @property {number} [max_depth=-1] The maximum depth to parse.
- *   Use -1 for "until you run out of memory".  Set this to a finite
- *   positive number for un-trusted inputs.  Most standard inputs won't nest
- *   more than 100 or so levels; I've tested into the millions before
- *   running out of memory.
- * @property {Tagged.TagMap} [tags] Mapping from tag number to function(v),
- *   where v is the decoded value that comes after the tag, and where the
- *   function returns the correctly-created value for that tag.
- * @property {boolean} [preferWeb=false] If true, prefer Uint8Arrays to
- *   be generated instead of node Buffers.  This might turn on some more
- *   changes in the future, so forward-compatibility is not guaranteed yet.
+ * @property {number} [max_depth=-1] The maximum depth to parse. Use -1 for
+ *   "until you run out of memory".  Set this to a finite positive number for
+ *   un-trusted inputs.  Most standard inputs won't nest more than 100 or so
+ *   levels; I've tested into the millions before running out of memory.
+ * @property {import('./tagged.js').TagMap} [tags] Mapping from tag number to
+ *   function(v), where v is the decoded value that comes after the tag, and
+ *   where the function returns the correctly-created value for that tag.
+ * @property {boolean} [preferWeb=false] If true, prefer Uint8Arrays to be
+ *   generated instead of node Buffers.  This might turn on some more changes
+ *   in the future, so forward-compatibility is not guaranteed yet.
  * @property {BufferEncoding} [encoding='hex'] The encoding of the input.
  *   Ignored if input is a Buffer.
- * @property {boolean} [required=false] Should an error be thrown when no
- *   data is in the input?
- * @property {boolean} [extendedResults=false] If true, emit extended
- *   results, which will be an object with shape {@link ExtendedResults}.
- *   The value will already have been null-checked.
- * @property {boolean} [preventDuplicateKeys=false] If true, error is
- *   thrown if a map has duplicate keys.
+ * @property {boolean} [required=false] Should an error be thrown when no data
+ *   is in the input?
+ * @property {boolean} [extendedResults=false] If true, emit extended results,
+ *   which will be an object with shape {@link ExtendedResults}. The value
+ *   will already have been null-checked.
+ * @property {boolean} [preventDuplicateKeys=false] If true, error is thrown
+ *   if a map has duplicate keys.
  */
 /**
  * @callback decodeCallback
  * @param {Error} [error] If one was generated.
  * @param {any} [value] The decoded value.
  * @returns {void}
+ */
+/**
+ * @callback decodeAllCallback
+ * @param {Error} error If one was generated.
+ * @param {Array<ExtendedResults>|Array<any>} value All of the decoded
+ *   values, wrapped in an Array.
  */
 /**
  * @param {DecoderOptions|decodeCallback|string} opts Options,
@@ -117,7 +117,12 @@ function normalizeOptions(opts, cb) {
  *
  * @extends BinaryParseStream
  */
-class Decoder extends BinaryParseStream {
+export class Decoder extends BinaryParseStream {
+  /**
+   * Error when value was required.
+   */
+  static NOT_FOUND = Symbol('not found')
+
   /**
    * Create a parsing stream.
    *
@@ -174,7 +179,7 @@ class Decoder extends BinaryParseStream {
       // Leaving this in for now as belt-and-suspenders, but I'm pretty sure
       // it can't happen.
       /* istanbul ignore next */
-      case NOT_FOUND:
+      case Decoder.NOT_FOUND:
         /* istanbul ignore next */
         throw new Error('Value not found')
       default:
@@ -229,7 +234,7 @@ class Decoder extends BinaryParseStream {
       val.unused = s.read()
     } else {
       val = Decoder.nullcheck(state.value)
-      if (s.length > 0) {
+      if (s.readableLength > 0) {
         const nextByte = s.read(1)
 
         s.unshift(nextByte)
@@ -262,7 +267,7 @@ class Decoder extends BinaryParseStream {
     const s = utils.guessEncoding(input, encoding)
     const res = []
 
-    while (s.length > 0) {
+    while (s.readableLength > 0) {
       const parser = c._parse()
       let state = parser.next()
 
@@ -306,7 +311,7 @@ class Decoder extends BinaryParseStream {
     const {encoding = 'hex', required = false, ...opts} = options
 
     const c = new Decoder(opts)
-    let v = /** @type {any} */ (NOT_FOUND)
+    let v = /** @type {any} */ (Decoder.NOT_FOUND)
     const s = utils.guessEncoding(input, encoding)
     const p = new Promise((resolve, reject) => {
       c.on('data', val => {
@@ -318,7 +323,7 @@ class Decoder extends BinaryParseStream {
           v.unused = c.bs.slice()
           return resolve(v)
         }
-        if (v !== NOT_FOUND) {
+        if (v !== Decoder.NOT_FOUND) {
           // Typescript work-around
           // eslint-disable-next-line dot-notation
           er['value'] = v
@@ -329,7 +334,7 @@ class Decoder extends BinaryParseStream {
       })
       c.once('end', () => {
         switch (v) {
-          case NOT_FOUND:
+          case Decoder.NOT_FOUND:
             if (required) {
               return reject(new Error('No CBOR found'))
             }
@@ -351,13 +356,6 @@ class Decoder extends BinaryParseStream {
     s.pipe(c)
     return p
   }
-
-  /**
-   * @callback decodeAllCallback
-   * @param {Error} error If one was generated.
-   * @param {Array<ExtendedResults>|Array<any>} value All of the decoded
-   *   values, wrapped in an Array.
-   */
 
   /**
    * Decode all of the CBOR items in the input.  This will error if there are
@@ -482,7 +480,9 @@ class Decoder extends BinaryParseStream {
           if (val === Number.MAX_SAFE_INTEGER) {
             val = BI.NEG_MAX
           } else {
-            val = (typeof val === 'bigint') ? BI.MINUS_ONE - val : -1 - val
+            val = (typeof val === 'bigint') ?
+              BI.MINUS_ONE - val :
+              -1 - /** @type {number} */ (val)
           }
           break
         case MT.BYTE_STRING:
@@ -503,7 +503,7 @@ class Decoder extends BinaryParseStream {
               continue
             default:
               this.emit('start-string', mt, val, parent_major, parent_length)
-              val = yield val
+              val = yield /** @type {number} */ (val)
               if (mt === MT.UTF8_STRING) {
                 val = utils.utf8(val)
               } else if (this.preferWeb) {
@@ -524,7 +524,11 @@ class Decoder extends BinaryParseStream {
               continue
             default:
               this.emit('start', mt, val, parent_major, parent_length)
-              parent = parentArray(parent, mt, val * (mt - 3))
+              parent = parentArray(
+                parent,
+                mt,
+                /** @type {number} */ (val) * (mt - 3)
+              )
               depth++
               continue
           }
@@ -549,7 +553,7 @@ class Decoder extends BinaryParseStream {
               hasParent && (parent[COUNT] < 0)
             )
           } else {
-            val = utils.parseCBORfloat(val)
+            val = utils.parseCBORfloat(/** @type {Buffer} */ (val))
           }
       }
       this.emit('value', val, parent_major, parent_length, ai)
@@ -665,6 +669,3 @@ class Decoder extends BinaryParseStream {
     }
   }
 }
-
-Decoder.NOT_FOUND = NOT_FOUND
-module.exports = Decoder

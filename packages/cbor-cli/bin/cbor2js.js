@@ -1,18 +1,18 @@
 #!/usr/bin/env node
-'use strict'
 
-const cbor = require('cbor')
-const utils = require('../lib/utils')
-const pkg = require('../package.json')
-const util = require('util')
-const bdec = require('cbor-bigdecimal')
-bdec(cbor)
+import * as cbor from 'cbor'
+import * as utils from '../lib/utils.js'
+import {Command} from 'commander'
+import {addBigDecimal} from 'cbor-bigdecimal'
+import util from 'util'
 
-const {program} = require('commander')
+addBigDecimal(cbor)
 
-program
-  .version(pkg.version)
-  .usage('[options] <file ...>')
+const pkg = await utils.pkg()
+
+const program = new Command()
+  .version(pkg.version, 'Files to process, or "-" for stdin')
+  .argument('[file...]')
   .option('-x, --hex <STRING>', 'Hex string input')
   .option('-e, --exports', 'add module.exports= to the beginning')
   .option('-H, --hidden', 'Include non-enumerable symbols and properties')
@@ -45,4 +45,7 @@ utils.streamFiles(argv, () => {
     }))
   })
   return d
-}).catch(utils.printError)
+}).catch(e => {
+  utils.printError(e)
+  process.exit(1)
+})

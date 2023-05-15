@@ -1,8 +1,7 @@
-'use strict'
+import {getMangled} from './cases.js'
+import test from 'ava'
 
-const cbor_src = process.env.CBOR_PACKAGE || '../'
-const cbor = require(cbor_src)
-const test = require('ava')
+const {cbor} = getMangled()
 
 test('reset', t => {
   cbor.Encoder.SEMANTIC_TYPES.UNKNOWN_TYPE = () => null

@@ -3,6 +3,7 @@
   "version": "9.0.0",
   "description": "A demo for cbor-web with no bundler",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "node build.js",
     "precopy": "npm run build",

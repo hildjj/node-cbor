@@ -1,17 +1,14 @@
 /// <reference types="node" />
-export = Commented;
 /**
  * Generate the expanded format of RFC 8949, section 3.2.2.
- *
- * @extends stream.Transform
  */
-declare class Commented extends stream.Transform {
+export class Commented extends Transform {
     /**
      * Comment on an input Buffer or string, creating a string passed to the
      * callback.  If callback not specified, a promise is returned.
      *
      * @param {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
-     *   |DataView|stream.Readable} input Something to parse.
+     *   |DataView|import('stream').Readable} input Something to parse.
      * @param {CommentOptions|commentCallback|string|number} [options={}]
      *   Encoding, max_depth, or callback.
      * @param {commentCallback} [cb] If specified, called on completion.
@@ -19,7 +16,7 @@ declare class Commented extends stream.Transform {
      * @throws {Error} Input required.
      * @static
      */
-    static comment(input: string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | stream.Readable, options?: CommentOptions | commentCallback | string | number, cb?: commentCallback): Promise<any>;
+    static comment(input: string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | import('stream').Readable, options?: CommentOptions | commentCallback | string | number, cb?: commentCallback): Promise<any>;
     /**
      * Create a CBOR commenter.
      *
@@ -68,14 +65,7 @@ declare class Commented extends stream.Transform {
      */
     _on_data(): void;
 }
-declare namespace Commented {
-    export { CommentOptions, commentCallback };
-}
-import stream = require("stream");
-import NoFilter = require("nofilter");
-import Decoder = require("./decoder");
-import { Buffer } from "buffer";
-type CommentOptions = {
+export type CommentOptions = {
     /**
      * How many times to indent
      * the dashes.
@@ -108,4 +98,8 @@ type CommentOptions = {
      */
     encoding?: BufferEncoding;
 };
-type commentCallback = (error?: Error, commented?: string) => void;
+export type commentCallback = (error?: Error, commented?: string) => void;
+import { Transform } from 'stream';
+import { NoFilter } from 'nofilter';
+import { Decoder } from './decoder.js';
+import { Buffer } from 'buffer';

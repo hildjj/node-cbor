@@ -1,8 +1,7 @@
-'use strict'
+import * as cases from './cases.js'
+import test from 'ava'
 
-const cbor = require(process.env.CBOR_PACKAGE || '../')
-const test = require('ava')
-const cases = require('./cases')
+const {cbor} = cases.getMangled()
 
 test('create', t => {
   const m = new cbor.Map()

@@ -1,32 +1,50 @@
-'use strict'
+import {BI, NUMBYTES, SHIFT32, SYMS} from './constants.js'
+import {Buffer} from 'buffer'
+import {NoFilter} from 'nofilter'
+import {Readable} from 'stream'
 
-const {Buffer} = require('buffer')
-const NoFilter = require('nofilter')
-const stream = require('stream')
-const constants = require('./constants')
-const {NUMBYTES, SHIFT32, BI, SYMS} = constants
 const MAX_SAFE_HIGH = 0x1fffff
+
+const td = new TextDecoder('utf8', {fatal: true, ignoreBOM: true})
 
 /**
  * Convert a UTF8-encoded Buffer to a JS string.  If possible, throw an error
  * on invalid UTF8.  Byte Order Marks are not looked at or stripped.
  *
+ * @param {Buffer} buf The buffer to convert.
+ * @returns {string} UTF8-decoded.
  * @private
  */
-const td = new TextDecoder('utf8', {fatal: true, ignoreBOM: true})
-exports.utf8 = buf => td.decode(buf)
-exports.utf8.checksUTF8 = true
+export function utf8(buf) {
+  return td.decode(buf)
+}
+utf8.checksUTF8 = true
 
+/**
+ * Type guard for readable stream.
+ *
+ * @param {any} s The potential stream.
+ * @returns {s is Readable} Can be used as a Readable.
+ * @private
+ */
 function isReadable(s) {
   // Is this a readable stream?  In the webpack version, instanceof isn't
   // working correctly.
-  if (s instanceof stream.Readable) {
+  if (s instanceof Readable) {
     return true
   }
   return ['read', 'on', 'pipe'].every(f => typeof s[f] === 'function')
 }
 
-exports.isBufferish = function isBufferish(b) {
+/**
+ * Type guard for buffer-like objects.
+ *
+ * @param {any} b The candidate object.
+ * @returns {b is Buffer|Uint16Array|Uint8ClampedArray|ArrayBuffer|DataView}
+ *   Safe to typecast b (boolean).
+ * @private
+ */
+export function isBufferish(b) {
   return b &&
     (typeof b === 'object') &&
     ((Buffer.isBuffer(b)) ||
@@ -36,7 +54,15 @@ exports.isBufferish = function isBufferish(b) {
       (b instanceof DataView))
 }
 
-exports.bufferishToBuffer = function bufferishToBuffer(b) {
+/**
+ * Convert object to a buffer.
+ *
+ * @param {Buffer|ArrayBuffer|ArrayBufferView} b Candidate object.
+ * @returns {Buffer|null} Object converted to Buffer, if possible.
+ *   Otherwise null.
+ * @private
+ */
+export function bufferishToBuffer(b) {
   if (Buffer.isBuffer(b)) {
     return b
   } else if (ArrayBuffer.isView(b)) {
@@ -47,7 +73,16 @@ exports.bufferishToBuffer = function bufferishToBuffer(b) {
   return null
 }
 
-exports.parseCBORint = function parseCBORint(ai, buf) {
+/**
+ * Parse a CBOR integer from a Buffer.
+ *
+ * @param {number} ai Additional Information.
+ * @param {Buffer} buf Buffer.
+ * @returns {number|bigint} Converted integer.
+ * @throws {Error} Invalid AI.
+ * @private
+ */
+export function parseCBORint(ai, buf) {
   switch (ai) {
     case NUMBYTES.ONE:
       return buf.readUInt8(0)
@@ -68,7 +103,15 @@ exports.parseCBORint = function parseCBORint(ai, buf) {
   }
 }
 
-exports.writeHalf = function writeHalf(buf, half) {
+/**
+ * Write a half-sized (2 byte) float to a buffer.
+ *
+ * @param {Buffer} buf Buffer.
+ * @param {number} half Number to encode.
+ * @returns {boolean} Success if true.
+ * @private
+ */
+export function writeHalf(buf, half) {
   // Assume 0, -0, NaN, Infinity, and -Infinity have already been caught
 
   // HACK: everyone settle in.  This isn't going to be pretty.
@@ -144,7 +187,14 @@ exports.writeHalf = function writeHalf(buf, half) {
   return true
 }
 
-exports.parseHalf = function parseHalf(buf) {
+/**
+ * Parse a half-sized (2 byte) float from a buffer.
+ *
+ * @param {Buffer} buf The buffer.
+ * @returns {number} Retrieved value.
+ * @private
+ */
+export function parseHalf(buf) {
   const sign = buf[0] & 0x80 ? -1 : 1
   const exp = (buf[0] & 0x7C) >> 2
   const mant = ((buf[0] & 0x03) << 8) | buf[1]
@@ -156,10 +206,19 @@ exports.parseHalf = function parseHalf(buf) {
   return sign * (2 ** (exp - 25)) * (1024 + mant)
 }
 
-exports.parseCBORfloat = function parseCBORfloat(buf) {
+/**
+ * Parse a CBOR float from a buffer, with the type determined by the buffer's
+ * length.
+ *
+ * @param {Buffer} buf The buffer.
+ * @returns {number} The decoded float.
+ * @throws {Error} Invalid buffer size, should be 2,4, or 8.
+ * @private
+ */
+export function parseCBORfloat(buf) {
   switch (buf.length) {
     case 2:
-      return exports.parseHalf(buf)
+      return parseHalf(buf)
     case 4:
       return buf.readFloatBE(0)
     case 8:
@@ -169,11 +228,26 @@ exports.parseCBORfloat = function parseCBORfloat(buf) {
   }
 }
 
-exports.hex = function hex(s) {
+/**
+ * Decode a hex-encoded string to a Buffer.  String may start with `0x`, which
+ * is ignored.
+ *
+ * @param {string} s String to decode.
+ * @returns {Buffer} The decoded value.
+ * @private
+ */
+export function hex(s) {
   return Buffer.from(s.replace(/^0x/, ''), 'hex')
 }
 
-exports.bin = function bin(s) {
+/**
+ * Decode a binary-encoded string to a Buffer.  Spaces will be ignored.
+ *
+ * @param {string} s String to decode.
+ * @returns {Buffer} The decoded value.
+ * @private
+ */
+export function bin(s) {
   s = s.replace(/\s/g, '')
   let start = 0
   let end = (s.length % 8) || 8
@@ -186,7 +260,16 @@ exports.bin = function bin(s) {
   return Buffer.from(chunks)
 }
 
-exports.arrayEqual = function arrayEqual(a, b) {
+/**
+ * Are the two arrays equal, by comparing each array element with `===`?
+ *
+ * @template T
+ * @param {Array<T>} [a] First array.
+ * @param {Array<T>} [b] Second array.
+ * @returns {boolean} Are they equal?
+ * @private
+ */
+export function arrayEqual(a, b) {
   if ((a == null) && (b == null)) {
     return true
   }
@@ -196,11 +279,33 @@ exports.arrayEqual = function arrayEqual(a, b) {
   return (a.length === b.length) && a.every((elem, i) => elem === b[i])
 }
 
-exports.bufferToBigInt = function bufferToBigInt(buf) {
+/**
+ * Convert a buffer to an unsigned bigint.  This is not efficient unless the
+ * buffer is length 8.
+ *
+ * @param {Buffer} buf Buffer.
+ * @returns {bigint} Decoded unsigned bigint.
+ * @private
+ */
+export function bufferToBigInt(buf) {
+  if (buf.length === 8) {
+    const dv = new DataView(buf.buffer, buf.byteOffset, buf.byteLength)
+    return dv.getBigUint64(0)
+  }
   return BigInt(`0x${buf.toString('hex')}`)
 }
 
-exports.cborValueToString = function cborValueToString(val, float_bytes = -1) {
+/**
+ * Convert the value to a string for diagnostics.
+ *
+ * @param {any} val The value to convert.
+ * @param {number} [float_bytes=-1] The number of bytes in the float, if
+ *   val is a floating point number.  -1 if val is not floating point.
+ *   If -Infinity, don't prepend hex with `h`.
+ * @returns {string} The string form of val.
+ * @private
+ */
+export function cborValueToString(val, float_bytes = -1) {
   switch (typeof val) {
     case 'symbol': {
       switch (val) {
@@ -211,20 +316,8 @@ exports.cborValueToString = function cborValueToString(val, float_bytes = -1) {
         case SYMS.BREAK:
           return 'BREAK'
       }
-      // Impossible in node 10
-      /* istanbul ignore if */
       if (val.description) {
         return val.description
-      }
-      // On node10, Symbol doesn't have description.  Parse it out of the
-      // toString value, which looks like `Symbol(foo)`.
-      const s = val.toString()
-      const m = s.match(/^Symbol\((?<name>.*)\)/)
-      /* istanbul ignore if */
-      if (m && m.groups.name) {
-        // Impossible in node 12+
-        /* istanbul ignore next */
-        return m.groups.name
       }
       return 'Symbol'
     }
@@ -238,10 +331,10 @@ exports.cborValueToString = function cborValueToString(val, float_bytes = -1) {
     }
     case 'object': {
       // A null should be caught above
-      const buf = exports.bufferishToBuffer(val)
+      const buf = bufferishToBuffer(val)
       if (buf) {
-        const hex = buf.toString('hex')
-        return (float_bytes === -Infinity) ? hex : `h'${hex}'`
+        const hx = buf.toString('hex')
+        return (float_bytes === -Infinity) ? hx : `h'${hx}'`
       }
       if (typeof val[Symbol.for('nodejs.util.inspect.custom')] === 'function') {
         return val[Symbol.for('nodejs.util.inspect.custom')]()
@@ -257,18 +350,30 @@ exports.cborValueToString = function cborValueToString(val, float_bytes = -1) {
   return String(val)
 }
 
-exports.guessEncoding = function guessEncoding(input, encoding) {
+/**
+ * Convert to a readable stream.
+ *
+ * @param {string|Buffer|ArrayBuffer|ArrayBufferView|Readable} input Source of
+ *   input.
+ * @param {BufferEncoding} [encoding] If the input is a string, how should it
+ *   be encoded?
+ * @returns {Readable} Input converted to Readable stream.
+ * @throws {TypeError} Unknown input type.
+ * @private
+ */
+export function guessEncoding(input, encoding) {
   if (typeof input === 'string') {
     return new NoFilter(input, (encoding == null) ? 'hex' : encoding)
-  }
-  const buf = exports.bufferishToBuffer(input)
-  if (buf) {
-    return new NoFilter(buf)
   }
   if (isReadable(input)) {
     return input
   }
-  throw new Error('Unknown input type')
+
+  const buf = bufferishToBuffer(input)
+  if (buf) {
+    return new NoFilter(buf)
+  }
+  throw new TypeError('Unknown input type')
 }
 
 const B64URL_SWAPS = {
@@ -283,8 +388,8 @@ const B64URL_SWAPS = {
  * @returns {string} Base64url string.
  * @private
  */
-exports.base64url = function base64url(buf) {
-  return exports.bufferishToBuffer(buf)
+export function base64url(buf) {
+  return bufferishToBuffer(buf)
     .toString('base64')
     .replace(/[=+/]/g, c => B64URL_SWAPS[c])
 }
@@ -295,11 +400,18 @@ exports.base64url = function base64url(buf) {
  * @returns {string} Base64 string.
  * @private
  */
-exports.base64 = function base64(buf) {
-  return exports.bufferishToBuffer(buf).toString('base64')
+export function base64(buf) {
+  return bufferishToBuffer(buf).toString('base64')
 }
 
-exports.isBigEndian = function isBigEndian() {
+/**
+ * Is the current system big-endian?  Tests, rather than using the node
+ * os.endianness() function, so that it will work in the browser.
+ *
+ * @returns {boolean} If BigEndian, true.
+ * @private
+ */
+export function isBigEndian() {
   const array = new Uint8Array(4)
   const view = new Uint32Array(array.buffer)
   return !((view[0] = 1) & array[0])

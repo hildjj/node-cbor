@@ -1,9 +1,11 @@
 /* eslint-disable no-console */
-'use strict'
+import bresolve from 'browser-resolve'
+import {fileURLToPath} from 'url'
+import fs from 'fs'
+import path from 'path'
 
-const fs = require('fs')
-const path = require('path')
-const bresolve = require('browser-resolve')
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const src = path.join(__dirname, 'src')
 const dist = path.join(__dirname, 'dist')

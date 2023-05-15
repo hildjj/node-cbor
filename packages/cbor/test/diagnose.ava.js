@@ -1,14 +1,10 @@
-'use strict'
+import * as cases from './cases.js'
+import pEvent from 'p-event'
+import test from 'ava'
+import util from 'util'
 
-const cbor = require(process.env.CBOR_PACKAGE || '../')
-const test = require('ava')
-const pEvent = require('p-event')
-const util = require('util')
-const cases = require('./cases')
+const {cbor, Buffer, NoFilter} = cases.getMangled()
 const pdiagnose = util.promisify(cbor.diagnose)
-// Use mangled versions
-const Buffer = cbor.encode(0).constructor
-const NoFilter = new cbor.Commented().all.constructor
 
 function testAll(t, list) {
   t.plan(list.length)

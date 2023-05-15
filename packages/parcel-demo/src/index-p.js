@@ -1,10 +1,10 @@
 import 'regenerator-runtime/runtime.js'
 import * as cbor from 'cbor'
 import {Buffer} from 'buffer'
-import bdec from 'cbor-bigdecimal'
+import {addBigDecimal} from 'cbor-bigdecimal'
 import {inspect} from 'node-inspect-extracted'
 
-bdec(cbor)
+addBigDecimal(cbor)
 
 const ofmt = document.getElementById('output-fmt')
 const otxt = document.getElementById('output-text')

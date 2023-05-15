@@ -1,10 +1,9 @@
-'use strict'
+import {Readable, Transform} from 'stream'
+import {getMangled} from './cases.js'
 
-const stream = require('stream')
-const cbor = require(process.env.CBOR_PACKAGE || '../')
-const Buffer = cbor.encode(0).constructor
+const {Buffer} = getMangled()
 
-exports.DeHexStream = class DeHexStream extends stream.Readable {
+export class DeHexStream extends Readable {
   constructor(hex) {
     super()
     hex = hex.replace(/^0x/, '')
@@ -15,7 +14,7 @@ exports.DeHexStream = class DeHexStream extends stream.Readable {
   }
 }
 
-exports.HexStream = class HexStream extends stream.Transform {
+export class HexStream extends Transform {
   constructor(options) {
     super(options)
   }

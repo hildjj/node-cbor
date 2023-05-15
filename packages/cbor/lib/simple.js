@@ -1,11 +1,9 @@
-'use strict'
-
-const {MT, SIMPLE, SYMS} = require('./constants')
+import {MT, SIMPLE, SYMS} from './constants.js'
 
 /**
  * A CBOR Simple Value that does not map onto a known constant.
  */
-class Simple {
+export class Simple {
   /**
    * Creates an instance of Simple.
    *
@@ -100,5 +98,3 @@ class Simple {
     }
   }
 }
-
-module.exports = Simple

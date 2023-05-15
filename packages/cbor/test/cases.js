@@ -1,50 +1,71 @@
-'use strict'
-
-const cbor = require(process.env.CBOR_PACKAGE || '../')
-const constants = require('../lib/constants')
-const utils = require('../lib/utils')
-const path = require('path')
+import * as constants from '../lib/constants.js'
+import * as utils from '../lib/utils.js'
 
 // Use mangled versions
+/**
+ * @type {import('../lib/cbor')}
+ */
+
+const cbor = process.env.CBOR_PACKAGE ?
+  // eslint-disable-next-line node/no-unsupported-features/es-syntax
+  (await import(process.env.CBOR_PACKAGE)).default :
+  // eslint-disable-next-line node/no-unsupported-features/es-syntax
+  await import('../lib/cbor.js')
+
+/**
+ * @type {Buffer}
+ */
 const Buffer = cbor.encode(0).constructor
+
+/**
+ * @type {import('nofilter').NoFilter}
+ */
 const NoFilter = new cbor.Commented().all.constructor
 
-function lbe(little, big) {
+/**
+ * Return one or the other of little or big, depending on endianness of
+ * current system.
+ *
+ * @template T
+ * @param {T} little Little-endian version.
+ * @param {T} big Big-endian version.
+ * @returns {T} Appropriate version for system.
+ */
+export function lbe(little, big) {
   return utils.isBigEndian() ? big : little
 }
-exports.lbe = lbe
 
-async function requireWithFailedDependency(source, dependency, fn) {
-  const src = require.resolve(source)
-  const dep = require.resolve(dependency)
-  const old_src = require.cache[src]
-  const old_dep = require.cache[dep]
-  require.cache[dep] = {
-    loaded: true,
-    get exports() {
-      // See @node/lib/internal/modules/cjs/loader.js#tryPackage()
-      const err = new Error(
-        `Cannot find module '${dep}'. ` +
-        'Please verify that the package.json has a valid "main" entry'
-      )
-      err.code = 'MODULE_NOT_FOUND'
-      err.path = path.resolve(dependency, 'package.json')
-      err.requestPath = __filename
-      throw err
-    },
-  }
-  delete require.cache[src]
+//
+// export async function requireWithFailedDependency(source, dependency, fn) {
+//   const src = require.resolve(source)
+//   const dep = require.resolve(dependency)
+//   const old_src = require.cache[src]
+//   const old_dep = require.cache[dep]
+//   require.cache[dep] = {
+//     loaded: true,
+//     get exports() {
+//       // See @node/lib/internal/modules/cjs/loader.js#tryPackage()
+//       const err = new Error(
+//         `Cannot find module '${dep}'. ` +
+//         'Please verify that the package.json has a valid "main" entry'
+//       )
+//       err.code = 'MODULE_NOT_FOUND'
+//       err.path = path.resolve(dependency, 'package.json')
+//       err.requestPath = __filename
+//       throw err
+//     },
+//   }
+//   delete require.cache[src]
 
-  await fn(require(source))
+//   await fn(require(source))
 
-  // eslint-disable-next-line require-atomic-updates
-  require.cache[src] = old_src
-  // eslint-disable-next-line require-atomic-updates
-  require.cache[dep] = old_dep
-}
-exports.requireWithFailedDependency = requireWithFailedDependency
+//   // eslint-disable-next-line require-atomic-updates
+//   require.cache[src] = old_src
+//   // eslint-disable-next-line require-atomic-updates
+//   require.cache[dep] = old_dep
+// }
 
-class TempClass {
+export class TempClass {
   constructor(val) {
     // Render as the string tempClass with the tag 0xffff
     this.value = val || 'tempClass'
@@ -58,10 +79,9 @@ class TempClass {
     return gen._pushTag(0xfffe) && gen.pushAny(obj.value)
   }
 }
-exports.TempClass = TempClass
 
 // [Decoded, Diagnostic, Commented]
-exports.good = [
+export const good = [
   [0, '0', `
   00                -- 0
 0x00`],
@@ -682,7 +702,7 @@ exports.good = [
 
 ]
 
-exports.encodeGood = [
+export const encodeGood = [
   [constants.SYMS.NULL, 'null', `
   f6                -- null
 0xf6`],
@@ -710,7 +730,7 @@ exports.encodeGood = [
 0xd9ffff63666f6f`],
 ]
 
-exports.decodeGood = [
+export const decodeGood = [
   [1.5, '1.5_1', `
   f9                -- Float, next 2 bytes
     3e00            -- 1.5
@@ -938,7 +958,7 @@ exports.decodeGood = [
 0xd8405f44aabbccdd43eeff99ff`],
 ]
 
-exports.collapseBigIntegers = [
+export const collapseBigIntegers = [
   [0n, undefined, '0x00'],
   [1n, undefined, '0x01'],
   [-1n, undefined, '0x20'],
@@ -954,7 +974,7 @@ exports.collapseBigIntegers = [
   [-0x10000000000000000n, undefined, '0x3bffffffffffffffff'],
 ]
 
-exports.decodeBad = [
+export const decodeBad = [
   '0x18', // Missing the next byte for AI
   '0x1c', // Invalid AI
   '0x1d', // Invalid AI
@@ -987,13 +1007,21 @@ exports.decodeBad = [
   '0xfe', // Reserved AI
 ]
 if (utils.utf8.checksUTF8) {
-  exports.decodeBad.push(
+  decodeBad.push(
     '0x62c0ae' // Invalid utf8
   )
 }
 
 const HEX = /0x(?<hex>[0-9a-f]+)$/i
-exports.toBuffer = function toBuffer(c) {
+
+/**
+ * Hex decode a string, or the third element of an array of strings.
+ *
+ * @param {string|string[]} c Don't remember why.
+ * @returns {Buffer} Converted to buffer.
+ * @private
+ */
+export function toBuffer(c) {
   if (Array.isArray(c)) {
     // eslint-disable-next-line prefer-destructuring
     c = c[2]
@@ -1002,7 +1030,14 @@ exports.toBuffer = function toBuffer(c) {
   return Buffer.from(match.groups.hex, 'hex')
 }
 
-exports.toString = function toString(c) {
+/**
+ * Strip off the leading 0x from a string, or the third element of an array of
+ * strings.
+ *
+ * @param {string|string[]} [c] Don't remember why.
+ * @returns {string} Stripped string.
+ */
+export function toString(c) {
   if (Array.isArray(c)) {
     // eslint-disable-next-line prefer-destructuring
     c = c[2]
@@ -1011,10 +1046,10 @@ exports.toString = function toString(c) {
     return c
   }
   const match = c.match(HEX)
-  return match[1]
+  return match.groups.hex
 }
 
-class EncodeFailer extends cbor.Encoder {
+export class EncodeFailer extends cbor.Encoder {
   constructor(count) {
     super()
     if (count == null) {
@@ -1051,10 +1086,9 @@ class EncodeFailer extends cbor.Encoder {
     t.truthy(enc.pushAny(f))
   }
 }
-exports.EncodeFailer = EncodeFailer
 
 // Here to avoid ava's odd injection of Map into the namespace of the tests
-exports.goodMap = new Map([
+export const goodMap = new Map([
   ['0', 'foo'],
   [0, 'bar'],
   [{}, 'empty obj'],
@@ -1070,7 +1104,7 @@ exports.goodMap = new Map([
   ['bbb', 3],
 ])
 
-exports.canonNums = [
+export const canonNums = [
   [-1.25, 'f9bd00'],
   [1.5, 'f93e00'],
   [10.1, 'fb4024333333333333'],
@@ -1088,3 +1122,20 @@ exports.canonNums = [
   [0, '00'],
   [-0, 'f98000'],
 ]
+
+/**
+ * Get the mangled version of CBOR and friends as identified by the
+ * CBOR_PACKAGE environment variable, or a non-mangled version from this
+ * directory.
+ *
+ * @returns {{
+ *   cbor: typeof cbor, Buffer: typeof Buffer, NoFilter: typeof NoFilter }
+ * } The same mangled versions everywhere.
+ */
+export function getMangled() {
+  return {
+    cbor,
+    Buffer,
+    NoFilter,
+  }
+}

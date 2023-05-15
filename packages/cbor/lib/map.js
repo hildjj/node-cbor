@@ -1,9 +1,7 @@
-'use strict'
-
-const {Buffer} = require('buffer')
-const encoder = require('./encoder')
-const decoder = require('./decoder')
-const {MT} = require('./constants')
+import {Buffer} from 'buffer'
+import {Decoder} from './decoder.js'
+import {Encoder} from './encoder.js'
+import {MT} from './constants.js'
 
 /**
  * Wrapper around a JavaScript Map object that allows the keys to be
@@ -16,7 +14,7 @@ const {MT} = require('./constants')
  *
  * @extends Map
  */
-class CborMap extends Map {
+export class CborMap extends Map {
   /**
    * Creates an instance of CborMap.
    *
@@ -33,14 +31,14 @@ class CborMap extends Map {
    * @ignore
    */
   static _encode(key) {
-    return encoder.encodeCanonical(key).toString('base64')
+    return Encoder.encodeCanonical(key).toString('base64')
   }
 
   /**
    * @ignore
    */
   static _decode(key) {
-    return decoder.decodeFirstSync(key, 'base64')
+    return Decoder.decodeFirstSync(key, 'base64')
   }
 
   /**
@@ -176,5 +174,3 @@ class CborMap extends Map {
     return true
   }
 }
-
-module.exports = CborMap

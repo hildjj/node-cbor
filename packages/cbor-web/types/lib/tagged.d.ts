@@ -1,10 +1,10 @@
-export = Tagged;
 /**
  * A CBOR tagged item, where the tag does not have semantics specified at the
  * moment, or those semantics threw an error during parsing. Typically this will
  * be an extension point you're not yet expecting.
  */
-declare class Tagged {
+export class Tagged {
+    static INTERNAL_JSON: symbol;
     static set TAGS(arg: {
         [x: string]: TagFunction;
     });
@@ -60,19 +60,15 @@ declare class Tagged {
      */
     convert(converters: object): any;
 }
-declare namespace Tagged {
-    export { INTERNAL_JSON, TagFunction, TagMap };
-}
 /**
  * Convert a tagged value to a more interesting JavaScript type.  Errors
  * thrown in this function will be captured into the "err" property of the
  * original Tagged instance.
  */
-type TagFunction = (value: any, tag: Tagged) => any;
-declare const INTERNAL_JSON: unique symbol;
+export type TagFunction = (value: any, tag: Tagged) => any;
 /**
  * A mapping from tag number to a tag decoding function.
  */
-type TagMap = {
+export type TagMap = {
     [x: string]: TagFunction;
 };

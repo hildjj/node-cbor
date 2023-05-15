@@ -1,7 +1,6 @@
-'use strict'
+import * as utils from './utils.js'
+import {BI} from './constants.js'
 
-const constants = require('./constants')
-const utils = require('./utils')
 const INTERNAL_JSON = Symbol('INTERNAL_JSON')
 
 function setBuffersToJSON(obj, fn) {
@@ -10,6 +9,7 @@ function setBuffersToJSON(obj, fn) {
   // contained in the data item, except for those contained in a nested data
   // item tagged with an expected conversion.
   if (utils.isBufferish(obj)) {
+    // @ts-ignore -- Abusing JS extensibility.
     obj.toJSON = fn
   } else if (Array.isArray(obj)) {
     for (const v of obj) {
@@ -89,7 +89,7 @@ const TAGS = {
   // Positive bignum; see Section 3.4.3
   2: v => utils.bufferToBigInt(v),
   // Negative bignum; see Section 3.4.3
-  3: v => constants.BI.MINUS_ONE - utils.bufferToBigInt(v),
+  3: v => BI.MINUS_ONE - utils.bufferToBigInt(v),
   // Expected conversion to base64url encoding; see Section 3.4.5.2
   21: (v, tag) => {
     if (utils.isBufferish(v)) {
@@ -243,9 +243,11 @@ function _toTypedArray(val, tagged) {
   const sz = 2 ** (float + (tag & 0b00000011))
 
   if ((!little !== utils.isBigEndian()) && (sz > 1)) {
+    // @ts-ignore
     swapEndian(val.buffer, sz, val.byteOffset, val.byteLength)
   }
 
+  // @ts-ignore
   const ab = val.buffer.slice(val.byteOffset, val.byteOffset + val.byteLength)
   return new TypedClass(ab)
 }
@@ -265,7 +267,9 @@ let current_TAGS = {}
  * moment, or those semantics threw an error during parsing. Typically this will
  * be an extension point you're not yet expecting.
  */
-class Tagged {
+export class Tagged {
+  static INTERNAL_JSON = INTERNAL_JSON
+
   /**
    * Creates an instance of Tagged.
    *
@@ -286,8 +290,8 @@ class Tagged {
   }
 
   toJSON() {
-    if (this[INTERNAL_JSON]) {
-      return this[INTERNAL_JSON].call(this.value)
+    if (this[Tagged.INTERNAL_JSON]) {
+      return this[Tagged.INTERNAL_JSON].call(this.value)
     }
     const ret = {
       tag: this.tag,
@@ -372,6 +376,4 @@ class Tagged {
     Tagged.TAGS = {...TAGS}
   }
 }
-Tagged.INTERNAL_JSON = INTERNAL_JSON
 Tagged.reset()
-module.exports = Tagged

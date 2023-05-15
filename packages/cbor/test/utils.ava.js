@@ -1,15 +1,14 @@
-'use strict'
+import * as utils from '../lib/utils.js'
+import {Buffer} from 'buffer' // NOT the mangled version
+import {lbe} from './cases.js'
+import test from 'ava'
 
-const test = require('ava')
-const utils = require('../lib/utils')
-const {lbe} = require('./cases')
-const {hex, bin} = utils
-const {Buffer} = require('buffer') // NOT the mangled version
+const {bin, hex} = utils
 
 test('bin', t => {
-  t.deepEqual(utils.bin('1'), hex('01'))
-  t.deepEqual(utils.bin('11'), hex('03'))
-  t.deepEqual(utils.bin('1100 0000 0000'), hex('0c00'))
+  t.deepEqual(bin('1'), hex('01'))
+  t.deepEqual(bin('11'), hex('03'))
+  t.deepEqual(bin('1100 0000 0000'), hex('0c00'))
 })
 
 test('parseCBORint', t => {

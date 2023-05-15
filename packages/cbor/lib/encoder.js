@@ -1,13 +1,8 @@
-'use strict'
-
-const stream = require('stream')
-const NoFilter = require('nofilter')
-const utils = require('./utils')
-const constants = require('./constants')
-const {
-  MT, NUMBYTES, SHIFT32, SIMPLE, SYMS, TAG, BI,
-} = constants
-const {Buffer} = require('buffer')
+import * as utils from './utils.js'
+import {BI, MT, NUMBYTES, SHIFT32, SIMPLE, SYMS, TAG} from './constants.js'
+import {Buffer} from 'buffer'
+import {NoFilter} from 'nofilter'
+import {Transform} from 'stream'
 
 const HALF = (MT.SIMPLE_FLOAT << 5) | NUMBYTES.TWO
 const FLOAT = (MT.SIMPLE_FLOAT << 5) | NUMBYTES.FOUR
@@ -79,15 +74,15 @@ function parseDateType(str) {
 }
 
 /**
- * @typedef ObjectOptions
- * @property {boolean} [indefinite = false] Force indefinite encoding for this
+ * @typedef {object} ObjectOptions
+ * @property {boolean} [indefinite=false] Force indefinite encoding for this
  *   object.
- * @property {boolean} [skipTypes = false] Do not use available type mappings
+ * @property {boolean} [skipTypes=false] Do not use available type mappings
  *   for this object, but encode it as a "normal" JS object would be.
  */
 
 /**
- * @typedef EncodingOptions
+ * @typedef {object} EncodingOptions
  * @property {any[]|object} [genTypes=[]] Array of pairs of
  *   `type`, `function(Encoder)` for semantic types to be encoded.  Not
  *   needed for Array, Date, Buffer, Map, RegExp, Set, or URL.
@@ -129,10 +124,8 @@ function parseDateType(str) {
 /**
  * Transform JavaScript values into CBOR bytes.  The `Writable` side of
  * the stream is in object mode.
- *
- * @extends stream.Transform
  */
-class Encoder extends stream.Transform {
+export class Encoder extends Transform {
   /**
    * Creates an instance of Encoder.
    *
@@ -194,7 +187,7 @@ class Encoder extends stream.Transform {
    *
    * @param {any} fresh Buffer to transcode.
    * @param {BufferEncoding} encoding Name of encoding.
-   * @param {stream.TransformCallback} cb Callback when done.
+   * @param {import('stream').TransformCallback} cb Callback when done.
    * @ignore
    */
   _transform(fresh, encoding, cb) {
@@ -206,7 +199,7 @@ class Encoder extends stream.Transform {
   /**
    * Flushing.
    *
-   * @param {stream.TransformCallback} cb Callback when done.
+   * @param {import('stream').TransformCallback} cb Callback when done.
    * @ignore
    */
   // eslint-disable-next-line class-methods-use-this
@@ -599,7 +592,7 @@ Call removeLoopDetectors before resuming.`)
       this.pushAny(o)
     }
     this.end()
-    return bs.read()
+    return /** @type {Buffer} */ (bs.read())
   }
 
   /**
@@ -852,9 +845,9 @@ Call removeLoopDetectors before resuming.`)
       entries.sort(([a], [b]) => {
         // Both a and b are the keys
         enc.pushAny(a)
-        const a_cbor = bs.read()
+        const a_cbor = /** @type {Buffer} */(bs.read())
         enc.pushAny(b)
-        const b_cbor = bs.read()
+        const b_cbor = /** @type {Buffer} */(bs.read())
         return a_cbor.compare(b_cbor)
       })
       for (const [k, v] of entries) {
@@ -1121,4 +1114,3 @@ if (typeof BigInt64Array !== 'undefined') {
 }
 
 Encoder.reset()
-module.exports = Encoder

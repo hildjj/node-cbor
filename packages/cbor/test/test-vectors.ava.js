@@ -1,16 +1,15 @@
 /* eslint-disable no-console */
-'use strict'
-const cbor = require(process.env.CBOR_PACKAGE || '../')
-const test = require('ava')
-const util = require('util')
-const fs = require('fs')
-const path = require('path')
-const Buffer = cbor.encode(0).constructor
-const readFile = util.promisify ?
-  util.promisify(fs.readFile) :
-  (...args) => new Promise((resolve, reject) => {
-    fs.readFile(...args, (er, res) => (er ? reject(er) : resolve(res)))
-  })
+
+import {fileURLToPath} from 'url'
+import {getMangled} from './cases.js'
+import path from 'path'
+import {readFile} from 'fs/promises'
+import test from 'ava'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+const {cbor, Buffer} = getMangled()
 
 let vectors = null
 let failures = null

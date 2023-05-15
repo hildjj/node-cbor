@@ -7,9 +7,9 @@
 // binary-parse-stream is now unmaintained, so I have rewritten it as
 // more modern JS so I can get tsc to help check types.
 
-'use strict'
-const stream = require('stream')
-const NoFilter = require('nofilter')
+import {Buffer} from 'buffer'
+import {NoFilter} from 'nofilter'
+import {Transform} from 'stream'
 
 /**
  * BinaryParseStream is a TransformStream that consumes buffers and outputs
@@ -17,15 +17,13 @@ const NoFilter = require('nofilter')
  * method that is a generator.  When your generator yields a number, it'll be
  * fed a buffer of that length from the input.  When your generator returns,
  * the return value will be pushed to the output side.
- *
- * @extends stream.Transform
  */
-class BinaryParseStream extends stream.Transform {
+export class BinaryParseStream extends Transform {
   /**
    * Creates an instance of BinaryParseStream.
    *
    * @memberof BinaryParseStream
-   * @param {stream.TransformOptions} options Stream options.
+   * @param {import('stream').TransformOptions} options Stream options.
    */
   constructor(options) {
     super(options)
@@ -45,7 +43,7 @@ class BinaryParseStream extends stream.Transform {
    *
    * @param {any} fresh Buffer to transcode.
    * @param {BufferEncoding} encoding Name of encoding.
-   * @param {stream.TransformCallback} cb Callback when done.
+   * @param {import('stream').TransformCallback} cb Callback when done.
    * @ignore
    */
   _transform(fresh, encoding, cb) {
@@ -53,9 +51,13 @@ class BinaryParseStream extends stream.Transform {
 
     while (this.bs.length >= this.__needed) {
       let ret = null
-      const chunk = (this.__needed === null) ?
+      let chunk = (this.__needed === null) ?
         undefined :
         this.bs.read(this.__needed)
+
+      if (typeof chunk === 'string') {
+        chunk = Buffer.from(chunk, encoding)
+      }
 
       try {
         ret = this.__parser.next(chunk)
@@ -99,12 +101,10 @@ class BinaryParseStream extends stream.Transform {
   /**
    * Flushing.
    *
-   * @param {stream.TransformCallback} cb Callback when done.
+   * @param {import('stream').TransformCallback} cb Callback when done.
    * @ignore
    */
   _flush(cb) {
     cb(this.__fresh ? null : new Error('unexpected end of input'))
   }
 }
-
-module.exports = BinaryParseStream

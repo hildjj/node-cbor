@@ -1,16 +1,14 @@
-'use strict'
-
-const stream = require('stream')
-const Decoder = require('./decoder')
-const utils = require('./utils')
-const NoFilter = require('nofilter')
-const {MT, SYMS} = require('./constants')
+import * as utils from './utils.js'
+import {MT, SYMS} from './constants.js'
+import {Decoder} from './decoder.js'
+import {NoFilter} from 'nofilter'
+import {Transform} from 'stream'
 
 /**
  * Things that can act as inputs, from which a NoFilter can be created.
  *
  * @typedef {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
- *   |DataView|stream.Readable} BufferLike
+ *   |DataView|import('stream').Readable} BufferLike
  */
 
 /**
@@ -61,10 +59,8 @@ function normalizeOptions(opts, cb) {
 
 /**
  * Output the diagnostic format from a stream of CBOR bytes.
- *
- * @extends stream.Transform
  */
-class Diagnose extends stream.Transform {
+export class Diagnose extends Transform {
   /**
    * Creates an instance of Diagnose.
    *
@@ -110,7 +106,7 @@ class Diagnose extends stream.Transform {
    *
    * @param {any} fresh Buffer to transcode.
    * @param {BufferEncoding} encoding Name of encoding.
-   * @param {stream.TransformCallback} cb Callback when done.
+   * @param {import('stream').TransformCallback} cb Callback when done.
    * @ignore
    */
   _transform(fresh, encoding, cb) {
@@ -120,7 +116,7 @@ class Diagnose extends stream.Transform {
   /**
    * Flushing.
    *
-   * @param {stream.TransformCallback} cb Callback when done.
+   * @param {import('stream').TransformCallback} cb Callback when done.
    * @ignore
    */
   _flush(cb) {
@@ -270,5 +266,3 @@ class Diagnose extends stream.Transform {
     this.push(this.separator)
   }
 }
-
-module.exports = Diagnose

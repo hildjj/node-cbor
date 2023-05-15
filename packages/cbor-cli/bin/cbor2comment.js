@@ -1,18 +1,19 @@
 #!/usr/bin/env node
-'use strict'
 
-const cbor = require('cbor')
-const utils = require('../lib/utils')
-const pkg = require('../package.json')
-const {program} = require('commander')
+import * as cbor from 'cbor'
+import * as utils from '../lib/utils.js'
+import {Command} from 'commander'
 
-const opts = program
+const pkg = await utils.pkg()
+
+const program = new Command()
   .version(pkg.version)
-  .usage('[options] <file ...>')
+  .argument('[file ...]', 'Files to read, or "-" for stdin')
   .option('-x, --hex <string>', 'Hex string input')
   .option('-t, --tabsize [spaces]', 'Indent amount')
   .parse(process.argv)
-  .opts()
+
+const opts = program.opts()
 
 const numTabs = (opts.tabsize | 0) || 10
 const argv = program.args
@@ -31,4 +32,7 @@ utils.streamFiles(argv, () => {
   })
   c.pipe(process.stdout)
   return c
-}).catch(utils.printError)
+}).catch(e => {
+  utils.printError(e)
+  process.exit(1)
+})
