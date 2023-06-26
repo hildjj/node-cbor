@@ -2,7 +2,7 @@ import * as utils from '../lib/utils.js'
 import {Buffer} from 'buffer' // Not the mangled version
 import {NoFilter} from 'nofilter'
 import mockIo from 'mock-stdio'
-import pEvent from 'p-event'
+import {pEvent} from 'p-event'
 import test from 'ava'
 
 const BAD_FILE = '/tmp/hopefully-does-not-exist'

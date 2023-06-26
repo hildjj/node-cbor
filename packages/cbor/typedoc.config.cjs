@@ -1,5 +1,6 @@
 'use strict'
 
+// eslint-disable-next-line jsdoc/imports-as-dependencies
 /** @type {import('typedoc').TypeDocOptions} */
 module.exports = {
   entryPoints: [

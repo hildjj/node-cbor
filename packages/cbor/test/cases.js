@@ -7,9 +7,7 @@ import * as utils from '../lib/utils.js'
  */
 
 const cbor = process.env.CBOR_PACKAGE ?
-  // eslint-disable-next-line node/no-unsupported-features/es-syntax
   (await import(process.env.CBOR_PACKAGE)).default :
-  // eslint-disable-next-line node/no-unsupported-features/es-syntax
   await import('../lib/cbor.js')
 
 /**

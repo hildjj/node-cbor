@@ -1,6 +1,6 @@
 import * as cases from './cases.js'
 import {DeHexStream} from './streams.js'
-import pEvent from 'p-event'
+import {pEvent} from 'p-event'
 import test from 'ava'
 import util from 'util'
 

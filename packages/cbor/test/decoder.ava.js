@@ -1,7 +1,7 @@
 import * as cases from './cases.js'
 import * as streams from './streams.js'
 import {BinaryParseStream} from '../vendor/binary-parse-stream/index.js'
-import pEvent from 'p-event'
+import {pEventIterator} from 'p-event'
 import test from 'ava'
 import util from 'util'
 
@@ -129,7 +129,7 @@ test('add_tag', async t => {
   const b = Buffer.from('d87f01c001', 'hex')
   d.end(b)
 
-  const ait = pEvent.iterator(d, 'data', {
+  const ait = pEventIterator(d, 'data', {
     resolutionEvents: ['finish'],
   })
 
@@ -162,7 +162,7 @@ test('stream', async t => {
   const d = new streams.DeHexStream('01')
   d.pipe(dt)
 
-  const ait = pEvent.iterator(dt, 'data', {
+  const ait = pEventIterator(dt, 'data', {
     resolutionEvents: ['end'],
   })
 
