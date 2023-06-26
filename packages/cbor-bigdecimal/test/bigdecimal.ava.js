@@ -1,17 +1,16 @@
-'use strict'
+import * as cases from '../../cbor/test/cases.js'
+import {addBigDecimal} from '../bigdecimal.js'
+import test from 'ava'
 
-const cbor = require(process.env.CBOR_PACKAGE || '../../cbor')
-const bigdec = require('..')
-const cases = require('../../cbor/test/cases')
-const test = require('ava')
-const {BigNumber} = bigdec
+const {BigNumber} = addBigDecimal
+const {cbor} = cases.getMangled()
 
 function enc(t, n, expected) {
   t.is(cbor.encodeOne(new BigNumber(n)).toString('hex'), expected)
 }
 
 test.before(t => {
-  bigdec(cbor)
+  addBigDecimal(cbor)
 })
 
 test.after(t => {

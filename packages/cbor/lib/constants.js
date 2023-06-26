@@ -1,9 +1,7 @@
-'use strict'
-
 /**
  * @enum {number}
  */
-exports.MT = {
+export const MT = {
   POS_INT: 0,
   NEG_INT: 1,
   BYTE_STRING: 2,
@@ -17,7 +15,7 @@ exports.MT = {
 /**
  * @enum {number}
  */
-exports.TAG = {
+export const TAG = {
   DATE_STRING: 0,
   DATE_EPOCH: 1,
   POS_BIGINT: 2,
@@ -40,7 +38,7 @@ exports.TAG = {
 /**
  * @enum {number}
  */
-exports.NUMBYTES = {
+export const NUMBYTES = {
   ZERO: 0,
   ONE: 24,
   TWO: 25,
@@ -52,14 +50,14 @@ exports.NUMBYTES = {
 /**
  * @enum {number}
  */
-exports.SIMPLE = {
+export const SIMPLE = {
   FALSE: 20,
   TRUE: 21,
   NULL: 22,
   UNDEFINED: 23,
 }
 
-exports.SYMS = {
+export const SYMS = {
   NULL: Symbol.for('github.com/hildjj/node-cbor/null'),
   UNDEFINED: Symbol.for('github.com/hildjj/node-cbor/undef'),
   PARENT: Symbol.for('github.com/hildjj/node-cbor/parent'),
@@ -67,13 +65,12 @@ exports.SYMS = {
   STREAM: Symbol.for('github.com/hildjj/node-cbor/stream'),
 }
 
-exports.SHIFT32 = 0x100000000
+export const SHIFT32 = 0x100000000
 
-exports.BI = {
+export const BI = {
   MINUS_ONE: BigInt(-1),
   NEG_MAX: BigInt(-1) - BigInt(Number.MAX_SAFE_INTEGER),
   MAXINT32: BigInt('0xffffffff'),
   MAXINT64: BigInt('0xffffffffffffffff'),
-  SHIFT32: BigInt(exports.SHIFT32),
+  SHIFT32: BigInt(SHIFT32),
 }
-

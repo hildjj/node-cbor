@@ -1,8 +1,8 @@
-'use strict'
+import {SIMPLE} from '../lib/constants.js'
+import {getMangled} from './cases.js'
+import test from 'ava'
 
-const test = require('ava')
-const cbor = require(process.env.CBOR_PACKAGE || '../')
-const constants = require('../lib/constants')
+const {cbor} = getMangled()
 
 test('create', t => {
   const u = new cbor.Simple(0)
@@ -19,8 +19,8 @@ test('create', t => {
 })
 
 test('decode', t => {
-  t.is(cbor.Simple.decode(constants.SIMPLE.NULL), null)
-  t.is(typeof (cbor.Simple.decode(constants.SIMPLE.UNDEFINED)), 'undefined')
+  t.is(cbor.Simple.decode(SIMPLE.NULL), null)
+  t.is(typeof (cbor.Simple.decode(SIMPLE.UNDEFINED)), 'undefined')
   t.throws(() => cbor.Simple.decode(-1, false))
 })
 

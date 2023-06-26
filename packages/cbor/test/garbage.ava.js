@@ -1,8 +1,8 @@
-'use strict'
+import garbage from 'garbage'
+import {getMangled} from './cases.js'
+import test from 'ava'
 
-const test = require('ava')
-const cbor = require(process.env.CBOR_PACKAGE || '../')
-const garbage = require('garbage')
+const {cbor} = getMangled()
 
 const REPEATS = parseInt(process.env.NODE_CBOR_GARBAGE || 10000, 10)
 test('garbage', t => {

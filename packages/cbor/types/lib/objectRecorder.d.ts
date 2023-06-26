@@ -1,11 +1,13 @@
-export = ObjectRecorder;
 /**
  * Record objects that pass by in a stream.  If the same object is used more
  * than once, it can be value-shared using shared values.
  *
+ * @private
  * @see {@link http://cbor.schmorp.de/value-sharing}
  */
-declare class ObjectRecorder {
+export class ObjectRecorder {
+    static NEVER: number;
+    static FIRST: number;
     /**
      * Clear all of the objects that have been seen.  Revert to recording mode.
      */
@@ -29,8 +31,4 @@ declare class ObjectRecorder {
      * @throws {Error} Recording does not match playback.
      */
     check(obj: object): number;
-}
-declare namespace ObjectRecorder {
-    const NEVER: number;
-    const FIRST: number;
 }

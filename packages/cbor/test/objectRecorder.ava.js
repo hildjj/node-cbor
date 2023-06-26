@@ -1,7 +1,5 @@
-'use strict'
-
-const test = require('ava')
-const ObjectRecorder = require('../lib/objectRecorder')
+import {ObjectRecorder} from '../lib/objectRecorder.js'
+import test from 'ava'
 
 test('create', t => {
   const o = new ObjectRecorder()

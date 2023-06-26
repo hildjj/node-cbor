@@ -1,17 +1,12 @@
-'use strict'
+import * as cases from './cases.js'
+import * as streams from './streams.js'
+import {BinaryParseStream} from '../vendor/binary-parse-stream/index.js'
+import {pEventIterator} from 'p-event'
+import test from 'ava'
+import util from 'util'
 
-const cbor_src = process.env.CBOR_PACKAGE || '../'
-const cbor = require(cbor_src)
-const test = require('ava')
-const pEvent = require('p-event')
-const util = require('util')
-const cases = require('./cases')
-const streams = require('./streams')
-const BinaryParseStream = require('../vendor/binary-parse-stream')
+const {cbor, Buffer, NoFilter} = cases.getMangled()
 const pdecodeFirst = util.promisify(cbor.decodeFirst)
-// Use mangled versions
-const Buffer = cbor.encode(0).constructor
-const NoFilter = new cbor.Commented().all.constructor
 
 function testAll(t, list, opts) {
   t.plan(list.length)
@@ -134,7 +129,7 @@ test('add_tag', async t => {
   const b = Buffer.from('d87f01c001', 'hex')
   d.end(b)
 
-  const ait = pEvent.iterator(d, 'data', {
+  const ait = pEventIterator(d, 'data', {
     resolutionEvents: ['finish'],
   })
 
@@ -167,7 +162,7 @@ test('stream', async t => {
   const d = new streams.DeHexStream('01')
   d.pipe(dt)
 
-  const ait = pEvent.iterator(dt, 'data', {
+  const ait = pEventIterator(dt, 'data', {
     resolutionEvents: ['end'],
   })
 
@@ -337,4 +332,18 @@ test('duplicate map keys', t => {
   )
 
   t.throws(() => cbor.decode(Buffer.from('a268746f537472696e670068746f537472696e6701', 'hex'), {preventDuplicateKeys: true}))
+})
+
+test('ArrayBufferView', async t => {
+  const buf = new Uint8Array([0x83, 0x01, 0x02, 0x03])
+  const buf16 = new Uint16Array(buf.buffer, buf.byteOffset, buf.byteLength / 2)
+
+  let val = await cbor.decodeFirst(buf16)
+  t.deepEqual(val, [1, 2, 3])
+  val = cbor.decodeFirstSync(buf16)
+  t.deepEqual(val, [1, 2, 3])
+  val = cbor.decodeAllSync(buf16)
+  t.deepEqual(val, [[1, 2, 3]])
+  val = await cbor.decodeAll(buf16)
+  t.deepEqual(val, [[1, 2, 3]])
 })

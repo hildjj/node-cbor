@@ -1,17 +1,20 @@
-'use strict'
-
-const Encoder = require('./encoder')
-const ObjectRecorder = require('./objectRecorder')
-const {Buffer} = require('buffer')
+import {Buffer} from 'buffer'
+import {Encoder} from './encoder.js'
+import {ObjectRecorder} from './objectRecorder.js'
 
 /**
  * Implement value sharing.
  *
- * @see {@link cbor.schmorp.de/value-sharing}
+ * @see {@link http://cbor.schmorp.de/value-sharing}
  */
-class SharedValueEncoder extends Encoder {
+export class SharedValueEncoder extends Encoder {
   constructor(opts) {
     super(opts)
+
+    /**
+     * @type {ObjectRecorder}
+     * @private
+     */
     this.valueSharing = new ObjectRecorder()
   }
 
@@ -138,5 +141,3 @@ class SharedValueEncoder extends Encoder {
     })
   }
 }
-
-module.exports = SharedValueEncoder

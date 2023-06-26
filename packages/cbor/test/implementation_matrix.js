@@ -1,11 +1,12 @@
 /* eslint-disable no-console */
-'use strict'
 
 // Data to fill out:
 // https://github.com/cbor-wg/CBORbis/wiki/Implementation-matrix
-const cbor = require(process.env.CBOR_PACKAGE || '../')
-const Buffer = cbor.encode(0).constructor
-const assert = require('assert')
+
+import assert from 'assert'
+import {getMangled} from './cases.js'
+
+const {cbor, Buffer} = getMangled()
 
 const all = [
   ['Major type 0 (uint)', 1, '01'],

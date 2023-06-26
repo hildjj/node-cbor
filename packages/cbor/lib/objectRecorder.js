@@ -1,12 +1,14 @@
-'use strict'
-
 /**
  * Record objects that pass by in a stream.  If the same object is used more
  * than once, it can be value-shared using shared values.
  *
+ * @private
  * @see {@link http://cbor.schmorp.de/value-sharing}
  */
-class ObjectRecorder {
+export class ObjectRecorder {
+  static NEVER = -1
+  static FIRST = -2
+
   constructor() {
     this.clear()
   }
@@ -64,8 +66,3 @@ class ObjectRecorder {
     return ObjectRecorder.NEVER
   }
 }
-
-ObjectRecorder.NEVER = -1
-ObjectRecorder.FIRST = -2
-
-module.exports = ObjectRecorder

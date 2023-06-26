@@ -1,6 +1,5 @@
-'use strict'
+import {BigNumber} from 'bignumber.js'
 
-const {BigNumber} = require('bignumber.js')
 let cbor = null
 
 const MAXINT = new BigNumber('0x20000000000000')
@@ -44,7 +43,13 @@ function tag_5(v) {
   return TWO.pow(v[0]).times(v[1])
 }
 
-function addBigDecimal(inCBOR) {
+/**
+ * Adds BigDecimal support to the cbor package, as a plugin.
+ *
+ * @param {any} inCBOR The cbor instance to modify.
+ * @returns {any} The passed-in instance, modified in place.
+ */
+export function addBigDecimal(inCBOR) {
   cbor = inCBOR
   cbor.Encoder.SEMANTIC_TYPES[BigNumber.name] = pushBigNumber
   cbor.Tagged.TAGS[4] = tag_4
@@ -53,4 +58,3 @@ function addBigDecimal(inCBOR) {
 }
 
 addBigDecimal.BigNumber = BigNumber
-module.exports = addBigDecimal

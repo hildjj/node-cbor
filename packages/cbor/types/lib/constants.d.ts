@@ -1,3 +1,4 @@
+export type MT = number;
 export namespace MT {
     const POS_INT: number;
     const NEG_INT: number;
@@ -8,7 +9,7 @@ export namespace MT {
     const TAG: number;
     const SIMPLE_FLOAT: number;
 }
-export type MT = number;
+export type TAG = number;
 export namespace TAG {
     const DATE_STRING: number;
     const DATE_EPOCH: number;
@@ -27,7 +28,7 @@ export namespace TAG {
     const MIME: number;
     const SET: number;
 }
-export type TAG = number;
+export type NUMBYTES = number;
 export namespace NUMBYTES {
     const ZERO: number;
     const ONE: number;
@@ -36,14 +37,13 @@ export namespace NUMBYTES {
     const EIGHT: number;
     const INDEFINITE: number;
 }
-export type NUMBYTES = number;
+export type SIMPLE = number;
 export namespace SIMPLE {
     const FALSE: number;
     const TRUE: number;
     const NULL: number;
     const UNDEFINED: number;
 }
-export type SIMPLE = number;
 export namespace SYMS {
     const NULL_1: symbol;
     export { NULL_1 as NULL };

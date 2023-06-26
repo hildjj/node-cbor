@@ -1,7 +1,5 @@
-/* eslint-disable no-undef */
-'use strict'
 
-cborBigDecimal(cbor)
+cborBigDecimal.addBigDecimal(cbor)
 
 const ofmt = document.getElementById('output-fmt')
 const otxt = document.getElementById('output-text')

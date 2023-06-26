@@ -13,8 +13,7 @@
 ## Usage
 
 ```js
-const BinaryParseStream = require('binary-parse-stream')
-const {One} = BinaryParseStream // -1
+import {BinaryParseStream} from 'binary-parse-stream'
 ```
 
   BinaryParseStream is a TransformStream that consumes buffers and outputs objects on the other end.
@@ -25,8 +24,9 @@ const {One} = BinaryParseStream // -1
 
 ## Example
 
-  The following module parses a protocol that consists of a 32-bit unsigned big-endian type parameter, an unsigned 8-bit length parameter, and a buffer of the specified length.
-  It outputs `{type, buf}` objects.
+  The following module parses a protocol that consists of a 32-bit unsigned
+  big-endian type parameter, an unsigned 8-bit length parameter, and a buffer
+  of the specified length. It outputs `{type, buf}` objects.
 
 ```js
 class SillyProtocolParseStream extends BinaryParseStream {
@@ -37,7 +37,7 @@ class SillyProtocolParseStream extends BinaryParseStream {
 
   *_parse() {
     const type = (yield 4).readUInt32BE(0, true)
-    const length = yield -1
+    const length = yield 1
     const buf = yield length
     this.count++
     return {type, buf}
@@ -45,5 +45,5 @@ class SillyProtocolParseStream extends BinaryParseStream {
 }
 ```
 
-  There is also a shorter syntax for when you don't want to explicitly subclass:  `BinaryParseStream.extend(function*())`.
-
+There is also a shorter syntax for when you don't want to explicitly subclass:
+`BinaryParseStream.extend(function*())`.

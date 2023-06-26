@@ -1,4 +1,3 @@
-export = CborMap;
 /**
  * Wrapper around a JavaScript Map object that allows the keys to be
  * any complex type.  The base Map object allows this, but will only
@@ -10,7 +9,7 @@ export = CborMap;
  *
  * @extends Map
  */
-declare class CborMap extends Map<any, any> {
+export class CborMap extends Map<any, any> {
     /**
      * @ignore
      */

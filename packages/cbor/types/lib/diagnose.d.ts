@@ -1,10 +1,7 @@
-export = Diagnose;
 /**
  * Output the diagnostic format from a stream of CBOR bytes.
- *
- * @extends stream.Transform
  */
-declare class Diagnose extends stream.Transform {
+export class Diagnose extends Transform {
     /**
      * Convenience function to return a string in diagnostic format.
      *
@@ -43,16 +40,11 @@ declare class Diagnose extends stream.Transform {
     /** @private */
     private _on_data;
 }
-declare namespace Diagnose {
-    export { BufferLike, DiagnoseOptions, diagnoseCallback };
-}
-import stream = require("stream");
-import Decoder = require("./decoder");
 /**
  * Things that can act as inputs, from which a NoFilter can be created.
  */
-type BufferLike = string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | stream.Readable;
-type DiagnoseOptions = {
+export type BufferLike = string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | import('stream').Readable;
+export type DiagnoseOptions = {
     /**
      * Output between detected objects.
      */
@@ -88,4 +80,6 @@ type DiagnoseOptions = {
      */
     encoding?: BufferEncoding;
 };
-type diagnoseCallback = (error?: Error, value?: string) => void;
+export type diagnoseCallback = (error?: Error, value?: string) => void;
+import { Transform } from 'stream';
+import { Decoder } from './decoder.js';

@@ -1,0 +1,11 @@
+{
+  "reporter": [
+    "text",
+    "lcov"
+  ],
+  "exclude": [
+    "**/test/**",
+    "**/node_modules/**",
+    "ava.config.cjs"
+  ]
+}

@@ -1,8 +1,7 @@
-export = Simple;
 /**
  * A CBOR Simple Value that does not map onto a known constant.
  */
-declare class Simple {
+export class Simple {
     /**
      * Is the given object a Simple?
      *
