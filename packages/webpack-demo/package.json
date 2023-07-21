@@ -1,6 +1,6 @@
 {
   "name": "webpack-demo",
-  "version": "9.0.0",
+  "version": "9.0.1",
   "description": "",
   "private": true,
   "scripts": {
@@ -22,7 +22,7 @@
     "bignumber.js": "^9.1.1",
     "buffer": "^6.0.3",
     "cbor-bigdecimal": "^9.0.0",
-    "cbor-web": "^9.0.0",
+    "cbor-web": "^9.0.1",
     "copyfiles": "^2.4.1",
     "css-loader": "^6.7.3",
     "events": "^3.3.0",
