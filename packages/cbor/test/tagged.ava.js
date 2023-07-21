@@ -138,3 +138,9 @@ test('Typed Arrays', t => {
   tag = new cbor.Tagged(73, Buffer.from('000100020003', 'hex'))
   t.deepEqual(_toTypedArray(tag.value, tag), new Int16Array([1, 2, 3]))
 })
+
+test('null converter', t => {
+  const buf = Buffer.from('c100', 'hex');
+  t.deepEqual(cbor.decode(buf), new Date(0));
+  t.deepEqual(cbor.decode(buf, {tags: {1: null}}), new cbor.Tagged(1, 0));
+})
