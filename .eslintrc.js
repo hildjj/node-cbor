@@ -11,6 +11,7 @@ module.exports = {
   ],
   rules: {
     'no-empty': ['error', {allowEmptyCatch: true}],
+    'jsdoc/imports-as-dependencies': 'off',
   },
   overrides: [
     {
