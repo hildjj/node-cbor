@@ -140,7 +140,7 @@ test('Typed Arrays', t => {
 })
 
 test('null converter', t => {
-  const buf = Buffer.from('c100', 'hex');
-  t.deepEqual(cbor.decode(buf), new Date(0));
-  t.deepEqual(cbor.decode(buf, {tags: {1: null}}), new cbor.Tagged(1, 0));
+  const buf = Buffer.from('c100', 'hex')
+  t.deepEqual(cbor.decode(buf), new Date(0))
+  t.deepEqual(cbor.decode(buf, {tags: {1: null}}), new cbor.Tagged(1, 0))
 })

@@ -237,13 +237,15 @@ exports.cborValueToString = function cborValueToString(val, float_bytes = -1) {
       return (float_bytes > 0) ? `${s}_${float_bytes}` : s
     }
     case 'object': {
-      // A null should be caught above
+      if (!val) {
+        return 'null'
+      }
       const buf = exports.bufferishToBuffer(val)
       if (buf) {
         const hex = buf.toString('hex')
         return (float_bytes === -Infinity) ? hex : `h'${hex}'`
       }
-      if (typeof val[Symbol.for('nodejs.util.inspect.custom')] === 'function') {
+      if (val && typeof val[Symbol.for('nodejs.util.inspect.custom')] === 'function') {
         return val[Symbol.for('nodejs.util.inspect.custom')]()
       }
       // Shouldn't get non-empty arrays here
