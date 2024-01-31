@@ -1,6 +1,6 @@
 {
   "name": "cbor-web",
-  "version": "9.0.1",
+  "version": "9.0.2",
   "description": "",
   "main": "dist/cbor.js",
   "types": "./types/lib/cbor.d.ts",
@@ -21,7 +21,7 @@
     "abort-controller": "3.0.0",
     "base64-js": "^1.5.1",
     "buffer": "^6.0.3",
-    "cbor": "^9.0.1",
+    "cbor": "^9.0.2",
     "events": "^3.3.0",
     "ieee754": "^1.2.1",
     "inherits": "^2.0.4",
