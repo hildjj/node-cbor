@@ -338,3 +338,25 @@ test('duplicate map keys', t => {
 
   t.throws(() => cbor.decode(Buffer.from('a268746f537472696e670068746f537472696e6701', 'hex'), {preventDuplicateKeys: true}))
 })
+
+test('preferMap', t => {
+  t.deepEqual(
+    cbor.decode(Buffer.from('a0', 'hex'), {preferMap: false}),
+    {}
+  )
+
+  t.deepEqual(
+    cbor.decode(Buffer.from('a0', 'hex'), {preferMap: true}),
+    new Map()
+  )
+
+  t.deepEqual(
+    cbor.decode(Buffer.from('a161616161', 'hex'), {preferMap: false}),
+    {a: 'a'}
+  )
+
+  t.deepEqual(
+    cbor.decode(Buffer.from('a161616161', 'hex'), {preferMap: true}),
+    new Map([['a', 'a']])
+  )
+})

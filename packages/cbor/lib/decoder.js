@@ -69,6 +69,9 @@ class UnexpectedDataError extends Error {
  * @property {Tagged.TagMap} [tags] Mapping from tag number to function(v),
  *   where v is the decoded value that comes after the tag, and where the
  *   function returns the correctly-created value for that tag.
+ * @property {boolean} [preferMap=false] If true, prefer to generate Map
+ *   instances to plain objects, even if there are no entries in the map
+ *   or if all of the keys are strings.
  * @property {boolean} [preferWeb=false] If true, prefer Uint8Arrays to
  *   be generated instead of node Buffers.  This might turn on some more
  *   changes in the future, so forward-compatibility is not guaranteed yet.
@@ -127,6 +130,7 @@ class Decoder extends BinaryParseStream {
     const {
       tags = {},
       max_depth = -1,
+      preferMap = false,
       preferWeb = false,
       required = false,
       encoding = 'hex',
@@ -140,6 +144,7 @@ class Decoder extends BinaryParseStream {
     this.running = true
     this.max_depth = max_depth
     this.tags = tags
+    this.preferMap = preferMap
     this.preferWeb = preferWeb
     this.extendedResults = extendedResults
     this.required = required
@@ -515,7 +520,11 @@ class Decoder extends BinaryParseStream {
         case MT.MAP:
           switch (val) {
             case 0:
-              val = (mt === MT.MAP) ? {} : []
+              if (mt === MT.MAP) {
+                val = (this.preferMap) ? new Map() : {}
+              } else {
+                val = []
+              }
               break
             case -1:
               this.emit('start', mt, SYMS.STREAM, parent_major, parent_length)
@@ -583,12 +592,16 @@ class Decoder extends BinaryParseStream {
               val = parent
               break
             case MT.MAP: {
-              let allstrings = true
+              let allstrings = !this.preferMap
 
               if ((parent.length % 2) !== 0) {
                 throw new Error(`Invalid map length: ${parent.length}`)
               }
-              for (let i = 0, len = parent.length; i < len; i += 2) {
+              for (
+                let i = 0, len = parent.length;
+                allstrings && (i < len);
+                i += 2
+              ) {
                 if ((typeof parent[i] !== 'string') ||
                     (parent[i] === '__proto__')) {
                   allstrings = false
