@@ -31,6 +31,8 @@ class CborMap extends Map {
 
   /**
    * @ignore
+   * @param {unknown} key
+   * @returns {string}
    */
   static _encode(key) {
     return encoder.encodeCanonical(key).toString('base64');
@@ -38,6 +40,8 @@ class CborMap extends Map {
 
   /**
    * @ignore
+   * @param {string} key
+   * @returns {unknown}
    */
   static _decode(key) {
     return decoder.decodeFirstSync(key, 'base64');
@@ -98,7 +102,7 @@ class CborMap extends Map {
    * in the Map object in insertion order.  The keys are decoded into their
    * original format.
    *
-   * @yields {any} The keys of the map.
+   * @returns {MapIterator<any>}
    */
   *keys() {
     for (const k of super.keys()) {
@@ -123,7 +127,7 @@ class CborMap extends Map {
    * Returns a new Iterator object that contains the [key, value] pairs for
    * each element in the Map object in insertion order.
    *
-   * @returns {IterableIterator} Key value pairs.
+   * @returns {IterableIterator<any>} Key value pairs.
    */
   [Symbol.iterator]() {
     return this.entries();
@@ -133,24 +137,25 @@ class CborMap extends Map {
    * Executes a provided function once per each key/value pair in the Map
    * object, in insertion order.
    *
-   * @param {function(any, any, Map): undefined} fun Function to execute for
-   *   each element, which takes a value, a key, and the Map being traversed.
+   * @param {function(any, any, Map<any,any>): undefined} fun Function to
+   *   execute for each element, which takes a value, a key, and the Map
+   *   being traversed.
    * @param {any} thisArg Value to use as this when executing callback.
    * @throws {TypeError} Invalid function.
    */
-  forEach(fun, thisArg) {
+  forEach(fun, thisArg = this) {
     if (typeof fun !== 'function') {
       throw new TypeError('Must be function');
     }
     for (const kv of super.entries()) {
-      fun.call(this, kv[1], CborMap._decode(kv[0]), this);
+      fun.call(thisArg, kv[1], CborMap._decode(kv[0]), this);
     }
   }
 
   /**
    * Push the simple value onto the CBOR stream.
    *
-   * @param {object} gen The generator to push onto.
+   * @param {import('./encoder.js')} gen The generator to push onto.
    * @returns {boolean} True on success.
    */
   encodeCBOR(gen) {
