@@ -6,56 +6,39 @@ on:
     branches: [master, main]
   pull_request:
     branches: [master, main]
+  workflow_call:
+    secrets:
+      codecov_token:
+        required: true
 
 jobs:
   build:
 
     strategy:
       matrix:
-        node-version: [16.x, 18.x, 20.x]
-        platform: [ubuntu-20.04, windows-latest]
+        node-version: [18.x, 20.x, 22.x]
+        platform: [ubuntu-latest, windows-latest]
 
     runs-on: ${{ matrix.platform }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
+      - run: corepack enable
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Cache pnpm modules
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-pnpm-modules
-        with:
-          # pnpm cache files are stored in `~/.pnpm-store` on Linux/macOS
-          path: ~/.pnpm-store
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.node-version }}-${{ hashFiles('**/package.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.node-version }}-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8.5.0
-          run_install: |
-            - recursive: true
-              args: [--filter, '!*-demo', --filter, '!cbor-web']
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm i -r --filter '!*-demo' --filter '!cbor-web'
       - name: Test ${{ matrix.node-version }}
         run: npm run coverage
-      - name: Coveralls Parallel
-        uses: coverallsapp/github-action@master
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4
         with:
-          github-token: ${{ secrets.github_token }}
-          flag-name: node-${{ matrix.node-version }}
-          parallel: true
-  finish:
-    needs: build
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Coveralls Finished
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.github_token }}
-          parallel-finished: true
+          fail_ci_if_error: true
+          verbose: true
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
