@@ -45,11 +45,11 @@ class BinaryParseStream extends stream.Transform {
    * Transforming.
    *
    * @param {any} fresh Buffer to transcode.
-   * @param {BufferEncoding} encoding Name of encoding.
+   * @param {BufferEncoding} _encoding Name of encoding.
    * @param {stream.TransformCallback} cb Callback when done.
    * @ignore
    */
-  _transform(fresh, encoding, cb) {
+  _transform(fresh, _encoding, cb) {
     this.bs.write(fresh);
 
     while (this.bs.length >= this.__needed) {

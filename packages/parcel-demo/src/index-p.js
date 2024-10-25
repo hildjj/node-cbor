@@ -33,7 +33,7 @@ function input() {
 }
 
 // Convert a buffer to the desired output format
-function output(buf, typ) {
+function output(buf, _typ) {
   const outp = ofmt.selectedOptions[0].label;
   switch (outp) {
     case 'hex':

@@ -1,11 +1,11 @@
 'use strict';
 
-const stream = require('node:stream');
+const stream = require('stream');
 const utils = require('./utils');
 const Decoder = require('./decoder');
 const NoFilter = require('nofilter');
 const {MT, NUMBYTES, SYMS} = require('./constants');
-const {Buffer} = require('node:buffer');
+const {Buffer} = require('buffer');
 
 function plural(c) {
   if (c > 1) {
@@ -162,7 +162,6 @@ class Commented extends stream.Transform {
    * @param {commentCallback} [cb] If specified, called on completion.
    * @returns {Promise} If cb not specified.
    * @throws {Error} Input required.
-   * @static
    */
   static comment(input, options = {}, cb = null) {
     if (input == null) {
@@ -222,7 +221,7 @@ class Commented extends stream.Transform {
   /**
    * @ignore
    */
-  _on_more(mt, len, parent_mt, pos) {
+  _on_more(mt, len, _parent_mt, _pos) {
     let desc = '';
 
     this.depth++;
@@ -259,7 +258,7 @@ class Commented extends stream.Transform {
   /**
    * @ignore
    */
-  _on_start_string(mt, len, parent_mt, pos) {
+  _on_start_string(mt, len, _parent_mt, _pos) {
     let desc = '';
 
     this.depth++;
@@ -325,7 +324,7 @@ class Commented extends stream.Transform {
   /**
    * @ignore
    */
-  _on_stop(mt) {
+  _on_stop(_mt) {
     this.depth--;
   }
 

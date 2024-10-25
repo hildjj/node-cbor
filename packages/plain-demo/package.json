@@ -12,7 +12,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "http://github.com/hildjj/node-cbor.git",
+    "url": "git+ssh://git@github.com/hildjj/node-cbor.git",
     "directory": "packages/plain-demo"
   },
   "devDependencies": {

@@ -33,11 +33,11 @@ class Simple {
   /**
    * Debug string for simple value.
    *
-   * @param {number} depth How deep are we?
-   * @param {object} opts Options.
+   * @param {number} _depth How deep are we?
+   * @param {object} _opts Options.
    * @returns {string} Formatted string of `simple(value)`.
    */
-  [Symbol.for('nodejs.util.inspect.custom')](depth, opts) {
+  [Symbol.for('nodejs.util.inspect.custom')](_depth, _opts) {
     return `simple(${this.value})`;
   }
 

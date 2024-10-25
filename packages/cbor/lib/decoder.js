@@ -7,7 +7,7 @@ const utils = require('./utils');
 const NoFilter = require('nofilter');
 const constants = require('./constants');
 const {MT, NUMBYTES, SYMS, BI} = constants;
-const {Buffer} = require('node:buffer');
+const {Buffer} = require('buffer');
 
 const COUNT = Symbol('count');
 const MAJOR = Symbol('major type');
@@ -198,7 +198,6 @@ class Decoder extends BinaryParseStream {
    * @returns {ExtendedResults|any} The decoded value.
    * @throws {UnexpectedDataError} Data is left over after decoding.
    * @throws {Error} Insufficient data.
-   * @static
    */
   static decodeFirstSync(input, options = {}) {
     if (input == null) {
@@ -254,7 +253,6 @@ class Decoder extends BinaryParseStream {
    * @returns {Array<ExtendedResults>|Array<any>} Array of all found items.
    * @throws {TypeError} No input provided.
    * @throws {Error} Insufficient data provided.
-   * @static
    */
   static decodeAllSync(input, options = {}) {
     if (input == null) {
@@ -300,7 +298,6 @@ class Decoder extends BinaryParseStream {
    * @returns {Promise<ExtendedResults|any>} Returned even if callback is
    *   specified.
    * @throws {TypeError} No input provided.
-   * @static
    */
   static decodeFirst(input, options = {}, cb = null) {
     if (input == null) {
@@ -374,7 +371,6 @@ class Decoder extends BinaryParseStream {
    * @returns {Promise<Array<ExtendedResults>|Array<any>>} Even if callback
    *   is specified.
    * @throws {TypeError} No input specified.
-   * @static
    */
   static decodeAll(input, options = {}, cb = null) {
     if (input == null) {

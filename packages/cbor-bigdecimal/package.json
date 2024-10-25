@@ -1,6 +1,6 @@
 {
   "name": "cbor-bigdecimal",
-  "version": "9.0.0",
+  "version": "9.0.2",
   "description": "Plugin for node-cbor to add BigDecimal and BigFloat support.  Requires bignumber.js",
   "browser": "dist/cbor-bigdecimal.js",
   "main": "./bigdecimal.js",
@@ -22,7 +22,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "http://github.com/hildjj/node-cbor.git",
+    "url": "git+ssh://git@github.com/hildjj/node-cbor.git",
     "directory": "packages/cbor-bigdecimal"
   },
   "peerDependencies": {

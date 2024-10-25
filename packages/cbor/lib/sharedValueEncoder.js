@@ -80,11 +80,11 @@ class SharedValueEncoder extends Encoder {
    * Encode one or more JavaScript objects canonically (slower!), and return
    * a Buffer containing the CBOR bytes.
    *
-   * @param {...any} objs The objects to encode.
+   * @param {...any} _objs The objects to encode.
    * @returns {Buffer} Never.
    * @throws {Error} Always.  This combination doesn't work at the moment.
    */
-  static encodeCanonical(...objs) {
+  static encodeCanonical(..._objs) {
     throw new Error('Cannot encode canonically in a SharedValueEncoder, which serializes objects multiple times.');
   }
 

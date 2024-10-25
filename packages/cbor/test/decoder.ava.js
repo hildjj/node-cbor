@@ -44,7 +44,7 @@ function failFirstAll(t, list) {
 function failFirstAllCB(t, list) {
   t.plan(list.length);
   return Promise.all(
-    list.map(c => new Promise((resolve, reject) => {
+    list.map(c => new Promise(resolve => {
       cbor.decodeFirst(cases.toBuffer(c), (er, d) => {
         if (d == null) {
           t.truthy(er, c);
@@ -118,7 +118,7 @@ test('add_tag', async t => {
   function replaceTag(val) {
     return {foo: val};
   }
-  function newTag(val) {
+  function newTag(_val) {
     throw new Error('Invalid tag');
   }
   const d = new cbor.Decoder({
@@ -192,7 +192,7 @@ test('decodeFirst', async t => {
   await t.throwsAsync(() => cbor.decodeFirst(
     Buffer.allocUnsafe(0),
     {required: true},
-    (er, v) => {
+    (er, _v) => {
       t.truthy(er);
     }
   ));
@@ -210,7 +210,7 @@ test('decodeAll', async t => {
     t.falsy(er);
     t.deepEqual(v, [1]);
   });
-  await t.throwsAsync(() => cbor.decodeAll('7f', {}, (er, v) => {
+  await t.throwsAsync(() => cbor.decodeAll('7f', {}, (er, _v) => {
     t.truthy(er);
   }));
   t.deepEqual(await cbor.decodeAll('AQ==', 'base64', (er, v) => {

@@ -53,7 +53,7 @@ test('addSemanticType', t => {
   gen.write(tc);
   t.is(gen.read().toString('hex'), 'd9fffe63666f6f');
 
-  function hexPackBuffer(gen2, obj, bufs) {
+  function hexPackBuffer(gen2, obj, _bufs) {
     gen2.write(`0x${obj.toString('hex')}`);
   // Intentionally don't return
   }

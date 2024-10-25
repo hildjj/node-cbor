@@ -1,6 +1,6 @@
 'use strict';
 
-const stream = require('node:stream');
+const stream = require('stream');
 const Decoder = require('./decoder');
 const utils = require('./utils');
 const NoFilter = require('nofilter');
@@ -9,7 +9,7 @@ const {MT, SYMS} = require('./constants');
 /**
  * Things that can act as inputs, from which a NoFilter can be created.
  *
- * @typedef {string|Buffer|ArrayBuffer|Uint8Array|Uint8ClampedArray
+ * @typedef {string|Buffer|ArrayBuffer|ArrayBufferView
  *   |DataView|stream.Readable} BufferLike
  */
 
@@ -181,7 +181,7 @@ class Diagnose extends stream.Transform {
   }
 
   /** @private */
-  _on_more(mt, len, parent_mt, pos) {
+  _on_more(mt, len, _parent_mt, _pos) {
     if (mt === MT.SIMPLE_FLOAT) {
       this.float_bytes = {
         2: 1,

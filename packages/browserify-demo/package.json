@@ -1,8 +1,8 @@
 {
   "name": "browserify-demo",
-  "version": "9.0.0",
+  "version": "9.0.2",
   "description": "",
-  "private": "true",
+  "private": true,
   "scripts": {
     "prebuild": "rimraf dist && mkdir dist",
     "build": "browserify --standalone cbor ../cbor/lib/cbor.js -t [ babelify  ] | terser --compress -o dist/bundle-bf.js && browserify src/index.js -t [ babelify  ] -o dist/index-bf.js && copyfiles -u1 src/*.css src/*.html dist",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/hildjj/node-cbor.git",
+    "url": "git+ssh://git@github.com/hildjj/node-cbor.git",
     "directory": "packages/browserify-demo"
   },
   "keywords": [],

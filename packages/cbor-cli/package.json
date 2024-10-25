@@ -4,7 +4,7 @@
   "description": "Command line tools to encode and parse data in the Concise Binary Object Representation (CBOR) data format (RFC8949).",
   "repository": {
     "type": "git",
-    "url": "http://github.com/hildjj/node-cbor.git",
+    "url": "git+ssh://git@github.com/hildjj/node-cbor.git",
     "directory": "pacakges/cbor-cli"
   },
   "homepage": "https://github.com/hildjj/node-cbor/tree/main/packages/cbor-cli",
