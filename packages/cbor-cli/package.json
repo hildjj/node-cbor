@@ -41,7 +41,7 @@
     "email": "joe-github@cursive.net"
   },
   "devDependencies": {
-    "marked": "^0.7.0",
+    "marked": "^14.1.3",
     "marked-man": "^2.1.0",
     "mock-stdio": "^1.0.3",
     "nofilter": "^3.0.2",
