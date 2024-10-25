@@ -1,7 +1,7 @@
-'use strict'
+'use strict';
 
-const path = require('path')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+const path = require('node:path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: './src/index-wp.js',
@@ -35,4 +35,4 @@ module.exports = {
       },
     ],
   },
-}
+};

@@ -7,15 +7,12 @@
     "name": "Joe Hildebrand",
     "email": "joe-github@cursive.net"
   },
-  "workspaces": [
-    "./packages/*"
-  ],
   "scripts": {
     "clean": "rimraf node_modules coverage .nyc_output packages/*/node_modules packages/*/coverage packages/*/.nyc_output",
     "docs": "jsdoc -c .jsdoc.conf",
-    "lint": "eslint . --ext cjs,mjs,js,md",
+    "lint": "eslint .",
     "test": "ava packages/*/test/*.ava.js",
-    "test:versions": "nve --continue --arch x64 --parallel 20,18,16,14 npm test",
+    "test:versions": "nve --continue --arch x64 --parallel 22,20,18 npm test",
     "test:bigendian": "docker run --rm -it -v ${PWD}:/root/cbor -w /root/cbor s390x/node npm test",
     "test:spot-check": "ava test/*.ava.js && CBOR_PACKAGE=${INIT_CWD}/packages/cbor-web/dist/cbor.js npm run test",
     "test:web": "node packages/puppeteer-demo/index.js",
@@ -27,30 +24,41 @@
     "copy": "pnpm -r copy"
   },
   "dependencies": {
-    "nofilter": "^3.1.0"
+    "nofilter": "^3.0.2"
   },
   "devDependencies": {
-    "@cto.af/eslint-config": "^1.1.2",
-    "ava": "^5.2.0",
-    "bignumber.js": "^9.1.1",
+    "@cto.af/eslint-config": "^5.0.1",
+    "ava": "5.2.0",
+    "bignumber.js": "^9.1.2",
     "copyfiles": "2.4.1",
-    "docdash": "2.0.1",
-    "eslint": "^8.40.0",
-    "eslint-plugin-ava": "^14.0.0",
-    "eslint-plugin-jsdoc": "^44.2.3",
-    "eslint-plugin-markdown": "^3.0.0",
+    "docdash": "2.0.2",
+    "eslint": "^9.13.0",
+    "eslint-plugin-ava": "^15.0.1",
+    "eslint-plugin-jsdoc": "^50.4.3",
+    "eslint-plugin-markdown": "^5.1.0",
     "eslint-plugin-node": "^11.1.0",
-    "jsdoc": "^4.0.2",
-    "lerna": "^6.6.2",
+    "jsdoc": "^4.0.4",
+    "lerna": "^8.1.8",
     "light-server": "^2.9.1",
     "minami": "*",
-    "nve": "^15.5.0",
-    "nyc": "^15.1.0",
-    "rimraf": "^5.0.0",
-    "typedoc": "0.24.7",
-    "typescript": "^5.0.4"
+    "nve": "^18.0.1",
+    "nyc": "^17.1.0",
+    "rimraf": "^6.0.1",
+    "typedoc": "0.26.10",
+    "typescript": "^5.6.3"
   },
   "license": "MIT",
+  "packageManager": "pnpm@9.12.2",
+  "overrides": {
+    "@typescript-eslint/utils": "8.0.0-alpha.30",
+    "@typescript-eslint/parser": "8.0.0-alpha.30"
+  },
+  "pnpm": {
+    "overrides": {
+      "@typescript-eslint/utils": "8.0.0-alpha.30",
+      "@typescript-eslint/parser": "8.0.0-alpha.30"
+    }
+  },
   "engines": {
     "node": ">=16"
   }

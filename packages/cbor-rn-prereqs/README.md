@@ -19,14 +19,14 @@ module.exports = {
       stream: require.resolve('stream-browserify'),
     },
   },
-}
+};
 ```
 
 `require` this package *before* importing or requiring `cbor`:
 
 ```js
-require('cbor-rn-prereqs')
-const cbor = require('cbor')
+require('cbor-rn-prereqs');
+const cbor = require('cbor');
 ```
 
 ## What this does

@@ -1,10 +1,10 @@
-'use strict'
+'use strict';
 
-const stream = require('stream')
-const Decoder = require('./decoder')
-const utils = require('./utils')
-const NoFilter = require('nofilter')
-const {MT, SYMS} = require('./constants')
+const stream = require('node:stream');
+const Decoder = require('./decoder');
+const utils = require('./utils');
+const NoFilter = require('nofilter');
+const {MT, SYMS} = require('./constants');
 
 /**
  * Things that can act as inputs, from which a NoFilter can be created.
@@ -49,13 +49,13 @@ const {MT, SYMS} = require('./constants')
 function normalizeOptions(opts, cb) {
   switch (typeof opts) {
     case 'function':
-      return {options: {}, cb: /** @type {diagnoseCallback} */ (opts)}
+      return {options: {}, cb: /** @type {diagnoseCallback} */ (opts)};
     case 'string':
-      return {options: {encoding: /** @type {BufferEncoding} */ (opts)}, cb}
+      return {options: {encoding: /** @type {BufferEncoding} */ (opts)}, cb};
     case 'object':
-      return {options: opts || {}, cb}
+      return {options: opts || {}, cb};
     default:
-      throw new TypeError('Unknown option type')
+      throw new TypeError('Unknown option type');
   }
 }
 
@@ -81,28 +81,28 @@ class Diagnose extends stream.Transform {
       encoding,
       // Stream.Transform options
       ...superOpts
-    } = options
+    } = options;
     super({
       ...superOpts,
       readableObjectMode: false,
       writableObjectMode: false,
-    })
+    });
 
-    this.float_bytes = -1
-    this.separator = separator
-    this.stream_errors = stream_errors
+    this.float_bytes = -1;
+    this.separator = separator;
+    this.stream_errors = stream_errors;
     this.parser = new Decoder({
       tags,
       max_depth,
       preferWeb,
       encoding,
-    })
-    this.parser.on('more-bytes', this._on_more.bind(this))
-    this.parser.on('value', this._on_value.bind(this))
-    this.parser.on('start', this._on_start.bind(this))
-    this.parser.on('stop', this._on_stop.bind(this))
-    this.parser.on('data', this._on_data.bind(this))
-    this.parser.on('error', this._on_error.bind(this))
+    });
+    this.parser.on('more-bytes', this._on_more.bind(this));
+    this.parser.on('value', this._on_value.bind(this));
+    this.parser.on('start', this._on_start.bind(this));
+    this.parser.on('stop', this._on_stop.bind(this));
+    this.parser.on('data', this._on_data.bind(this));
+    this.parser.on('error', this._on_error.bind(this));
   }
 
   /**
@@ -114,7 +114,7 @@ class Diagnose extends stream.Transform {
    * @ignore
    */
   _transform(fresh, encoding, cb) {
-    this.parser.write(fresh, encoding, cb)
+    this.parser.write(fresh, encoding, cb);
   }
 
   /**
@@ -127,12 +127,12 @@ class Diagnose extends stream.Transform {
     this.parser._flush(er => {
       if (this.stream_errors) {
         if (er) {
-          this._on_error(er)
+          this._on_error(er);
         }
-        return cb()
+        return cb();
       }
-      return cb(er)
-    })
+      return cb(er);
+    });
   }
 
   /**
@@ -147,26 +147,26 @@ class Diagnose extends stream.Transform {
    */
   static diagnose(input, options = {}, cb = null) {
     if (input == null) {
-      throw new TypeError('input required')
+      throw new TypeError('input required');
     }
-    ({options, cb} = normalizeOptions(options, cb))
-    const {encoding = 'hex', ...opts} = options
+    ({options, cb} = normalizeOptions(options, cb));
+    const {encoding = 'hex', ...opts} = options;
 
-    const bs = new NoFilter()
-    const d = new Diagnose(opts)
-    let p = null
+    const bs = new NoFilter();
+    const d = new Diagnose(opts);
+    let p = null;
     if (typeof cb === 'function') {
-      d.on('end', () => cb(null, bs.toString('utf8')))
-      d.on('error', cb)
+      d.on('end', () => cb(null, bs.toString('utf8')));
+      d.on('error', cb);
     } else {
       p = new Promise((resolve, reject) => {
-        d.on('end', () => resolve(bs.toString('utf8')))
-        d.on('error', reject)
-      })
+        d.on('end', () => resolve(bs.toString('utf8')));
+        d.on('error', reject);
+      });
     }
-    d.pipe(bs)
-    utils.guessEncoding(input, encoding).pipe(d)
-    return p
+    d.pipe(bs);
+    utils.guessEncoding(input, encoding).pipe(d);
+    return p;
   }
 
   /**
@@ -174,9 +174,9 @@ class Diagnose extends stream.Transform {
    */
   _on_error(er) {
     if (this.stream_errors) {
-      this.push(er.toString())
+      this.push(er.toString());
     } else {
-      this.emit('error', er)
+      this.emit('error', er);
     }
   }
 
@@ -187,7 +187,7 @@ class Diagnose extends stream.Transform {
         2: 1,
         4: 2,
         8: 3,
-      }[len]
+      }[len];
     }
   }
 
@@ -198,15 +198,15 @@ class Diagnose extends stream.Transform {
       case MT.UTF8_STRING:
       case MT.ARRAY:
         if (pos > 0) {
-          this.push(', ')
+          this.push(', ');
         }
-        break
+        break;
       case MT.MAP:
         if (pos > 0) {
           if (pos % 2) {
-            this.push(': ')
+            this.push(': ');
           } else {
-            this.push(', ')
+            this.push(', ');
           }
         }
     }
@@ -215,34 +215,34 @@ class Diagnose extends stream.Transform {
   /** @private */
   _on_value(val, parent_mt, pos) {
     if (val === SYMS.BREAK) {
-      return
+      return;
     }
-    this._fore(parent_mt, pos)
-    const fb = this.float_bytes
-    this.float_bytes = -1
-    this.push(utils.cborValueToString(val, fb))
+    this._fore(parent_mt, pos);
+    const fb = this.float_bytes;
+    this.float_bytes = -1;
+    this.push(utils.cborValueToString(val, fb));
   }
 
   /** @private */
   _on_start(mt, tag, parent_mt, pos) {
-    this._fore(parent_mt, pos)
+    this._fore(parent_mt, pos);
     switch (mt) {
       case MT.TAG:
-        this.push(`${tag}(`)
-        break
+        this.push(`${tag}(`);
+        break;
       case MT.ARRAY:
-        this.push('[')
-        break
+        this.push('[');
+        break;
       case MT.MAP:
-        this.push('{')
-        break
+        this.push('{');
+        break;
       case MT.BYTE_STRING:
       case MT.UTF8_STRING:
-        this.push('(')
-        break
+        this.push('(');
+        break;
     }
     if (tag === SYMS.STREAM) {
-      this.push('_ ')
+      this.push('_ ');
     }
   }
 
@@ -250,25 +250,25 @@ class Diagnose extends stream.Transform {
   _on_stop(mt) {
     switch (mt) {
       case MT.TAG:
-        this.push(')')
-        break
+        this.push(')');
+        break;
       case MT.ARRAY:
-        this.push(']')
-        break
+        this.push(']');
+        break;
       case MT.MAP:
-        this.push('}')
-        break
+        this.push('}');
+        break;
       case MT.BYTE_STRING:
       case MT.UTF8_STRING:
-        this.push(')')
-        break
+        this.push(')');
+        break;
     }
   }
 
   /** @private */
   _on_data() {
-    this.push(this.separator)
+    this.push(this.separator);
   }
 }
 
-module.exports = Diagnose
+module.exports = Diagnose;

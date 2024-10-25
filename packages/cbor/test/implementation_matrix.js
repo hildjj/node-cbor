@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
-'use strict'
+'use strict';
 
 // Data to fill out:
 // https://github.com/cbor-wg/CBORbis/wiki/Implementation-matrix
-const cbor = require(process.env.CBOR_PACKAGE || '../')
-const Buffer = cbor.encode(0).constructor
-const assert = require('assert')
+const cbor = require(process.env.CBOR_PACKAGE || '../');
+const Buffer = cbor.encode(0).constructor;
+const assert = require('assert');
 
 const all = [
   ['Major type 0 (uint)', 1, '01'],
@@ -44,18 +44,18 @@ const all = [
   ['Tag 35', /foo/, 'd82363666f6f'],
   ['Tag 36', 0, ''],
   ['Tag 55799', 0, ''],
-]
+];
 
 function deepEqual(actual, expected) {
-  assert.deepEqual(actual, expected)
-  return true
+  assert.deepEqual(actual, expected);
+  return true;
 }
 
 function markdownOut(title, decode, encode) {
-  const DE = (decode ? 'D' : ' ') + (encode ? 'E' : ' ')
+  const DE = (decode ? 'D' : ' ') + (encode ? 'E' : ' ');
   console.log(
     `| ${title.padEnd(28)}|          | ${DE}        |           |       |`
-  )
+  );
 }
 
 // eslint-disable-next-line max-params
@@ -64,18 +64,18 @@ function test(title, native, encoded, canonical, dateType) {
     const e = cbor.Encoder.encodeOne(native, {
       canonical,
       dateType,
-    })
-    const d = cbor.decodeFirstSync(encoded)
+    });
+    const d = cbor.decodeFirstSync(encoded);
     markdownOut(
       title,
       deepEqual(native, d),
       deepEqual(e, Buffer.from(encoded, 'hex'))
-    )
+    );
   } else {
-    markdownOut(title)
+    markdownOut(title);
   }
 }
 
 for (const t of all) {
-  test(...t)
+  test(...t);
 }

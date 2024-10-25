@@ -12,7 +12,7 @@
   "license": "MIT",
   "devDependencies": {
     "chrome-finder": "^1.0.7",
-    "puppeteer": "^20.2.0"
+    "puppeteer": "^23.6.0"
   },
   "engines": {
     "node": ">=16"

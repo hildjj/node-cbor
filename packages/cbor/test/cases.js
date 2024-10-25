@@ -1,24 +1,24 @@
-'use strict'
+'use strict';
 
-const cbor = require(process.env.CBOR_PACKAGE || '../')
-const constants = require('../lib/constants')
-const utils = require('../lib/utils')
-const path = require('path')
+const cbor = require(process.env.CBOR_PACKAGE || '../');
+const constants = require('../lib/constants');
+const utils = require('../lib/utils');
+const path = require('node:path');
 
 // Use mangled versions
-const Buffer = cbor.encode(0).constructor
-const NoFilter = new cbor.Commented().all.constructor
+const Buffer = cbor.encode(0).constructor;
+const NoFilter = new cbor.Commented().all.constructor;
 
 function lbe(little, big) {
-  return utils.isBigEndian() ? big : little
+  return utils.isBigEndian() ? big : little;
 }
-exports.lbe = lbe
+exports.lbe = lbe;
 
 async function requireWithFailedDependency(source, dependency, fn) {
-  const src = require.resolve(source)
-  const dep = require.resolve(dependency)
-  const old_src = require.cache[src]
-  const old_dep = require.cache[dep]
+  const src = require.resolve(source);
+  const dep = require.resolve(dependency);
+  const old_src = require.cache[src];
+  const old_dep = require.cache[dep];
   require.cache[dep] = {
     loaded: true,
     get exports() {
@@ -26,39 +26,39 @@ async function requireWithFailedDependency(source, dependency, fn) {
       const err = new Error(
         `Cannot find module '${dep}'. ` +
         'Please verify that the package.json has a valid "main" entry'
-      )
-      err.code = 'MODULE_NOT_FOUND'
-      err.path = path.resolve(dependency, 'package.json')
-      err.requestPath = __filename
-      throw err
+      );
+      err.code = 'MODULE_NOT_FOUND';
+      err.path = path.resolve(dependency, 'package.json');
+      err.requestPath = __filename;
+      throw err;
     },
-  }
-  delete require.cache[src]
+  };
+  delete require.cache[src];
 
-  await fn(require(source))
+  await fn(require(source));
 
   // eslint-disable-next-line require-atomic-updates
-  require.cache[src] = old_src
+  require.cache[src] = old_src;
   // eslint-disable-next-line require-atomic-updates
-  require.cache[dep] = old_dep
+  require.cache[dep] = old_dep;
 }
-exports.requireWithFailedDependency = requireWithFailedDependency
+exports.requireWithFailedDependency = requireWithFailedDependency;
 
 class TempClass {
   constructor(val) {
     // Render as the string tempClass with the tag 0xffff
-    this.value = val || 'tempClass'
+    this.value = val || 'tempClass';
   }
 
   encodeCBOR(gen) {
-    return gen._pushTag(0xffff) && gen.pushAny(this.value)
+    return gen._pushTag(0xffff) && gen.pushAny(this.value);
   }
 
   static toCBOR(gen, obj) {
-    return gen._pushTag(0xfffe) && gen.pushAny(obj.value)
+    return gen._pushTag(0xfffe) && gen.pushAny(obj.value);
   }
 }
-exports.TempClass = TempClass
+exports.TempClass = TempClass;
 
 // [Decoded, Diagnostic, Commented]
 exports.good = [
@@ -683,7 +683,7 @@ exports.good = [
   81                -- Array, 1 item
     f6              -- [0], null
 0x81f6`],
-]
+];
 
 exports.encodeGood = [
   [constants.SYMS.NULL, 'null', `
@@ -711,7 +711,7 @@ exports.encodeGood = [
       63            -- String, length: 3
         666f6f      -- "foo"
 0xd9ffff63666f6f`],
-]
+];
 
 exports.decodeGood = [
   [1.5, '1.5_1', `
@@ -939,7 +939,7 @@ exports.decodeGood = [
           eeff99    -- eeff99
         ff          -- BREAK
 0xd8405f44aabbccdd43eeff99ff`],
-]
+];
 
 exports.collapseBigIntegers = [
   [0n, undefined, '0x00'],
@@ -955,7 +955,7 @@ exports.collapseBigIntegers = [
   [-0x1ffffffffn, undefined, '0x3b00000001fffffffe'],
   [0xffffffffffffffffn, undefined, '0x1bffffffffffffffff'],
   [-0x10000000000000000n, undefined, '0x3bffffffffffffffff'],
-]
+];
 
 exports.decodeBad = [
   '0x18', // Missing the next byte for AI
@@ -988,73 +988,73 @@ exports.decodeBad = [
   '0xfc', // Reserved AI
   '0xfd', // Reserved AI
   '0xfe', // Reserved AI
-]
+];
 if (utils.utf8.checksUTF8) {
   exports.decodeBad.push(
     '0x62c0ae' // Invalid utf8
-  )
+  );
 }
 
-const HEX = /0x(?<hex>[0-9a-f]+)$/i
+const HEX = /0x(?<hex>[0-9a-f]+)$/i;
 exports.toBuffer = function toBuffer(c) {
   if (Array.isArray(c)) {
     // eslint-disable-next-line prefer-destructuring
-    c = c[2]
+    c = c[2];
   }
-  const match = c.match(HEX)
-  return Buffer.from(match.groups.hex, 'hex')
-}
+  const match = c.match(HEX);
+  return Buffer.from(match.groups.hex, 'hex');
+};
 
 exports.toString = function toString(c) {
   if (Array.isArray(c)) {
     // eslint-disable-next-line prefer-destructuring
-    c = c[2]
+    c = c[2];
   }
   if (c == null) {
-    return c
+    return c;
   }
-  const match = c.match(HEX)
-  return match[1]
-}
+  const match = c.match(HEX);
+  return match[1];
+};
 
 class EncodeFailer extends cbor.Encoder {
   constructor(count) {
-    super()
+    super();
     if (count == null) {
-      count = Number.MAX_SAFE_INTEGER
+      count = Number.MAX_SAFE_INTEGER;
     }
-    this.count = count
-    this.start = count
+    this.count = count;
+    this.start = count;
   }
 
   push(fresh, encoding) {
     if (this.count-- <= 0) {
-      super.push(null)
-      return false
+      super.push(null);
+      return false;
     }
-    return super.push(fresh, encoding)
+    return super.push(fresh, encoding);
   }
 
   get used() {
-    return this.start - this.count
+    return this.start - this.count;
   }
 
   static tryAll(t, f, canonical) {
-    let enc = new EncodeFailer()
-    enc.canonical = canonical
-    t.truthy(enc.pushAny(f))
-    const {used} = enc
+    let enc = new EncodeFailer();
+    enc.canonical = canonical;
+    t.truthy(enc.pushAny(f));
+    const {used} = enc;
     for (let i = 0; i < used; i++) {
-      enc = new EncodeFailer(i)
-      enc.canonical = canonical
-      t.falsy(enc.pushAny(f))
+      enc = new EncodeFailer(i);
+      enc.canonical = canonical;
+      t.falsy(enc.pushAny(f));
     }
-    enc = new EncodeFailer(used)
-    enc.canonical = canonical
-    t.truthy(enc.pushAny(f))
+    enc = new EncodeFailer(used);
+    enc.canonical = canonical;
+    t.truthy(enc.pushAny(f));
   }
 }
-exports.EncodeFailer = EncodeFailer
+exports.EncodeFailer = EncodeFailer;
 
 // Here to avoid ava's odd injection of Map into the namespace of the tests
 exports.goodMap = new Map([
@@ -1071,7 +1071,7 @@ exports.goodMap = new Map([
   ['bb', 2],
   ['b', 1],
   ['bbb', 3],
-])
+]);
 
 exports.canonNums = [
   [-1.25, 'f9bd00'],
@@ -1090,4 +1090,4 @@ exports.canonNums = [
   [NaN, 'f97e00'],
   [0, '00'],
   [-0, 'f98000'],
-]
+];

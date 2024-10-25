@@ -1,9 +1,9 @@
-'use strict'
+'use strict';
 
-const {Buffer} = require('buffer')
-const encoder = require('./encoder')
-const decoder = require('./decoder')
-const {MT} = require('./constants')
+const {Buffer} = require('buffer');
+const encoder = require('./encoder');
+const decoder = require('./decoder');
+const {MT} = require('./constants');
 
 /**
  * Wrapper around a JavaScript Map object that allows the keys to be
@@ -26,21 +26,21 @@ class CborMap extends Map {
    *   to the new CborMap; null values are treated as undefined.
    */
   constructor(iterable) {
-    super(iterable)
+    super(iterable);
   }
 
   /**
    * @ignore
    */
   static _encode(key) {
-    return encoder.encodeCanonical(key).toString('base64')
+    return encoder.encodeCanonical(key).toString('base64');
   }
 
   /**
    * @ignore
    */
   static _decode(key) {
-    return decoder.decodeFirstSync(key, 'base64')
+    return decoder.decodeFirstSync(key, 'base64');
   }
 
   /**
@@ -52,7 +52,7 @@ class CborMap extends Map {
    * @returns {any} The element if it exists, or <code>undefined</code>.
    */
   get(key) {
-    return super.get(CborMap._encode(key))
+    return super.get(CborMap._encode(key));
   }
 
   /**
@@ -65,7 +65,7 @@ class CborMap extends Map {
    * @returns {this} This object.
    */
   set(key, val) {
-    return super.set(CborMap._encode(key), val)
+    return super.set(CborMap._encode(key), val);
   }
 
   /**
@@ -77,7 +77,7 @@ class CborMap extends Map {
    *   been removed, or false if the element does not exist.
    */
   delete(key) {
-    return super.delete(CborMap._encode(key))
+    return super.delete(CborMap._encode(key));
   }
 
   /**
@@ -90,7 +90,7 @@ class CborMap extends Map {
    *   the Map object; otherwise false.
    */
   has(key) {
-    return super.has(CborMap._encode(key))
+    return super.has(CborMap._encode(key));
   }
 
   /**
@@ -102,7 +102,7 @@ class CborMap extends Map {
    */
   *keys() {
     for (const k of super.keys()) {
-      yield CborMap._decode(k)
+      yield CborMap._decode(k);
     }
   }
 
@@ -115,7 +115,7 @@ class CborMap extends Map {
    */
   *entries() {
     for (const kv of super.entries()) {
-      yield [CborMap._decode(kv[0]), kv[1]]
+      yield [CborMap._decode(kv[0]), kv[1]];
     }
   }
 
@@ -126,7 +126,7 @@ class CborMap extends Map {
    * @returns {IterableIterator} Key value pairs.
    */
   [Symbol.iterator]() {
-    return this.entries()
+    return this.entries();
   }
 
   /**
@@ -140,10 +140,10 @@ class CborMap extends Map {
    */
   forEach(fun, thisArg) {
     if (typeof fun !== 'function') {
-      throw new TypeError('Must be function')
+      throw new TypeError('Must be function');
     }
     for (const kv of super.entries()) {
-      fun.call(this, kv[1], CborMap._decode(kv[0]), this)
+      fun.call(this, kv[1], CborMap._decode(kv[0]), this);
     }
   }
 
@@ -155,26 +155,26 @@ class CborMap extends Map {
    */
   encodeCBOR(gen) {
     if (!gen._pushInt(this.size, MT.MAP)) {
-      return false
+      return false;
     }
     if (gen.canonical) {
       const entries = Array.from(super.entries())
-        .map(kv => [Buffer.from(kv[0], 'base64'), kv[1]])
-      entries.sort((a, b) => a[0].compare(b[0]))
+        .map(kv => [Buffer.from(kv[0], 'base64'), kv[1]]);
+      entries.sort((a, b) => a[0].compare(b[0]));
       for (const kv of entries) {
         if (!(gen.push(kv[0]) && gen.pushAny(kv[1]))) {
-          return false
+          return false;
         }
       }
     } else {
       for (const kv of super.entries()) {
         if (!(gen.push(Buffer.from(kv[0], 'base64')) && gen.pushAny(kv[1]))) {
-          return false
+          return false;
         }
       }
     }
-    return true
+    return true;
   }
 }
 
-module.exports = CborMap
+module.exports = CborMap;
