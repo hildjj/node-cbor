@@ -14,6 +14,11 @@
     "chrome-finder": "^1.0.7",
     "puppeteer": "^23.6.0"
   },
+  "pnpm": {
+    "overrides": {
+      "ip": "https://registry.npmjs.org/neoip/-/neoip-3.0.1.tgz"
+    }
+  },
   "engines": {
     "node": ">=18"
   }
