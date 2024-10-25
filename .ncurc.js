@@ -1,8 +1,11 @@
-'use strict'
+'use strict';
 
 module.exports = {
   reject: [
-    "marked",
-    "p-event",
-  ]
-}
+    'json-text-sequence',
+    'marked',
+    'nofilter',
+    'p-event',
+    'rimraf',
+  ],
+};

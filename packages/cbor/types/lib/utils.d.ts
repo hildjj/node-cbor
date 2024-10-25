@@ -1,7 +1,6 @@
-/// <reference types="node" />
 export function utf8(buf: any): string;
 export namespace utf8 {
-    const checksUTF8: boolean;
+    let checksUTF8: boolean;
 }
 export function isBufferish(b: any): boolean;
 export function bufferishToBuffer(b: any): Buffer;

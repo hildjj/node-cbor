@@ -33,48 +33,48 @@ For a command-line interface, see [cbor-cli](../cbor-cli).
 
 Example:
 ```js
-const cbor = require('cbor')
-const assert = require('assert')
+const cbor = require('cbor');
+const assert = require('node:assert');
 
-let encoded = cbor.encode(true) // Returns <Buffer f5>
+let encoded = cbor.encode(true); // Returns <Buffer f5>
 cbor.decodeFirst(encoded, (error, obj) => {
   // If there was an error, error != null
   // obj is the unpacked object
-  assert.ok(obj === true)
-})
+  assert.ok(obj === true);
+});
 
 // Use integers as keys?
-const m = new Map()
-m.set(1, 2)
-encoded = cbor.encode(m) // <Buffer a1 01 02>
+const m = new Map();
+m.set(1, 2);
+encoded = cbor.encode(m); // <Buffer a1 01 02>
 ```
 
 Allows streaming as well:
 
 ```js
-const cbor = require('cbor')
-const fs = require('fs')
+const cbor = require('cbor');
+const fs = require('node:fs');
 
-const d = new cbor.Decoder()
+const d = new cbor.Decoder();
 d.on('data', obj => {
-  console.log(obj)
-})
+  console.log(obj);
+});
 
-const s = fs.createReadStream('foo')
-s.pipe(d)
+const s = fs.createReadStream('foo');
+s.pipe(d);
 
-const d2 = new cbor.Decoder({input: '00', encoding: 'hex'})
+const d2 = new cbor.Decoder({input: '00', encoding: 'hex'});
 d.on('data', obj => {
-  console.log(obj)
-})
+  console.log(obj);
+});
 ```
 
 There is also support for synchronous decodes:
 
 ```js
 try {
-  console.log(cbor.decodeFirstSync('02')) // 2
-  console.log(cbor.decodeAllSync('0202')) // [2, 2]
+  console.log(cbor.decodeFirstSync('02')); // 2
+  console.log(cbor.decodeAllSync('0202')); // [2, 2]
 } catch (e) {
   // Throws on invalid input
 }
@@ -93,18 +93,18 @@ streams.  There are a few ways to fix this:
 1) pass in a `highWaterMark` option with the value of the largest buffer size you think you will need:
 
 ```js
-cbor.encodeOne(new ArrayBuffer(40000), {highWaterMark: 65535})
+cbor.encodeOne(new ArrayBuffer(40000), {highWaterMark: 65535});
 ```
 
 2) use stream mode.  Catch the `data`, `finish`, and `error` events.  Make sure to call `end()` when you're done.
 
 ```js
-const enc = new cbor.Encoder()
-enc.on('data', buf => /* Send the data somewhere */ null)
-enc.on('error', console.error)
-enc.on('finish', () => /* Tell the consumer we are finished */ null)
+const enc = new cbor.Encoder();
+enc.on('data', buf => /* Send the data somewhere */ null);
+enc.on('error', console.error);
+enc.on('finish', () => /* Tell the consumer we are finished */ null);
 
-enc.end(['foo', 1, false])
+enc.end(['foo', 1, false]);
 ```
 
 3) use `encodeAsync()`, which uses the approach from approach 2 to return a memory-inefficient promise for a Buffer.
@@ -179,13 +179,13 @@ For example:
 ```js
 class Foo {
   constructor() {
-    this.one = 1
-    this.two = 2
+    this.one = 1;
+    this.two = 2;
   }
 
   encodeCBOR(encoder) {
-    const tagged = new Tagged(64000, [this.one, this.two])
-    return encoder.pushAny(tagged)
+    const tagged = new Tagged(64000, [this.one, this.two]);
+    return encoder.pushAny(tagged);
   }
 }
 ```
@@ -203,13 +203,13 @@ encode, for example:
 ```js
 class Bar {
   constructor() {
-    this.three = 3
+    this.three = 3;
   }
 }
-const enc = new Encoder()
+const enc = new Encoder();
 enc.addSemanticType(Bar, (encoder, b) => {
-  encoder.pushAny(b.three)
-})
+  encoder.pushAny(b.three);
+});
 ```
 
 ## Adding new decoders
@@ -227,12 +227,12 @@ const d = new Decoder({
   tags: {
     64000: val => {
       // Check val to make sure it's an Array as expected, etc.
-      const foo = new Foo()
-      ;[foo.one, foo.two] = val
-      return foo
+      const foo = new Foo();
+      [foo.one, foo.two] = val;
+      return foo;
     },
   },
-})
+});
 ```
 
 You can also replace the default decoders by passing in an appropriate tag
@@ -246,7 +246,7 @@ cbor.decodeFirstSync(input, {
     // Temporal built-in, which supports nanosecond time:
     0: x => Temporal.Instant.from(x),
   },
-})
+});
 ```
 
 Developers
@@ -269,4 +269,4 @@ env NO_GARBAGE=1 npm run dev
 ```
 
 [![Build Status](https://github.com/hildjj/node-cbor/workflows/Tests/badge.svg)](https://github.com/hildjj/node-cbor/actions?query=workflow%3ATests)
-[![Coverage Status](https://coveralls.io/repos/hildjj/node-cbor/badge.svg?branch=main)](https://coveralls.io/r/hildjj/node-cbor?branch=main)
+[![codecov](https://codecov.io/github/hildjj/node-cbor/graph/badge.svg?token=HEGszEFpTc)](https://codecov.io/github/hildjj/node-cbor)

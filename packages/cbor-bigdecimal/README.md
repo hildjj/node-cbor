@@ -14,15 +14,15 @@ npm install cbor cbor-bignumber
 Before trying to encode or decode:
 
 ```js
-const cbor = require('cbor')
-const bdec = require('cbor-bigdecimal')
-bdec(cbor)
+const cbor = require('cbor');
+const bdec = require('cbor-bigdecimal');
+bdec(cbor);
 ```
 
 If you want to remove the added encoders and decoders:
 
 ```js
-cbor.reset()
+cbor.reset();
 ```
 
 If you need to access the same BigNumber class that `cbor-bigdecimal` is (e.g.

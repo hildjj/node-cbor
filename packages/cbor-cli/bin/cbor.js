@@ -1,17 +1,17 @@
 #!/usr/bin/env node
 
-'use strict'
-const child_process = require('child_process')
-const fs = require('fs')
-const path = require('path')
-const util = require('util')
-const cbor = require('cbor')
-const bdec = require('cbor-bigdecimal')
-const commander = require('commander')
-const pkg = require('../package.json')
+'use strict';
+const child_process = require('node:child_process');
+const fs = require('node:fs');
+const path = require('node:path');
+const util = require('node:util');
+const cbor = require('cbor');
+const bdec = require('cbor-bigdecimal');
+const commander = require('commander');
+const pkg = require('../package.json');
 
-bdec(cbor)
-const HEX = /^\s*(?:['"`]|0x)(?<hex>[0-9a-f]+)\s*$/
+bdec(cbor);
+const HEX = /^\s*(?:['"`]|0x)(?<hex>[0-9a-f]+)\s*$/;
 const OUTPUT_TYPES = {
   comment: 'comment',
   c: 'comment',
@@ -21,15 +21,15 @@ const OUTPUT_TYPES = {
   javascript: 'javascript',
   js: 'javascript',
   j: 'javascript',
-}
+};
 function outputType(val) {
-  const norm = OUTPUT_TYPES[val]
+  const norm = OUTPUT_TYPES[val];
   if (!norm) {
     throw new commander.InvalidOptionArgumentError(
       `Not one of: ${Object.keys(OUTPUT_TYPES).join(', ')}`
-    )
+    );
   }
-  return norm
+  return norm;
 }
 
 const opts = commander.program
@@ -43,18 +43,18 @@ const opts = commander.program
     'javascript'
   )
   .parse(process.argv)
-  .opts()
+  .opts();
 
-const COLOR = process.stdout.isTTY || opts.color
+const COLOR = process.stdout.isTTY || opts.color;
 
 // Figure out the node-cbor version number, and the branch name
 // if we're running from a git repo.  require.resolve returns
 // `{node-cbor}/lib/cbor.js`
-const cborPath = path.resolve(path.dirname(require.resolve('cbor')), '..')
+const cborPath = path.resolve(path.dirname(require.resolve('cbor')), '..');
 const cborPkg = JSON.parse(
   fs.readFileSync(path.join(cborPath, 'package.json'), 'utf8')
-)
-let branch = ''
+);
+let branch = '';
 try {
   // Too hard to test both branches.
   /* istanbul ignore next */
@@ -67,7 +67,7 @@ try {
           encoding: 'utf8',
           stdio: 'pipe',
         }
-      ).trimEnd()
+      ).trimEnd();
     } catch (ignored) {
       // Any failures with git, we throw up our hands
     }
@@ -78,95 +78,95 @@ try {
 
 console.log(
   `cbor v${cborPkg.version}${branch} (${opts.type} output from typing 0x00)`
-)
+);
 
 // Extracted from node source
 function stylizeWithColor(str, styleType) {
   if (COLOR) {
-    const style = util.inspect.styles[styleType]
-    const color = util.inspect.colors[style]
-    return `\u001b[${color[0]}m${str}\u001b[${color[1]}m`
+    const style = util.inspect.styles[styleType];
+    const color = util.inspect.colors[style];
+    return `\u001b[${color[0]}m${str}\u001b[${color[1]}m`;
   }
-  return str
+  return str;
 }
 
 // Wrapper that removes quotes and colorizes from the results of certain
 // operations
 class PlainResults {
   constructor(str) {
-    this.str = str
+    this.str = str;
   }
 
   [util.inspect.custom](depth, options) {
     if (typeof this.str === 'string') {
-      const m = this.str.match(/(?<pre>.*)(?<hex>0x[0-9a-f]+)\n$/msi)
+      const m = this.str.match(/(?<pre>.*)(?<hex>0x[0-9a-f]+)\n$/msi);
       if (m) {
-        return `${m.groups.pre}${options.stylize(m.groups.hex, 'special')}`
+        return `${m.groups.pre}${options.stylize(m.groups.hex, 'special')}`;
       }
     }
-    return this.str
+    return this.str;
   }
 }
 
-util.inspect.defaultOptions.compact = false
-const repl = require('repl')
+util.inspect.defaultOptions.compact = false;
+const repl = require('node:repl');
 const cborRepl = repl.start({
   prompt: `${stylizeWithColor('cbor', 'string')}> `,
   ignoreUndefined: true,
-})
+});
 
 // Import everything from the cbor package into the top level,
 // and gussy up a few of them
 for (const [k, v] of Object.entries(cbor)) {
-  cborRepl.context[k] = v
+  cborRepl.context[k] = v;
 }
-cborRepl.context.cbor = cbor
-cborRepl.context.NoFilter = require('nofilter')
+cborRepl.context.cbor = cbor;
+cborRepl.context.NoFilter = require('nofilter');
 cborRepl.context.comment =
   function comment(input, options) {
     return cbor
       .comment(input, options)
-      .then(t => new PlainResults(t))
-  }
+      .then(t => new PlainResults(t));
+  };
 cborRepl.context.diagnose =
   function diagnose(input, options) {
     return cbor
       .diagnose(input, options)
-      .then(t => new PlainResults(t))
-  }
+      .then(t => new PlainResults(t));
+  };
 
-const originalEval = cborRepl.eval
+const originalEval = cborRepl.eval;
 cborRepl.eval = (cmd, context, filename, callback) => {
-  const m = cmd.match(HEX)
+  const m = cmd.match(HEX);
   if (m) {
     switch (opts.type) {
       case 'diagnose':
         cbor.diagnose(m.groups.hex, (er, txt) => {
           if (er) {
-            callback(er)
+            callback(er);
           } else {
-            callback(null, new PlainResults(txt))
+            callback(null, new PlainResults(txt));
           }
-        })
-        return
+        });
+        return;
       case 'comment':
         cbor.comment(m.groups.hex, (er, txt) => {
           if (er) {
-            callback(er)
+            callback(er);
           } else {
-            callback(null, new PlainResults(txt))
+            callback(null, new PlainResults(txt));
           }
-        })
-        return
+        });
+        return;
       case 'javascript':
         cbor.decodeFirst(m.groups.hex, (er, o) => {
           if (er) {
-            callback(er)
+            callback(er);
           } else {
-            callback(null, new PlainResults(o))
+            callback(null, new PlainResults(o));
           }
-        })
-        return
+        });
+        return;
     }
   }
   originalEval(cmd, context, filename, (er, output) => {
@@ -174,31 +174,31 @@ cborRepl.eval = (cmd, context, filename, callback) => {
     // would be bad if this was a system where Promises might last a
     // long time; the command line would lock up while waiting.
     if (!er && (output instanceof Promise)) {
-      console.log(stylizeWithColor('Promise', 'special'))
-      output.then(results => callback(null, results), callback)
+      console.log(stylizeWithColor('Promise', 'special'));
+      output.then(results => callback(null, results), callback);
     } else {
-      callback(er, output)
+      callback(er, output);
     }
-  })
-}
+  });
+};
 
 cborRepl.writer = output => {
-  let str = repl.writer(output)
+  let str = repl.writer(output);
   if (!(output instanceof Error) &&
       !(output instanceof PlainResults)) {
     try {
       // Hey!  Let's encode all results as CBOR for fun.
-      const buf = cbor.encodeCanonical(output)
+      const buf = cbor.encodeCanonical(output);
       str += stylizeWithColor(
         `\n0x${buf.toString('hex')}`,
         'special'
-      )
+      );
     } catch (ignored) {
       // If it didn't work, oh well, we tried
     }
   }
-  return str
-}
+  return str;
+};
 
 // TODO: The completer mostly doesn't work.
 // const originalCompleter = cborRepl.completer.bind(cborRepl)
@@ -225,7 +225,7 @@ if (typeof cborRepl.setupHistory === 'function') {
     // or invalid file
     /* istanbul ignore if */
     if (er) {
-      console.error(er)
+      console.error(er);
     }
-  })
+  });
 }

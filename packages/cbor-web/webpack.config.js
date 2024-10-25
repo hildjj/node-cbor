@@ -1,5 +1,7 @@
-const path = require('path')
-const webpack = require('webpack')
+'use strict';
+
+const path = require('node:path');
+const webpack = require('webpack');
 
 module.exports = {
   entry: './lib/cbor.js',
@@ -24,4 +26,4 @@ module.exports = {
       Buffer: ['buffer', 'Buffer'],
     }),
   ],
-}
+};

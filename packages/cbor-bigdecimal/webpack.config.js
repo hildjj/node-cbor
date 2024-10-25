@@ -1,5 +1,5 @@
-'use strict'
-const path = require('path')
+'use strict';
+const path = require('node:path');
 
 module.exports = {
   entry: './bigdecimal.js',
@@ -19,4 +19,4 @@ module.exports = {
     },
   },
   target: 'web',
-}
+};

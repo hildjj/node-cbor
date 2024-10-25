@@ -6,6 +6,7 @@
     "checkJs": true,
     "declaration": true,
     "emitDeclarationOnly": true,
+    "strict": false,
     "moduleResolution": "node",
     "outDir": "types",
     "target": "ES2020"

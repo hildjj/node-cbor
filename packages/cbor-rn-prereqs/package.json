@@ -21,10 +21,13 @@
   "license": "MIT",
   "dependencies": {
     "@cto.af/textdecoder": "^0.2.0",
-    "big-integer": "^1.6.51",
+    "big-integer": "^1.6.52",
     "buffer": "^6.0.3",
     "events": "^3.3.0",
     "process": "^0.11.10",
     "stream-browserify": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }

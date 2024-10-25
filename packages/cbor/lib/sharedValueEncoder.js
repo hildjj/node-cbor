@@ -1,8 +1,8 @@
-'use strict'
+'use strict';
 
-const Encoder = require('./encoder')
-const ObjectRecorder = require('./objectRecorder')
-const {Buffer} = require('buffer')
+const Encoder = require('./encoder');
+const ObjectRecorder = require('./objectRecorder');
+const {Buffer} = require('buffer');
 
 /**
  * Implement value sharing.
@@ -11,8 +11,8 @@ const {Buffer} = require('buffer')
  */
 class SharedValueEncoder extends Encoder {
   constructor(opts) {
-    super(opts)
-    this.valueSharing = new ObjectRecorder()
+    super(opts);
+    this.valueSharing = new ObjectRecorder();
   }
 
   /**
@@ -25,27 +25,27 @@ class SharedValueEncoder extends Encoder {
    */
   _pushObject(obj, opts) {
     if (obj !== null) {
-      const shared = this.valueSharing.check(obj)
+      const shared = this.valueSharing.check(obj);
       switch (shared) {
         case ObjectRecorder.FIRST:
           // Prefix with tag 28
-          this._pushTag(28)
-          break
+          this._pushTag(28);
+          break;
         case ObjectRecorder.NEVER:
           // Do nothing
-          break
+          break;
         default:
-          return this._pushTag(29) && this._pushIntNum(shared)
+          return this._pushTag(29) && this._pushIntNum(shared);
       }
     }
-    return super._pushObject(obj, opts)
+    return super._pushObject(obj, opts);
   }
 
   /**
    * Between encoding runs, stop recording, and start outputing correct tags.
    */
   stopRecording() {
-    this.valueSharing.stop()
+    this.valueSharing.stop();
   }
 
   /**
@@ -53,7 +53,7 @@ class SharedValueEncoder extends Encoder {
    * pairs.
    */
   clearRecording() {
-    this.valueSharing.clear()
+    this.valueSharing.clear();
   }
 
   /**
@@ -64,19 +64,18 @@ class SharedValueEncoder extends Encoder {
    * @returns {Buffer} The encoded objects.
    */
   static encode(...objs) {
-    const enc = new SharedValueEncoder()
+    const enc = new SharedValueEncoder();
     // eslint-disable-next-line no-empty-function
-    enc.on('data', () => {}) // Sink all writes
+    enc.on('data', () => {}); // Sink all writes
 
     for (const o of objs) {
-      enc.pushAny(o)
+      enc.pushAny(o);
     }
-    enc.stopRecording()
-    enc.removeAllListeners('data')
-    return enc._encodeAll(objs)
+    enc.stopRecording();
+    enc.removeAllListeners('data');
+    return enc._encodeAll(objs);
   }
 
-  // eslint-disable-next-line jsdoc/require-returns-check
   /**
    * Encode one or more JavaScript objects canonically (slower!), and return
    * a Buffer containing the CBOR bytes.
@@ -86,7 +85,7 @@ class SharedValueEncoder extends Encoder {
    * @throws {Error} Always.  This combination doesn't work at the moment.
    */
   static encodeCanonical(...objs) {
-    throw new Error('Cannot encode canonically in a SharedValueEncoder, which serializes objects multiple times.')
+    throw new Error('Cannot encode canonically in a SharedValueEncoder, which serializes objects multiple times.');
   }
 
   /**
@@ -99,13 +98,13 @@ class SharedValueEncoder extends Encoder {
    * @static
    */
   static encodeOne(obj, options) {
-    const enc = new SharedValueEncoder(options)
+    const enc = new SharedValueEncoder(options);
     // eslint-disable-next-line no-empty-function
-    enc.on('data', () => {}) // Sink all writes
-    enc.pushAny(obj)
-    enc.stopRecording()
-    enc.removeAllListeners('data')
-    return enc._encodeAll([obj])
+    enc.on('data', () => {}); // Sink all writes
+    enc.pushAny(obj);
+    enc.stopRecording();
+    enc.removeAllListeners('data');
+    return enc._encodeAll([obj]);
   }
 
   /**
@@ -123,20 +122,20 @@ class SharedValueEncoder extends Encoder {
   static encodeAsync(obj, options) {
     return new Promise((resolve, reject) => {
       /** @type {Buffer[]} */
-      const bufs = []
-      const enc = new SharedValueEncoder(options)
+      const bufs = [];
+      const enc = new SharedValueEncoder(options);
       // eslint-disable-next-line no-empty-function
-      enc.on('data', () => {})
-      enc.on('error', reject)
-      enc.on('finish', () => resolve(Buffer.concat(bufs)))
-      enc.pushAny(obj)
-      enc.stopRecording()
-      enc.removeAllListeners('data')
-      enc.on('data', buf => bufs.push(buf))
-      enc.pushAny(obj)
-      enc.end()
-    })
+      enc.on('data', () => {});
+      enc.on('error', reject);
+      enc.on('finish', () => resolve(Buffer.concat(bufs)));
+      enc.pushAny(obj);
+      enc.stopRecording();
+      enc.removeAllListeners('data');
+      enc.on('data', buf => bufs.push(buf));
+      enc.pushAny(obj);
+      enc.end();
+    });
   }
 }
 
-module.exports = SharedValueEncoder
+module.exports = SharedValueEncoder;

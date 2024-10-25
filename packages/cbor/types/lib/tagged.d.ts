@@ -5,7 +5,7 @@ export = Tagged;
  * be an extension point you're not yet expecting.
  */
 declare class Tagged {
-    static set TAGS(arg: {
+    static set TAGS(val: {
         [x: string]: TagFunction;
     });
     /**
@@ -63,13 +63,13 @@ declare class Tagged {
 declare namespace Tagged {
     export { INTERNAL_JSON, TagFunction, TagMap };
 }
+declare const INTERNAL_JSON: unique symbol;
 /**
  * Convert a tagged value to a more interesting JavaScript type.  Errors
  * thrown in this function will be captured into the "err" property of the
  * original Tagged instance.
  */
 type TagFunction = (value: any, tag: Tagged) => any;
-declare const INTERNAL_JSON: unique symbol;
 /**
  * A mapping from tag number to a tag decoding function.
  */

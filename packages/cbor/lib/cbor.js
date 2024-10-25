@@ -1,13 +1,13 @@
-'use strict'
+'use strict';
 
-const Commented = require('./commented')
-const Diagnose = require('./diagnose')
-const Decoder = require('./decoder')
-const Encoder = require('./encoder')
-const Simple = require('./simple')
-const Tagged = require('./tagged')
-const Map = require('./map')
-const SharedValueEncoder = require('./sharedValueEncoder')
+const Commented = require('./commented');
+const Diagnose = require('./diagnose');
+const Decoder = require('./decoder');
+const Encoder = require('./encoder');
+const Simple = require('./simple');
+const Tagged = require('./tagged');
+const Map = require('./map');
+const SharedValueEncoder = require('./sharedValueEncoder');
 
 module.exports = {
   Commented,
@@ -108,7 +108,7 @@ module.exports = {
    * encoding will use.
    */
   reset() {
-    Encoder.reset()
-    Tagged.reset()
+    Encoder.reset();
+    Tagged.reset();
   },
-}
+};

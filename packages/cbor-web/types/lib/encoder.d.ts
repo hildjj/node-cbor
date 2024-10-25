@@ -1,4 +1,3 @@
-/// <reference types="node" />
 export = Encoder;
 /**
  * @typedef ObjectOptions
@@ -195,7 +194,7 @@ declare class Encoder extends stream.Transform {
      * @returns {Promise<Buffer>} A promise for the encoded buffer.
      */
     static encodeAsync(obj: any, options?: EncodingOptions): Promise<Buffer>;
-    static set SEMANTIC_TYPES(arg: {
+    static set SEMANTIC_TYPES(val: {
         [x: string]: EncodeFunction;
     });
     /**
@@ -390,12 +389,20 @@ declare namespace Encoder {
     export { EncodeFunction, SemanticMap, ObjectOptions, EncodingOptions };
 }
 import stream = require("stream");
+import { Buffer } from "buffer";
+import NoFilter = require("nofilter");
 /**
  * Generate the CBOR for a value.  If you are using this, you'll either need
- * to call {@link Encoder.write } with a Buffer, or look into the internals of
+ * to call {@link Encoder.write} with a Buffer, or look into the internals of
  * Encoder to reuse existing non-documented behavior.
  */
 type EncodeFunction = (enc: Encoder, val: any) => boolean;
+/**
+ * A mapping from tag number to a tag decoding function.
+ */
+type SemanticMap = {
+    [x: string]: EncodeFunction;
+};
 type ObjectOptions = {
     /**
      * Force indefinite encoding for this
@@ -408,8 +415,6 @@ type ObjectOptions = {
      */
     skipTypes?: boolean;
 };
-import { Buffer } from "buffer";
-import NoFilter = require("nofilter");
 type EncodingOptions = {
     /**
      * Array of pairs of
@@ -474,10 +479,4 @@ type EncodingOptions = {
      * `undefined`.
      */
     omitUndefinedProperties?: boolean;
-};
-/**
- * A mapping from tag number to a tag decoding function.
- */
-type SemanticMap = {
-    [x: string]: EncodeFunction;
 };

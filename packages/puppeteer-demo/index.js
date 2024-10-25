@@ -1,16 +1,16 @@
 /* eslint-disable no-console */
-'use strict'
+'use strict';
 
-const puppeteer = require('puppeteer')
-const path = require('path')
-const assert = require('assert')
-const fs = require('fs')
+const puppeteer = require('puppeteer');
+const path = require('node:path');
+const assert = require('node:assert');
+const fs = require('node:fs');
 
 const TOP = `file://${path.resolve(
   __dirname, '..', '..', 'docs', 'example', 'index.html'
-)}`
+)}`;
 
-let executablePath = process.env.PUPPETEER_EXECUTABLE_PATH
+let executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
 if (!executablePath && (process.platform === 'darwin')) {
   executablePath = path.resolve(
     '/',
@@ -19,14 +19,14 @@ if (!executablePath && (process.platform === 'darwin')) {
     'Contents',
     'MacOS',
     'Google Chrome'
-  )
+  );
 }
 if (executablePath) {
   try {
-    fs.accessSync(executablePath, fs.constants.X_OK)
+    fs.accessSync(executablePath, fs.constants.X_OK);
   } catch (ignored) {
-    executablePath = undefined
-    delete process.env.PUPPETEER_EXECUTABLE_PATH
+    executablePath = undefined;
+    delete process.env.PUPPETEER_EXECUTABLE_PATH;
   }
 }
 
@@ -36,42 +36,42 @@ async function main() {
     slowMo: 100,
     headless: false,
     defaultViewport: null,
-  })
-  const pages = await browser.pages()
-  const page = (pages.length > 0) ? pages[0] : await browser.newPage()
+  });
+  const pages = await browser.pages();
+  const page = (pages.length > 0) ? pages[0] : await browser.newPage();
   page
     .on('console', message => {
-      const txt = message.text()
+      const txt = message.text();
       const type = message
         .type()
         .substr(0, 3)
-        .toUpperCase()
-      console.log(`${type} ${txt}`)
+        .toUpperCase();
+      console.log(`${type} ${txt}`);
     })
     .on('pageerror', ({message}) => console.log(message))
     // .on('response', response =>
     //   console.log(`${response.status()} ${response.url()}`))
     .on('requestfailed', request => console.log(
       `${request.failure().errorText} ${request.url()}`
-    ))
-  await page.goto(TOP, {waitUntil: 'load'})
-  const links = await page.$$('li a')
-  const len = links.length
+    ));
+  await page.goto(TOP, {waitUntil: 'load'});
+  const links = await page.$$('li a');
+  const len = links.length;
   for (let i = 0; i < len; i++) {
     await Promise.all([
       page.waitForNavigation({waitUntil: 'load'}),
       page.click(`li:nth-child(${i + 1}) a`),
-    ])
+    ]);
     await page.$eval('#input-text', input => {
-      input.value = 'c482382cc254056e5e99b1be81b6eefa3964490ac18c69399361'
-    })
-    await page.select('#input-fmt', 'hex')
-    await page.select('#output-fmt', 'js')
-    const txt = await page.$eval('#output-text', output => output.value)
-    assert(txt.match(/\s+s:\s+\d+,/))
-    await page.goBack()
+      input.value = 'c482382cc254056e5e99b1be81b6eefa3964490ac18c69399361';
+    });
+    await page.select('#input-fmt', 'hex');
+    await page.select('#output-fmt', 'js');
+    const txt = await page.$eval('#output-text', output => output.value);
+    assert(txt.match(/\s+s:\s+\d+,/));
+    await page.goBack();
   }
-  await browser.close()
+  await browser.close();
 }
 
-main().catch(console.error)
+main().catch(console.error);
