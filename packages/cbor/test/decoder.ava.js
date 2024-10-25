@@ -230,6 +230,7 @@ test('typed arrays', t => {
   t.is(cbor.decode(ab), 9007199254740992n);
   t.is(cbor.decode(new Uint8Array(ab)), 9007199254740992n);
   t.is(cbor.decode(new Uint8ClampedArray(ab)), 9007199254740992n);
+  t.is(cbor.decode(new Int8Array(ab)), 9007199254740992n);
 
   // Beware endian-ness
   const u8b = new Uint8ClampedArray([0x61, 0x62]);
