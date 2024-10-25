@@ -6,5 +6,6 @@ module.exports = {
     'marked',
     'nofilter',
     'p-event',
+    'rimraf',
   ],
 };

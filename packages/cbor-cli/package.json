@@ -46,7 +46,7 @@
     "mock-stdio": "^1.0.3",
     "nofilter": "^3.0.2",
     "p-event": "^4.2.0",
-    "rimraf": "^6.0.1"
+    "rimraf": "5.0.10"
   },
   "license": "MIT",
   "readmeFilename": "README.md",
@@ -58,6 +58,6 @@
     "json-text-sequence": "1.0.1"
   },
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   }
 }
