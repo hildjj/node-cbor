@@ -1,4 +1,3 @@
-/// <reference types="node" />
 export = Commented;
 /**
  * Generate the expanded format of RFC 8949, section 3.2.2.

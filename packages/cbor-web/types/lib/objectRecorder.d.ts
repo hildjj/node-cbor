@@ -31,6 +31,6 @@ declare class ObjectRecorder {
     check(obj: object): number;
 }
 declare namespace ObjectRecorder {
-    const NEVER: number;
-    const FIRST: number;
+    let NEVER: number;
+    let FIRST: number;
 }

@@ -1,4 +1,3 @@
-/// <reference types="node" />
 export = Decoder;
 /**
  * Decode a stream of CBOR bytes by transforming them into equivalent
@@ -89,7 +88,7 @@ declare class Decoder extends BinaryParseStream {
      * @throws {TypeError} No input specified.
      * @static
      */
-    static decodeAll(input: BufferLike, options?: string | DecoderOptions | ((error: Error, value: Array<ExtendedResults> | Array<any>) => any), cb?: (error: Error, value: Array<ExtendedResults> | Array<any>) => any): Promise<Array<ExtendedResults> | Array<any>>;
+    static decodeAll(input: BufferLike, options?: DecoderOptions | ((error: Error, value: Array<ExtendedResults> | Array<any>) => any) | string, cb?: (error: Error, value: Array<ExtendedResults> | Array<any>) => any): Promise<Array<ExtendedResults> | Array<any>>;
     /**
      * Create a parsing stream.
      *
@@ -101,6 +100,7 @@ declare class Decoder extends BinaryParseStream {
     tags: {
         [x: string]: Tagged.TagFunction;
     };
+    preferMap: boolean;
     preferWeb: boolean;
     extendedResults: boolean;
     required: boolean;
@@ -123,10 +123,33 @@ declare namespace Decoder {
 import BinaryParseStream = require("../vendor/binary-parse-stream");
 import Tagged = require("./tagged");
 import NoFilter = require("nofilter");
+declare const NOT_FOUND: unique symbol;
 /**
  * Things that can act as inputs, from which a NoFilter can be created.
  */
-type BufferLike = string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | stream.Readable;
+type BufferLike = string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | import("stream").Readable;
+type ExtendedResults = {
+    /**
+     * The value that was found.
+     */
+    value: any;
+    /**
+     * The number of bytes of the original input that
+     * were read.
+     */
+    length: number;
+    /**
+     * The bytes of the original input that were used
+     * to produce the value.
+     */
+    bytes: Buffer;
+    /**
+     * The bytes that were left over from the original
+     * input.  This property only exists if {@linkcode Decoder.decodeFirst} or
+     * {@linkcode Decoder.decodeFirstSync} was called.
+     */
+    unused?: Buffer;
+};
 type DecoderOptions = {
     /**
      * The maximum depth to parse.
@@ -142,6 +165,12 @@ type DecoderOptions = {
      * function returns the correctly-created value for that tag.
      */
     tags?: Tagged.TagMap;
+    /**
+     * If true, prefer to generate Map
+     * instances to plain objects, even if there are no entries in the map
+     * or if all of the keys are strings.
+     */
+    preferMap?: boolean;
     /**
      * If true, prefer Uint8Arrays to
      * be generated instead of node Buffers.  This might turn on some more
@@ -160,7 +189,7 @@ type DecoderOptions = {
     required?: boolean;
     /**
      * If true, emit extended
-     * results, which will be an object with shape {@link ExtendedResults }.
+     * results, which will be an object with shape {@link ExtendedResults}.
      * The value will already have been null-checked.
      */
     extendedResults?: boolean;
@@ -170,29 +199,5 @@ type DecoderOptions = {
      */
     preventDuplicateKeys?: boolean;
 };
-type ExtendedResults = {
-    /**
-     * The value that was found.
-     */
-    value: any;
-    /**
-     * The number of bytes of the original input that
-     * were read.
-     */
-    length: number;
-    /**
-     * The bytes of the original input that were used
-     * to produce the value.
-     */
-    bytes: Buffer;
-    /**
-     * The bytes that were left over from the original
-     * input.  This property only exists if {@linkcode Decoder.decodeFirst } or
-     * {@linkcode Decoder.decodeFirstSync } was called.
-     */
-    unused?: Buffer;
-};
 type decodeCallback = (error?: Error, value?: any) => void;
-declare const NOT_FOUND: unique symbol;
 import { Buffer } from "buffer";
-import stream = require("stream");
