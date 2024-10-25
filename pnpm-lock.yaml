@@ -5,10 +5,10 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  ip: https://registry.npmjs.org/neoip/-/neoip-3.0.1.tgz
   axios: 1.7.7
   braces: 3.0.3
   ejs: 3.1.10
+  ip: https://registry.npmjs.org/neoip/-/neoip-3.0.1.tgz
   micromatch: 4.0.8
 
 importers:
