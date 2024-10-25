@@ -25,8 +25,8 @@ importers:
         version: 1.0.1
     devDependencies:
       marked:
-        specifier: ^0.7.0
-        version: 0.7.0
+        specifier: ^4.0.10
+        version: 4.0.10
       marked-man:
         specifier: ^2.1.0
         version: 2.1.0
@@ -212,14 +212,14 @@ packages:
     resolution: {integrity: sha512-tHW9cRz3xS05zPolHr6qP5aWguzcfBJvMRjg3RDnONxs5hNxifFv9TyIoX47YTOrco3AVK7EIbh0rWgQ0YonkA==}
     hasBin: true
 
-  marked@0.7.0:
-    resolution: {integrity: sha512-c+yYdCZJQrsRjTPhUx7VKkApw9bwDkNbHUKo1ovgcfDjb2kc8rLuRbIFyXL5WOEUwzSSKo3IXpph2K6DqB/KZg==}
-    engines: {node: '>=0.10.0'}
-    hasBin: true
-
   marked@12.0.2:
     resolution: {integrity: sha512-qXUm7e/YKFoqFPYPa3Ukg9xlI5cyAtGmyEIzMfW//m6kXwCy2Ps9DYf5ioijFKQ8qyuscrHoY04iJGctu2Kg0Q==}
     engines: {node: '>= 18'}
+    hasBin: true
+
+  marked@4.0.10:
+    resolution: {integrity: sha512-+QvuFj0nGgO970fySghXGmuw+Fd0gD2x3+MqCWLIPf5oxdv1Ka6b2q+z9RP01P/IaKPMEramy+7cNy/Lw8c3hw==}
+    engines: {node: '>= 12'}
     hasBin: true
 
   minimatch@9.0.5:
@@ -513,9 +513,9 @@ snapshots:
       marked: 12.0.2
       read-pkg-up: 11.0.0
 
-  marked@0.7.0: {}
-
   marked@12.0.2: {}
+
+  marked@4.0.10: {}
 
   minimatch@9.0.5:
     dependencies:
