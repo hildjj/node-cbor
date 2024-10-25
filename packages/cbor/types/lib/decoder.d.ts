@@ -127,7 +127,7 @@ declare const NOT_FOUND: unique symbol;
 /**
  * Things that can act as inputs, from which a NoFilter can be created.
  */
-type BufferLike = string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | import("stream").Readable;
+type BufferLike = string | Buffer | ArrayBuffer | ArrayBufferView | DataView | import("stream").Readable;
 type ExtendedResults = {
     /**
      * The value that was found.
