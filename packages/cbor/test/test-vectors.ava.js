@@ -38,7 +38,7 @@ use command \`git submodule update --init\` to load test-vectors`);
       "___VALUE___": "$<num>"
     }`
   );
-  vectors = JSON.parse(vecStr, (key, value) => {
+  vectors = JSON.parse(vecStr, (_key, value) => {
     if (!value) {
       return value;
     }

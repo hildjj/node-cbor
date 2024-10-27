@@ -1,6 +1,6 @@
 {
   "name": "cbor-rn-prereqs",
-  "version": "9.0.0",
+  "version": "9.0.2",
   "description": "React Native pre-requisites for cbor",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/hildjj/node-cbor.git",
+    "url": "git+ssh://git@github.com/hildjj/node-cbor.git",
     "directory": "packages/cbor-rn-prereqs"
   },
   "homepage": "https://github.com/hildjj/node-cbor/tree/main/packages/cbor-rn-prereqs",

@@ -15,7 +15,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "http://github.com/hildjj/node-cbor.git",
+    "url": "git+ssh://git@github.com/hildjj/node-cbor.git",
     "directory": "packages/parcel-demo"
   },
   "devDependencies": {
@@ -36,12 +36,6 @@
     "rimraf": "5.0.10",
     "stream-browserify": "3.0.0",
     "svgo": "3.3.2"
-  },
-  "pnpm": {
-    "overrides": {
-      "braces": "3.0.3",
-      "micromatch": "4.0.8"
-    }
   },
   "engines": {
     "node": ">=18"

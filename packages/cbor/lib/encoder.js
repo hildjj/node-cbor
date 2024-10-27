@@ -191,11 +191,11 @@ class Encoder extends stream.Transform {
    * Transforming.
    *
    * @param {any} fresh Buffer to transcode.
-   * @param {BufferEncoding} encoding Name of encoding.
+   * @param {BufferEncoding} _encoding Name of encoding.
    * @param {stream.TransformCallback} cb Callback when done.
    * @ignore
    */
-  _transform(fresh, encoding, cb) {
+  _transform(fresh, _encoding, cb) {
     const ret = this.pushAny(fresh);
     // Old transformers might not return bool.  undefined !== false
     cb((ret === false) ? new Error('Push Error') : undefined);
@@ -446,11 +446,11 @@ class Encoder extends stream.Transform {
   }
 
   /**
-   * @param {null} obj Ignored.
+   * @param {null} _obj Ignored.
    * @returns {boolean} True on success.
    * @ignore
    */
-  _pushNull(obj) {
+  _pushNull(_obj) {
     return this._pushUInt8(NULL);
   }
 
@@ -823,7 +823,7 @@ Call removeLoopDetectors before resuming.`);
     };
     let entries = [...obj.entries()];
     if (gen.omitUndefinedProperties) {
-      entries = entries.filter(([k, v]) => v !== undefined);
+      entries = entries.filter(([_k, v]) => v !== undefined);
     }
     if (opts.indefinite) {
       if (!gen._pushUInt8((MT.MAP << 5) | NUMBYTES.INDEFINITE)) {
@@ -1033,7 +1033,6 @@ Call removeLoopDetectors before resuming.`);
    * @param {any} obj The object to encode.
    * @param {EncodingOptions} [options={}] Passed to the Encoder constructor.
    * @returns {Buffer} The encoded objects.
-   * @static
    */
   static encodeOne(obj, options) {
     return new Encoder(options)._encodeAll([obj]);

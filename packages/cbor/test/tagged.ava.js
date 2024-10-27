@@ -121,22 +121,22 @@ test('Typed Arrays', t => {
   t.is(tag.err, 'val not a buffer');
   tag = new cbor.Tagged(90, 'foo');
 
-  const {64: _toTypedArray} = cbor.Tagged.TAGS;
-  t.throws(() => _toTypedArray(tag.value, tag));
+  const {64: toTypedArray} = cbor.Tagged.TAGS;
+  t.throws(() => toTypedArray(tag.value, tag));
   tag = new cbor.Tagged(76, 'foo');
-  t.throws(() => _toTypedArray(tag.value, tag));
+  t.throws(() => toTypedArray(tag.value, tag));
   tag = new cbor.Tagged(90, Buffer.from('000100020003', 'hex'));
-  t.throws(() => _toTypedArray(tag.value, tag));
+  t.throws(() => toTypedArray(tag.value, tag));
 
   // Endian
   tag = new cbor.Tagged(65, Buffer.from('000100020003', 'hex'));
-  t.deepEqual(_toTypedArray(tag.value, tag), new Uint16Array([1, 2, 3]));
+  t.deepEqual(toTypedArray(tag.value, tag), new Uint16Array([1, 2, 3]));
 
   tag = new cbor.Tagged(68, Buffer.from('010203', 'hex'));
-  t.deepEqual(_toTypedArray(tag.value, tag), new Uint8ClampedArray([1, 2, 3]));
+  t.deepEqual(toTypedArray(tag.value, tag), new Uint8ClampedArray([1, 2, 3]));
 
   tag = new cbor.Tagged(73, Buffer.from('000100020003', 'hex'));
-  t.deepEqual(_toTypedArray(tag.value, tag), new Int16Array([1, 2, 3]));
+  t.deepEqual(toTypedArray(tag.value, tag), new Int16Array([1, 2, 3]));
 });
 
 test('null converter', t => {

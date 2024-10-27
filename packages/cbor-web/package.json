@@ -14,7 +14,7 @@
   "homepage": "https://github.com/hildjj/node-cbor/tree/main/packages/cbor-web",
   "repository": {
     "type": "git",
-    "url": "http://github.com/hildjj/node-cbor.git",
+    "url": "git+ssh://git@github.com/hildjj/node-cbor.git",
     "directory": "packages/cbor-web"
   },
   "devDependencies": {

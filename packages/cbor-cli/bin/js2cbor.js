@@ -37,7 +37,7 @@ class ModuleStream extends stream.Transform {
     this.filename = filename;
   }
 
-  _transform(chunk, encoding, callback) {
+  _transform(chunk, _encoding, callback) {
     this.bufs.push(chunk);
     callback();
   }

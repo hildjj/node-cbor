@@ -10,11 +10,11 @@ function enc(t, n, expected) {
   t.is(cbor.encodeOne(new BigNumber(n)).toString('hex'), expected);
 }
 
-test.before(t => {
+test.before(() => {
   bigdec(cbor);
 });
 
-test.after(t => {
+test.after(() => {
   cbor.reset();
 });
 

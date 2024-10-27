@@ -1,6 +1,6 @@
 {
   "name": "puppeteer-demo",
-  "version": "9.0.0",
+  "version": "9.0.2",
   "description": "Run all web demos in puppeteer",
   "main": "index.js",
   "private": true,
@@ -13,11 +13,6 @@
   "devDependencies": {
     "chrome-finder": "^1.0.7",
     "puppeteer": "^23.6.0"
-  },
-  "pnpm": {
-    "overrides": {
-      "ip": "https://registry.npmjs.org/neoip/-/neoip-3.0.1.tgz"
-    }
   },
   "engines": {
     "node": ">=18"

@@ -226,7 +226,7 @@ if (typeof BigInt64Array !== 'undefined') {
   TYPED_ARRAY_TAGS[79] = BigInt64Array;
 }
 
-function _toTypedArray(val, tagged) {
+function toTypedArray(val, tagged) {
   if (!utils.isBufferish(val)) {
     throw new TypeError('val not a buffer');
   }
@@ -249,7 +249,7 @@ function _toTypedArray(val, tagged) {
 }
 
 for (const n of Object.keys(TYPED_ARRAY_TAGS)) {
-  TAGS[n] = _toTypedArray;
+  TAGS[n] = toTypedArray;
 }
 
 /**

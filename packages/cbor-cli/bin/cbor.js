@@ -97,7 +97,7 @@ class PlainResults {
     this.str = str;
   }
 
-  [util.inspect.custom](depth, options) {
+  [util.inspect.custom](_depth, options) {
     if (typeof this.str === 'string') {
       const m = this.str.match(/(?<pre>.*)(?<hex>0x[0-9a-f]+)\n$/msi);
       if (m) {

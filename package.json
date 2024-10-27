@@ -2,34 +2,41 @@
   "name": "cbor-monorepo",
   "private": true,
   "main": "./packages/cbor/lib/cbor.js",
-  "version": "8.0.0",
+  "version": "9.0.2",
   "author": {
     "name": "Joe Hildebrand",
     "email": "joe-github@cursive.net"
   },
+  "license": "MIT",
   "scripts": {
-    "clean": "rimraf node_modules coverage .nyc_output packages/*/node_modules packages/*/coverage packages/*/.nyc_output",
+    "clean": "rimraf pnpm-lock.yaml .parcel-cache docs node_modules coverage .nyc_output packages/*/node_modules packages/*/coverage packages/*/.nyc_output packages/*/pnpm-lock.yaml",
     "docs": "jsdoc -c .jsdoc.conf",
     "lint": "eslint .",
     "test": "ava packages/*/test/*.ava.js",
-    "test:versions": "nve --continue --arch x64 --parallel 22,20,18 npm test",
+    "test:versions": "nve --continue --arch x64 --parallel 23,22,20,18 npm test",
     "test:bigendian": "docker run --rm -it -v ${PWD}:/root/cbor -w /root/cbor s390x/node npm test",
     "test:spot-check": "ava test/*.ava.js && CBOR_PACKAGE=${INIT_CWD}/packages/cbor-web/dist/cbor.js npm run test",
     "test:web": "node packages/puppeteer-demo/index.js",
     "test:all": "npm run test:versions && npm run test:spot-check && npm run test:bigendian && npm run test:web",
-    "build": "pnpm -r build",
+    "build": "pnpm run -r --sort build",
     "coverage": "nyc -r lcov npm test",
     "coverage:all": "nyc -r lcov npm run test:all",
     "precopy": "rimraf docs/example/*",
-    "copy": "pnpm -r copy"
+    "copy": "pnpm -r copy",
+    "version": "monopub -P version"
   },
   "dependencies": {
     "nofilter": "^3.0.2"
   },
   "devDependencies": {
     "@cto.af/eslint-config": "^5.0.2",
-    "ava": "6.1.3",
+    "@cto.af/monopub": "0.1.1",
+    "@parcel/core": "2.12.0",
+    "@parcel/optimizer-data-url": "2.12.0",
+    "@parcel/transformer-inline-string": "2.12.0",
+    "ava": "6.2.0",
     "bignumber.js": "^9.1.2",
+    "buffer": "^6.0.3",
     "copyfiles": "2.4.1",
     "docdash": "2.0.2",
     "eslint": "^9.13.0",
@@ -37,15 +44,25 @@
     "eslint-plugin-jsdoc": "^50.4.3",
     "eslint-plugin-markdown": "^5.1.0",
     "eslint-plugin-node": "^11.1.0",
+    "events": "^3.3.0",
     "jsdoc": "^4.0.4",
     "minami": "*",
     "nve": "^18.0.1",
     "nyc": "^17.1.0",
+    "process": "^0.11.10",
     "rimraf": "5.0.10",
-    "typedoc": "0.26.10",
+    "stream-browserify": "^3.0.0",
+    "svgo": "3.3.2",
     "typescript": "^5.6.3"
   },
-  "license": "MIT",
+  "pnpm": {
+    "overrides": {
+      "braces": "3.0.3",
+      "ip": "https://registry.npmjs.org/neoip/-/neoip-3.0.1.tgz",
+      "micromatch": "4.0.8",
+      "svgo": "3.3.2"
+    }
+  },
   "packageManager": "pnpm@9.12.2",
   "engines": {
     "node": ">=18"

@@ -20,7 +20,7 @@ exports.HexStream = class HexStream extends stream.Transform {
     super(options);
   }
 
-  _transform(fresh, encoding, cb) {
+  _transform(fresh, _encoding, cb) {
     this.push(fresh.toString('hex'));
     return cb();
   }
