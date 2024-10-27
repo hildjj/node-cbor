@@ -22,8 +22,8 @@ importers:
         specifier: ^5.0.2
         version: 5.0.2(eslint@9.13.0)(typescript@5.6.3)
       '@cto.af/monopub':
-        specifier: 0.1.1
-        version: 0.1.1
+        specifier: 0.1.2
+        version: 0.1.2
       '@parcel/core':
         specifier: 2.12.0
         version: 2.12.0(@swc/helpers@0.5.13)
@@ -490,8 +490,8 @@ packages:
     resolution: {integrity: sha512-hvSb7FmLPdXneaE0pDzgp/n5GL+QMjNQ/ccqEG8Ih3u1EjffmxiMaQBVyT/zLFJuOZVfJ4ojdNZs121nfh6vTg==}
     engines: {node: '>=18'}
 
-  '@cto.af/monopub@0.1.1':
-    resolution: {integrity: sha512-7dMX+LMbDx+VmZPvChSc7ZX6pnL0kXnPhmYmwspCFtLB5ooAIEwTJ5kZQsBPCBCY9wS9v/Q+nn52FYLiC5G1Tw==}
+  '@cto.af/monopub@0.1.2':
+    resolution: {integrity: sha512-xX7F9wfF0Uht6F0708ouo16sbwzXZkzOnCQY1qLjfxptd9s5gXhXR2SoBi7uCR6hJmPXXVcPfRedb00P6bgIfQ==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -601,6 +601,12 @@ packages:
   '@jsdoc/salty@0.2.8':
     resolution: {integrity: sha512-5e+SFVavj1ORKlKaKr2BmTOekmXbelU7dC0cDkQLqag7xfuTPuGMUFx7KWJuv4bYZrTsoL2Z18VVCOKYxzoHcg==}
     engines: {node: '>=v12.0.0'}
+
+  '@kwsites/file-exists@1.1.1':
+    resolution: {integrity: sha512-m9/5YGR18lIwxSFDwfE3oA7bWuq9kdau6ugN4H2rJeyhFQZcG9AgSHkQtSD15a8WvTgfz9aikZMrKPHvbpqFiw==}
+
+  '@kwsites/promise-deferred@1.1.1':
+    resolution: {integrity: sha512-GaHYm+c0O9MjZRu0ongGBRbinu8gVAMd2UZjji6jVmqKtZluZnptXGWhz1E8j8D2HJ3f/yMxKAUC0b+57wncIw==}
 
   '@lezer/common@1.2.3':
     resolution: {integrity: sha512-w7ojc8ejBqr2REPsWxJjrMFsA/ysDCFICn8zEOR9mrqzOu2amhITYuLD8ag6XZf0CFXDrhKqw7+tW8cX66NaDA==}
@@ -4017,6 +4023,9 @@ packages:
   simple-concat@1.0.1:
     resolution: {integrity: sha512-cSFtAPtRhljv69IK0hTVZQ+OfE9nePi/rtJmw5UjHeVyVroEqJXP1sFztKUy1qU+xvz3u/sfYJLa947b7nAN2Q==}
 
+  simple-git@3.27.0:
+    resolution: {integrity: sha512-ivHoFS9Yi9GY49ogc6/YAi3Fl9ROnF4VyubNylgCkA+RVqLaKWnDSzXOVzya8csELIaWaYNutsEuAhZrtOjozA==}
+
   slash@5.1.0:
     resolution: {integrity: sha512-ZA6oR3T/pEyuqwMgAKT0/hAv8oAXckzbkmR0UkUosQ+Mc4RxGoJkRmwHgHufaenlyAgE1Mxgpdcrf75y6XcnDg==}
     engines: {node: '>=14.16'}
@@ -4713,11 +4722,14 @@ snapshots:
       - supports-color
       - typescript
 
-  '@cto.af/monopub@0.1.1':
+  '@cto.af/monopub@0.1.2':
     dependencies:
       commander: 12.1.0
       fast-glob: 3.3.2
+      simple-git: 3.27.0
       yaml: 2.6.0
+    transitivePeerDependencies:
+      - supports-color
 
   '@cto.af/textdecoder@0.2.0': {}
 
@@ -4830,6 +4842,14 @@ snapshots:
   '@jsdoc/salty@0.2.8':
     dependencies:
       lodash: 4.17.21
+
+  '@kwsites/file-exists@1.1.1':
+    dependencies:
+      debug: 4.3.7
+    transitivePeerDependencies:
+      - supports-color
+
+  '@kwsites/promise-deferred@1.1.1': {}
 
   '@lezer/common@1.2.3': {}
 
@@ -8822,6 +8842,14 @@ snapshots:
   signal-exit@4.1.0: {}
 
   simple-concat@1.0.1: {}
+
+  simple-git@3.27.0:
+    dependencies:
+      '@kwsites/file-exists': 1.1.1
+      '@kwsites/promise-deferred': 1.1.1
+      debug: 4.3.7
+    transitivePeerDependencies:
+      - supports-color
 
   slash@5.1.0: {}
 
