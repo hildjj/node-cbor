@@ -26,8 +26,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: docs
           publish_branch: gh-pages
-          destination_dir: docs
-      - run: monopub delete devDependencies,scripts
-      - run: monopub exec 'npm publish --access public --provenance'
+      - run: npx monopub delete devDependencies,scripts
+      - run: npx monopub exec 'npm publish --access public --provenance'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
