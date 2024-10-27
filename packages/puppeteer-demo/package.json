@@ -1,6 +1,6 @@
 {
   "name": "puppeteer-demo",
-  "version": "10.0.0",
+  "version": "10.0.1",
   "description": "Run all web demos in puppeteer",
   "main": "index.js",
   "private": true,
