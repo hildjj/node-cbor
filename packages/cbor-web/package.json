@@ -1,6 +1,6 @@
 {
   "name": "cbor-web",
-  "version": "9.0.2",
+  "version": "10.0.0",
   "description": "",
   "main": "dist/cbor.js",
   "types": "./types/lib/cbor.d.ts",
