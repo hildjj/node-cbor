@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>lib/diagnose.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BinaryParseStream.html">BinaryParseStream</a></li><li><a href="CborMap.html">CborMap</a><ul class='methods'><li data-type='method'><a href="CborMap.html#delete">delete</a></li><li data-type='method'><a href="CborMap.html#encodeCBOR">encodeCBOR</a></li><li data-type='method'><a href="CborMap.html#entries">entries</a></li><li data-type='method'><a href="CborMap.html#forEach">forEach</a></li><li data-type='method'><a href="CborMap.html#get">get</a></li><li data-type='method'><a href="CborMap.html#has">has</a></li><li data-type='method'><a href="CborMap.html#keys">keys</a></li><li data-type='method'><a href="CborMap.html#set">set</a></li></ul></li><li><a href="Commented.html">Commented</a><ul class='methods'><li data-type='method'><a href="Commented.html#.comment">comment</a></li></ul></li><li><a href="Decoder.html">Decoder</a><ul class='methods'><li data-type='method'><a href="Decoder.html#close">close</a></li><li data-type='method'><a href="Decoder.html#.decodeAll">decodeAll</a></li><li data-type='method'><a href="Decoder.html#.decodeAllSync">decodeAllSync</a></li><li data-type='method'><a href="Decoder.html#.decodeFirst">decodeFirst</a></li><li data-type='method'><a href="Decoder.html#.decodeFirstSync">decodeFirstSync</a></li><li data-type='method'><a href="Decoder.html#.nullcheck">nullcheck</a></li></ul></li><li><a href="Diagnose.html">Diagnose</a><ul class='methods'><li data-type='method'><a href="Diagnose.html#.diagnose">diagnose</a></li></ul></li><li><a href="Encoder.html">Encoder</a><ul class='methods'><li data-type='method'><a href="Encoder.html#addSemanticType">addSemanticType</a></li><li data-type='method'><a href="Encoder.html#pushAny">pushAny</a></li><li data-type='method'><a href="Encoder.html#removeLoopDetectors">removeLoopDetectors</a></li><li data-type='method'><a href="Encoder.html#.encode">encode</a></li><li data-type='method'><a href="Encoder.html#.encodeAsync">encodeAsync</a></li><li data-type='method'><a href="Encoder.html#.encodeCanonical">encodeCanonical</a></li><li data-type='method'><a href="Encoder.html#.encodeIndefinite">encodeIndefinite</a></li><li data-type='method'><a href="Encoder.html#.encodeOne">encodeOne</a></li><li data-type='method'><a href="Encoder.html#.pushArray">pushArray</a></li><li data-type='method'><a href="Encoder.html#.reset">reset</a></li></ul></li><li><a href="ObjectRecorder.html">ObjectRecorder</a><ul class='methods'><li data-type='method'><a href="ObjectRecorder.html#check">check</a></li><li data-type='method'><a href="ObjectRecorder.html#clear">clear</a></li><li data-type='method'><a href="ObjectRecorder.html#stop">stop</a></li></ul></li><li><a href="SharedValueEncoder.html">SharedValueEncoder</a><ul class='methods'><li data-type='method'><a href="SharedValueEncoder.html#clearRecording">clearRecording</a></li><li data-type='method'><a href="SharedValueEncoder.html#stopRecording">stopRecording</a></li><li data-type='method'><a href="SharedValueEncoder.html#.encode">encode</a></li><li data-type='method'><a href="SharedValueEncoder.html#.encodeAsync">encodeAsync</a></li><li data-type='method'><a href="SharedValueEncoder.html#.encodeCanonical">encodeCanonical</a></li><li data-type='method'><a href="SharedValueEncoder.html#.encodeOne">encodeOne</a></li></ul></li><li><a href="Simple.html">Simple</a><ul class='methods'><li data-type='method'><a href="Simple.html#encodeCBOR">encodeCBOR</a></li><li data-type='method'><a href="Simple.html#toString">toString</a></li><li data-type='method'><a href="Simple.html#.decode">decode</a></li><li data-type='method'><a href="Simple.html#.isSimple">isSimple</a></li></ul></li><li><a href="Tagged.html">Tagged</a><ul class='methods'><li data-type='method'><a href="Tagged.html#convert">convert</a></li><li data-type='method'><a href="Tagged.html#encodeCBOR">encodeCBOR</a></li><li data-type='method'><a href="Tagged.html#toString">toString</a></li><li data-type='method'><a href="Tagged.html#.reset">reset</a></li></ul></li></ul><h3><a href="global.html">Global</a></h3>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">lib/diagnose.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+
+const stream = require('stream');
+const Decoder = require('./decoder');
+const utils = require('./utils');
+const NoFilter = require('nofilter');
+const {MT, SYMS} = require('./constants');
+
+/**
+ * Things that can act as inputs, from which a NoFilter can be created.
+ *
+ * @typedef {string|Buffer|ArrayBuffer|ArrayBufferView
+ *   |DataView|stream.Readable} BufferLike
+ */
+
+/**
+ * @typedef DiagnoseOptions
+ * @property {string} [separator='\n'] Output between detected objects.
+ * @property {boolean} [stream_errors=false] Put error info into the
+ *   output stream.
+ * @property {number} [max_depth=-1] The maximum depth to parse.
+ *   Use -1 for "until you run out of memory".  Set this to a finite
+ *   positive number for un-trusted inputs.  Most standard inputs won't nest
+ *   more than 100 or so levels; I've tested into the millions before
+ *   running out of memory.
+ * @property {object} [tags] Mapping from tag number to function(v),
+ *   where v is the decoded value that comes after the tag, and where the
+ *   function returns the correctly-created value for that tag.
+ * @property {boolean} [preferWeb=false] If true, prefer Uint8Arrays to
+ *   be generated instead of node Buffers.  This might turn on some more
+ *   changes in the future, so forward-compatibility is not guaranteed yet.
+ * @property {BufferEncoding} [encoding='hex'] The encoding of input, ignored if
+ *   input is not string.
+ */
+/**
+ * @callback diagnoseCallback
+ * @param {Error} [error] If one was generated.
+ * @param {string} [value] The diagnostic value.
+ * @returns {void}
+ */
+/**
+ * @param {DiagnoseOptions|diagnoseCallback|string} opts Options,
+ *   the callback, or input incoding.
+ * @param {diagnoseCallback} [cb] Called on completion.
+ * @returns {{options: DiagnoseOptions, cb: diagnoseCallback}} Normalized.
+ * @throws {TypeError} Unknown option type.
+ * @private
+ */
+function normalizeOptions(opts, cb) {
+  switch (typeof opts) {
+    case 'function':
+      return {options: {}, cb: /** @type {diagnoseCallback} */ (opts)};
+    case 'string':
+      return {options: {encoding: /** @type {BufferEncoding} */ (opts)}, cb};
+    case 'object':
+      return {options: opts || {}, cb};
+    default:
+      throw new TypeError('Unknown option type');
+  }
+}
+
+/**
+ * Output the diagnostic format from a stream of CBOR bytes.
+ *
+ * @extends stream.Transform
+ */
+class Diagnose extends stream.Transform {
+  /**
+   * Creates an instance of Diagnose.
+   *
+   * @param {DiagnoseOptions} [options={}] Options for creation.
+   */
+  constructor(options = {}) {
+    const {
+      separator = '\n',
+      stream_errors = false,
+      // Decoder options
+      tags,
+      max_depth,
+      preferWeb,
+      encoding,
+      // Stream.Transform options
+      ...superOpts
+    } = options;
+    super({
+      ...superOpts,
+      readableObjectMode: false,
+      writableObjectMode: false,
+    });
+
+    this.float_bytes = -1;
+    this.separator = separator;
+    this.stream_errors = stream_errors;
+    this.parser = new Decoder({
+      tags,
+      max_depth,
+      preferWeb,
+      encoding,
+    });
+    this.parser.on('more-bytes', this._on_more.bind(this));
+    this.parser.on('value', this._on_value.bind(this));
+    this.parser.on('start', this._on_start.bind(this));
+    this.parser.on('stop', this._on_stop.bind(this));
+    this.parser.on('data', this._on_data.bind(this));
+    this.parser.on('error', this._on_error.bind(this));
+  }
+
+  /**
+   * Transforming.
+   *
+   * @param {any} fresh Buffer to transcode.
+   * @param {BufferEncoding} encoding Name of encoding.
+   * @param {stream.TransformCallback} cb Callback when done.
+   * @ignore
+   */
+  _transform(fresh, encoding, cb) {
+    this.parser.write(fresh, encoding, cb);
+  }
+
+  /**
+   * Flushing.
+   *
+   * @param {stream.TransformCallback} cb Callback when done.
+   * @ignore
+   */
+  _flush(cb) {
+    this.parser._flush(er => {
+      if (this.stream_errors) {
+        if (er) {
+          this._on_error(er);
+        }
+        return cb();
+      }
+      return cb(er);
+    });
+  }
+
+  /**
+   * Convenience function to return a string in diagnostic format.
+   *
+   * @param {BufferLike} input The CBOR bytes to format.
+   * @param {DiagnoseOptions |diagnoseCallback|string} [options={}]
+   *   Options, the callback, or the input encoding.
+   * @param {diagnoseCallback} [cb] Callback.
+   * @returns {Promise} If callback not specified.
+   * @throws {TypeError} Input not provided.
+   */
+  static diagnose(input, options = {}, cb = null) {
+    if (input == null) {
+      throw new TypeError('input required');
+    }
+    ({options, cb} = normalizeOptions(options, cb));
+    const {encoding = 'hex', ...opts} = options;
+
+    const bs = new NoFilter();
+    const d = new Diagnose(opts);
+    let p = null;
+    if (typeof cb === 'function') {
+      d.on('end', () => cb(null, bs.toString('utf8')));
+      d.on('error', cb);
+    } else {
+      p = new Promise((resolve, reject) => {
+        d.on('end', () => resolve(bs.toString('utf8')));
+        d.on('error', reject);
+      });
+    }
+    d.pipe(bs);
+    utils.guessEncoding(input, encoding).pipe(d);
+    return p;
+  }
+
+  /**
+   * @ignore
+   */
+  _on_error(er) {
+    if (this.stream_errors) {
+      this.push(er.toString());
+    } else {
+      this.emit('error', er);
+    }
+  }
+
+  /** @private */
+  _on_more(mt, len, _parent_mt, _pos) {
+    if (mt === MT.SIMPLE_FLOAT) {
+      this.float_bytes = {
+        2: 1,
+        4: 2,
+        8: 3,
+      }[len];
+    }
+  }
+
+  /** @private */
+  _fore(parent_mt, pos) {
+    switch (parent_mt) {
+      case MT.BYTE_STRING:
+      case MT.UTF8_STRING:
+      case MT.ARRAY:
+        if (pos > 0) {
+          this.push(', ');
+        }
+        break;
+      case MT.MAP:
+        if (pos > 0) {
+          if (pos % 2) {
+            this.push(': ');
+          } else {
+            this.push(', ');
+          }
+        }
+    }
+  }
+
+  /** @private */
+  _on_value(val, parent_mt, pos) {
+    if (val === SYMS.BREAK) {
+      return;
+    }
+    this._fore(parent_mt, pos);
+    const fb = this.float_bytes;
+    this.float_bytes = -1;
+    this.push(utils.cborValueToString(val, fb));
+  }
+
+  /** @private */
+  _on_start(mt, tag, parent_mt, pos) {
+    this._fore(parent_mt, pos);
+    switch (mt) {
+      case MT.TAG:
+        this.push(`${tag}(`);
+        break;
+      case MT.ARRAY:
+        this.push('[');
+        break;
+      case MT.MAP:
+        this.push('{');
+        break;
+      case MT.BYTE_STRING:
+      case MT.UTF8_STRING:
+        this.push('(');
+        break;
+    }
+    if (tag === SYMS.STREAM) {
+      this.push('_ ');
+    }
+  }
+
+  /** @private */
+  _on_stop(mt) {
+    switch (mt) {
+      case MT.TAG:
+        this.push(')');
+        break;
+      case MT.ARRAY:
+        this.push(']');
+        break;
+      case MT.MAP:
+        this.push('}');
+        break;
+      case MT.BYTE_STRING:
+      case MT.UTF8_STRING:
+        this.push(')');
+        break;
+    }
+  }
+
+  /** @private */
+  _on_data() {
+    this.push(this.separator);
+  }
+}
+
+module.exports = Diagnose;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>

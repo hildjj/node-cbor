@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>BinaryParseStream - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BinaryParseStream.html">BinaryParseStream</a></li><li><a href="CborMap.html">CborMap</a><ul class='methods'><li data-type='method'><a href="CborMap.html#delete">delete</a></li><li data-type='method'><a href="CborMap.html#encodeCBOR">encodeCBOR</a></li><li data-type='method'><a href="CborMap.html#entries">entries</a></li><li data-type='method'><a href="CborMap.html#forEach">forEach</a></li><li data-type='method'><a href="CborMap.html#get">get</a></li><li data-type='method'><a href="CborMap.html#has">has</a></li><li data-type='method'><a href="CborMap.html#keys">keys</a></li><li data-type='method'><a href="CborMap.html#set">set</a></li></ul></li><li><a href="Commented.html">Commented</a><ul class='methods'><li data-type='method'><a href="Commented.html#.comment">comment</a></li></ul></li><li><a href="Decoder.html">Decoder</a><ul class='methods'><li data-type='method'><a href="Decoder.html#close">close</a></li><li data-type='method'><a href="Decoder.html#.decodeAll">decodeAll</a></li><li data-type='method'><a href="Decoder.html#.decodeAllSync">decodeAllSync</a></li><li data-type='method'><a href="Decoder.html#.decodeFirst">decodeFirst</a></li><li data-type='method'><a href="Decoder.html#.decodeFirstSync">decodeFirstSync</a></li><li data-type='method'><a href="Decoder.html#.nullcheck">nullcheck</a></li></ul></li><li><a href="Diagnose.html">Diagnose</a><ul class='methods'><li data-type='method'><a href="Diagnose.html#.diagnose">diagnose</a></li></ul></li><li><a href="Encoder.html">Encoder</a><ul class='methods'><li data-type='method'><a href="Encoder.html#addSemanticType">addSemanticType</a></li><li data-type='method'><a href="Encoder.html#pushAny">pushAny</a></li><li data-type='method'><a href="Encoder.html#removeLoopDetectors">removeLoopDetectors</a></li><li data-type='method'><a href="Encoder.html#.encode">encode</a></li><li data-type='method'><a href="Encoder.html#.encodeAsync">encodeAsync</a></li><li data-type='method'><a href="Encoder.html#.encodeCanonical">encodeCanonical</a></li><li data-type='method'><a href="Encoder.html#.encodeIndefinite">encodeIndefinite</a></li><li data-type='method'><a href="Encoder.html#.encodeOne">encodeOne</a></li><li data-type='method'><a href="Encoder.html#.pushArray">pushArray</a></li><li data-type='method'><a href="Encoder.html#.reset">reset</a></li></ul></li><li><a href="ObjectRecorder.html">ObjectRecorder</a><ul class='methods'><li data-type='method'><a href="ObjectRecorder.html#check">check</a></li><li data-type='method'><a href="ObjectRecorder.html#clear">clear</a></li><li data-type='method'><a href="ObjectRecorder.html#stop">stop</a></li></ul></li><li><a href="SharedValueEncoder.html">SharedValueEncoder</a><ul class='methods'><li data-type='method'><a href="SharedValueEncoder.html#clearRecording">clearRecording</a></li><li data-type='method'><a href="SharedValueEncoder.html#stopRecording">stopRecording</a></li><li data-type='method'><a href="SharedValueEncoder.html#.encode">encode</a></li><li data-type='method'><a href="SharedValueEncoder.html#.encodeAsync">encodeAsync</a></li><li data-type='method'><a href="SharedValueEncoder.html#.encodeCanonical">encodeCanonical</a></li><li data-type='method'><a href="SharedValueEncoder.html#.encodeOne">encodeOne</a></li></ul></li><li><a href="Simple.html">Simple</a><ul class='methods'><li data-type='method'><a href="Simple.html#encodeCBOR">encodeCBOR</a></li><li data-type='method'><a href="Simple.html#toString">toString</a></li><li data-type='method'><a href="Simple.html#.decode">decode</a></li><li data-type='method'><a href="Simple.html#.isSimple">isSimple</a></li></ul></li><li><a href="Tagged.html">Tagged</a><ul class='methods'><li data-type='method'><a href="Tagged.html#convert">convert</a></li><li data-type='method'><a href="Tagged.html#encodeCBOR">encodeCBOR</a></li><li data-type='method'><a href="Tagged.html#toString">toString</a></li><li data-type='method'><a href="Tagged.html#.reset">reset</a></li></ul></li></ul><h3><a href="global.html">Global</a></h3>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">BinaryParseStream</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        
+            BinaryParseStream
+        
+        </h2>
+        
+            <div class="class-description usertext">BinaryParseStream is a TransformStream that consumes buffers and outputs
+objects on the other end.  It expects your subclass to implement a `_parse`
+method that is a generator.  When your generator yields a number, it'll be
+fed a buffer of that length from the input.  When your generator returns,
+the return value will be pushed to the output side.</div>
+        
+    
+</header>
+
+<article>
+    
+        <div class="container-overview">
+        
+            
+
+    
+    <h2>Constructor</h2>
+    
+
+    <h4 class="name" id="BinaryParseStream"><span class="type-signature"></span>new BinaryParseStream<span class="signature">(options)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Creates an instance of BinaryParseStream.</li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vendor_binary-parse-stream_index.js.html">vendor/binary-parse-stream/index.js</a>, <a href="vendor_binary-parse-stream_index.js.html#line24">line 24</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">stream.TransformOptions</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Stream options.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        </div>
+    
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li>stream.Transform</li>
+    </ul>
+
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Classes</h3>
+
+        <dl>
+            <dt><a href="BinaryParseStream.html">BinaryParseStream</a></dt>
+            <dd></dd>
+        </dl>
+    
+    
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>
