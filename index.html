@@ -62,12 +62,18 @@
     <section class="readme usertext">
         <article><h1>cbor</h1>
 <p>Encode and parse data in the Concise Binary Object Representation (CBOR) data format (<a href="https://www.rfc-editor.org/rfc/rfc8949.html">RFC8949</a>).</p>
+<h2>MOVE TO CBOR2</h2>
+<p><strong>NOTE</strong></p>
+<p>All new users and most existing users of this library should move to the
+<a href="https://github.com/hildjj/cbor2">cbor2</a> library.  It is where most
+maintenance and support and all new features are happening.</p>
+<p><em>Only</em> catastrophic bugs will be fixed in this library going forward.</p>
 <h2>Supported Node.js versions</h2>
 <p>This project now only supports versions of Node that the Node team is
 <a href="https://github.com/nodejs/Release#release-schedule">currently supporting</a>.
 Ava's <a href="https://github.com/avajs/ava/blob/main/docs/support-statement.md">support
 statement</a>
-is what we will be using as well.  Currently, that means Node <code>10</code>+ is
+is what we will be using as well.  Currently, that means Node <code>18</code>+ is
 required.  If you need to support an older version of Node (back to version
 6), use cbor version 5.2.x, which will get nothing but security updates from
 here on out.</p>
