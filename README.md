@@ -3,6 +3,16 @@
 Encode and parse data in the Concise Binary Object Representation (CBOR) data
 format ([RFC8949](https://www.rfc-editor.org/rfc/rfc8949.html)).
 
+## MOVE TO CBOR2
+
+**NOTE**
+
+All new users and most existing users of these libraries should move to the
+[cbor2](https://github.com/hildjj/cbor2) library.  It is where most
+maintenance and support and all new features are happening.
+
+*Only* catastrophic bugs will be fixed in these libraries going forward.
+
 ## Pointers
 
 This is a monorepo that holds a few related packages:

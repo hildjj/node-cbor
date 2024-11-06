@@ -1,7 +1,18 @@
 # cbor-bignumber
 
-This package adds suppot for BigDecimal and BigFloats to the [cbor](../cbor)
+This package adds support for BigDecimal and BigFloats to the [cbor](../cbor)
 package, relying on [bignumber.js](https://github.com/MikeMcl/bignumber.js).
+
+## MOVE TO CBOR2
+
+**NOTE**
+
+All new users and most existing users of this library should move to the
+[cbor2](https://github.com/hildjj/cbor2) library.  It is where most
+maintenance and support and all new features are happening.  cbor2 has
+support for JavaScript bigints enabled by default.
+
+*Only* catastrophic bugs will be fixed in this library going forward.
 
 ## Installation
 

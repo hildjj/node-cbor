@@ -4,6 +4,18 @@ A command-line interface for encoding and parse data in the Concise Binary
 Object Representation (CBOR) data format
 ([RFC8949](https://www.rfc-editor.org/rfc/rfc8949.html)).
 
+## MOVE TO CBOR2
+
+**NOTE**
+
+All new users and most existing users of this library should move to the
+[cbor2](https://github.com/hildjj/cbor2) library.  It is where most
+maintenance and support and all new features are happening.  The easiest way
+to get this functionality on cbor2 is to use the web
+[playground](https://hildjj.github.io/cbor2/playground/).
+
+*Only* catastrophic bugs will be fixed in this package going forward.
+
 ## Supported Node.js versions
 
 This project now only supports versions of Node that the Node team is

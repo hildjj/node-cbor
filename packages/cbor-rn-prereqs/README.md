@@ -2,6 +2,17 @@
 
 Make it easier to use the cbor package in React Native.
 
+## MOVE TO CBOR2
+
+**NOTE**
+
+All users of this library should move to the
+[cbor2](https://github.com/hildjj/cbor2) library.  It is where most
+maintenance and support and all new features are happening.  This set of
+workarounds has always been lightly-maintained, since React Native's JS
+implementation is... not that similar to other modern runtimes.
+
+*Only* catastrophic bugs will be fixed in this library going forward.
 
 ## Installation:
 

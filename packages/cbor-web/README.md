@@ -7,6 +7,17 @@ This package bundles the [cbor](../cbor) package for easy use on the web.  The f
  - [process](https://github.com/shtylman/node-process)
  - [stream-browserify](https://github.com/browserify/stream-browserify)
 
+## MOVE TO CBOR2
+
+**NOTE**
+
+ALL users of this library should move to the
+[cbor2](https://github.com/hildjj/cbor2) library.  It is where most
+maintenance and support and all new features are happening.  cbor2 works
+natively on the web and does not this set of work-arounds and dependencies.
+
+*Only* catastrophic bugs will be fixed in this library going forward.
+
 ## Examples
 
 You can see `cbor-web` in action on the web [here](https://hildjj.github.io/node-cbor/example/).
