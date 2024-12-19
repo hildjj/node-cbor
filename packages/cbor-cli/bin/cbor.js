@@ -99,10 +99,7 @@ class PlainResults {
 
   [util.inspect.custom](_depth, options) {
     if (typeof this.str === 'string') {
-      const m = this.str.match(/(?<pre>.*)(?<hex>0x[0-9a-f]+)\n$/msi);
-      if (m) {
-        return `${m.groups.pre}${options.stylize(m.groups.hex, 'special')}`;
-      }
+      return this.str.replace(/0x[0-9a-f]+/, hex => options.stylize(hex, 'special'));
     }
     return this.str;
   }

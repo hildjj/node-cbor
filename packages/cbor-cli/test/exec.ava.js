@@ -182,7 +182,7 @@ test('cbor', async t => {
       NODE_REPL_HISTORY: '',
     },
   });
-  t.regex(buf, / +a: 1\n/);
+  t.regex(buf, / a: 1\n/);
   buf = await exec(t.title, {
     stdin: 'comment("01")',
     env: {
