@@ -6,5 +6,6 @@ module.exports = {
     'nofilter',
     'p-event',
     'rimraf',
+    'webpack-cli',
   ],
 };

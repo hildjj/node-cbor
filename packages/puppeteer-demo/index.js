@@ -68,7 +68,7 @@ async function main() {
     await page.select('#input-fmt', 'hex');
     await page.select('#output-fmt', 'js');
     const txt = await page.$eval('#output-text', output => output.value);
-    assert(txt.match(/\s+s:\s+\d+,/));
+    assert(txt.match(/ s:\s+\d+,/));
     await page.goBack();
   }
   await browser.close();
