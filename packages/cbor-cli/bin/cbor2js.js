@@ -12,7 +12,8 @@ const {program} = require('commander');
 
 program
   .version(pkg.version)
-  .usage('[options] <file ...>')
+  .argument('[file...]', 'Files to read, "-" for stdin')
+  .usage('[options] [file ...]')
   .option('-x, --hex <STRING>', 'Hex string input')
   .option('-e, --exports', 'add module.exports= to the beginning')
   .option('-H, --hidden', 'Include non-enumerable symbols and properties')

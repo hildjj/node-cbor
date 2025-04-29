@@ -12,9 +12,9 @@
   "license": "MIT",
   "devDependencies": {
     "chrome-finder": "^1.0.7",
-    "puppeteer": "^23.11.1"
+    "puppeteer": "^24.7.2"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   }
 }

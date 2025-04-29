@@ -52,7 +52,7 @@
   },
   "devDependencies": {
     "@types/node": "^22",
-    "bignumber.js": "^9.1.2",
+    "bignumber.js": "^9.3.0",
     "garbage": "~0.0.0",
     "p-event": "^4.2.0",
     "rimraf": "5.0.10"
@@ -60,6 +60,6 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   }
 }

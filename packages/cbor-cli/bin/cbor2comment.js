@@ -8,7 +8,8 @@ const {program} = require('commander');
 
 const opts = program
   .version(pkg.version)
-  .usage('[options] <file ...>')
+  .argument('[file...]', 'Files to read, "-" for stdin')
+  .usage('[options] [file ...]')
   .option('-x, --hex <string>', 'Hex string input')
   .option('-t, --tabsize [spaces]', 'Indent amount')
   .parse(process.argv)

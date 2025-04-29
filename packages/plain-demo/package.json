@@ -16,7 +16,7 @@
     "directory": "packages/plain-demo"
   },
   "devDependencies": {
-    "bignumber.js": "^9.1.2",
+    "bignumber.js": "^9.3.0",
     "browser-resolve": "^2.0.0",
     "cbor-bigdecimal": "^10.0.3",
     "cbor-web": "^10.0.3",
@@ -24,6 +24,6 @@
     "node-inspect-extracted": "^3.0.2"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   }
 }

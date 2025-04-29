@@ -49,4 +49,12 @@ export default [
       'n/prefer-node-protocol': 'off',
     },
   },
+  {
+    files: [
+      'test-vectors/appendix_a.json',
+    ],
+    rules: {
+      'json/no-unsafe-values': 'off',
+    },
+  },
 ];
