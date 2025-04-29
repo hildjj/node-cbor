@@ -14,7 +14,8 @@ bdec(cbor);
 
 program
   .version(pkg.version)
-  .usage('[options] <file ...>')
+  .argument('[file...]', 'Files to read, "-" for stdin')
+  .usage('[options] [file...]')
   .option('-x, --hex', 'Hex string output')
   .option('-c, --canonical', 'Canonical output')
   .parse(process.argv);

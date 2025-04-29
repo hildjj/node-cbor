@@ -11,7 +11,8 @@ const {program} = require('commander');
 
 program
   .version(pkg.version)
-  .usage('[options] <file ...>')
+  .argument('[file...]', 'Files to read, "-" for stdin')
+  .usage('[options] [file ...]')
   .option('-x, --hex <STRING>', 'Hex string input')
   .parse(process.argv);
 

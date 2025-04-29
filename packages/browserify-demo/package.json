@@ -18,14 +18,14 @@
   "author": "Joe Hildebrand <joe-github@cursive.net>",
   "license": "MIT",
   "devDependencies": {
-    "@babel/core": "^7.26.0",
+    "@babel/core": "^7.26.10",
     "babelify": "^10.0.0",
     "browserify": "^17.0.1",
     "cbor-bigdecimal": "^10.0.3",
     "copyfiles": "^2.4.1",
     "node-inspect-extracted": "*",
     "rimraf": "5.0.10",
-    "terser": "^5.37.0"
+    "terser": "^5.39.0"
   },
   "engines": {
     "node": ">=18"
