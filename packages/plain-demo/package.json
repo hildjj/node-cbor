@@ -1,6 +1,6 @@
 {
   "name": "plain-demo",
-  "version": "10.0.3",
+  "version": "10.0.4",
   "description": "A demo for cbor-web with no bundler",
   "private": true,
   "scripts": {
