@@ -29,8 +29,8 @@
     "nofilter": "^3.0.2"
   },
   "devDependencies": {
-    "@cto.af/eslint-config": "^6.0.0",
-    "@cto.af/monopub": "0.1.3",
+    "@cto.af/eslint-config": "^6.0.1",
+    "@cto.af/monopub": "1.0.0",
     "@parcel/core": "2.14.4",
     "@parcel/optimizer-data-url": "2.14.4",
     "@parcel/transformer-inline-string": "2.14.4",
