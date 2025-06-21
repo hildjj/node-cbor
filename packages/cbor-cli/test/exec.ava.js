@@ -21,11 +21,8 @@ function exec(bin, opts = {}) {
       ...opts.env,
     };
     const args = opts.args || [];
-    if (process.platform === 'win32') {
-      args.unshift(bin);
-      [bin] = process.argv;
-    }
-    const c = spawn(bin, args, {
+    args.unshift(...process.execArgv, bin);
+    const c = spawn(process.execPath, args, {
       stdio: 'pipe',
       env,
     });
@@ -45,12 +42,13 @@ function exec(bin, opts = {}) {
         reject(err);
       }
     });
-    if (opts.stdin != null) {
-      c.stdin.write(opts.stdin);
-    }
-    c.stdin.end();
+    c.stdin.end(opts.stdin);
   });
 }
+
+const env = {
+  NODE_REPL_HISTORY: '',
+};
 
 test('json2cbor', async t => {
   let buf = await exec('json2cbor', {
@@ -140,10 +138,9 @@ test('cbor2comment', async t => {
 test('cbor', async t => {
   let buf = await exec(t.title, {
     stdin: 'true',
-    env: {
-      NODE_REPL_HISTORY: '',
-    },
+    env,
   });
+
   // I might leave this in for a while to ensure that we're running the cbor
   // version I think we should be in CI.
   console.log('cli VERSION:', buf);
@@ -152,77 +149,59 @@ test('cbor', async t => {
 
   await t.throwsAsync(() => exec(t.title, {
     args: ['-t', 'foo'],
-    env: {
-      NODE_REPL_HISTORY: '',
-    },
+    env,
   }));
 
   buf = await exec(t.title, {
     args: ['-t', 'diag', '-c'],
     stdin: '0x818100',
-    env: {
-      NODE_REPL_HISTORY: '',
-    },
+    env,
   });
   t.regex(buf, /\[\[0\]\]\n/);
 
   buf = await exec(t.title, {
     args: ['-t', 'comment', '-c'],
     stdin: '0x818100',
-    env: {
-      NODE_REPL_HISTORY: '',
-    },
+    env,
   });
   t.regex(buf, /Array, 1 item/);
 
   buf = await exec(t.title, {
     args: ['-t', 'js'],
     stdin: '0xa1616101',
-    env: {
-      NODE_REPL_HISTORY: '',
-    },
+    env,
   });
   t.regex(buf, / a: 1\n/);
   buf = await exec(t.title, {
     stdin: 'comment("01")',
-    env: {
-      NODE_REPL_HISTORY: '',
-    },
+    env,
   });
   t.regex(buf, /Promise/);
   t.regex(buf, /0x01/);
   buf = await exec(t.title, {
     stdin: 'diagnose("01")',
-    env: {
-      NODE_REPL_HISTORY: '',
-    },
+    env,
   });
   t.regex(buf, /Promise\n1\n/);
 
   buf = await exec(t.title, {
     args: ['-t', 'd'],
     stdin: '0x81',
-    env: {
-      NODE_REPL_HISTORY: '',
-    },
+    env,
   });
   t.regex(buf, /Error: unexpected end of input/);
 
   buf = await exec(t.title, {
     args: ['-t', 'c'],
     stdin: '0x81',
-    env: {
-      NODE_REPL_HISTORY: '',
-    },
+    env,
   });
   t.regex(buf, /Error: unexpected end of input/);
 
   buf = await exec(t.title, {
     args: ['-t', 'javascript'],
     stdin: '0x81',
-    env: {
-      NODE_REPL_HISTORY: '',
-    },
+    env,
   });
   t.regex(buf, /Error: unexpected end of input/);
 });

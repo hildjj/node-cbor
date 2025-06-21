@@ -20,7 +20,7 @@
   "author": "Joe Hildebrand <joe-github@cursive.net>",
   "license": "MIT",
   "dependencies": {
-    "@cto.af/textdecoder": "^0.2.0",
+    "@cto.af/textdecoder": "^0.2.1",
     "big-integer": "^1.6.52",
     "buffer": "^6.0.3",
     "events": "^3.3.0",

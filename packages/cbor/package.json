@@ -51,7 +51,7 @@
     "nofilter": "^3.0.2"
   },
   "devDependencies": {
-    "@types/node": "^22",
+    "@types/node": "^24",
     "bignumber.js": "^9.3.0",
     "garbage": "~0.0.0",
     "p-event": "^4.2.0",

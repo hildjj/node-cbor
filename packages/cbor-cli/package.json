@@ -41,7 +41,7 @@
     "email": "joe-github@cursive.net"
   },
   "devDependencies": {
-    "marked": "^15.0.11",
+    "marked": "^15.0.12",
     "marked-man": "^2.1.0",
     "mock-stdio": "^1.0.3",
     "nofilter": "^3.0.2",
@@ -54,7 +54,7 @@
     "bignumber.js": "^9.3.0",
     "cbor": "^10.0.3",
     "cbor-bigdecimal": "^10.0.3",
-    "commander": "^13.1.0",
+    "commander": "^14.0.0",
     "json-text-sequence": "1.0.1"
   },
   "engines": {

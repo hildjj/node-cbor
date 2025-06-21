@@ -112,6 +112,13 @@ const cborRepl = repl.start({
   ignoreUndefined: true,
 });
 
+// Fix node v24.2 issue with close timing.
+// See https://github.com/nodejs/node/issues/58784
+const oclose = cborRepl.close;
+cborRepl.close = (...args) => {
+  setTimeout(() => oclose.apply(cborRepl, args), 10);
+};
+
 // Import everything from the cbor package into the top level,
 // and gussy up a few of them
 for (const [k, v] of Object.entries(cbor)) {
