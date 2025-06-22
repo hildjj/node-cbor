@@ -1,6 +1,6 @@
 {
   "name": "cbor-bigdecimal",
-  "version": "10.0.3",
+  "version": "10.0.4",
   "description": "Plugin for node-cbor to add BigDecimal and BigFloat support.  Requires bignumber.js",
   "browser": "dist/cbor-bigdecimal.js",
   "main": "./bigdecimal.js",
@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "bignumber.js": "^9.3.0",
-    "webpack": "^5.99.7",
+    "webpack": "^5.99.9",
     "webpack-cli": "^5.1.4"
   },
   "engines": {
