@@ -5,18 +5,14 @@ export = Tagged;
  * be an extension point you're not yet expecting.
  */
 declare class Tagged {
-    static set TAGS(val: {
-        [x: string]: TagFunction;
-    });
+    static set TAGS(val: TagMap);
     /**
      * The current set of supported tags.  May be modified by plugins.
      *
      * @type {TagMap}
      * @static
      */
-    static get TAGS(): {
-        [x: string]: TagFunction;
-    };
+    static get TAGS(): TagMap;
     /**
      * Reset the supported tags to the original set, before any plugins modified
      * the list.

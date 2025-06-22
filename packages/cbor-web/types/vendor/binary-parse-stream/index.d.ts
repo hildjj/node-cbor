@@ -28,7 +28,7 @@ declare class BinaryParseStream extends stream.Transform {
      */
     _parse(): Generator<number, any, Buffer>;
     __restart(): void;
-    __parser: Generator<number, any, Buffer>;
+    __parser: Generator<number, any, Buffer<ArrayBufferLike>>;
 }
 import stream = require("stream");
 import NoFilter = require("nofilter");

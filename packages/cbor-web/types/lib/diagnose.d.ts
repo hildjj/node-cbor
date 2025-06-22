@@ -51,7 +51,7 @@ import Decoder = require("./decoder");
 /**
  * Things that can act as inputs, from which a NoFilter can be created.
  */
-type BufferLike = string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | stream.Readable;
+type BufferLike = string | Buffer | ArrayBuffer | ArrayBufferView | DataView | stream.Readable;
 type DiagnoseOptions = {
     /**
      * Output between detected objects.

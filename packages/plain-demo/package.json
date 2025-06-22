@@ -18,8 +18,8 @@
   "devDependencies": {
     "bignumber.js": "^9.3.0",
     "browser-resolve": "^2.0.0",
-    "cbor-bigdecimal": "10.0.5",
-    "cbor-web": "10.0.5",
+    "cbor-bigdecimal": "link:../cbor-bigdecimal/",
+    "cbor-web": "link:../cbor-web/",
     "copyfiles": "^2.4.1",
     "node-inspect-extracted": "^3.1.0"
   },

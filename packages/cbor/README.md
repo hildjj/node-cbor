@@ -30,16 +30,16 @@ $ npm install --save cbor
 ```
 
 **NOTE**
-If you are going to use this on the web, use [cbor-web](../cbor-web) instead.
+If you are going to use this on the web, use [cbor-web](../cbor-web/) instead.
 
 If you need support for encoding and decoding BigDecimal fractions (tag 4) or
-BigFloats (tag 5), please see [cbor-bigdecimal](../cbor-bigdecimal).
+BigFloats (tag 5), please see [cbor-bigdecimal](../cbor-bigdecimal/).
 
 ## Documentation:
 
 See the full API [documentation](http://hildjj.github.io/node-cbor/).
 
-For a command-line interface, see [cbor-cli](../cbor-cli).
+For a command-line interface, see [cbor-cli](../cbor-cli/).
 
 Example:
 ```js

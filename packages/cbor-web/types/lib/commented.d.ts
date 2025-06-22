@@ -16,7 +16,6 @@ declare class Commented extends stream.Transform {
      * @param {commentCallback} [cb] If specified, called on completion.
      * @returns {Promise} If cb not specified.
      * @throws {Error} Input required.
-     * @static
      */
     static comment(input: string | Buffer | ArrayBuffer | Uint8Array | Uint8ClampedArray | DataView | stream.Readable, options?: CommentOptions | commentCallback | string | number, cb?: commentCallback): Promise<any>;
     /**
@@ -45,11 +44,11 @@ declare class Commented extends stream.Transform {
     /**
      * @ignore
      */
-    _on_more(mt: any, len: any, parent_mt: any, pos: any): void;
+    _on_more(mt: any, len: any, _parent_mt: any, _pos: any): void;
     /**
      * @ignore
      */
-    _on_start_string(mt: any, len: any, parent_mt: any, pos: any): void;
+    _on_start_string(mt: any, len: any, _parent_mt: any, _pos: any): void;
     /**
      * @ignore
      */
@@ -57,7 +56,7 @@ declare class Commented extends stream.Transform {
     /**
      * @ignore
      */
-    _on_stop(mt: any): void;
+    _on_stop(_mt: any): void;
     /**
      * @private
      */

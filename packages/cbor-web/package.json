@@ -21,7 +21,7 @@
     "abort-controller": "3.0.0",
     "base64-js": "^1.5.1",
     "buffer": "^6.0.3",
-    "cbor": "10.0.5",
+    "cbor": "link:../cbor/",
     "events": "^3.3.0",
     "ieee754": "^1.2.1",
     "inherits": "^2.0.4",
