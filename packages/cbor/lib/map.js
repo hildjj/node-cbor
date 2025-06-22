@@ -114,7 +114,7 @@ class CborMap extends Map {
    * Returns a new Iterator object that contains the [key, value] pairs for
    * each element in the Map object in insertion order.
    *
-   * @returns {IterableIterator<any>} Key value pairs.
+   * @returns {MapIterator<any>} Key value pairs.
    * @yields {any[]} Key value pairs.
    */
   *entries() {
@@ -127,7 +127,7 @@ class CborMap extends Map {
    * Returns a new Iterator object that contains the [key, value] pairs for
    * each element in the Map object in insertion order.
    *
-   * @returns {IterableIterator<any>} Key value pairs.
+   * @returns {MapIterator<any>} Key value pairs.
    */
   [Symbol.iterator]() {
     return this.entries();

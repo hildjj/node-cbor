@@ -35,7 +35,6 @@ declare class Decoder extends BinaryParseStream {
      * @returns {ExtendedResults|any} The decoded value.
      * @throws {UnexpectedDataError} Data is left over after decoding.
      * @throws {Error} Insufficient data.
-     * @static
      */
     static decodeFirstSync(input: BufferLike, options?: DecoderOptions | string): ExtendedResults | any;
     /**
@@ -49,7 +48,6 @@ declare class Decoder extends BinaryParseStream {
      * @returns {Array<ExtendedResults>|Array<any>} Array of all found items.
      * @throws {TypeError} No input provided.
      * @throws {Error} Insufficient data provided.
-     * @static
      */
     static decodeAllSync(input: BufferLike, options?: DecoderOptions | string): Array<ExtendedResults> | Array<any>;
     /**
@@ -66,7 +64,6 @@ declare class Decoder extends BinaryParseStream {
      * @returns {Promise<ExtendedResults|any>} Returned even if callback is
      *   specified.
      * @throws {TypeError} No input provided.
-     * @static
      */
     static decodeFirst(input: BufferLike, options?: DecoderOptions | decodeCallback | string, cb?: decodeCallback): Promise<ExtendedResults | any>;
     /**
@@ -86,7 +83,6 @@ declare class Decoder extends BinaryParseStream {
      * @returns {Promise<Array<ExtendedResults>|Array<any>>} Even if callback
      *   is specified.
      * @throws {TypeError} No input specified.
-     * @static
      */
     static decodeAll(input: BufferLike, options?: DecoderOptions | ((error: Error, value: Array<ExtendedResults> | Array<any>) => any) | string, cb?: (error: Error, value: Array<ExtendedResults> | Array<any>) => any): Promise<Array<ExtendedResults> | Array<any>>;
     /**

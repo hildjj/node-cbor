@@ -179,7 +179,6 @@ declare class Encoder extends stream.Transform {
      * @param {any} obj The object to encode.
      * @param {EncodingOptions} [options={}] Passed to the Encoder constructor.
      * @returns {Buffer} The encoded objects.
-     * @static
      */
     static encodeOne(obj: any, options?: EncodingOptions): Buffer;
     /**
@@ -194,17 +193,13 @@ declare class Encoder extends stream.Transform {
      * @returns {Promise<Buffer>} A promise for the encoded buffer.
      */
     static encodeAsync(obj: any, options?: EncodingOptions): Promise<Buffer>;
-    static set SEMANTIC_TYPES(val: {
-        [x: string]: EncodeFunction;
-    });
+    static set SEMANTIC_TYPES(val: SemanticMap);
     /**
      * The currently supported set of semantic types.  May be modified by plugins.
      *
      * @type {SemanticMap}
      */
-    static get SEMANTIC_TYPES(): {
-        [x: string]: EncodeFunction;
-    };
+    static get SEMANTIC_TYPES(): SemanticMap;
     /**
      * Reset the supported semantic types to the original set, before any
      * plugins modified the list.
@@ -328,11 +323,11 @@ declare class Encoder extends stream.Transform {
      */
     _pushUndefined(obj: undefined): boolean;
     /**
-     * @param {null} obj Ignored.
+     * @param {null} _obj Ignored.
      * @returns {boolean} True on success.
      * @ignore
      */
-    _pushNull(obj: null): boolean;
+    _pushNull(_obj: null): boolean;
     /**
      * @param {number} tag Tag number to encode.
      * @returns {boolean} True on success.

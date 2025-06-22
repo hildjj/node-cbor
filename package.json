@@ -42,7 +42,7 @@
     "docdash": "2.0.2",
     "eslint": "^9.29.0",
     "eslint-plugin-ava": "^15.0.1",
-    "eslint-plugin-jsdoc": "^51.1.1",
+    "eslint-plugin-jsdoc": "^51.1.2",
     "events": "^3.3.0",
     "jsdoc": "^4.0.4",
     "minami": "*",
@@ -51,7 +51,8 @@
     "process": "^0.11.10",
     "rimraf": "5.0.10",
     "stream-browserify": "^3.0.0",
-    "svgo": "3.3.2",
+    "svgo": "4.0.0",
+    "typedoc": "0.28.5",
     "typescript": "^5.8.3"
   },
   "packageManager": "pnpm@10.12.1",
