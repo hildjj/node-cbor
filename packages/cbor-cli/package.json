@@ -25,7 +25,6 @@
     "lint": "eslint lib/*.js bin/* test/*.js",
     "test": "ava",
     "man": "mkdir -p man; for f in man_src/*.md; do b=`basename $f`; marked-man $f -o man/${b%.md}.1; gzip -9f man/${b%.md}.1; done",
-    "release": "npm version patch && git push --follow-tags && npm publish",
     "typecheck": "tsc --allowJs --checkJs --noEmit --target ES6 --moduleResolution node lib/*.js",
     "coverage": "nyc -r html ava",
     "dev": "light-server -q -s. -w 'lib/*.js,test/*.js,bin/*.js # npm run coverage' -o /coverage/index.html"
@@ -41,7 +40,8 @@
     "email": "joe-github@cursive.net"
   },
   "devDependencies": {
-    "marked": "^15.0.12",
+    "@types/node": "^24.0.7",
+    "marked": "^16.0.0",
     "marked-man": "^2.1.0",
     "mock-stdio": "^1.0.3",
     "nofilter": "^3.0.2",

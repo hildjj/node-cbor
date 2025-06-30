@@ -40,9 +40,9 @@
     "buffer": "^6.0.3",
     "copyfiles": "2.4.1",
     "docdash": "2.0.2",
-    "eslint": "^9.29.0",
+    "eslint": "^9.30.0",
     "eslint-plugin-ava": "^15.0.1",
-    "eslint-plugin-jsdoc": "^51.1.2",
+    "eslint-plugin-jsdoc": "^51.3.1",
     "events": "^3.3.0",
     "jsdoc": "^4.0.4",
     "minami": "*",
@@ -52,10 +52,10 @@
     "rimraf": "5.0.10",
     "stream-browserify": "^3.0.0",
     "svgo": "4.0.0",
-    "typedoc": "0.28.5",
+    "typedoc": "0.28.7",
     "typescript": "^5.8.3"
   },
-  "packageManager": "pnpm@10.12.1",
+  "packageManager": "pnpm@10.12.4",
   "engines": {
     "node": ">=20"
   }
