@@ -23,7 +23,7 @@
     "coverage:all": "nyc -r lcov npm run test:all",
     "precopy": "rimraf docs/example/*",
     "copy": "pnpm -r copy",
-    "version": "monopub -P version"
+    "version": "monopub -P version && pnpm i -r && git add pnpm-lock.yaml"
   },
   "dependencies": {
     "nofilter": "^3.0.2"
