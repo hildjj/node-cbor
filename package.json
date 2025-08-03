@@ -29,20 +29,20 @@
     "nofilter": "^3.0.2"
   },
   "devDependencies": {
-    "@cto.af/eslint-config": "^6.0.9",
-    "@cto.af/monopub": "1.2.1",
-    "@eslint/markdown": "6.6.0",
+    "@cto.af/eslint-config": "^6.0.12",
+    "@cto.af/monopub": "1.2.2",
+    "@eslint/markdown": "7.1.0",
     "@parcel/core": "2.15.4",
     "@parcel/optimizer-data-url": "2.15.4",
     "@parcel/transformer-inline-string": "2.15.4",
-    "ava": "6.4.0",
-    "bignumber.js": "^9.3.0",
+    "ava": "6.4.1",
+    "bignumber.js": "^9.3.1",
     "buffer": "^6.0.3",
     "copyfiles": "2.4.1",
     "docdash": "2.0.2",
-    "eslint": "^9.30.0",
-    "eslint-plugin-ava": "^15.0.1",
-    "eslint-plugin-jsdoc": "^51.3.1",
+    "eslint": "^9.32.0",
+    "eslint-plugin-ava": "^15.1.0",
+    "eslint-plugin-jsdoc": "^52.0.2",
     "events": "^3.3.0",
     "jsdoc": "^4.0.4",
     "minami": "*",
@@ -52,10 +52,10 @@
     "rimraf": "5.0.10",
     "stream-browserify": "^3.0.0",
     "svgo": "4.0.0",
-    "typedoc": "0.28.7",
-    "typescript": "^5.8.3"
+    "typedoc": "0.28.9",
+    "typescript": "^5.9.2"
   },
-  "packageManager": "pnpm@10.12.4",
+  "packageManager": "pnpm@10.14.0",
   "engines": {
     "node": ">=20"
   }

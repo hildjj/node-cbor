@@ -16,12 +16,12 @@
     "directory": "packages/plain-demo"
   },
   "devDependencies": {
-    "bignumber.js": "^9.3.0",
+    "bignumber.js": "^9.3.1",
     "browser-resolve": "^2.0.0",
     "cbor-bigdecimal": "10.0.9",
     "cbor-web": "10.0.9",
     "copyfiles": "^2.4.1",
-    "node-inspect-extracted": "^3.1.0"
+    "node-inspect-extracted": "^3.2.0"
   },
   "engines": {
     "node": ">=20"
