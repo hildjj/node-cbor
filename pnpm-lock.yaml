@@ -100,7 +100,7 @@ importers:
         specifier: ^17.0.1
         version: 17.0.1
       cbor-bigdecimal:
-        specifier: 10.0.9
+        specifier: 10.0.10
         version: link:../cbor-bigdecimal
       copyfiles:
         specifier: ^2.4.1
@@ -155,10 +155,10 @@ importers:
         specifier: ^9.3.1
         version: 9.3.1
       cbor:
-        specifier: 10.0.9
+        specifier: 10.0.10
         version: link:../cbor
       cbor-bigdecimal:
-        specifier: 10.0.9
+        specifier: 10.0.10
         version: link:../cbor-bigdecimal
       commander:
         specifier: ^14.0.0
@@ -222,7 +222,7 @@ importers:
         specifier: ^6.0.3
         version: 6.0.3
       cbor:
-        specifier: 10.0.9
+        specifier: 10.0.10
         version: link:../cbor
       events:
         specifier: ^3.3.0
@@ -279,10 +279,10 @@ importers:
         specifier: 6.0.3
         version: 6.0.3
       cbor:
-        specifier: 10.0.9
+        specifier: 10.0.10
         version: link:../cbor
       cbor-bigdecimal:
-        specifier: 10.0.9
+        specifier: 10.0.10
         version: link:../cbor-bigdecimal
       copyfiles:
         specifier: ^2.4.1
@@ -324,10 +324,10 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       cbor-bigdecimal:
-        specifier: 10.0.9
+        specifier: 10.0.10
         version: link:../cbor-bigdecimal
       cbor-web:
-        specifier: 10.0.9
+        specifier: 10.0.10
         version: link:../cbor-web
       copyfiles:
         specifier: ^2.4.1
@@ -360,10 +360,10 @@ importers:
         specifier: ^6.0.3
         version: 6.0.3
       cbor-bigdecimal:
-        specifier: 10.0.9
+        specifier: 10.0.10
         version: link:../cbor-bigdecimal
       cbor-web:
-        specifier: 10.0.9
+        specifier: 10.0.10
         version: link:../cbor-web
       copyfiles:
         specifier: ^2.4.1
