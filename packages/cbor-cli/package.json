@@ -40,8 +40,8 @@
     "email": "joe-github@cursive.net"
   },
   "devDependencies": {
-    "@types/node": "^24.0.7",
-    "marked": "^16.0.0",
+    "@types/node": "^24.1.0",
+    "marked": "^16.1.1",
     "marked-man": "^2.1.0",
     "mock-stdio": "^1.0.3",
     "nofilter": "^3.0.2",
@@ -51,7 +51,7 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {
-    "bignumber.js": "^9.3.0",
+    "bignumber.js": "^9.3.1",
     "cbor": "10.0.9",
     "cbor-bigdecimal": "10.0.9",
     "commander": "^14.0.0",

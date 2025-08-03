@@ -29,8 +29,8 @@
     "bignumber.js": "^9.1.0"
   },
   "devDependencies": {
-    "bignumber.js": "^9.3.0",
-    "webpack": "^5.99.9",
+    "bignumber.js": "^9.3.1",
+    "webpack": "^5.101.0",
     "webpack-cli": "^5.1.4"
   },
   "engines": {

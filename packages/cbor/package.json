@@ -52,7 +52,7 @@
   },
   "devDependencies": {
     "@types/node": "^24",
-    "bignumber.js": "^9.3.0",
+    "bignumber.js": "^9.3.1",
     "garbage": "~0.0.0",
     "p-event": "^4.2.0",
     "rimraf": "5.0.10"
