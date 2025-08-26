@@ -1,6 +1,6 @@
 {
   "name": "cbor-bigdecimal",
-  "version": "10.0.10",
+  "version": "10.0.11",
   "description": "Plugin for node-cbor to add BigDecimal and BigFloat support.  Requires bignumber.js",
   "browser": "dist/cbor-bigdecimal.js",
   "main": "./bigdecimal.js",
