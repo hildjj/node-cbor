@@ -40,13 +40,13 @@
     "email": "joe-github@cursive.net"
   },
   "devDependencies": {
-    "@types/node": "^24.1.0",
-    "marked": "^16.1.1",
+    "@types/node": "^24.3.0",
+    "marked": "^16.2.0",
     "marked-man": "^2.1.0",
     "mock-stdio": "^1.0.3",
     "nofilter": "^3.0.2",
     "p-event": "^4.2.0",
-    "rimraf": "5.0.10"
+    "rimraf": "6.0.1"
   },
   "license": "MIT",
   "readmeFilename": "README.md",

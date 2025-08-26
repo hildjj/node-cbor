@@ -18,13 +18,13 @@
   "author": "Joe Hildebrand <joe-github@cursive.net>",
   "license": "MIT",
   "devDependencies": {
-    "@babel/core": "^7.28.0",
+    "@babel/core": "^7.28.3",
     "babelify": "^10.0.0",
     "browserify": "^17.0.1",
     "cbor-bigdecimal": "10.0.10",
     "copyfiles": "^2.4.1",
     "node-inspect-extracted": "*",
-    "rimraf": "5.0.10",
+    "rimraf": "6.0.1",
     "terser": "^5.43.1"
   },
   "engines": {

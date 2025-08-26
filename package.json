@@ -29,9 +29,9 @@
     "nofilter": "^3.0.2"
   },
   "devDependencies": {
-    "@cto.af/eslint-config": "^6.0.12",
+    "@cto.af/eslint-config": "^6.0.13",
     "@cto.af/monopub": "1.2.2",
-    "@eslint/markdown": "7.1.0",
+    "@eslint/markdown": "7.2.0",
     "@parcel/core": "2.15.4",
     "@parcel/optimizer-data-url": "2.15.4",
     "@parcel/transformer-inline-string": "2.15.4",
@@ -40,22 +40,22 @@
     "buffer": "^6.0.3",
     "copyfiles": "2.4.1",
     "docdash": "2.0.2",
-    "eslint": "^9.32.0",
+    "eslint": "^9.34.0",
     "eslint-plugin-ava": "^15.1.0",
-    "eslint-plugin-jsdoc": "^52.0.2",
+    "eslint-plugin-jsdoc": "^54.1.1",
     "events": "^3.3.0",
     "jsdoc": "^4.0.4",
     "minami": "*",
     "nve": "^18.0.3",
     "nyc": "^17.1.0",
     "process": "^0.11.10",
-    "rimraf": "5.0.10",
+    "rimraf": "6.0.1",
     "stream-browserify": "^3.0.0",
     "svgo": "4.0.0",
-    "typedoc": "0.28.9",
+    "typedoc": "0.28.11",
     "typescript": "^5.9.2"
   },
-  "packageManager": "pnpm@10.14.0",
+  "packageManager": "pnpm@10.15.0",
   "engines": {
     "node": ">=20"
   }

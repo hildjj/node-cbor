@@ -71,7 +71,18 @@ async function main() {
     assert(txt.match(/ s:\s+\d+,/));
     await page.goBack();
   }
-  await browser.close();
+
+  // Problems shutting down pupeteer.  This more-or-less works,
+  // but it's brittle and isn't fixing whatever the actual issue is.
+  page.off('console');
+  page.off('pageerror');
+  page.off('requestfailed');
+
+  await Promise.all((await browser.pages()).map(p => p.close()));
+  if (browser.process() !== null) {
+    await browser.close();
+  }
+  process.exit(0);
 }
 
 main().catch(console.error);
