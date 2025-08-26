@@ -5,7 +5,5 @@ module.exports = {
     'json-text-sequence',
     'nofilter',
     'p-event',
-    'rimraf',
-    'webpack-cli',
   ],
 };
