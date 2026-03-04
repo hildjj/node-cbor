@@ -1,6 +1,6 @@
 {
   "name": "browserify-demo",
-  "version": "10.0.11",
+  "version": "10.0.12",
   "description": "",
   "private": true,
   "scripts": {
@@ -21,7 +21,7 @@
     "@babel/core": "^7.29.0",
     "babelify": "^10.0.0",
     "browserify": "^17.0.1",
-    "cbor-bigdecimal": "10.0.11",
+    "cbor-bigdecimal": "10.0.12",
     "copyfiles": "^2.4.1",
     "elliptic": "npm:@soatok/elliptic-to-noble",
     "node-inspect-extracted": "*",
