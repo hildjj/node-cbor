@@ -5,15 +5,16 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: publish
     permissions:
       contents: write
       id-token: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
           cache: pnpm
       - run: pnpm i -r
@@ -28,5 +29,3 @@ jobs:
           publish_branch: gh-pages
       - run: npx monopub delete devDependencies,scripts
       - run: npx monopub exec 'npm publish --access public --provenance'
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
