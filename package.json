@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@cto.af/eslint-config": "^6.2.5",
-    "@cto.af/monopub": "1.2.2",
+    "@cto.af/monopub": "1.2.4",
     "@eslint/markdown": "7.5.1",
     "@parcel/core": "2.16.4",
     "@parcel/optimizer-data-url": "2.16.4",
@@ -41,9 +41,9 @@
     "copyfiles": "2.4.1",
     "docdash": "2.0.2",
     "elliptic": "npm:@soatok/elliptic-to-noble",
-    "eslint": "^10.0.2",
+    "eslint": "^10.1.0",
     "eslint-plugin-ava": "^16.0.0",
-    "eslint-plugin-jsdoc": "^62.7.1",
+    "eslint-plugin-jsdoc": "^62.8.0",
     "events": "^3.3.0",
     "jsdoc": "^4.0.5",
     "minami": "*",
@@ -56,7 +56,7 @@
     "typedoc": "0.28.17",
     "typescript": "^5.9.3"
   },
-  "packageManager": "pnpm@10.30.3",
+  "packageManager": "pnpm@10.32.1",
   "pnpm": {
     "overrides": {
       "elliptic": "$elliptic"
