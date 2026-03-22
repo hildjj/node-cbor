@@ -26,8 +26,7 @@
     "test": "ava",
     "man": "mkdir -p man; for f in man_src/*.md; do b=`basename $f`; marked-man $f -o man/${b%.md}.1; gzip -9f man/${b%.md}.1; done",
     "typecheck": "tsc --allowJs --checkJs --noEmit --target ES6 --moduleResolution node lib/*.js",
-    "coverage": "nyc -r html ava",
-    "dev": "light-server -q -s. -w 'lib/*.js,test/*.js,bin/*.js # npm run coverage' -o /coverage/index.html"
+    "coverage": "nyc -r html ava"
   },
   "keywords": [
     "coap",
@@ -40,8 +39,8 @@
     "email": "joe-github@cursive.net"
   },
   "devDependencies": {
-    "@types/node": "^25.3.3",
-    "marked": "^17.0.4",
+    "@types/node": "^25.5.0",
+    "marked": "^17.0.5",
     "marked-man": "^2.1.0",
     "mock-stdio": "^1.0.3",
     "nofilter": "^3.0.2",
