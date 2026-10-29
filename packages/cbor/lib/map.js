@@ -112,6 +112,7 @@ class CborMap extends Map {
     }
   }
 
+  // eslint-disable-next-line @stylistic/spaced-comment
   /***
    * Returns a new Iterator object that contains the [key, value] pairs for
    * each element in the Map object in insertion order.

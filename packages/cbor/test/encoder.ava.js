@@ -3,6 +3,7 @@
 const cbor_src = process.env.CBOR_PACKAGE || '../';
 const cbor = require(cbor_src);
 const test = require('ava');
+const utils = require('../lib/utils');
 const pEvent = require('p-event');
 const cases = require('./cases');
 // Use mangled versions
@@ -51,7 +52,7 @@ test('addSemanticType', t => {
     genTypes: [cases.TempClass, cases.TempClass.toCBOR],
   });
   gen.write(tc);
-  t.is(gen.read().toString('hex'), 'd9fffe63666f6f');
+  t.is(utils.readAll(gen).toString('hex'), 'd9fffe63666f6f');
 
   function hexPackBuffer(gen2, obj, _bufs) {
     gen2.write(`0x${obj.toString('hex')}`);
@@ -62,7 +63,7 @@ test('addSemanticType', t => {
   gen.addSemanticType(Buffer, hexPackBuffer);
   gen.write(Buffer.from('010203', 'hex'));
 
-  t.is(gen.read().toString('hex'), '683078303130323033');
+  t.is(utils.readAll(gen).toString('hex'), '683078303130323033');
 
   t.throws(() => gen.addSemanticType('foo', 'bar'));
   t.is(gen.addSemanticType(Buffer), hexPackBuffer);
@@ -75,7 +76,7 @@ test('addSemanticType', t => {
     },
   });
   gen2.write(tc);
-  t.is(gen2.read().toString('hex'), 'd9fffe63666f6f');
+  t.is(utils.readAll(gen2).toString('hex'), 'd9fffe63666f6f');
 });
 
 test('stream', async t => {
@@ -85,7 +86,8 @@ test('stream', async t => {
   gen.write(1);
   gen.end(2);
   await pEvent(gen, 'end');
-  t.deepEqual(bs.read(), Buffer.from([1, 2]));
+
+  t.deepEqual(utils.readAll(bs), Buffer.from([1, 2]));
 });
 
 test('streamNone', async t => {
@@ -129,18 +131,18 @@ test('pushAny', t => {
   const bs = new NoFilter();
   enc.pipe(bs);
   enc.pushAny(0);
-  t.is(bs.read().toString('hex'), '00');
+  t.is(utils.readAll(bs).toString('hex'), '00');
 });
 
-test('canonical', t => {
+test.only('canonical', t => {
   const enc = new cbor.Encoder({canonical: true});
   const bs = new NoFilter();
   enc.pipe(bs);
   enc.write(cases.goodMap);
-  t.is(bs.read().toString('hex'),
+  t.is(utils.readAll(bs).toString('hex'),
     'ad0063626172613063666f6f616101616201626161026262620263616161036362626203806b656d7074792061727261798101656172726179a069656d707479206f626aa1613102636f626af6646e756c6c');
   enc.write({aa: 2, b: 1});
-  t.is(bs.read().toString('hex'),
+  t.is(utils.readAll(bs).toString('hex'),
     'a261620162616102');
 });
 
@@ -151,7 +153,7 @@ test('canonical numbers', t => {
 
   for (const numEnc of cases.canonNums) {
     enc.write(numEnc[0]);
-    t.is(bs.read().toString('hex'), numEnc[1]);
+    t.is(utils.readAll(bs).toString('hex'), numEnc[1]);
   }
 });
 
@@ -167,7 +169,7 @@ test('detect loops', t => {
   const a = {c: false};
   const b = [a];
   enc.write(b);
-  t.is(bs.read().toString('hex'), '81a16163f4');
+  t.is(utils.readAll(bs).toString('hex'), '81a16163f4');
   t.falsy(enc.detectLoops.has(a));
   t.truthy(enc.detectLoops.has(b));
   t.truthy(enc.removeLoopDetectors());

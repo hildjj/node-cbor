@@ -7,6 +7,8 @@ const constants = require('./constants');
 const {NUMBYTES, SHIFT32, BI, SYMS} = constants;
 const MAX_SAFE_HIGH = 0x1fffff;
 
+/** @import {Readable} from 'stream' */
+
 /**
  * Convert a UTF8-encoded Buffer to a JS string.  If possible, throw an error
  * on invalid UTF8.  Byte Order Marks are not looked at or stripped.
@@ -305,4 +307,19 @@ exports.isBigEndian = function isBigEndian() {
   const array = new Uint8Array(4);
   const view = new Uint32Array(array.buffer);
   return !((view[0] = 1) & array[0]);
+};
+
+/**
+ * @param {Readable} bs
+ * @returns {Buffer|null}
+ */
+exports.readAll = function readAll(bs) {
+  const bufs = [];
+  for (let buf = bs.read(); buf; buf = bs.read()) {
+    bufs.push(buf);
+  }
+  if (bufs.length === 0) {
+    return null;
+  }
+  return Buffer.concat(bufs);
 };
