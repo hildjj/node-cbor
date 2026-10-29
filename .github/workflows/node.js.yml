@@ -16,18 +16,18 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20, 22, 24, 25]
+        node-version: [22, 24, 26]
         platform: [ubuntu-latest, windows-latest]
 
     runs-on: ${{ matrix.platform }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: true
-      - uses: pnpm/action-setup@v5
+      - uses: pnpm/action-setup@v6
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
@@ -36,6 +36,6 @@ jobs:
       - name: Test ${{ matrix.node-version }}
         run: npm run coverage
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

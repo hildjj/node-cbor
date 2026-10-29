@@ -5,12 +5,12 @@ export = Tagged;
  * be an extension point you're not yet expecting.
  */
 declare class Tagged {
+    static INTERNAL_JSON: symbol;
     static set TAGS(val: TagMap);
     /**
      * The current set of supported tags.  May be modified by plugins.
      *
      * @type {TagMap}
-     * @static
      */
     static get TAGS(): TagMap;
     /**
@@ -57,9 +57,8 @@ declare class Tagged {
     convert(converters: object): any;
 }
 declare namespace Tagged {
-    export { INTERNAL_JSON, TagFunction, TagMap };
+    export { TagFunction, TagMap };
 }
-declare const INTERNAL_JSON: unique symbol;
 /**
  * Convert a tagged value to a more interesting JavaScript type.  Errors
  * thrown in this function will be captured into the "err" property of the

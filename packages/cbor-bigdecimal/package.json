@@ -26,14 +26,14 @@
     "directory": "packages/cbor-bigdecimal"
   },
   "peerDependencies": {
-    "bignumber.js": "^9.1.0"
+    "bignumber.js": "^11.1.5"
   },
   "devDependencies": {
-    "bignumber.js": "^10.0.2",
-    "webpack": "^5.105.4",
-    "webpack-cli": "^7.0.2"
+    "bignumber.js": "^11.1.5",
+    "webpack": "^5.112.0",
+    "webpack-cli": "^7.2.3"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   }
 }

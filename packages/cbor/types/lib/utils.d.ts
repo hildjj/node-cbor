@@ -3,7 +3,7 @@ export namespace utf8 {
     let checksUTF8: boolean;
 }
 export function isBufferish(b: any): boolean;
-export function bufferishToBuffer(b: any): Buffer<ArrayBuffer>;
+export function bufferishToBuffer(b: any): Buffer<ArrayBufferLike>;
 export function parseCBORint(ai: any, buf: any): any;
 export function writeHalf(buf: any, half: any): boolean;
 export function parseHalf(buf: any): number;
@@ -17,4 +17,4 @@ export function guessEncoding(input: any, encoding: any): any;
 export function base64url(buf: Buffer | Uint8Array | Uint8ClampedArray | ArrayBuffer | DataView): string;
 export function base64(buf: Buffer | Uint8Array | Uint8ClampedArray | ArrayBuffer | DataView): string;
 export function isBigEndian(): boolean;
-import { Buffer } from "buffer";
+import { Buffer } from "node:buffer";

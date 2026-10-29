@@ -597,7 +597,14 @@ Call removeLoopDetectors before resuming.`);
       this.pushAny(o);
     }
     this.end();
-    return bs.read();
+    const bufs = [];
+    for (let buf = bs.read(); buf; buf = bs.read()) {
+      bufs.push(buf);
+    }
+    if (bufs.length === 0) {
+      return null;
+    }
+    return Buffer.concat(bufs);
   }
 
   /**

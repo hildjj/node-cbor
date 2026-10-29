@@ -12,7 +12,8 @@ const {Buffer} = require('buffer');
 const COUNT = Symbol('count');
 const MAJOR = Symbol('major type');
 const ERROR = Symbol('error');
-const NOT_FOUND = Symbol('not found');
+
+/** @import {Readable} from 'stream' */
 
 function parentArray(parent, typ, count) {
   const a = [];
@@ -45,7 +46,7 @@ class UnexpectedDataError extends Error {
  * Things that can act as inputs, from which a NoFilter can be created.
  *
  * @typedef {string|Buffer|ArrayBuffer|ArrayBufferView
- *   |DataView|import('stream').Readable} BufferLike
+ *   |DataView|Readable} BufferLike
  */
 /**
  * @typedef ExtendedResults
@@ -120,6 +121,8 @@ function normalizeOptions(opts, cb) {
  * @extends BinaryParseStream
  */
 class Decoder extends BinaryParseStream {
+  static NOT_FOUND = Symbol('not found');
+
   /**
    * Create a parsing stream.
    *
@@ -162,7 +165,6 @@ class Decoder extends BinaryParseStream {
    * @param {any} val The value to check.
    * @returns {any} The corrected value.
    * @throws {Error} Nothing was found.
-   * @static
    * @example
    * myDecoder.on('data', val => {
    *   val = Decoder.nullcheck(val)
@@ -178,7 +180,7 @@ class Decoder extends BinaryParseStream {
       // Leaving this in for now as belt-and-suspenders, but I'm pretty sure
       // it can't happen.
       /* istanbul ignore next */
-      case NOT_FOUND:
+      case Decoder.NOT_FOUND:
         /* istanbul ignore next */
         throw new Error('Value not found');
       default:
@@ -307,7 +309,7 @@ class Decoder extends BinaryParseStream {
     const {encoding = 'hex', required = false, ...opts} = options;
 
     const c = new Decoder(opts);
-    let v = /** @type {any} */ (NOT_FOUND);
+    let v = /** @type {any} */ (Decoder.NOT_FOUND);
     const s = utils.guessEncoding(input, encoding);
     const p = new Promise((resolve, reject) => {
       c.on('data', val => {
@@ -319,7 +321,7 @@ class Decoder extends BinaryParseStream {
           v.unused = c.bs.slice();
           return resolve(v);
         }
-        if (v !== NOT_FOUND) {
+        if (v !== Decoder.NOT_FOUND) {
           // Typescript work-around
           // eslint-disable-next-line dot-notation
           er['value'] = v;
@@ -330,7 +332,7 @@ class Decoder extends BinaryParseStream {
       });
       c.once('end', () => {
         switch (v) {
-          case NOT_FOUND:
+          case Decoder.NOT_FOUND:
             if (required) {
               return reject(new Error('No CBOR found'));
             }
@@ -676,5 +678,4 @@ class Decoder extends BinaryParseStream {
   }
 }
 
-Decoder.NOT_FOUND = NOT_FOUND;
 module.exports = Decoder;

@@ -4,6 +4,8 @@ const Encoder = require('./encoder');
 const ObjectRecorder = require('./objectRecorder');
 const {Buffer} = require('buffer');
 
+/** @import {EncodingOptions, ObjectOptions} from ('./encoder') */
+
 /**
  * Implement value sharing.
  *
@@ -17,7 +19,7 @@ class SharedValueEncoder extends Encoder {
 
   /**
    * @param {object} obj Object to encode.
-   * @param {import('./encoder').ObjectOptions} [opts] Options for encoding
+   * @param {ObjectOptions} [opts] Options for encoding
    *   this object.
    * @returns {boolean} True on success.
    * @throws {Error} Loop detected.
@@ -92,10 +94,9 @@ class SharedValueEncoder extends Encoder {
    * Encode one JavaScript object using the given options.
    *
    * @param {any} obj The object to encode.
-   * @param {import('./encoder').EncodingOptions} [options={}]
+   * @param {EncodingOptions} [options={}]
    *   Passed to the Encoder constructor.
    * @returns {Buffer} The encoded objects.
-   * @static
    */
   static encodeOne(obj, options) {
     const enc = new SharedValueEncoder(options);
@@ -115,7 +116,7 @@ class SharedValueEncoder extends Encoder {
    * directly if you need to process large and complicated inputs.
    *
    * @param {any} obj The object to encode.
-   * @param {import('./encoder').EncodingOptions} [options={}]
+   * @param {EncodingOptions} [options={}]
    *   Passed to the Encoder constructor.
    * @returns {Promise<Buffer>} A promise for the encoded buffer.
    */

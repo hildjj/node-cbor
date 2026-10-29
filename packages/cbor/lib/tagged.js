@@ -2,6 +2,7 @@
 
 const constants = require('./constants');
 const utils = require('./utils');
+
 const INTERNAL_JSON = Symbol('INTERNAL_JSON');
 
 function setBuffersToJSON(obj, fn) {
@@ -264,6 +265,8 @@ let current_TAGS = {};
  * be an extension point you're not yet expecting.
  */
 class Tagged {
+  static INTERNAL_JSON = INTERNAL_JSON;
+
   /**
    * Creates an instance of Tagged.
    *
@@ -284,8 +287,8 @@ class Tagged {
   }
 
   toJSON() {
-    if (this[INTERNAL_JSON]) {
-      return this[INTERNAL_JSON].call(this.value);
+    if (this[Tagged.INTERNAL_JSON]) {
+      return this[Tagged.INTERNAL_JSON].call(this.value);
     }
     const ret = {
       tag: this.tag,
@@ -355,7 +358,6 @@ class Tagged {
    * The current set of supported tags.  May be modified by plugins.
    *
    * @type {TagMap}
-   * @static
    */
   static get TAGS() {
     return current_TAGS;
@@ -373,6 +375,6 @@ class Tagged {
     Tagged.TAGS = {...TAGS};
   }
 }
-Tagged.INTERNAL_JSON = INTERNAL_JSON;
+
 Tagged.reset();
 module.exports = Tagged;

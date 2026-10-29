@@ -3,7 +3,7 @@
 
 const puppeteer = require('puppeteer');
 const path = require('node:path');
-const assert = require('node:assert');
+const assert = require('node:assert/strict');
 const fs = require('node:fs');
 
 const TOP = `file://${path.resolve(

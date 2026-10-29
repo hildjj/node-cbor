@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/devcontainers/spec/refs/heads/main/schemas/devContainer.schema.json",
+  "name": "playwright",
+  "dockerFile": "Dockerfile",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "editorconfig.editorconfig",
+        "connor4312.nodejs-testing"
+      ]
+    }
+  },
+  "postCreateCommand": "sudo npm install -g npm-check-updates"
+}
