@@ -15,3 +15,5 @@ minimumReleaseAgeExclude:
 overrides:
   "micromark-extension-math@3.1.0>katex": 0.19.1
   "elliptic": "npm:@soatok/elliptic-to-noble"
+  "glob": ~14.0.3
+  "minimatch": ~11.0.3
