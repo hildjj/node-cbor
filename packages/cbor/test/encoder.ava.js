@@ -134,7 +134,7 @@ test('pushAny', t => {
   t.is(utils.readAll(bs).toString('hex'), '00');
 });
 
-test.only('canonical', t => {
+test('canonical', t => {
   const enc = new cbor.Encoder({canonical: true});
   const bs = new NoFilter();
   enc.pipe(bs);
