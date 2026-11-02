@@ -69,10 +69,10 @@ declare class Commented extends stream.Transform {
 declare namespace Commented {
     export { CommentOptions, commentCallback };
 }
-import stream = require("stream");
+import stream = require("node:stream");
 import NoFilter = require("nofilter");
 import Decoder = require("./decoder");
-import { Buffer } from "buffer";
+import { Buffer } from "node:buffer";
 type CommentOptions = {
     /**
      * How many times to indent

@@ -46,7 +46,7 @@ declare class Diagnose extends stream.Transform {
 declare namespace Diagnose {
     export { BufferLike, DiagnoseOptions, diagnoseCallback };
 }
-import stream = require("stream");
+import stream = require("node:stream");
 import Decoder = require("./decoder");
 /**
  * Things that can act as inputs, from which a NoFilter can be created.

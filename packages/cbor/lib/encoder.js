@@ -597,7 +597,7 @@ Call removeLoopDetectors before resuming.`);
       this.pushAny(o);
     }
     this.end();
-    return bs.read();
+    return utils.readAll(bs);
   }
 
   /**
@@ -850,9 +850,9 @@ Call removeLoopDetectors before resuming.`);
       entries.sort(([a], [b]) => {
         // Both a and b are the keys
         enc.pushAny(a);
-        const a_cbor = bs.read();
+        const a_cbor = utils.readAll(bs);
         enc.pushAny(b);
-        const b_cbor = bs.read();
+        const b_cbor = utils.readAll(bs);
         return a_cbor.compare(b_cbor);
       });
       for (const [k, v] of entries) {

@@ -44,6 +44,7 @@ export default [
     languageOptions: {
       sourceType: 'module',
       globals: globals.browser,
+      ecmaVersion: 2022,
     },
     rules: {
       'n/prefer-node-protocol': 'off',

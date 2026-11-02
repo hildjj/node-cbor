@@ -1,3 +1,4 @@
+/* eslint-disable new-cap */
 'use strict';
 
 const test = require('ava');

@@ -19,6 +19,7 @@
     "clean": "rimraf coverage .nyc_output/ docs",
     "lint": "eslint lib/*.js test/*.js",
     "coverage": "nyc -r lcov npm test",
+    "docs": "typedoc",
     "test": "ava test/*.ava.js",
     "release": "npm version patch && git push --follow-tags && npm publish",
     "predev": "npm run coverage",
@@ -51,8 +52,8 @@
     "nofilter": "^3.0.2"
   },
   "devDependencies": {
-    "@types/node": "^25",
-    "bignumber.js": "^10.0.2",
+    "@types/node": "^26",
+    "bignumber.js": "^11.1.5",
     "garbage": "^0.0.0",
     "p-event": "^4.2.0",
     "rimraf": "^6.1.3"
@@ -60,6 +61,6 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   }
 }

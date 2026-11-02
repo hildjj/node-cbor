@@ -8,6 +8,7 @@ export = Decoder;
  * @extends BinaryParseStream
  */
 declare class Decoder extends BinaryParseStream {
+    static NOT_FOUND: symbol;
     /**
      * Check the given value for a symbol encoding a NULL or UNDEFINED value in
      * the CBOR stream.
@@ -15,7 +16,6 @@ declare class Decoder extends BinaryParseStream {
      * @param {any} val The value to check.
      * @returns {any} The corrected value.
      * @throws {Error} Nothing was found.
-     * @static
      * @example
      * myDecoder.on('data', val => {
      *   val = Decoder.nullcheck(val)
@@ -114,16 +114,15 @@ declare class Decoder extends BinaryParseStream {
     _onRead(data: any): void;
 }
 declare namespace Decoder {
-    export { NOT_FOUND, BufferLike, ExtendedResults, DecoderOptions, decodeCallback };
+    export { BufferLike, ExtendedResults, DecoderOptions, decodeCallback };
 }
 import BinaryParseStream = require("../vendor/binary-parse-stream");
 import Tagged = require("./tagged");
 import NoFilter = require("nofilter");
-declare const NOT_FOUND: unique symbol;
 /**
  * Things that can act as inputs, from which a NoFilter can be created.
  */
-type BufferLike = string | Buffer | ArrayBuffer | ArrayBufferView | DataView | import("stream").Readable;
+type BufferLike = string | Buffer | ArrayBuffer | ArrayBufferView | DataView | Readable;
 type ExtendedResults = {
     /**
      * The value that was found.
@@ -196,4 +195,5 @@ type DecoderOptions = {
     preventDuplicateKeys?: boolean;
 };
 type decodeCallback = (error?: Error, value?: any) => void;
-import { Buffer } from "buffer";
+import { Buffer } from "node:buffer";
+import type { Readable } from 'stream';

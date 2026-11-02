@@ -1,3 +1,19 @@
 packages:
   - 'packages/*'
+allowBuilds:
+  '@parcel/watcher': false
+  '@soatok/elliptic-to-noble': false
+  '@swc/core': true
+  core-js: set this to true or false
+  lmdb: false
+  msgpackr-extract: false
+  puppeteer: false
 linkWorkspacePackages: true
+minimumReleaseAgeExclude:
+  - nofilter@7.0.0
+  - '@cto.af/eslint-config@7.0.4'
+overrides:
+  "micromark-extension-math@3.1.0>katex": 0.19.1
+  "elliptic": "npm:@soatok/elliptic-to-noble"
+  "glob": ~14.0.3
+  "minimatch": ~11.0.3

@@ -1,4 +1,5 @@
 export = CborMap;
+/** @import Encoder from './encoder.js' */
 /**
  * Wrapper around a JavaScript Map object that allows the keys to be
  * any complex type.  The base Map object allows this, but will only
@@ -42,14 +43,14 @@ declare class CborMap extends Map<any, any> {
      * @returns {this} This object.
      */
     set(key: any, val: any): this;
-    /**
+    /***
      * Returns a new Iterator object that contains the [key, value] pairs for
      * each element in the Map object in insertion order.
      *
-     * @returns {MapIterator<any>} Key value pairs.
+     * @returns {MapIterator<[unknown, unknown]>} Key value pairs.
      * @yields {any[]} Key value pairs.
      */
-    entries(): MapIterator<any>;
+    entries(): MapIterator<[unknown, unknown]>;
     /**
      * Executes a provided function once per each key/value pair in the Map
      * object, in insertion order.
@@ -64,15 +65,16 @@ declare class CborMap extends Map<any, any> {
     /**
      * Push the simple value onto the CBOR stream.
      *
-     * @param {import('./encoder.js')} gen The generator to push onto.
+     * @param {Encoder} gen The generator to push onto.
      * @returns {boolean} True on success.
      */
-    encodeCBOR(gen: import("./encoder.js")): boolean;
+    encodeCBOR(gen: encoder): boolean;
     /**
      * Returns a new Iterator object that contains the [key, value] pairs for
      * each element in the Map object in insertion order.
      *
-     * @returns {MapIterator<any>} Key value pairs.
+     * @yields {any[]} Key value pairs.
      */
-    [Symbol.iterator](): MapIterator<any>;
+    [Symbol.iterator](): MapIterator<[unknown, unknown]>;
 }
+import encoder = require("./encoder");

@@ -44,7 +44,7 @@ For a command-line interface, see [cbor-cli](../cbor-cli/).
 Example:
 ```js
 const cbor = require('cbor');
-const assert = require('node:assert');
+const assert = require('node:assert/strict');
 
 let encoded = cbor.encode(true); // Returns <Buffer f5>
 cbor.decodeFirst(encoded, (error, obj) => {

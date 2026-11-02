@@ -5,6 +5,8 @@ const encoder = require('./encoder');
 const decoder = require('./decoder');
 const {MT} = require('./constants');
 
+/** @import Encoder from './encoder.js' */
+
 /**
  * Wrapper around a JavaScript Map object that allows the keys to be
  * any complex type.  The base Map object allows this, but will only
@@ -110,7 +112,8 @@ class CborMap extends Map {
     }
   }
 
-  /**
+  // eslint-disable-next-line @stylistic/spaced-comment
+  /***
    * Returns a new Iterator object that contains the [key, value] pairs for
    * each element in the Map object in insertion order.
    *
@@ -127,7 +130,7 @@ class CborMap extends Map {
    * Returns a new Iterator object that contains the [key, value] pairs for
    * each element in the Map object in insertion order.
    *
-   * @returns {MapIterator<[unknown, unknown]>} Key value pairs.
+   * @yields {any[]} Key value pairs.
    */
   [Symbol.iterator]() {
     return this.entries();
@@ -155,7 +158,7 @@ class CborMap extends Map {
   /**
    * Push the simple value onto the CBOR stream.
    *
-   * @param {import('./encoder.js')} gen The generator to push onto.
+   * @param {Encoder} gen The generator to push onto.
    * @returns {boolean} True on success.
    */
   encodeCBOR(gen) {

@@ -383,8 +383,8 @@ declare class Encoder extends stream.Transform {
 declare namespace Encoder {
     export { EncodeFunction, SemanticMap, ObjectOptions, EncodingOptions };
 }
-import stream = require("stream");
-import { Buffer } from "buffer";
+import stream = require("node:stream");
+import { Buffer } from "node:buffer";
 import NoFilter = require("nofilter");
 /**
  * Generate the CBOR for a value.  If you are using this, you'll either need
