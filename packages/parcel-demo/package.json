@@ -1,6 +1,6 @@
 {
   "name": "parcel-demo",
-  "version": "10.0.12",
+  "version": "11.0.0",
   "description": "",
   "private": true,
   "type": "module",
@@ -23,8 +23,8 @@
     "@parcel/optimizer-data-url": "^2.16.4",
     "@parcel/transformer-inline-string": "^2.16.4",
     "buffer": "^6.0.3",
-    "cbor": "10.0.12",
-    "cbor-bigdecimal": "10.0.12",
+    "cbor": "11.0.0",
+    "cbor-bigdecimal": "11.0.0",
     "copyfiles": "^2.4.1",
     "events": "^3.3.0",
     "node-inspect-extracted": "^3.3.4",
