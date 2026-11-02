@@ -11,12 +11,5 @@ module.exports = {
     libraryTarget: 'umd',
     globalObject: 'this',
   },
-  externals: {
-    'bignumber.js': {
-      root: 'BigNumber',
-      commonjs: 'bignumber.js',
-      commonjs2: 'bignumber.js',
-    },
-  },
   target: 'web',
 };

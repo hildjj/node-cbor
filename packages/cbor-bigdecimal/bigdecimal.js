@@ -1,6 +1,6 @@
 'use strict';
 
-const {BigNumber} = require('bignumber.js');
+const BigNumber = require("bignumber.js")
 let cbor = null;
 
 const MAXINT = new BigNumber('0x20000000000000');
@@ -53,4 +53,5 @@ function addBigDecimal(inCBOR) {
 }
 
 addBigDecimal.BigNumber = BigNumber;
+globalThis.BigNumber = BigNumber;
 module.exports = addBigDecimal;

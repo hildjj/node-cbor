@@ -13,7 +13,7 @@
     "docs": "jsdoc -c .jsdoc.conf",
     "lint": "eslint .",
     "test": "ava",
-    "test:versions": "nve --continue --arch x64 --parallel 25,24,22,20 ava",
+    "test:versions": "nve --continue --arch x64 --parallel 26,24,22 ava",
     "test:bigendian": "DOCKER_DEFAULT_PLATFORM='linux/s390x' docker run --rm -it -v ${PWD}:/root/cbor -w /root/cbor s390x/node npm test",
     "test:spot-check": "ava test/*.ava.js && CBOR_PACKAGE=${INIT_CWD}/packages/cbor-web/dist/cbor.js npm run test",
     "test:web": "node packages/puppeteer-demo/index.js",

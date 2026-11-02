@@ -22,7 +22,6 @@
     "@parcel/core": "^2.16.4",
     "@parcel/optimizer-data-url": "^2.16.4",
     "@parcel/transformer-inline-string": "^2.16.4",
-    "bignumber.js": "^11.1.5",
     "buffer": "^6.0.3",
     "cbor": "10.0.12",
     "cbor-bigdecimal": "10.0.12",

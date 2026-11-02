@@ -16,7 +16,6 @@
     "directory": "packages/plain-demo"
   },
   "devDependencies": {
-    "bignumber.js": "^11.1.5",
     "browser-resolve": "^2.0.0",
     "cbor-bigdecimal": "10.0.12",
     "cbor-web": "10.0.12",

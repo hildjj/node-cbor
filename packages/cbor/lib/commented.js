@@ -374,7 +374,7 @@ class Commented extends stream.Transform {
    */
   _on_data() {
     this.push('0x');
-    this.push(this.all.read().toString('hex'));
+    this.push(utils.readAll(this.all).toString('hex'));
     this.push('\n');
   }
 }

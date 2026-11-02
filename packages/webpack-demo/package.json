@@ -19,7 +19,6 @@
   "devDependencies": {
     "@cto.af/textdecoder": "^0.3.0",
     "base64-js": "^1.5.1",
-    "bignumber.js": "^11.1.5",
     "buffer": "^6.0.3",
     "cbor-bigdecimal": "10.0.12",
     "cbor-web": "10.0.12",
